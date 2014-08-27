@@ -1,0 +1,175 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+        
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{ADMIN_ROOT_URL}}/dashboard">
+										{{lang.general11}}
+									</a>
+								</li>
+								<li>
+								    <a href="{{ADMIN_ROOT_URL}}/groups">
+									    {{lang.groups1}}
+								    </a>
+								</li>
+								<li class="active">
+									{{lang.groups25}}
+								</li>
+								<li class="search-box">
+									<form class="sidebar-search">
+										<div class="form-group">
+											<input type="text" placeholder="Start Searching...">
+											<button class="submit">
+												<i class="clip-search-3"></i>
+											</button>
+										</div>
+									</form>
+								</li>
+							</ol>
+							<div class="row page-header">
+							    <div class="col-md-12">
+								    <h1>{{lang.groups26}} <small> {{lang.groups27}}</small></h1>
+								</div>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+					
+
+                    {% if infomessage is defined %}
+                         <div class="row">
+    					    <div class="col-md-12">
+                                <div class="alert alert-success">
+                                	<button data-dismiss="alert" class="close">
+                                		×
+                                	</button>
+                                	<i class="fa fa-check-circle"></i>
+                                	{{infomessage}}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                        					
+					<div class="row">
+					    <div class="col-md-3">
+					        
+					        <img src="{{FILE_DOWNLOAD_URL}}{{data.image_thumb}}" alt="" class="img-thumbnail"><br />
+					        <H4>
+					            {{data.name}}
+					        </H4>
+					        
+					    </div>
+					    
+					    <div class="col-md-9">
+                            
+                            {% include 'paginator.twig' %}
+
+                            <table class="table table-hover" id="sample-table-1">
+								<thead>
+									<tr>
+										<th class="hidden-xs" width="5%"></th>
+										<th width="70%">{{lang.users6}}</th>
+										<th class="hidden-xs">{{lang.users12}}</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+								
+                                        
+                                        <form role="form" class="form-horizontal form-groups" method="post" action="{{ADMIN_ROOT_URL}}/groups/members/{{data.id}}" enctype="multipart/form-data">
+                                            <tr>
+                                                <td></td>
+                                                <td colspan="2">
+    
+                                                    <select multiple data-placeholder="{{lang.general14}}" name="usersselect[]" id="usersselect" class="chosen-select" style="width:100%">
+                                                        
+                                                        {% for row in users %}
+                                                            
+                                                            <option value="{{row.id}}">{{row.firstname}} {{row.lastname}}</option>
+                                                            
+                                                        {% endfor %}
+                                                        
+                                                    </select>
+                                                    
+                                                </td>
+                                                <td>
+                                                    <input type="submit" class="btn btn-primary" value="{{lang.general13}}" / >
+                                                </td>
+                                            </tr>
+                                        
+                                        </form>
+                                        
+                                        {% for row in list %}
+
+                    				    <tr>
+    										<td class="hidden-xs">
+    										    <img width="40" src="{{FILE_DOWNLOAD_URL}}{{row.image_thumb}}" />
+                                            </td>
+                                            
+    										<td>
+    										    <a href="{{ADMIN_ROOT_URL}}/users/view/{{row.id}}">
+    										        {{row.username}}
+    										    </a>
+                                            </td>
+
+    										<td>
+    										      {{row.firstname}} {{row.lastname}}
+                                            </td>
+    										
+    										<td class="right">
+    										
+        										<div class="visible-md visible-lg hidden-sm hidden-xs">
+        											<a href="{{ADMIN_ROOT_URL}}/groups/members_delete/{{data.id}}/{{row.id}}" class="btn btn-xs btn-bricky tooltips" data-placement="top" data-original-title="{{lang.general8}}"><i class="fa fa-times fa fa-white"></i></a>
+
+        										</div>
+        										<div class="visible-xs visible-sm hidden-md hidden-lg">
+        											<div class="btn-group">
+        												<a class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" href="#">
+        													<i class="fa fa-cog"></i> <span class="caret"></span>
+        												</a>
+        												<ul role="menu" class="dropdown-menu pull-right">
+        													<li role="presentation">
+        														<a role="menuitem" tabindex="-1" href="{{ADMIN_ROOT_URL}}/groups/members_delete/{{data.id}}/{{row.id}}">
+        															<i class="fa fa-times"></i> {{lang.general8}}
+        														</a>
+        													</li>
+        												</ul>
+        											</div>
+        										</div>
+    										</td>
+    									</tr>
+								
+                                    {% endfor %}
+
+								</tbody>
+							</table>
+							
+							{% include 'paginator.twig' %}
+							
+                        </div>
+					</div>
+                    
+                    
+{% endblock %}
+
+{% block pageScript %}
+
+	<script>
+
+		jQuery(document).ready(function() {
+            
+            $('.chosen-select').chosen({});
+            
+		});
+		
+	</script>
+{% endblock %}

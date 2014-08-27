@@ -1,0 +1,130 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+        
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{ADMIN_ROOT_URL}}/dashboard">
+										{{lang.general11}}
+									</a>
+								</li>
+								<li class="active">
+									{{lang.groups1}}
+								</li>
+								<li class="search-box">
+									<form class="sidebar-search">
+										<div class="form-group">
+											<input type="text" placeholder="Start Searching...">
+											<button class="submit">
+												<i class="clip-search-3"></i>
+											</button>
+										</div>
+									</form>
+								</li>
+							</ol>
+							<div class="row page-header">
+							    <div class="col-md-6">
+								    <h1>{{lang.groups2}} <small> {{lang.groups3}}</small></h1>
+								</div>
+								<div class="col-md-6 right">
+								    <a class="btn btn-primary" href="{{ADMIN_ROOT_URL}}/groups/add"><i class="fa fa-plus"></i>{{lang.groups4}}</a>
+								</div>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+					
+
+                    {% if infomessage is defined %}
+                         <div class="row">
+    					    <div class="col-md-12">
+                                <div class="alert alert-success">
+                                	<button data-dismiss="alert" class="close">
+                                		×
+                                	</button>
+                                	<i class="fa fa-check-circle"></i>
+                                	{{infomessage}}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                        
+					{% include 'paginator.twig' %}
+					
+					<div class="row">
+					    <div class="col-md-12">
+
+                            <table class="table table-hover" id="sample-table-1">
+								<thead>
+									<tr>
+										<th class="hidden-xs" width="5%"></th>
+										<th width="70%">{{lang.groups10}}</th>
+										<th class="hidden-xs">{{lang.groups11}}</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+								
+                                    {% for row in list %}
+
+                    				    <tr>
+    										<td class="hidden-xs">
+    										    <img width="40" src="{{FILE_DOWNLOAD_URL}}{{row.image_thumb}}" />
+                                            </td>
+    										<td>
+    										    <a href="{{ADMIN_ROOT_URL}}/groups/view/{{row.id}}">
+    										        {{row.name}}
+    										    </a>
+                                            </td>
+    										<td class="hidden-xs">{{row.modified|date("Y.m.d")}} </td>
+    										<td class="right">
+        										<div class="visible-md visible-lg hidden-sm hidden-xs">
+        											<a href="{{ADMIN_ROOT_URL}}/groups/members/{{row.id}}" class="btn btn-xs btn-teal tooltips" data-placement="top" data-original-title="{{lang.groups25}}"><i class="fa fa-users fa fa-white"></i></a>
+        											 <a href="{{ADMIN_ROOT_URL}}/groups/edit/{{row.id}}" class="btn btn-xs btn-teal tooltips" data-placement="top" data-original-title="{{lang.general7}}"><i class="fa fa-edit"></i></a>
+        											<a href="{{ADMIN_ROOT_URL}}/groups/delete/{{row.id}}" class="btn btn-xs btn-bricky tooltips" data-placement="top" data-original-title="{{lang.general8}}"><i class="fa fa-times fa fa-white"></i></a>
+
+        										</div>
+        										<div class="visible-xs visible-sm hidden-md hidden-lg">
+        											<div class="btn-group">
+        												<a class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" href="#">
+        													<i class="fa fa-cog"></i> <span class="caret"></span>
+        												</a>
+        												<ul role="menu" class="dropdown-menu pull-right">
+         													<li role="presentation">
+        														<a role="menuitem" tabindex="-1" href="#">
+        															<i class="fa fa-users"></i> {{lang.groups25}}
+        														</a>
+        													</li>
+           													<li role="presentation">
+        														<a role="menuitem" tabindex="-1" href="#">
+        															<i class="fa fa-edit"></i> {{lang.general7}}
+        														</a>
+        													</li>
+        													<li role="presentation">
+        														<a role="menuitem" tabindex="-1" href="#">
+        															<i class="fa fa-times"></i> {{lang.general8}}
+        														</a>
+        													</li>
+        												</ul>
+        											</div>
+        										</div>
+    										</td>
+    									</tr>
+									
+                                    {% endfor %}
+								</tbody>
+							</table>
+                        </div>
+					</div>
+                    
+                    {% include 'paginator.twig' %}
+                    
+{% endblock %}

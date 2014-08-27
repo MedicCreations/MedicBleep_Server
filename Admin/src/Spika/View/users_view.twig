@@ -1,0 +1,151 @@
+{% extends "adminbase.twig" %}
+{% block content %}
+
+<!-- start: PAGE HEADER -->
+<div class="row">
+	<div class="col-sm-12">
+		<!-- start: PAGE TITLE & BREADCRUMB -->
+		<ol class="breadcrumb">
+			<li>
+				<i class="clip-home-3"></i>
+				<a href="{{ADMIN_ROOT_URL}}/dashboard">
+				{{lang.users1}}
+				</a>
+			</li>
+			<li>
+				<a href="{{ADMIN_ROOT_URL}}/users">
+				{{lang.users2}}
+				</a>
+			</li>
+			</li>
+			<li class="active">
+			    {% if mode == 'view' %}
+				    {{lang.users34}}
+				{% endif %}
+			    {% if mode == 'delete' %}
+				    {{lang.users40}}
+				{% endif %}
+			</li>
+			<li class="search-box">
+				<form class="sidebar-search">
+					<div class="form-group">
+						<input type="text" placeholder="Start Searching...">
+						<button class="submit">
+						<i class="clip-search-3"></i>
+						</button>
+					</div>
+				</form>
+			</li>
+		</ol>
+		<div class="row page-header">
+			<div class="col-md-6">
+				<h1>{{data.username}}</h1>
+			</div>
+		</div>
+		<!-- end: PAGE TITLE & BREADCRUMB -->
+	</div>
+</div>
+<!-- end: PAGE HEADER -->
+
+<!-- start: PAGE CONTENT -->
+<div class="row">
+    
+    {% if mode == 'delete' %}
+        
+        <div class="col-md-12" style="padding-bottom:20px">
+    
+            <div class="alert alert-warning">
+            	<i class="fa fa-exclamation-triangle"></i>
+            	<strong>Warning!</strong> 
+            	{{lang.users35}}
+            </div>
+            
+            <form role="form" class="form-horizontal form-user right" method="post" action="{{ADMIN_ROOT_URL}}/users/delete/{{data.id}}">
+                
+                <button type="button" class="btn btn-success" onclick="history.back()">{{lang.general9}}</button>
+                <button type="submit" class="btn btn-warning">{{lang.users36}}</button>
+
+            </form>
+            
+        </div>
+        
+    {% endif %}
+    
+	<div class="col-md-3">
+		<img src="{{FILE_DOWNLOAD_URL}}{{data.image_thumb}}" alt="" class="img-thumbnail"><br />
+		
+		{% if mode == 'view' %}
+            <a href="{{ADMIN_ROOT_URL}}/users/edit/{{data.id}}" class="btn btn-warning btn-block">
+            	{{lang.users38}}
+            </a>
+            
+            <a href="{{ADMIN_ROOT_URL}}/users/delete/{{data.id}}" class="btn btn-danger btn-block">
+            	{{lang.users39}}
+            </a>
+        {% endif %} 							
+																															
+	</div>
+		
+    <div class="col-md-9">
+
+        <table class="table table-hover" id="sample-table-1">
+
+    		<tr>
+    			<td>{{lang.users28}}</td>
+    			<td>{{data.username}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.users23}}</td>
+    			<td>{{data.id}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.users24}}</td>
+    			<td>{{data.outside_id}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.users25}}</td>
+    			<td>{{data.token}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.users26}}</td>
+    			<td>{{data.token_timestamp}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.users27}}</td>
+    			<td>{{data.firstname}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.users28}}</td>
+    			<td>{{data.lastname}}</td>
+    		</tr>
+
+    		<tr>
+    			<td>{{lang.users29}}</td>
+    			<td>{{data.email}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.users30}}</td>
+    			<td>{{data.android_push_token}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.users31}}</td>
+    			<td>{{data.ios_push_token}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.users32}}</td>
+    			<td>{{data.created}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.users33}}</td>
+    			<td>{{data.modified}}</td>
+    		</tr>
+
+
+        </table>
+
+    </div>
+
+</div>
+
+
+{% endblock %}

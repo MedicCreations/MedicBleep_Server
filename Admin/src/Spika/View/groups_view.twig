@@ -1,0 +1,126 @@
+{% extends "adminbase.twig" %}
+{% block content %}
+
+<!-- start: PAGE HEADER -->
+<div class="row">
+	<div class="col-sm-12">
+
+		<!-- start: PAGE TITLE & BREADCRUMB -->
+		<ol class="breadcrumb">
+			<li>
+				<i class="clip-home-3"></i>
+				<a href="{{ADMIN_ROOT_URL}}/dashboard">
+					{{lang.general11}}
+				</a>
+			</li>
+			<li>
+				<a href="{{ADMIN_ROOT_URL}}/groups">
+				    {{lang.groups1}}
+                </a>
+			</li>
+			<li class="active">
+
+			    {% if mode == 'view' %}
+				    {{lang.groups15}}
+				{% endif %}
+			    {% if mode == 'delete' %}
+				    {{lang.groups24}}
+				{% endif %}
+				
+			</li>
+			<li class="search-box">
+				<form class="sidebar-search">
+					<div class="form-group">
+						<input type="text" placeholder="Start Searching...">
+						<button class="submit">
+							<i class="clip-search-3"></i>
+						</button>
+					</div>
+				</form>
+			</li>
+		</ol>
+		<div class="row page-header">
+		    <div class="col-md-6">
+			    <h1>{{data.name}}</h1>
+			</div>
+		</div>
+		<!-- end: PAGE TITLE & BREADCRUMB -->
+	</div>
+</div>
+<!-- end: PAGE HEADER -->
+<!-- start: PAGE CONTENT -->
+
+<!-- start: PAGE CONTENT -->
+<div class="row">
+    
+    {% if mode == 'delete' %}
+        
+        <div class="col-md-12" style="padding-bottom:20px">
+    
+            <div class="alert alert-warning">
+            	<i class="fa fa-exclamation-triangle"></i>
+            	<strong>Warning!</strong> 
+            	{{lang.groups22}}
+            </div>
+            
+            <form role="form" class="form-horizontal form-user right" method="post" action="{{ADMIN_ROOT_URL}}/groups/delete/{{data.id}}">
+
+                <button type="button" class="btn btn-success" onclick="history.back()">{{lang.general9}}</button>
+                <button type="submit" class="btn btn-warning">{{lang.groups23}}</button>
+
+            </form>
+            
+        </div>
+        
+    {% endif %}
+    
+	<div class="col-md-3">
+		<img src="{{FILE_DOWNLOAD_URL}}{{data.image_thumb}}" alt="" class="img-thumbnail"><br />
+		
+		{% if mode == 'view' %}
+
+            <a href="{{ADMIN_ROOT_URL}}/groups/members/{{data.id}}" class="btn btn-success btn-block" >
+                {{lang.groups25}}
+            </a>
+                
+            <a href="{{ADMIN_ROOT_URL}}/groups/edit/{{data.id}}" class="btn btn-warning btn-block">
+            	{{lang.groups20}}
+            </a>
+            
+            <a href="{{ADMIN_ROOT_URL}}/groups/delete/{{data.id}}" class="btn btn-danger btn-block">
+            	{{lang.groups21}}
+            </a>
+        {% endif %} 							
+																															
+	</div>
+		
+    <div class="col-md-9">
+
+        <table class="table table-hover" id="sample-table-1">
+
+    		<tr>
+    			<td>{{lang.groups16}}</td>
+    			<td>{{data.name}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.groups17}}</td>
+    			<td>{{data.id}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.groups18}}</td>
+    			<td>{{data.created}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.groups19}}</td>
+    			<td>{{data.modified}}</td>
+    		</tr>
+
+
+        </table>
+
+    </div>
+
+</div>
+
+
+{% endblock %}

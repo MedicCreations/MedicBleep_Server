@@ -1,0 +1,67 @@
+	<div class="row">
+    
+        {% if information is defined %}
+            <div class="col-md-12">
+                <div class="alert alert-success">
+                	<button data-dismiss="alert" class="close">
+                		×
+                	</button>
+                	<i class="fa fa-check-circle"></i>
+                	{{information}}
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if error is not defined %}
+            <div class="col-md-12 errorHandler no-display">
+        		<div class="alert alert-danger">
+        			<i class="fa fa-remove-sign"></i>{{lang.general12}}
+        		</div>
+            </div>
+        {% else %}
+            <div class="col-md-12 errorHandler">
+        		<div class="alert alert-danger">
+        			<i class="fa fa-remove-sign"></i> {{error}}
+        		</div>
+            </div>
+        {% endif %}
+    			
+		<div class="col-md-3">
+			<label>
+			    {{lang.chats5}}
+			</label>
+            
+		    {% if mode == 'add' %}
+
+    			<div class="fileupload-new thumbnail" style="width: 200px; height: 200px;">
+    				    <img src="http://www.placehold.it/200x200/EFEFEF/AAAAAA?text=no+image" alt="">
+    			</div>
+			
+			{% endif %}
+				
+		    {% if mode == 'edit' %}
+    			<div class="fileupload-new">
+    			
+    			    {% if form.image is not empty %}
+    				    <img src="{{FILE_DOWNLOAD_URL}}{{form.image}}" alt="" class="img-thumbnail">
+    				{% endif %}
+    			</div>    
+			{% endif %}
+
+			<input type="file" name="picture">																							
+		</div>
+		<div class="col-md-9">
+			
+    		<div class="form-group">
+    			<label class="col-sm-2 control-label" for="form-field-1">
+    			{{lang.chats6}}
+    			</label>
+    			<div class="col-sm-9">
+    				<input type="text" name="name" {% if mode == 'add' %}placeholder="{{lang.chats6}}"{% endif %} id="form-field-1" class="form-control" value="{{form.name}}">
+    			</div>
+    		</div>
+			
+		</div>
+	</div>
+    
+    <input type="hidden" name="id" value="{{form.id}}">

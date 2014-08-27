@@ -1,0 +1,229 @@
+{% extends "adminbase.twig" %}
+{% block content %}
+
+<!-- start: PAGE HEADER -->
+<div class="row">
+	<div class="col-sm-12">
+
+		<!-- start: PAGE TITLE & BREADCRUMB -->
+		<ol class="breadcrumb">
+			<li>
+				<i class="clip-home-3"></i>
+				<a href="{{ADMIN_ROOT_URL}}/dashboard">
+					{{lang.general11}}
+				</a>
+			</li>
+			<li>
+				<a href="{{ADMIN_ROOT_URL}}/chats">
+				    {{lang.chats1}}
+                </a>
+			</li>
+			<li class="active">
+
+			    {% if mode == 'view' %}
+				    {{lang.chats9}}
+				{% endif %}
+			    {% if mode == 'delete' %}
+				    {{lang.chats10}}
+				{% endif %}
+				
+			</li>
+			<li class="search-box">
+				<form class="sidebar-search">
+					<div class="form-group">
+						<input type="text" placeholder="Start Searching...">
+						<button class="submit">
+							<i class="clip-search-3"></i>
+						</button>
+					</div>
+				</form>
+			</li>
+		</ol>
+		<div class="row page-header">
+		    <div class="col-md-6">
+			    <h1>{{data.name}}</h1>
+			</div>
+		</div>
+		<!-- end: PAGE TITLE & BREADCRUMB -->
+	</div>
+</div>
+<!-- end: PAGE HEADER -->
+<!-- start: PAGE CONTENT -->
+
+<!-- start: PAGE CONTENT -->
+<div class="row">
+    
+    {% if mode == 'delete' %}
+        
+        <div class="col-md-12" style="padding-bottom:20px">
+    
+            <div class="alert alert-warning">
+            	<i class="fa fa-exclamation-triangle"></i>
+            	<strong>Warning!</strong> 
+            	{{lang.chats11}}
+            </div>
+            
+            <form role="form" class="form-horizontal form-user right" method="post" action="{{ADMIN_ROOT_URL}}/chats/delete/{{data.id}}">
+
+                <button type="button" class="btn btn-success" onclick="history.back()">{{lang.general9}}</button>
+                <button type="submit" class="btn btn-warning">{{lang.chats14}}</button>
+
+            </form>
+            
+        </div>
+        
+    {% endif %}
+    
+	<div class="col-md-6">
+	    
+    	    {% if data.image is not empty %}
+    		    <img src="{{FILE_DOWNLOAD_URL}}{{data.image}}" alt="" class="img-thumbnail" width="240"/><br />
+    		{% endif %} 	
+    		
+    		{% if mode == 'view' %}
+                    
+                <a href="{{ADMIN_ROOT_URL}}/chats/edit/{{data.id}}" class="btn btn-warning btn-block">
+                	{{lang.chats13}}
+                </a>
+                
+                <a href="{{ADMIN_ROOT_URL}}/chats/delete/{{data.id}}" class="btn btn-danger btn-block">
+                	{{lang.chats14}}
+                </a>
+            {% endif %} 							
+
+	    <h3>{{lang.chats19}}</h3>
+	    
+        <table class="table table-hover" id="sample-table-1">
+
+    		<tr>
+    			<td>{{lang.chats15}}</td>
+    			<td>{{data.name}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.chats16}}</td>
+    			<td>{{data.id}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.chats17}}</td>
+    			<td>{{data.created}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.chats18}}</td>
+    			<td>{{data.modified}}</td>
+    		</tr>
+
+
+        </table>
+        
+        <h3>{{lang.chats20}}</h3>
+        		
+        <table class="table table-hover" id="sample-table-1">
+            
+            {% for user in users %}
+    		<tr>
+    			<td width="15%">
+    			    <img width="40" src="{{FILE_DOWNLOAD_URL}}{{user.image_thumb}}" />
+    			</td>
+    			<td>
+    			    <a href="{{ADMIN_ROOT_URL}}/users/view/{{user.id}}">
+    			        {{user.firstname}} {{user.lastname}}
+    			    </a>
+    			 </td>
+    		</tr>
+    		{% endfor %}
+
+        </table>
+        																								
+	</div>
+		
+    <div class="col-md-6">
+        
+
+        <ul class="messages-list">
+        	<li class="messages-search">
+        		<form action="#" class="form-inline">
+        			<div class="input-group">
+        				<input type="text" class="form-control" placeholder="Search messages...">
+        				<div class="input-group-btn">
+        					<button class="btn btn-primary" type="button">
+        						<i class="fa fa-search"></i>
+        					</button>
+        				</div>
+        			</div>
+        		</form>
+        	</li>
+        	
+        	{% for message in messages %}
+        	<li class="messages-item">
+        		<img alt="" src="{{FILE_DOWNLOAD_URL}}{{message.image_thumb}}" class="messages-item-avatar">
+        		
+        		<span class="messages-item-from">
+    			    <a href="{{ADMIN_ROOT_URL}}/users/view/{{message.user_id}}">
+    			        {{message.firstname}} {{message.lastname}}
+    			    </a>        		
+                </span>
+        		<div class="messages-item-time">
+        			<span class="text">{{message.message_timestamp|date("Y.m.d H:i:s")}}</span>
+        			<div class="messages-item-actions">
+        				<a title="Delete" href="{{ADMIN_ROOT_URL}}/chats/view/deletemessage/{{data.id}}/{{message.message_id}}" onclick="return confirm('{{lang.chats21}}')">
+        				    <i class="fa fa-trash-o"></i> {{lang.general8}}
+        				</a>
+        			</div>
+        		</div>
+        		<span class="messages-item-subject">
+
+        		    
+        		    {% if message.type == '1' %}
+        		    {% elseif message.type == '2' %}
+        		        <i class="fa fa-file-image-o on fa-square"></i>
+            		    {% if message.file_id is not empty %}
+            		        <a href="{{FILE_DOWNLOAD_URL}}{{message.file_id}}" download="file">{{lang.general16}}</a>
+            		    {% endif %}
+        		    
+        		    {% elseif message.type == '3' %}
+        		        <i class="fa fa-file-video-o on fa-square"></i>
+            		    {% if message.file_id is not empty %}
+            		        <a href="{{FILE_DOWNLOAD_URL}}{{message.file_id}}" download="file">{{lang.general16}}</a>
+            		    {% endif %}
+
+        		    {% elseif message.type == '4' %}
+        		        <i class="fa fa-map-marker on fa-square"></i>
+        		        <a target="_blank" href="http://maps.google.com/?q={{message.latitude}},{{message.longitude}}">
+        		            Lat:{{message.latitude}}
+        		            Lon:{{message.longitude}}
+        		        </a>
+            		    
+        		    {% elseif message.type == '5' %}
+        		        <i class="fa fa-file-audio-o on fa-square"></i>
+            		    {% if message.file_id is not empty %}
+            		        <a href="{{FILE_DOWNLOAD_URL}}{{message.file_id}}" download="file">{{lang.general16}}</a>
+            		    {% endif %}
+
+        		    {% elseif message.type == '6' %}
+        		        <i class="fa fa-file on fa-square"></i>
+            		    {% if message.file_id is not empty %}
+            		        <a href="{{FILE_DOWNLOAD_URL}}{{message.file_id}}" download="{{message.text}}">{{lang.general16}}</a>
+            		    {% endif %}
+            		                		    
+        		    {% else %}
+        		        
+        		    {% endif %}
+                    &nbsp;
+
+        		    
+                </span>
+        		<span class="messages-item-preview">
+        		    {{message.text}}
+                </span>
+        	</li>
+            {% endfor %}
+
+        </ul>
+									
+
+    </div>
+
+</div>
+
+
+{% endblock %}

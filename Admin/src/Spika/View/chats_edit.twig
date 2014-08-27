@@ -1,0 +1,96 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+        
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{ADMIN_ROOT_URL}}/dashboard">
+										{{lang.general11}}
+									</a>
+								</li>
+								<li>
+									<a href="{{ADMIN_ROOT_URL}}/chats">
+									    {{lang.chats1}}
+                                    </a>
+								</li>
+								<li class="active">
+									{{lang.chats3}}
+								</li>
+								<li class="search-box">
+									<form class="sidebar-search">
+										<div class="form-group">
+											<input type="text" placeholder="Start Searching...">
+											<button class="submit">
+												<i class="clip-search-3"></i>
+											</button>
+										</div>
+									</form>
+								</li>
+							</ol>
+							<div class="row page-header">
+							    <div class="col-md-6">
+								    <h1>{{lang.chats3}}</h1>
+								</div>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+					     
+
+                    <form role="form" class="form-horizontal form-chats" method="post" action="{{ADMIN_ROOT_URL}}/chats/edit/{{form.id}}" enctype="multipart/form-data">
+                        
+                        {% include 'chats_form.twig' %}
+                        
+                    	<div class="row">
+                    		<div class="col-md-12 right">
+                    			<input type="submit" name="edit_profile" class="btn btn-primary" value="{{lang.chats4}}" / >
+                    		</div>
+                    	</div>
+                    	
+                    </form>
+
+{% endblock %}
+
+
+{% block pageScript %}
+    <script src="{{ROOT_URL}}/assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="{{ROOT_URL}}/assets/js/sp-validator.js"></script>
+	<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
+	<script>
+
+        var runChatFormValidator = function () {
+            var form = $('.form-chats');
+            var errorHandler = $('.errorHandler', form);
+            form.validate({
+                rules: {
+                    name: {
+                        minlength: 6,
+                        required: true
+                    }
+                },
+                submitHandler: function (form) {
+                    errorHandler.hide();
+                    form.submit();
+                },
+                invalidHandler: function (event, validator) {
+                    errorHandler.show();
+                }
+            });
+        };
+        
+		jQuery(document).ready(function() {
+			SpValidator.initValidator();
+			runChatFormValidator();
+		});
+		
+	</script>
+{% endblock %}
+
