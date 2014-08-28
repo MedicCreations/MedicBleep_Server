@@ -454,6 +454,39 @@ SpikaClient.prototype.addUserToChat = function(chatId,userId,succeessListener,fa
 };
 
 
+SpikaClient.prototype.getUserById = function(userId,succeessListener,failedListener)
+{
+    
+    var self = this;
+    
+    var requestParams = {};
+    
+    requestParams.user_id = userId;
+        
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/user/profile',
+        type: 'GET',
+        data: requestParams,
+        headers: {"token":this.token}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+
 SpikaClient.prototype.getThreadMessages = function(rootMessageId,succeessListener,failedListener)
 {
     

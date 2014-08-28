@@ -32,7 +32,8 @@ var SPIKA_RightColumnView = Backbone.View.extend({
         require(['app/views/rightcolumn/chatProflieView','thirdparty/text!templates/rightcolumn/chatProfile.tpl',
                     'app/views/rightcolumn/chatMemberView','thirdparty/text!templates/rightcolumn/chatMember.tpl'
                 ],function (ChatProflieViewTmp,TemplateChatProflieView,
-                            ChatMemberViewTmp,TemplateChatMemberView) {
+                            ChatMemberViewTmp,TemplateChatMemberView
+                            ) {
                     
             self.chatProfileView = new SPIKA_ChatProfileView({
                 template: TemplateChatProflieView
@@ -62,7 +63,7 @@ var SPIKA_RightColumnView = Backbone.View.extend({
             
             $(U.sel('#right_col_holder1')).css('display','none');
             $(U.sel('#right_col_holder2')).css('display','none');
-            $(U.sel('#right_col_holder3')).css('display','none');
+            $(U.sel('#user_profile_holder')).css('display','none');
 
             $(U.sel('#' + contentId)).css('display','block');
 

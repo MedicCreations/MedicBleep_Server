@@ -11,4 +11,6 @@
 	<div id="right_col_tab_content">
     	<div id="right_col_holder1" style="display:block"></div>
     	<div id="right_col_holder2" style="display:none"></div>
+    	<div id="user_profile_holder" style="display:none"></div>
+
 	</div>
