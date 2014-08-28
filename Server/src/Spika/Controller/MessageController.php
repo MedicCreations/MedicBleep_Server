@@ -201,15 +201,23 @@ class MessageController extends SpikaBaseController {
 			$payload['aps'] = $apsAry;
 			$payload['d'] = $dataAry;
 				
-			$ios_fields = array('ios_push_token_members' => $ios_push_members,
+			$ios_fields_dev = array('ios_push_token_members' => $ios_push_members,
 					'type' => SERVICE_PROVIDOR_APN_DEV,
 					'payload' => $payload);
+					
+			$ios_fields_prod = array('ios_push_token_members' => $ios_push_members,
+					'type' => SERVICE_PROVIDOR_APN_PROD,
+					'payload' => $payload);		
+			
 				
 // 			//send ios push request
 			if (count($ios_push_members) > 0){
-				$self->sendPushRequest($ios_fields);
+				$self->sendPushRequest($ios_fields_dev);
 			}
 			
+			if (count($ios_push_members) > 0){
+				$self->sendPushRequest($ios_fields_prod);
+			}
 			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'Message created');

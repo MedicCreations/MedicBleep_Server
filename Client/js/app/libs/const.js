@@ -1,6 +1,6 @@
 // config
-var API_URL = 'http://local.clover-studio.com/SpikaAPI/wwwroot/v1';
-var WEB_ROOT = 'http://local.clover-studio.com/spikaenterprise_demos/dev/spikaenterprise_html5'
+var API_URL = 'https://www.spikaent.com/dev/server/v1';
+var WEB_ROOT = 'https://www.spikaent.com/dev/web'
 var AES_PASSWORD = 'jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB';
 
 var POOLING_INTERVAL = 3000; // ms

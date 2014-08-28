@@ -43,4 +43,21 @@
     	    </div>
     	    
     	</article>
+
     </div>
+    	
+	<div class="download_box">
+        <h3>Download Mobile Apps</h3>
+        <ul class="applist">
+            <li><i class="fa fa-apple"></i> <a href="itms-services://?action=download-manifest&url=https://www.spikaent.com/client/apps/spikaent.plist"> iPhone App</a></li>
+            <li><i class="fa fa-android"></i> <a href="./apps/spikaent.apk"> Android App</a></li>            
+        </ul>
+
+        <h3>Download Desktop Apps</h3>
+        <ul class="applist">
+            <li><i class="fa fa-windows"></i> <a href="./apps/windows.zip"> Windows</a></li>
+            <li><i class="fa fa-desktop"></i> <a href="./apps/SpikaEnterprise_mac.zip"> Mac</a></li>            
+            <li><i class="fa fa-linux"></i> <a href="./apps/linux.zip"> Linux</a></li>            
+        </ul>
+
+	</div>

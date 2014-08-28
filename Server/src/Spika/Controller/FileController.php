@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 class FileController extends SpikaBaseController {
 	
 	static $paramName = 'file';
-	static $fileDirName = 'Uploads';
+	static $fileDirName = 'uploads';
 	
 	public function connect(Application $app) {
 		$self = $this;
@@ -29,10 +29,10 @@ class FileController extends SpikaBaseController {
 				
 			$fineName = $mySql->randomString(20, 20) . time();
 				
-			if(!is_writable(__DIR__.'/../'.FileController::$fileDirName))
+			if(!is_writable(__DIR__.'/../../../'.FileController::$fileDirName))
 				return $self->returnErrorResponse(FileController::$fileDirName ." dir is not writable.", ER_DIR_NOT_WRITABLE);
 		
-			$file->move(__DIR__.'/../'.FileController::$fileDirName, $fineName);
+			$file->move(__DIR__.'/../../../'.FileController::$fileDirName, $fineName);
 			return $app->json(array("message" => "file uploaded", "code" => CODE_SUCCESS, "file_id" => $fineName,), 200);
 		
 		})->before($app['beforeSpikaTokenChecker']);
@@ -42,7 +42,7 @@ class FileController extends SpikaBaseController {
 		$controllers->get ( '/download', function (Request $request) use($app, $self, $mySql) {
 			$requestBodyAry = $request->query->all();
 			$fileID = $requestBodyAry['file_id'];
-			$filePath = __DIR__.'/../'.FileController::$fileDirName."/".basename($fileID);
+			$filePath = __DIR__.'/../../../'.FileController::$fileDirName."/".basename($fileID);
 				
 			if(file_exists($filePath)){
 				return $app->sendFile($filePath, 200);
