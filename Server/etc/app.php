@@ -28,9 +28,9 @@ $app->register ( new Silex\Provider\DoctrineServiceProvider (), array (
 		'db.options' => array (
 				'driver' => 'pdo_mysql',
 				'host' => 'localhost',
-				'dbname' => 'spika_enterprise_db',
-				'user' => 'root',
-				'password' => 'cloverpass013',
+				'dbname' => DB_NAME,
+				'user' => DB_USERNAME,
+				'password' => DB_PASSWORD,
 				'charset' => 'utf8',
 				'driverOptions' => array (
 						1002 => 'SET NAMES utf8' 
@@ -46,9 +46,9 @@ $app->register(new Silex\Provider\SessionServiceProvider(), array(
 ));
 
 //ldap
-$ldapconn = ldap_connect(LDAP_SERVER, LDAP_PORT);
-ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
-$app['ldap'] = $ldapconn;
+//$ldapconn = ldap_connect(LDAP_SERVER, LDAP_PORT);
+//ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
+//$app['ldap'] = $ldapconn;
 
 // $app['beforeAdminChecker'] = $app->share(function () use ($app) {
 // return new GameBu\Middleware\AdminChecker(
