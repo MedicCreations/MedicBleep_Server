@@ -33,9 +33,9 @@ $app->register ( new Silex\Provider\DoctrineServiceProvider(), array (
 		'db.options' => array (
 				'driver' => 'pdo_mysql',
 				'host' => 'localhost',
-				'dbname' => 'spika_enterprise_db',
-				'user' => 'root',
-				'password' => 'cloverpass013',
+				'dbname' => DB_NAME,
+				'user' => DB_USER,
+				'password' => DB_PASS,
 				'charset' => 'utf8',
 				'driverOptions' => array (
 						1002 => 'SET NAMES utf8' 
@@ -46,8 +46,8 @@ $app->register ( new Silex\Provider\DoctrineServiceProvider(), array (
 
 $app->register(new Silex\Provider\SessionServiceProvider());
 
-$app->mount ( '/v1/admin', new Spika\Controller\LoginController() );
-$app->mount ( '/v1/admin/dashboard', new Spika\Controller\DashboardController() );
-$app->mount ( '/v1/admin/users', new Spika\Controller\UsersController() );
-$app->mount ( '/v1/admin/groups', new Spika\Controller\GroupsController() );
-$app->mount ( '/v1/admin/chats', new Spika\Controller\ChatsController() );
+$app->mount ( '/', new Spika\Controller\LoginController() );
+$app->mount ( '/dashboard', new Spika\Controller\DashboardController() );
+$app->mount ( '/users', new Spika\Controller\UsersController() );
+$app->mount ( '/groups', new Spika\Controller\GroupsController() );
+$app->mount ( '/chats', new Spika\Controller\ChatsController() );

@@ -11,7 +11,7 @@
  
 define('TOKEN_VALID_TIME', 60*60*24);
 define('PW_RESET_CODE_VALID_TIME', 60*5);
-define('ROOT_URL', "http://local.clover-studio.com/Spika/wwwroot");
+define('ROOT_URL', "https://www.spikaent.com/dev/server");
 define('PUSH_ROOT_URL', "http://local.clover-studio.com/SpikaPushServer/receiver.php");
 
 define('LDAP_SERVER', '192.168.1.180');
