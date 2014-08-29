@@ -1,6 +1,7 @@
 *.swp
 .vagrant/
 vagrant/
+
 Admin/logs/
 Admin/tmp/
 Server/logs/

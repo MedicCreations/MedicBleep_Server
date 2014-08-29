@@ -237,12 +237,36 @@ var SPIKA_ChatView = Backbone.View.extend({
                 
             },function(data){
             
-            
+                
             
             });
 
-
         }
+        
+        $(U.sel("#chat_view")).on("dragover", function(event) {
+            event.preventDefault();  
+            event.stopPropagation();
+            $(this).addClass('dragging');
+        });
+        
+        $(U.sel("#chat_view")).on("dragleave", function(event) {
+            event.preventDefault();  
+            event.stopPropagation();
+            $(this).removeClass('dragging');
+        });
+        
+        $(U.sel("#chat_view")).on("drop", function(event) {
+            event.preventDefault();  
+            event.dataTransfer = event.originalEvent.dataTransfer;
+            
+            if(_.isUndefined(event.dataTransfer))
+                return;
+                
+            Backbone.trigger(EVENT_FILE_DROP,event.dataTransfer.files);
+            
+        });
+        
+        
     },
     
     startChat : function(chatModel){
@@ -683,6 +707,24 @@ var SPIKA_ChatView = Backbone.View.extend({
             
         });
         
-    }
+    },
+    
+    // file drop handlig
+    dragover : function(){
         
+        $(U.sel("#chat_view")).css('border','1px solid #f00');
+        
+    },
+    
+    dragleave : function(){
+        
+        $(U.sel("#chat_view")).css('border','none');
+        
+    },
+    
+    drop : function(){
+        
+        
+    }
+    
 });

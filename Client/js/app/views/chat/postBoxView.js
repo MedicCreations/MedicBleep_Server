@@ -6,6 +6,8 @@ var SPIKA_PostBoxView = Backbone.View.extend({
     replyMeessageId: 0,
     viewMode: CHATVIEW_LISTMODE,
     rootMessageId: 0,
+    filesQueue:null,
+    processingFileIndex:0,
     initialize: function(options) {
         
         _.bindAll(this, "render");
@@ -27,7 +29,20 @@ var SPIKA_PostBoxView = Backbone.View.extend({
             self.viewMode = CHATVIEW_LISTMODE;
             self.rootMessageId = 0;
         });
-                
+
+        // drop file
+        Backbone.on(EVENT_FILE_DROP, function(files) {
+
+            if(_.isUndefined(files)){
+                return;
+            }
+            
+            self.filesQueue = files;
+            self.processingFileIndex = 0;
+            self.startProcessQueue();
+            
+        });
+                      
     },
     
     events: {
@@ -70,79 +85,18 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         });
         
         $(U.sel("#btn_dummy_file_upload")).change(function (evt){
-        
-            var fileName = $(this).val();
-
+            
+            if(self.processingFileIndex > 0)
+                return;
+                
             var files = evt.target.files; // FileList object
             
             // files is a FileList of File objects. List some properties.
             var output = [];
             
-            for (var i = 0 ; i < files.length ; i++) {
-                
-                f = files[i];
-                
-                self.startUpload();
-                
-                fileUploadHandler.processFile(f,function(origData){
-                    
-                    var fileId = origData.fileId;
-                    var thumbId = origData.thumbId;
-                    var type = origData.type;
-                    var text = origData.text;
-                    
-                    var data = {
-                        chat_id:self.chatId,
-                        type:type,
-                        parent_id:self.replyMeessageId
-                    };
-                    
-
-                    if(type == MESSAGE_TYPE_TEXT){                        
-                        data.text = text;
-                    }
-
-                    if(type == MESSAGE_TYPE_IMAGE){                        
-                        data.file_id = fileId;
-                        data.thumb_id = thumbId;
-                    }
-                    
-                    if(type == MESSAGE_TYPE_VIDEO){
-                        data.file_id = fileId;
-                    }
-
-                    if(type == MESSAGE_TYPE_VOICE){
-                        data.file_id = fileId;
-                    }
-                    
-                    if(type == MESSAGE_TYPE_FILE){
-                        data.file_id = fileId;
-                        var encryptedHex = EncryptManager.encryptText(text);
-                        data.text = encryptedHex;
-                    }
-                    
-                    self.replyMeessageId = 0;
-                    
-                    apiClient.sendMessage(data,function(data){
-                        $(U.sel('#chat_textbox')).val('');
-                        self.finishUpload();
-                        Backbone.trigger(EVENT_MESSAGE_SENT,self.chatId);
-                    },function(data){
-                        
-                        
-                    });
-                    
-                },function(){
-                    
-                    self.finishUpload();
-                    
-                },function(progress,text){
-                    
-                    self.progressUpload(progress,text);
-                    
-                });
-
-            }
+            self.filesQueue = files;
+            self.processingFileIndex = 0;
+            self.startProcessQueue();
 
         });
      
@@ -225,6 +179,79 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         }
         
     },
+    
+    startProcessQueue:function(){
+
+        var self = this;
+        
+        if(this.processingFileIndex >= this.filesQueue.length){
+            this.processingFileIndex = 0;
+            return;
+        }
+        
+        var f = this.filesQueue[this.processingFileIndex];
+            
+        self.startUpload();
+        
+        fileUploadHandler.processFile(f,function(origData){
+            
+            var fileId = origData.fileId;
+            var thumbId = origData.thumbId;
+            var type = origData.type;
+            var text = origData.text;
+            
+            var data = {
+                chat_id:self.chatId,
+                type:type,
+                parent_id:self.replyMeessageId
+            };
+            
+
+            if(type == MESSAGE_TYPE_TEXT){                        
+                data.text = text;
+            }
+
+            if(type == MESSAGE_TYPE_IMAGE){                        
+                data.file_id = fileId;
+                data.thumb_id = thumbId;
+            }
+            
+            if(type == MESSAGE_TYPE_VIDEO){
+                data.file_id = fileId;
+            }
+
+            if(type == MESSAGE_TYPE_VOICE){
+                data.file_id = fileId;
+            }
+            
+            if(type == MESSAGE_TYPE_FILE){
+                data.file_id = fileId;
+                var encryptedHex = EncryptManager.encryptText(text);
+                data.text = encryptedHex;
+            }
+            
+            self.replyMeessageId = 0;
+            
+            apiClient.sendMessage(data,function(data){
+                $(U.sel('#chat_textbox')).val('');
+                self.finishUpload();
+                Backbone.trigger(EVENT_MESSAGE_SENT,self.chatId);
+            },function(data){
+                
+                
+            });
+            
+        },function(){
+            
+            self.finishUpload();
+            
+        },function(progress,text){
+            
+            self.progressUpload(progress,text);
+            
+        });
+              
+    },
     startUpload:function(){
     
         this.isSending = true;
@@ -233,9 +260,19 @@ var SPIKA_PostBoxView = Backbone.View.extend({
     },
     finishUpload:function(){
         
+        var self = this;
+        
         this.isSending = false;
         $(U.sel('#chat_textbox_holder')).css('display','table-cell');
         $(U.sel('#chat_progress_holder')).css('display','none');
+        
+        this.processingFileIndex++;
+
+        _.debounce(function() {
+            self.startProcessQueue();
+        }, 500)();
+        
+        
     },
     progressUpload:function(progress,text){
 
