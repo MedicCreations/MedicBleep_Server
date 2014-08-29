@@ -2,6 +2,7 @@
 .vagrant/
 vagrant/
 Admin/logs/
+Admin/tmp/
 Server/logs/
 Server/uploads/
 !logs/.gitkeep
