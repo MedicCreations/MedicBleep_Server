@@ -5,3 +5,6 @@ Admin/logs/
 Server/logs/
 Server/uploads/
 !logs/.gitkeep
+Admin/init.php
+Server/init.php
+Client/js/app/libs/const.js
