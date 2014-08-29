@@ -31,6 +31,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     sudo /etc/init.d/apache2 restart
     sudo mkdir -p /vagrant_data/Admin/logs
     sudo chmod 777 /vagrant_data/Admin/logs
+    sudo mkdir -p /vagrant_data/Admin/tmp
+    sudo chmod 777 /vagrant_data/Admin/tmp
     sudo mkdir -p /vagrant_data/Server/logs
     sudo chmod 777 /vagrant_data/Server/logs
     sudo mkdir -p /vagrant_data/Server/uploads
