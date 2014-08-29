@@ -1,0 +1,7 @@
+*.swp
+.vagrant/
+vagrant/
+Admin/logs/
+Server/logs/
+Server/uploads/
+!logs/.gitkeep
