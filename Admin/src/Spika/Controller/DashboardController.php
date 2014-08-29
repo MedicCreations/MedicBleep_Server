@@ -21,7 +21,7 @@ class DashboardController extends BaseController {
 		
 		$controllers->get('/', function (Request $request) use ($app, $self){
             
-            $this->page = 'dashboard';
+            $self->page = 'dashboard';
             
             return $self->render('dashboard.twig', array(
             ));

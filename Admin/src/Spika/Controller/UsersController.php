@@ -31,7 +31,7 @@ class UsersController extends BaseController {
             $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from user where is_deleted = 0");
             $count = $countAssoc['count'];
             
-            $this->page = 'users';
+            $self->page = 'users';
             
             return $self->render('users.twig', array(
                 'pager' => array(
@@ -50,7 +50,7 @@ class UsersController extends BaseController {
         /* user view */
 		$controllers->get('/view/{userId}', function (Request $request,$userId) use ($app, $self){
             
-            $this->page = 'users';
+            $self->page = 'users';
             $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
             
             return $self->render('users_view.twig', array(
@@ -63,7 +63,7 @@ class UsersController extends BaseController {
         /* user delete */
 		$controllers->get('/delete/{userId}', function (Request $request,$userId) use ($app, $self){
             
-            $this->page = 'users';
+            $self->page = 'users';
             $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
             
             return $self->render('users_view.twig', array(
@@ -75,7 +75,7 @@ class UsersController extends BaseController {
 
 		$controllers->post('/delete/{userId}', function (Request $request,$userId) use ($app, $self){
             
-            $this->page = 'users';
+            $self->page = 'users';
             $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
 
 			$values = array(
@@ -92,7 +92,7 @@ class UsersController extends BaseController {
         /* user add */
 		$controllers->get('/add', function (Request $request) use ($app, $self){
             
-            $this->page = 'users';
+            $self->page = 'users';
             
             return $self->render('users_add.twig', array(
                  'form' => $self->defaultFormValues(),
@@ -103,7 +103,7 @@ class UsersController extends BaseController {
 		
 		$controllers->post('/add', function (Request $request) use ($app, $self){
             
-            $this->page = 'users';
+            $self->page = 'users';
             $formValues = $request->request->all();
             
             $errorMessage = $self->validate($request);
@@ -157,7 +157,7 @@ class UsersController extends BaseController {
 		/* Edit */
 		$controllers->get('/edit/{userId}', function (Request $request,$userId) use ($app, $self){
             
-            $this->page = 'users';
+            $self->page = 'users';
             $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
             
             if(!isset($data['id'])){
@@ -173,7 +173,7 @@ class UsersController extends BaseController {
 
 		$controllers->post('/edit/{userId}', function (Request $request,$userId) use ($app, $self){
             
-            $this->page = 'users';
+            $self->page = 'users';
             $formValues = $request->request->all();
             $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
             

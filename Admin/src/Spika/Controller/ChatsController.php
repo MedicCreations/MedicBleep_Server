@@ -21,7 +21,7 @@ class ChatsController extends BaseController {
 		
 		$controllers->get('/', function (Request $request) use ($app, $self){
             
-            $this->page = 'chats';
+            $self->page = 'chats';
 
             $page = $request->get('page');
             if(empty($page))
@@ -49,7 +49,7 @@ class ChatsController extends BaseController {
         /* group view */
 		$controllers->get('/view/{chatId}', function (Request $request,$chatId) use ($app, $self){
             
-            $this->page = 'chats';
+            $self->page = 'chats';
             $data = $this->app['db']->fetchAssoc("select * from chat where id = ?", array($chatId));
             
              // select participants
@@ -79,8 +79,8 @@ class ChatsController extends BaseController {
         /* group delete */
 		$controllers->get('/delete/{chatId}', function (Request $request,$chatId) use ($app, $self){
             
-            $this->page = 'chats';
-            $data = $this->app['db']->fetchAssoc("select * from chat where id = ?", array($chatId));
+            $self->page = 'chats';
+            $data = $self->app['db']->fetchAssoc("select * from chat where id = ?", array($chatId));
             
             return $self->render('chats_view.twig', array(
                  'data' => $data,
@@ -91,8 +91,8 @@ class ChatsController extends BaseController {
 
 		$controllers->post('/delete/{chatId}', function (Request $request,$chatId) use ($app, $self){
             
-            $this->page = 'chats';
-            $data = $this->app['db']->fetchAssoc("select * from chat where id = ?", array($chatId));
+            $self->page = 'chats';
+            $data = $self->app['db']->fetchAssoc("select * from chat where id = ?", array($chatId));
 
 			$app['db']->delete('chat',array('id' => $chatId));
     			
@@ -104,8 +104,8 @@ class ChatsController extends BaseController {
 		/* Edit */
 		$controllers->get('/edit/{chatId}', function (Request $request,$chatId) use ($app, $self){
             
-            $this->page = 'chats';
-            $data = $this->app['db']->fetchAssoc("select * from chat where id = ?", array($chatId));
+            $self->page = 'chats';
+            $data = $self->app['db']->fetchAssoc("select * from chat where id = ?", array($chatId));
             
             if(!isset($data['id'])){
                 return $app->redirect(ADMIN_ROOT_URL . '/chats');
@@ -120,9 +120,9 @@ class ChatsController extends BaseController {
 
 		$controllers->post('/edit/{chatId}', function (Request $request,$chatId) use ($app, $self){
             
-            $this->page = 'chats';
+            $self->page = 'chats';
             $formValues = $request->request->all();
-            $data = $this->app['db']->fetchAssoc("select * from chat where id = ?", array($chatId));
+            $data = $self->app['db']->fetchAssoc("select * from chat where id = ?", array($chatId));
             
             if(!isset($data['id'])){
                 return $app->redirect(ADMIN_ROOT_URL . '/chats');

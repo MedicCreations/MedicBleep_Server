@@ -21,7 +21,7 @@ class GroupsController extends BaseController {
 		
 		$controllers->get('/', function (Request $request) use ($app, $self){
 		
-            $this->page = 'groups';
+            $self->page = 'groups';
 
             $page = $request->get('page');
             if(empty($page))
@@ -48,7 +48,7 @@ class GroupsController extends BaseController {
         /* group view */
 		$controllers->get('/view/{groupId}', function (Request $request,$groupId) use ($app, $self){
             
-            $this->page = 'groups';
+            $self->page = 'groups';
             $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
             
             return $self->render('groups_view.twig', array(
@@ -61,7 +61,7 @@ class GroupsController extends BaseController {
         /* group delete */
 		$controllers->get('/delete/{groupId}', function (Request $request,$groupId) use ($app, $self){
             
-            $this->page = 'groups';
+            $self->page = 'groups';
             $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
             
             return $self->render('groups_view.twig', array(
@@ -73,7 +73,7 @@ class GroupsController extends BaseController {
 
 		$controllers->post('/delete/{groupId}', function (Request $request,$groupId) use ($app, $self){
             
-            $this->page = 'groups';
+            $self->page = 'groups';
             $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
 
 			$values = array(
@@ -89,7 +89,7 @@ class GroupsController extends BaseController {
 		
 		/* add group */
 		$controllers->get('/add', function (Request $request) use ($app, $self){
-            $this->page = 'groups';
+            $self->page = 'groups';
             return $self->render('groups_add.twig', array(
                 'form' => $self->defaultFormValues(),
                 'mode' => 'add'
@@ -98,7 +98,7 @@ class GroupsController extends BaseController {
 
 		$controllers->post('/add', function (Request $request) use ($app, $self){
 		
-            $this->page = 'groups';
+            $self->page = 'groups';
             $formValues = $request->request->all();
             
             $errorMessage = $self->validate($request);
@@ -151,7 +151,7 @@ class GroupsController extends BaseController {
 		/* Edit */
 		$controllers->get('/edit/{groupId}', function (Request $request,$groupId) use ($app, $self){
             
-            $this->page = 'groups';
+            $self->page = 'groups';
             $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
             
             if(!isset($data['id'])){
@@ -167,7 +167,7 @@ class GroupsController extends BaseController {
 
 		$controllers->post('/edit/{groupId}', function (Request $request,$groupId) use ($app, $self){
             
-            $this->page = 'groups';
+            $self->page = 'groups';
             $formValues = $request->request->all();
             $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
             
@@ -228,7 +228,7 @@ class GroupsController extends BaseController {
         /* group members */
 		$controllers->get('/members/{groupId}', function (Request $request,$groupId) use ($app, $self){
             
-            $this->page = 'groups';
+            $self->page = 'groups';
 
             $page = $request->get('page');
             if(empty($page))
@@ -263,7 +263,7 @@ class GroupsController extends BaseController {
 		
 		$controllers->post('/members/{groupId}', function (Request $request,$groupId) use ($app, $self){
             
-            $this->page = 'groups';
+            $self->page = 'groups';
             $self->setInfoMessage($self->lang['groups28']);
             
             $formValues = $request->request->all();
@@ -300,7 +300,7 @@ class GroupsController extends BaseController {
 		
 		$controllers->get('/members_delete/{groupId}/{userId}', function (Request $request,$groupId,$userId) use ($app, $self){
             
-            $this->page = 'groups';
+            $self->page = 'groups';
             $self->setInfoMessage($self->lang['groups28']);
             
 

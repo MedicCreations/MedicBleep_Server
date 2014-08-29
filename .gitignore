@@ -9,3 +9,7 @@ Server/uploads/
 Admin/init.php
 Server/init.php
 Client/js/app/libs/const.js
+
+sourcetreeconfig
+Admin/wwwroot/.htaccess
+Server/wwwroot/.htaccess
