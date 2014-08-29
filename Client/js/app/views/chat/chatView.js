@@ -403,6 +403,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         if(messageType == MESSAGE_TYPE_TEXT){
             content = decryptedText;
+            content = content.split("\n").join("<br />");
         }
         
         else if(messageType == MESSAGE_TYPE_IMAGE){
@@ -440,7 +441,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             }
         }
         
-        return '<pre>' + content + '</pre>';
+        return content;
     
     },
     
