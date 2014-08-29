@@ -4,7 +4,8 @@ var SPIKA_SearchUsersView = Backbone.View.extend({
         
         _.bindAll(this, "render");
         this.template = options.template;
-        this.displayUsers = null;
+        this.displayUsers = new UserResult([]);
+		this.currentPage = 0;
         this.chatTyepe = CHATTYPE_PRIVATE;
         
         var self = this;
@@ -64,26 +65,37 @@ var SPIKA_SearchUsersView = Backbone.View.extend({
 
         var self = this;
         
-        $(U.sel("#tb_search_user")).keypress(function(evt) {
-            var currentText = $(U.sel("#tb_search_user")).val() + String.fromCharCode(evt.keyCode);
-            self.searchUsers(currentText);
-        });
-
-        $(U.sel("#tb_search_user")).change(function() {
+        $(U.sel("#tb_search_user")).keyup(function(evt) {
+			self.currentPage = 0;
+			self.displayUsers = new UserResult([]); 
             var currentText = $(U.sel("#tb_search_user")).val();
+			
             self.searchUsers(currentText);
         });
         
         this.searchUsers("");
+		
+		 //handle paging
+        $(U.sel('#left_column_second')).scroll(function() {
+		
+			 if($(U.sel('#left_column_second')).scrollTop() + $(U.sel('#left_column_second')).height() == $(U.sel('#left_column_second')).prop("scrollHeight")) {
+				
+				var searchText = $(U.sel("#tb_search_user")).val();
+				self.currentPage++;
+				self.searchUsers(searchText);
+				
+			}
+			
+		});
 
     },
     searchUsers:function(keyword){
 
         var self = this;
         
-        apiClient.searchUsers(keyword,function(data){
+        apiClient.searchUsers(self.currentPage,keyword,function(data){
             
-            self.displayUsers = userFactory.createCollectionByAPIResponse(data);
+            self.displayUsers.add(userFactory.createCollectionByAPIResponse(data).models);
             
             var template = _.template($(U.sel('#template_userlist_row')).html(), {users: self.displayUsers.models});
             
@@ -93,6 +105,9 @@ var SPIKA_SearchUsersView = Backbone.View.extend({
                Backbone.trigger(EVENT_START_PRIVATE_CHAT,self.displayUsers.searchById($(this).attr('data-userid')));
                return false;
             });
+			
+			console.log('height ' + $(U.sel('#left_column_second')).prop("scrollHeight"));
+			console.log('height ul ' + $(U.sel('#user_list')).height());
             
             if(self.chatTyepe == CHATTYPE_PRIVATE && self.chatMembers != null){
                 

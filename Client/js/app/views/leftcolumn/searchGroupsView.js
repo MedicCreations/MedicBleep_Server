@@ -30,20 +30,18 @@ var SPIKA_SearchGroupsView = Backbone.View.extend({
     },
     
     onload: function(){
-                
-        $(U.sel("#tb_search_group")).keypress(function(evt) {
-            var currentText = $(U.sel("#tb_search_group")).val() + String.fromCharCode(evt.keyCode);
-            self.searchGroups(currentText);
-        });
-
-        $(U.sel("#tb_search_group")).change(function() {
+        
+		var self = this;
+        
+        $(U.sel("#tb_search_group")).keyup(function(evt) {
             var currentText = $(U.sel("#tb_search_group")).val();
             self.searchGroups(currentText);
         });
 
         this.searchGroups("");
     },
-    searchGroups:function(keyword){
+    
+	searchGroups:function(keyword){
         
         var self = this;
 

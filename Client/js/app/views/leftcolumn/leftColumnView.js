@@ -89,6 +89,8 @@ var SPIKA_LeftColumnView = Backbone.View.extend({
             this.panelOpened ='';
         }
             
+		console.log('height ul ' + $(U.sel('#user_list')).prop("scrollHeight"));
+		console.log('height stupac' + $(U.sel('#left_column_second')).prop("scrollHeight"));
     },
     updateWindowSize: function(){
         

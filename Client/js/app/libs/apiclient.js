@@ -91,15 +91,23 @@ SpikaClient.prototype.login = function(userName,password,succeessListener,failed
 };
 
 // get users
-SpikaClient.prototype.searchUsers = function(search,succeessListener,failedListener)
+SpikaClient.prototype.searchUsers = function(page,search,succeessListener,failedListener)
 {
     
     var self = this;
+	
+	var requestParams = {};
+    
+    requestParams.search = search;
+	
+	if (page > 0){
+		requestParams.page = page;
+		}
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/list',
         type: 'GET',
-        data: {search:search},
+        data: requestParams,
         headers: {"token":this.token}
     });
     

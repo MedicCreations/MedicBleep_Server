@@ -75,6 +75,13 @@ var SPIKA_RightColumnView = Backbone.View.extend({
     },
     
     startNewChat: function(modelChat){
+	
+		$(U.sel('#right_col_holder1')).css('display','block');
+        $(U.sel('#right_col_holder2')).css('display','none');
+        $(U.sel('#user_profile_holder')).css('display','none');
+		
+		$(U.sel('.tab_holder li')).removeClass('active');
+		$(U.sel('#tab1')).addClass('active');
         
         this.currentChatData = modelChat;
         
