@@ -284,14 +284,18 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         Backbone.trigger(EVENT_ENTER_CHAT,chatModel);
         Backbone.trigger(EVENT_LIST_MODE,this.chatId);
-                        
+
+        _.debounce(function() {
+            self.updateWindowSize(U.getWidth(),U.getHeight());   
+        }, 1000)(); 
+            
     },
     
     updateWindowSize: function(width,height){
 
        var headerHeight = $(U.sel('#main_top')).height();
        var chatBoxHeight = $(U.sel('#chat_post')).height();
-       var messageBoxHeight = height - chatBoxHeight - headerHeight;
+       var messageBoxHeight = height - chatBoxHeight - headerHeight ;
        
        $(U.sel('#chat_view')).height(messageBoxHeight);
        
