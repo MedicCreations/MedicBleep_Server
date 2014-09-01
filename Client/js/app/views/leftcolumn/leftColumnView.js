@@ -77,20 +77,66 @@ var SPIKA_LeftColumnView = Backbone.View.extend({
     },
     openPanel: function(panelId){
         
+		var self = this;
+		
+		console.log(panelId);
+		
         this.updateWindowSize();
-        $(U.sel('.accordion > dd')).slideUp();
+        $(U.sel('.accordion > dd')).slideUp(function(){
+			
+			console.log(panelId);
+			
+			if (panelId == "left_column_second"){
+				_.debounce(function() {
+        
+					var listHeight = $(U.sel('#user_list')).prop("scrollHeight");
+					var usersHeight = $(U.sel('#left_column_second')).height();
+					
+					if (listHeight < usersHeight){
+						//load new page
+						var searchText = $(U.sel("#tb_search_user")).val();
+						self.searchUsersView.currentPage++;
+						self.searchUsersView.searchUsers(searchText);
+					}
+					
+					}, 100)();
+				};
+			
+			if (panelId == "left_column_third"){
+				_.debounce(function() {
+        
+					var listHeight = $(U.sel('#group_list')).prop("scrollHeight");
+					var groupsHeight = $(U.sel('#left_column_third')).height();
+					
+					console.log('groupe ' + listHeight);
+					console.log('groupe ' + groupsHeight);
+					
+					if (listHeight < groupsHeight){
+						//load new page
+						
+						console.log('trebalo bi loadati nove grupe');
+						
+						var searchText = $(U.sel("#tb_search_group")).val();
+						self.searchGroupsView.currentPage++;
+						self.searchGroupsView.searchGroups(searchText);
+					}
+					
+					}, 100)();
+				};
+				
+			}
+		);
         $(U.sel('.accordion i')).removeClass('fa-rotate-90');
         
         if(panelId != this.panelOpened){
+			self.searchUsersView.openedPanel = panelId;
+			self.searchGroupsView.openedPanel = panelId;
             this.panelOpened = panelId;
             $(U.sel("#" + panelId)).slideDown();
             $(U.sel("#" + panelId)).prev().find( "i" ).addClass('fa-rotate-90');
         }else{
             this.panelOpened ='';
         }
-            
-		console.log('height ul ' + $(U.sel('#user_list')).prop("scrollHeight"));
-		console.log('height stupac' + $(U.sel('#left_column_second')).prop("scrollHeight"));
     },
     updateWindowSize: function(){
         

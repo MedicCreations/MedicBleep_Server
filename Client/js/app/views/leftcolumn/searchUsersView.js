@@ -6,6 +6,7 @@ var SPIKA_SearchUsersView = Backbone.View.extend({
         this.template = options.template;
         this.displayUsers = new UserResult([]);
 		this.currentPage = 0;
+		this.openedPanel = "";
         this.chatTyepe = CHATTYPE_PRIVATE;
         
         var self = this;
@@ -100,14 +101,31 @@ var SPIKA_SearchUsersView = Backbone.View.extend({
             var template = _.template($(U.sel('#template_userlist_row')).html(), {users: self.displayUsers.models});
             
             $(U.sel("#user_list")).html(template);
+			
+			console.log(self.openedPanel);
+			
+			if (self.openedPanel == "left_column_second"){
+			
+				var listHeight = $(U.sel('#user_list')).prop("scrollHeight");
+				var usersHeight = $(U.sel('#left_column_second')).height();
+				
+				console.log("from search " + listHeight);
+				console.log("from search" + usersHeight);
+				
+				if (listHeight < usersHeight && userFactory.createCollectionByAPIResponse(data).models.length > 0){
+					//load new page
+					var searchText = $(U.sel("#tb_search_user")).val();
+					self.currentPage++;
+					self.searchUsers(searchText);
+				}
+			
+			}
+			
             
             $(U.sel('#user_list li')).click(function(){
                Backbone.trigger(EVENT_START_PRIVATE_CHAT,self.displayUsers.searchById($(this).attr('data-userid')));
                return false;
             });
-			
-			console.log('height ' + $(U.sel('#left_column_second')).prop("scrollHeight"));
-			console.log('height ul ' + $(U.sel('#user_list')).height());
             
             if(self.chatTyepe == CHATTYPE_PRIVATE && self.chatMembers != null){
                 

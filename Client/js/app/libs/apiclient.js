@@ -128,15 +128,23 @@ SpikaClient.prototype.searchUsers = function(page,search,succeessListener,failed
 };
 
 // get groups
-SpikaClient.prototype.searchGroups = function(search,succeessListener,failedListener)
+SpikaClient.prototype.searchGroups = function(page,search,succeessListener,failedListener)
 {
     
-    var self = this;
+	var self = this;
+	
+	var requestParams = {};
+    
+    requestParams.search = search;
+	
+	if (page > 0){
+		requestParams.page = page;
+		}
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/groups/list',
         type: 'GET',
-        data: {search:search},
+        data: requestParams,
         headers: {"token":this.token}
     });
     
