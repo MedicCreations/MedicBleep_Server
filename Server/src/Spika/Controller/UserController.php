@@ -61,7 +61,8 @@ class UserController extends SpikaBaseController {
 						'token' => $login_result['user']['token'],
 						'firstname' => $login_result['user']['firstname'],
 						'lastname' => $login_result['user']['lastname'],
-						'image' => $login_result['user']['image']);
+						'image' => $login_result['user']['image'],
+						'image_thumb' => $login_result['user']['image_thumb']);
 			}
 			
 			//$result = $mySql->registerUser($app, $ldap_result['uid_number'], $ldap_result['firstname'], $ldap_result['lastname'], $password, $username, $android_push_token, $ios_push_token);
@@ -129,6 +130,7 @@ class UserController extends SpikaBaseController {
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK',
 					'page' => $page,
+					'items_per_page' => USERS_PAGE_SIZE,
 					'total_count' => $users_count,
 					'users' => $users);
 			
@@ -170,7 +172,7 @@ class UserController extends SpikaBaseController {
 				
 			} else {
 				//create chat and chat_members
-				$chat_id = $mySql->createChat($app, "", CHAT_USER_TYPE, 0, "", $custom_chat_id);
+				$chat_id = $mySql->createChat($app, "", CHAT_USER_TYPE, 0, "", "", $custom_chat_id);
 				$mySql->addChatMembers($app, $chat_id, $members);
 				$messages = array();
 			}
@@ -293,15 +295,30 @@ class UserController extends SpikaBaseController {
 		})->before($app['beforeSpikaTokenChecker']);
 		
 		
-		$controllers->get('ldap', function (Request $request) use ($app, $self, $mySql, $ldap){
+		$controllers->get('test', function (Request $request) use ($app, $self, $mySql, $ldap){
 			
-			$self->updateSeen($app, $mySql, 119);
+			for($i = 0; $i<200; $i++){
+				$firstname = "";
+				$index = 'abcdefghijklmnopqrstuvwxyz';
+				for ($j = 0; $j < 5; $j++) {
+					$firstname .= $index[rand(0, strlen($index) - 1)];
+				}
+				
+				$lastname = $i;
+				
+				$values = array('firstname' => $firstname,
+						'lastname' => $lastname,
+						'created' => time(),
+						'modified' => time());
+						
+				$app['db']->insert('user', $values);
+				
+			}
 			
-			$result = array('info' => 'ok');
-			
+			$result = "OK";
 			return $app->json($result, 200);
 			
-		})->before($app['beforeSpikaTokenChecker']);
+		});
 		
 		
 		return $controllers;

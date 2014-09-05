@@ -28,7 +28,9 @@ define(['jQuery','underscore','backbone','Notification'], function($, _, Backbon
             
             $(HOLDER).attr('class', 'login');
             $(HOLDER).html(loginView.render().el);
-
+            
+            
+            
         });
         
 
@@ -37,11 +39,23 @@ define(['jQuery','underscore','backbone','Notification'], function($, _, Backbon
     
     app_router.on('route:logoutRoute', function(actions) {
         
-        $.removeCookie(COOKIE_USERNAME);
-        $.removeCookie(COOKIE_PASSWORD);
-        
-        document.location.href = "#login";
-        
+        try{
+                    
+            $.removeCookie(COOKIE_USERNAME);
+            $.removeCookie(COOKIE_PASSWORD);
+            
+            document.location.href = "#login";
+            
+            if(!_.isUndefined(SPIKA_notificationManger))
+                SPIKA_notificationManger.stopPooling();
+
+
+        } catch(ex){
+
+            document.location.href = "#login"; 
+            
+        }
+
     });
 
     

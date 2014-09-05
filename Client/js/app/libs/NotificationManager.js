@@ -3,7 +3,7 @@ var SPIKA_notificationManger = {
     lastLobbyData : null,
     lastUnreadNum : null,
     unreadMessageNum : 0,
-    stopPooling:false,
+    flgStopPooling:false,
     init : function(){
         
         var self = this;
@@ -13,15 +13,19 @@ var SPIKA_notificationManger = {
         }, POOLING_INTERVAL);
         
         Backbone.on(EVENT_FORCE_LOGOUT, function(page) {
-            self.stopPooling = true;
+            self.flgStopPooling = true;
         });
         
+    },
+    stopPooling : function(){
+        U.l('stop');
+        this.flgStopPooling = true;
     },
     doPooling : function(){
 
         var self = this;
         
-        self.stopPooling = false;
+        self.flgStopPooling = false;
         
         if(apiClient == null || apiClient.authorized == false){
             
@@ -102,7 +106,7 @@ var SPIKA_notificationManger = {
             
             self.lastLobbyData = lobbyData;
             
-            if(self.stopPooling == false){
+            if(self.flgStopPooling == false){
 
                 window.setTimeout(function(){
                     self.doPooling();

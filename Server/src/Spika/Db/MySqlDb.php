@@ -183,7 +183,7 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%'";
 		}
 		
-		$sql = $sql . " LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
+		$sql = $sql . " ORDER BY user.firstname,user.id LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($my_user_id));
 		
@@ -382,13 +382,14 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function createChat(Application $app, $name, $type, $group_id, $group_image, $custom_chat_id){
+	public function createChat(Application $app, $name, $type, $group_id, $group_image, $group_image_thumb, $custom_chat_id){
 		
 		$values = array('custom_chat_id' => $custom_chat_id,
 				'name' => $name, 
 				'type' => $type, 
 				'group_id' => $group_id,
 				'image' => $group_image,
+				'image_thumb' => $group_image_thumb,
 				'created' => time(), 
 				'modified' => time()
 				);
@@ -612,6 +613,7 @@ class MySqlDb implements DbInterface{
 	public function updateMessage(Application $app, $message_id, $values){
 		
 		$where = array('id' => $message_id);
+		$values['modified'] = time();
 		$app['db']->update('message', $values, $where);
 		
 	}
@@ -641,6 +643,17 @@ class MySqlDb implements DbInterface{
 		
 		return $messages;
 		
+	}
+	
+	
+	public function getModifiedMessages(Application $app, $chat_id, $modified) {
+	
+		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 AND message.modified >= ? ORDER BY message.id DESC";
+		
+		$messages = $app['db']->fetchAll($sql, array($chat_id, $modified));
+		
+		return $messages;
+	
 	}
 	
 	

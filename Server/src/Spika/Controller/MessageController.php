@@ -306,12 +306,17 @@ class MessageController extends SpikaBaseController {
 			
 			$messages = $mySql->getMessagesOnPush($app, $chat_id, $first_msg_id);
 			
+			$message = $mySql->getMessageByID($app, $first_msg_id);
+			
+			$modified_messages = $mySql->getModifiedMessages($app, $chat_id, $message['modified']);
+			
 			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
 			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK', 
 					'total_count' => $total_count,
-					'messages' => $messages);
+					'messages' => $messages, 
+					'modified_messages' => $modified_messages);
 			
 			return $app->json($result, 200);
 			

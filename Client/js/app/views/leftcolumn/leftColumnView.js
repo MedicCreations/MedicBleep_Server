@@ -74,6 +74,12 @@ var SPIKA_LeftColumnView = Backbone.View.extend({
 
         this.updateWindowSize();
         this.openPanel('left_column_first');
+        
+        $(U.sel("#menu_signout")).click(function(){
+            
+            location.href ="#logout";
+            
+        });
     },
     openPanel: function(panelId){
         

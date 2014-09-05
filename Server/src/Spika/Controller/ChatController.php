@@ -20,6 +20,47 @@ class ChatController extends SpikaBaseController {
 		
 		$controllers = $app ['controllers_factory'];
 		
+		//create group chat
+		$controllers->post('/create', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->request->all();
+			
+			$name = "";
+			$image = DEFAULT_GROUP_IMAGE;
+			$image_thumb = DEFAULT_GROUP_IMAGE;
+			
+			if (array_key_exists('name', $paramsAry)){
+				$name = $paramsAry['name'];
+			}
+			if (array_key_exists('image', $paramsAry)){
+				$image = $paramsAry['image'];
+			}
+			if (array_key_exists('image_thumb', $paramsAry)){
+				$image_thumb = $paramsAry['image_thumb'];
+			}
+			
+			$users_to_add = $paramsAry['users_to_add'];
+			$users_to_add_ary = explode(',', $users_to_add);
+			
+			$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
+			
+			$chat_id = $mySql->createChat($app, $name, CHAT_USER_GROUP_TYPE, 0, $image, $image_thumb, $custom_chat_id);
+				
+			$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
+			
+			$chat = $mySql->getChatWithID($app, $chat_id);
+			$chat['chat_name'] = $name;
+			$chat['chat_id'] = $chat_id;
+			
+			$result = array('code' => CODE_SUCCESS, 
+					'message' => 'OK',
+					'chat' => $chat);
+			
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
+		
+		
 		//add members to chat
 		$controllers->post('/member/add', function (Request $request) use ($app, $self, $mySql){
 			
@@ -50,7 +91,7 @@ class ChatController extends SpikaBaseController {
 				
 					$custom_chat_id = $self->createChatCustomID($all_members);
 				
-					$chat_id = $mySql->createChat($app, "", CHAT_USER_GROUP_TYPE, 0, DEFAULT_GROUP_IMAGE, $custom_chat_id);
+					$chat_id = $mySql->createChat($app, "", CHAT_USER_GROUP_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id);
 					$mySql->addChatMembers($app, $chat_id, $all_members);
 					$messages = array();
 				
@@ -70,7 +111,7 @@ class ChatController extends SpikaBaseController {
 				
 				$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 				
-				$chat_id = $mySql->createChat($app, "", CHAT_USER_GROUP_TYPE, 0, DEFAULT_GROUP_IMAGE, $custom_chat_id);
+				$chat_id = $mySql->createChat($app, "", CHAT_USER_GROUP_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id);
 				
 				$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
 				$messages = array();

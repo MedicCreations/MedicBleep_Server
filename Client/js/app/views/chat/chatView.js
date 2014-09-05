@@ -233,6 +233,8 @@ var SPIKA_ChatView = Backbone.View.extend({
             apiClient.getChatById(lastChatId,function(data){
                 
                 var chatData = chatFactory.createModelByAPIResponse2(data.chat_data);
+                
+                U.l(chatData);
                 self.startChat(chatData);
                 
             },function(data){

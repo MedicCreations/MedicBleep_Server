@@ -49,6 +49,7 @@ class GroupController extends SpikaBaseController {
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK',
 					'page' => $page,
+					'items_per_page' => GROUPS_PAGE_SIZE,
 					'total_count' => $groups_count,
 					'groups' => $groups);
 			
@@ -84,7 +85,7 @@ class GroupController extends SpikaBaseController {
 				$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id);
 			} else {
 				//create chat and chat_members
-				$chat_id = $mySql->createChat($app, $chat_name, CHAT_GROUP_TYPE, $group_id, DEFAULT_GROUP_IMAGE, "");
+				$chat_id = $mySql->createChat($app, $chat_name, CHAT_GROUP_TYPE, $group_id, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, "");
 				
 				//get users from ldap
 				//$ldap_user_id_ary = $ldap->getGroupMembers($app, $outside_group_id);

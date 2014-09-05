@@ -5,7 +5,7 @@
         },
         createModelByAPIResponse2 : function(data){   
             return new ModelHistory({ chat_id:data.id,
-                                        chat_name: data.name,
+                                        chat_name: data.chat_name,
                                         group_id: data.group_id,
                                         image: data.image,
                                         image_thumb: data.imag_thumb});   

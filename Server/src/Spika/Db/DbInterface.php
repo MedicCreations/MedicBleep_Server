@@ -26,7 +26,7 @@ interface DbInterface
 	
 	public function isPrivateChatAlreadyExist(Application $app, $custom_chat_id);
 	public function isGroupChatAlreadyExist(Application $app, $group_id);
-	public function createChat(Application $app, $name, $type, $group_id, $group_image, $custom_chat_id);
+	public function createChat(Application $app, $name, $type, $group_id, $group_image, $group_image_thumb, $custom_chat_id);
 	public function addChatMembers(Application $app, $chat_id, $members);
 	public function getChatWithID(Application $app, $chat_id);
 	public function getPrivateChatData(Application $app, $chat_id, $user_id);
@@ -47,6 +47,7 @@ interface DbInterface
 	public function updateMessage(Application $app, $message_id, $values);
 	public function getMessageByID(Application $app, $message_id);
 	public function getChildMessages(Application $app, $child_id_list);
+	public function getModifiedMessages(Application $app, $chat_id, $modified);
 	
 	public function getRecentAllChats(Application $app, $user_id, $offset);
 	public function getCountRecentAllChats(Application $app, $user_id);
