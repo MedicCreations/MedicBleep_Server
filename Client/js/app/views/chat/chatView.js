@@ -273,6 +273,8 @@ var SPIKA_ChatView = Backbone.View.extend({
     
     startChat : function(chatModel){
         
+        var self = this;
+        
         this.viewmode = CHATVIEW_LISTMODE;
         
         $.cookie(COOKIE_LAST_CHATID, chatModel.get('chat_id'), { expires: COOKIE_EXPIRES });
