@@ -273,11 +273,11 @@ var SPIKA_MainView = Backbone.View.extend({
 
         require(['app/views/rightcolumn/rightColumnView','thirdparty/text!templates/rightcolumn/rightColumn.tpl',
                     'app/views/leftcolumn/leftColumnView','thirdparty/text!templates/leftcolumn/leftColumn.tpl',
-                    'app/views/chat/chatView','thirdparty/text!templates/chat/chat.tpl',
+                    'app/views/maincolumn/mainColumnView','thirdparty/text!templates/maincolumn/mainColumn.tpl',
                     
                 ],function (RightColumnViewTmp,TemplateRight,
                             LeftColumnViewTmp,TemplateLeft,
-                            ChatViewTmp,TemplateChat) {
+                            MainColumnView,TemplateMain) {
                     
             self.leftColumnView = new SPIKA_LeftColumnView({
                 template: TemplateLeft
@@ -287,8 +287,8 @@ var SPIKA_MainView = Backbone.View.extend({
                 template: TemplateRight
             });
             
-            self.chatView = new SPIKA_ChatView({
-                template: TemplateChat
+            self.mainColumnView = new SPIKA_MainColumnView({
+                template: TemplateMain
             });
             
             self.onload();
@@ -306,8 +306,8 @@ var SPIKA_MainView = Backbone.View.extend({
         $(U.sel("#content")).css('opacity',0);
         $(U.sel("#left_column")).html(this.leftColumnView.render().el);
         $(U.sel("#right_column")).html(this.rightColumnView.render().el);
+        $(U.sel("#main_column")).html(self.mainColumnView.render().el);
         
-        $(U.sel("#main_column")).html(self.chatView.render().el);
         // chat view should loaded last for event handling
 
         

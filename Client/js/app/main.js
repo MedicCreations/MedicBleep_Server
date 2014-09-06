@@ -23,7 +23,7 @@ requirejs.config({
   },
  
   urlArgs: 'bust=' + (new Date()).getTime()
-  
+
 });
 
 
@@ -39,7 +39,7 @@ require(['app/libs/apiclient',
     require(['app/router'], function () {
         
         
-        
+                
     });
     
 });

@@ -52,6 +52,7 @@ define(['jQuery','underscore','backbone','Notification'], function($, _, Backbon
 
         } catch(ex){
 
+            U.l(ex);
             document.location.href = "#login"; 
             
         }

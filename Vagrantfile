@@ -22,8 +22,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 	sudo pear channel-discover pear.symfony.com
 	sudo pear install --alldeps phpunit/PHPUnit
 
-    a2enmod rewrite
-    sed -i '/AllowOverride None/c AllowOverride All' /etc/apache2/sites-available/default    
+    sudo a2enmod rewrite
+    sudo sed -i '/AllowOverride None/c AllowOverride All' /etc/apache2/sites-available/default    
+    sudo echo 'EnableSendfile off' >> /etc/apache2/apache2.conf  
 
     sudo rm -rf /var/www
     sudo ln -s /vagrant_data /var/www

@@ -148,7 +148,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         var self = this;
         
-        require(['app/views/chat/postBoxView','thirdparty/text!templates/chat/postBox.tpl'
+        require(['app/views/maincolumn/chat/postBoxView','thirdparty/text!templates/maincolumn/chat/postBox.tpl'
                 ],function (
                         PostBoxViewTmp,TemplatePostBox
                 ) {
