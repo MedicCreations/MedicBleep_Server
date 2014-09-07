@@ -6,7 +6,7 @@ EncryptManager = {
             return null;
         } 
         
-        sessionStorage[fileId] = data;
+        localStorage[fileId] = data;
         
     },
     localchacheGetImage:function(fileId){
@@ -15,7 +15,7 @@ EncryptManager = {
             return null;
         } 
         
-        return sessionStorage[fileId];
+        return localStorage[fileId];
         
     },    
     encryptText : function(text){
