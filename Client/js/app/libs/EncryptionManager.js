@@ -1,5 +1,23 @@
 EncryptManager = {
+    
+    localchacheSaveImage:function(fileId,data){
 
+        if(typeof(Storage) == "undefined") {
+            return null;
+        } 
+        
+        sessionStorage[fileId] = data;
+        
+    },
+    localchacheGetImage:function(fileId){
+
+        if(typeof(Storage) == "undefined") {
+            return null;
+        } 
+        
+        return sessionStorage[fileId];
+        
+    },    
     encryptText : function(text){
         
         if( text.length == 0)
@@ -58,6 +76,20 @@ EncryptManager = {
 
     decryptImage : function(imgElement,fileId,width,apiClient,successListner){
         
+        var self = this;
+        
+        var chacedFile = self.localchacheGetImage(fileId);
+        
+        if(!_.isUndefined(chacedFile) && !_.isNull(chacedFile)){
+
+            $(imgElement).attr('src','data:image/jpeg;base64,' + chacedFile);
+            
+            if(width > 0)
+                $(imgElement).attr('width',width);
+            
+            return;
+        }
+        
         // download file first  
         apiClient.downloadFile(fileId,function(data){
             
@@ -76,6 +108,8 @@ EncryptManager = {
                 if(width > 0)
                     $(imgElement).attr('width',width);
                 
+                self.localchacheSaveImage(fileId,sjcl.codec.base64.fromBits(decryptedBin));
+                
                 if(_.isFunction(successListner))
                     successListner();
                 
@@ -93,6 +127,7 @@ EncryptManager = {
         });
         
     },
+    
     downloadFile:function(fileId,fileName,encryptedFileName){
         
         $('#downloadlink_' + fileId + " img").attr('src','img/btn_decrypting.png');
