@@ -15,19 +15,9 @@ var SPIKA_ChatView = Backbone.View.extend({
         this.viewmode = CHATVIEW_LISTMODE;
         this.chatData = null;
         this.threadId = 0;
-        
-        Backbone.on(EVENT_WINDOW_SIZE_CHANGED, function(sizeObj) {
-            var width = sizeObj.width;
-            var height = sizeObj.height;
-            self.updateWindowSize(width,height);
-        });
     
         Backbone.on(EVENT_TB_HEIGHT_UPDATED, function(modelUser) {
-        
-            var windowWidth = U.getWidth();
-            var windowHeight = U.getHeight();
-
-            self.updateWindowSize(windowWidth,windowHeight);
+            self.updateWindowSize();
         });
         
         Backbone.on(EVENT_START_PRIVATE_CHAT, function(modelUser) {
@@ -234,7 +224,6 @@ var SPIKA_ChatView = Backbone.View.extend({
                 
                 var chatData = chatFactory.createModelByAPIResponse2(data.chat_data);
                 
-                U.l(chatData);
                 self.startChat(chatData);
                 
             },function(data){
@@ -279,8 +268,9 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         $.cookie(COOKIE_LAST_CHATID, chatModel.get('chat_id'), { expires: COOKIE_EXPIRES });
         $.cookie(COOKIE_LAST_CHATNAME, chatModel.get('chat_name'), { expires: COOKIE_EXPIRES });
-            
-        $(U.sel('#chat_title')).text(chatModel.get('chat_name'));
+        
+        mainView.mainColumnView.setCenterColumnTitle(chatModel.get('chat_name'));
+        
         this.chatId = chatModel.get('chat_id');
         this.postBoxView.setChatId(this.chatId);
         this.loadPage(true,0);
@@ -290,18 +280,21 @@ var SPIKA_ChatView = Backbone.View.extend({
         Backbone.trigger(EVENT_LIST_MODE,this.chatId);
 
         _.debounce(function() {
-            self.updateWindowSize(U.getWidth(),U.getHeight());   
+            self.updateWindowSize();   
         }, 100)(); 
             
     },
     
-    updateWindowSize: function(width,height){
-
-       var headerHeight = $(U.sel('#main_top')).height();
-       var chatBoxHeight = $(U.sel('#chat_post')).height();
-       var messageBoxHeight = height - chatBoxHeight - headerHeight ;
-       
-       $(U.sel('#chat_view')).height(messageBoxHeight);
+    updateWindowSize: function(mainViewHeight){
+    
+        var width = U.getWidth();
+        var height = U.getHeight();
+        
+        var headerHeight = $(U.sel('#main_top')).height();
+        var chatBoxHeight = $(U.sel('#chat_post')).height();
+        var messageBoxHeight = height - chatBoxHeight - headerHeight ;
+        
+        $(U.sel('#chat_view')).height(messageBoxHeight);
        
     },
     
@@ -732,6 +725,12 @@ var SPIKA_ChatView = Backbone.View.extend({
     
     drop : function(){
         
+        
+    },
+    
+    getChatName : function(){
+        
+        return this.chatData.get('chat_name');
         
     }
     

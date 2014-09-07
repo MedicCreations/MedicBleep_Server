@@ -394,9 +394,7 @@ SpikaClient.prototype.fileUpload = function(file,succeessListener,failedListener
     });
     
     request.done(function( data ) {
-        
-        U.l(data);
-        
+
         if(data.code == 2000){
             succeessListener(data);
         } else {
@@ -596,6 +594,61 @@ SpikaClient.prototype.downloadFile = function(fileId,succeessListener,failedList
 
 };
 
+SpikaClient.prototype.saveProflie = function(userId,values,succeessListener,failedListener)
+{
+    
+    var self = this;
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/user/updateProflie',
+        type: 'POST',
+        data: values,
+        headers: {"token":this.token}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+SpikaClient.prototype.saveProfliePicture = function(userId,fileId,thumbId,succeessListener,failedListener)
+{
+    
+    var self = this;
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/user/update',
+        type: 'POST',
+        data: {image:fileId,image_thumb:thumbId},
+        headers: {"token":this.token}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
 
 
 SpikaClient.prototype.test = function()

@@ -18,7 +18,6 @@ var SPIKA_notificationManger = {
         
     },
     stopPooling : function(){
-        U.l('stop');
         this.flgStopPooling = true;
     },
     doPooling : function(){
@@ -66,10 +65,8 @@ var SPIKA_notificationManger = {
                 
             });
             
-            U.l(lobbyData.length + ":" + self.lastLobbyData.length);
-            
             if(lobbyData.length != self.lastLobbyData.length){
-                U.l('new chat');
+
                 // new chat is generated or chat is removed
                 Backbone.trigger(EVENT_NEW_MESSAGE,null);
             }

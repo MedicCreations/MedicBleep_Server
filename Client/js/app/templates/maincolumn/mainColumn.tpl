@@ -10,5 +10,9 @@
                 
 			</div>
 
-			
+			<div id="sub_content" style="display:none">
+                
+                
+			</div>
+						
 		</article>

@@ -15,6 +15,7 @@ var EVENT_SELECT_REPLY = 'eventSelectReply';
 var EVENT_THREAD_MODE = 'eventThreadMode';
 var EVENT_LIST_MODE = 'eventListMode';
 var EVENT_FILE_DROP = 'eventFileDrop';
+var EVENT_OPEN_PROFLIE = 'openProflie';
 
 // message types
 var MESSAGE_TYPE_TEXT = 1;
@@ -26,6 +27,7 @@ var MESSAGE_TYPE_FILE = 6;
 
 // image
 var BIG_PIC_SIZE = 1024;
+var PROFLIE_PIC_SIZE = 512;
 var THUMB_PIC_SIZE = 250;
 
 // cookie

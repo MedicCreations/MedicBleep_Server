@@ -13,7 +13,7 @@
     						<button id="btn_upload_file"><i class="fa fa-file-image-o"></i></button>
     						<div class="choose_file" style="display:none">
     						    <input id="btn_dummy_file_upload" name="Select File" type="file" />
-    						  </div>
+                            </div>
     					</li>
     					<li class="small">
     						<input id="btn_post_message" type="submit" value="Send" />

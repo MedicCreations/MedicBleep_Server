@@ -45,8 +45,6 @@ var SPIKA_LobbyView = Backbone.View.extend({
         
         var self = this;
         
-        U.l('lobby reload');
-        
         apiClient.lobby(function(data){
             
             self.lobbyData = historyFactory.createCollectionByAPIResponse(data);

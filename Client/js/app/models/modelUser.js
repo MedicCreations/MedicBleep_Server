@@ -1,6 +1,7 @@
     var userFactory = {
     
         createModelByAPIResponse : function(data){
+            
             var user_id = 0;
             
             if(!_.isUndefined(data.user_id)){
@@ -10,9 +11,9 @@
             if(!_.isUndefined(data.id)){
                 user_id = data.id;
             }
-                       
-            return new ModelUser({ id:user_id,firstname: data.firstname, lastname: data.lastname, image: data.image, image_thumb: data.image_thumb,
-                                    details: data.details});   
+            
+            return new ModelUser({ id:user_id,firstname: data.firstname, lastname: data.lastname, image: data.image, image_thumb: data.image_thumb,details: data.details});   
+            
         },
         createCollectionByAPIResponse : function(data){
             

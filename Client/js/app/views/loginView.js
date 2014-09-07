@@ -63,18 +63,29 @@ var SPIKA_LoginView = Backbone.View.extend({
         
         apiClient.login(username,password,function(data){
             
-            $(U.sel('#loginform')).fadeOut(200,function(){
+            apiClient.getUserById(data.user_id,function(data){
+            
+                SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
                 
-                $(U.sel('#loginform')).css('display','none');
-                $(U.sel('#login_loading')).css('display','block');
-                
-                $(U.sel('#loading')).fadeIn(200,function(){
+                $(U.sel('#loginform')).fadeOut(200,function(){
                     
-                    Backbone.trigger(EVENT_SHOW_PAGE,'main');
+                    $(U.sel('#loginform')).css('display','none');
+                    $(U.sel('#login_loading')).css('display','block');
+                    
+                    $(U.sel('#loading')).fadeIn(200,function(){
+                        
+                        Backbone.trigger(EVENT_SHOW_PAGE,'main');
+                        
+                    });
                     
                 });
                 
+            },function(data){
+                
+                
+                
             });
+
             
         },function(data){
             

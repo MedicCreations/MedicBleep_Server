@@ -74,23 +74,22 @@ var SPIKA_LeftColumnView = Backbone.View.extend({
 
         this.updateWindowSize();
         this.openPanel('left_column_first');
-        
-        $(U.sel("#menu_signout")).click(function(){
-            
-            location.href ="#logout";
-            
+
+        $(U.sel("#menu_proflie")).click(function(){
+            Backbone.trigger(EVENT_OPEN_PROFLIE,null);
         });
+                
+        $(U.sel("#menu_signout")).click(function(){
+            location.href ="#logout";
+        });
+        
     },
     openPanel: function(panelId){
         
 		var self = this;
-		
-		console.log(panelId);
-		
+
         this.updateWindowSize();
         $(U.sel('.accordion > dd')).slideUp(function(){
-			
-			console.log(panelId);
 			
 			if (panelId == "left_column_second"){
 				_.debounce(function() {
@@ -114,14 +113,9 @@ var SPIKA_LeftColumnView = Backbone.View.extend({
 					var listHeight = $(U.sel('#group_list')).prop("scrollHeight");
 					var groupsHeight = $(U.sel('#left_column_third')).height();
 					
-					console.log('groupe ' + listHeight);
-					console.log('groupe ' + groupsHeight);
-					
 					if (listHeight < groupsHeight){
 						//load new page
-						
-						console.log('trebalo bi loadati nove grupe');
-						
+
 						var searchText = $(U.sel("#tb_search_group")).val();
 						self.searchGroupsView.currentPage++;
 						self.searchGroupsView.searchGroups(searchText);

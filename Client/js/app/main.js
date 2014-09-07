@@ -28,11 +28,14 @@ requirejs.config({
 
 
 require(['app/libs/apiclient',
+            'app/libs/UserManager',
             'app/libs/utils',
             'app/libs/SoundManager'], function() {
     
+    
     // global variables
     window.apiClient = new SpikaClient(API_URL);
+    window.mainView = null;
     SPIKA_soundManager.init();
     
     // start app

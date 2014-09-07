@@ -67,8 +67,6 @@ var SPIKA_SearchGroupsView = Backbone.View.extend({
 
             self.displayGroups.add(groupFactory.createCollectionByAPIResponse(data).models);
 			
-			console.log(groupFactory.createCollectionByAPIResponse(data).models);
-            
             var template = _.template($(U.sel('#template_grouplist_row')).html(), {groups: self.displayGroups.models});
             $(U.sel("#group_list")).html(template);
             

@@ -252,7 +252,30 @@ class UserController extends SpikaBaseController {
 			
 		})->before($app['beforeSpikaTokenChecker']);
 		
-		
+
+		//update user proflie
+		$controllers->post('/updateProflie', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->request->all();
+
+            $values = array();
+            $values['firstname'] = $paramsAry['firstname'];
+            $values['lastname'] = $paramsAry['lastname'];
+            $values['details'] = $paramsAry['details'];
+            		
+			$user_id = $app['user']['id'];
+			
+			$mySql->updateUser($app, $user_id, $values);
+			
+			$result = array(
+			        'code' => CODE_SUCCESS,
+					'message' => 'OK'
+            );
+				
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);		
+
 		//get user profile
 		$controllers->get('/profile', function (Request $request) use ($app, $self, $mySql){
 				
@@ -261,9 +284,7 @@ class UserController extends SpikaBaseController {
 			$user_id = $paramsAry['user_id'];
 		
 			$user = $mySql->getUserByID($app, $user_id);
-			
-			$details = json_decode($user['details']);
-		
+			$details = json_decode($user['details'],true);
 			$user['details'] = $details;
 				
 			$result = array('code' => CODE_SUCCESS,

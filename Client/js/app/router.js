@@ -100,7 +100,7 @@ define(['jQuery','underscore','backbone','Notification'], function($, _, Backbon
 
     app_router.on('route:mainRoute', function (actions) {
         
-        if(apiClient == null || apiClient.authorized == false){
+        if(apiClient == null || SPIKA_UserManager.isAuthorised() == false){
             document.location.href = "#login";
             return;
         }
@@ -108,12 +108,12 @@ define(['jQuery','underscore','backbone','Notification'], function($, _, Backbon
         require(['app/views/mainView','thirdparty/text!templates/main.tpl'], 
                     function (MainViewTmp,TemplateMain) {
 
-            var mainView = new SPIKA_MainView({
+            window.mainView = new SPIKA_MainView({
                 template: TemplateMain
             });
             
             $(HOLDER).attr('class', 'chat');
-            $(HOLDER).html(mainView.render().el);
+            $(HOLDER).html(window.mainView.render().el);
 
         });
         

@@ -34,6 +34,42 @@
     margin-left: 10px;
 }
 
+#spika_window .right{
+    text-align: right;
+}
+
+#spika_window .formrow{
+    line-height: 30px;
+    height: 30px;
+    vertical-align: middle;
+    padding: 10px;
+}
+
+#spika_window .formrow:after{
+    clear: both;
+}
+
+#spika_window .formrow label{
+    display: block;
+    float: left;
+    width: 140px;
+}
+
+#spika_window .formrow input{
+    padding: 3px;
+    display: block;
+    float: left;
+    width: 140px;
+}
+
+#spika_window .topline{
+    border-top: 1px #bbb dashed;
+}
+
+#spika_window .notice{
+    font-weight: bold;
+    font-size: 10px;
+}
 
 /*480 - 320*/
 /*==============================*/
@@ -576,3 +612,55 @@
 #spika_window #chat_title a{
     color: #fff;
 }
+
+/*==============================*/
+/*			Edit profile		*/
+/*==============================*/
+
+#spika_window #profile_edit_view{
+    background-color: #efefef;
+    width: 100%;
+    height: 100%
+}
+
+#spika_window #profile_edit_avatarimage{
+    
+    margin: 10px;
+    float: left;
+    width: 250px;
+    height: 250px;
+    
+}
+
+#spika_window #profile_edit_profliedata{
+    margin: 10px;
+    float: left;
+    width: 320px;
+    height: 250px;
+}
+
+#spika_window #profile_edit_avatarimage{
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+}
+
+#spika_window #profile_edit_avatarimage i{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color: #666;
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+

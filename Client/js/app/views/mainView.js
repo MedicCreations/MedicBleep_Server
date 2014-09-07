@@ -36,44 +36,27 @@ var windowManager = {
         });
         
         Backbone.on(EVENT_START_PRIVATE_CHAT, function(modelUser) {
-            
-            if(self.displayType == 1 && self.currentWindow == 0)
-                self.openMainFromLeft(true);
-                
-            if(self.displayType == 1 && self.currentWindow == 2)
-                self.openMainFromRight(true);
-            
-            //self.updateWindowSize();
-            
+            self.showCenterView();
         });
         
         Backbone.on(EVENT_START_GROUP_CHAT, function(modelUser) {
-            
-            if(self.displayType == 1 && self.currentWindow == 0)
-                self.openMainFromLeft(true);
-                
-            if(self.displayType == 1 && self.currentWindow == 2)
-                self.openMainFromRight(true);
-            
-            //self.updateWindowSize();
-            
+            self.showCenterView();
         });
         
         Backbone.on(EVENT_START_CHAT_BY_CHATDATA, function(modelHistory) {
-            
-            
-            if(self.displayType == 1 && self.currentWindow == 0)
-                self.openMainFromLeft(true);
-                
-            if(self.displayType == 1 && self.currentWindow == 2)
-                self.openMainFromRight(true);
-            
-            //self.updateWindowSize();
-            
+            self.showCenterView();
         });
         
         SPIKA_notificationManger.init();
         
+    },
+    showCenterView:function(){
+        if(this.displayType == 1 && this.currentWindow == 0)
+            this.openMainFromLeft(true);
+            
+        if(this.displayType == 1 && this.currentWindow == 2)
+            this.openMainFromRight(true);
+                
     },
     updateWindowSize:function(){
         

@@ -56,7 +56,7 @@ EncryptManager = {
             
     },
 
-    decryptImage : function(imgElement,fileId,width,apiClient){
+    decryptImage : function(imgElement,fileId,width,apiClient,successListner){
         
         // download file first  
         apiClient.downloadFile(fileId,function(data){
@@ -75,7 +75,10 @@ EncryptManager = {
                 
                 if(width > 0)
                     $(imgElement).attr('width',width);
-                    
+                
+                if(_.isFunction(successListner))
+                    successListner();
+                
             } catch(ex){
                 U.l(ex);
             }
