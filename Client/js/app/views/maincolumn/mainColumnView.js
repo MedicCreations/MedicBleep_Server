@@ -39,8 +39,11 @@ var SPIKA_MainColumnView = Backbone.View.extend({
         Backbone.on(EVENT_START_CHAT_BY_CHATDATA, function(chatData) {
             self.showMainContent();
         });
-        
-        
+
+        Backbone.on(EVENT_ENTER_CHAT, function(chatData) {
+            self.setCenterColumnTitle(self.chatView.getChatName());
+        });
+                
     },
     
     events: {
@@ -108,7 +111,6 @@ var SPIKA_MainColumnView = Backbone.View.extend({
         $(U.sel("#main_content")).show();
         $(U.sel("#sub_content")).hide();
         
-        this.setCenterColumnTitle(this.chatView.getChatName());
     },
     
     setCenterColumnTitle : function(title){
