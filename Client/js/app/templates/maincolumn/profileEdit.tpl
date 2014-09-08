@@ -1,7 +1,7 @@
 <div id="profile_edit_view">
     
     <div id="profile_edit_avatarimage">
-        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <i class="fa fa-circle-o-notch fa-spin fa-2x"></i>
         <img src="img/default_user.png" width="100%"/>
         <span class="notice">Only png allowed</span>
     </div>

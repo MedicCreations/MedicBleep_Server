@@ -74,7 +74,7 @@ EncryptManager = {
             
     },
 
-    decryptImage : function(imgElement,fileId,width,apiClient,successListner){
+    decryptImage : function(imgElement,fileId,width,apiClient,successListner,failedListner){
         
         var self = this;
         
@@ -87,6 +87,9 @@ EncryptManager = {
             if(width > 0)
                 $(imgElement).attr('width',width);
             
+            if(_.isFunction(successListner))
+                successListner();
+                    
             return;
         }
         
@@ -115,6 +118,11 @@ EncryptManager = {
                 
             } catch(ex){
                 U.l(ex);
+                
+                if(_.isFunction(failedListner))
+                    failedListner();
+
+
             }
 
                 

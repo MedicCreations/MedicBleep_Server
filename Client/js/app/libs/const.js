@@ -29,6 +29,7 @@ var MESSAGE_TYPE_FILE = 6;
 var BIG_PIC_SIZE = 1024;
 var PROFLIE_PIC_SIZE = 512;
 var THUMB_PIC_SIZE = 250;
+var THUMB_PIC_SIZE_INVIEW = 150;
 
 // cookie
 var COOKIE_USERNAME = 'cookieusername';
