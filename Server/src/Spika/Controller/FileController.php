@@ -33,9 +33,10 @@ class FileController extends SpikaBaseController {
 				return $self->returnErrorResponse(FileController::$fileDirName ." dir is not writable.", ER_DIR_NOT_WRITABLE);
 		
 			$file->move(__DIR__.'/../../../'.FileController::$fileDirName, $fineName);
+			
 			return $app->json(array("message" => "file uploaded", "code" => CODE_SUCCESS, "file_id" => $fineName,), 200);
 		
-		})->before($app['beforeSpikaTokenChecker']);
+		});
 		
 		
 		//image download
@@ -49,7 +50,7 @@ class FileController extends SpikaBaseController {
 			}else{
 				return $self->returnErrorResponse("File doesn't exists.", "1010");
 			}
-		})->before($app['beforeSpikaTokenChecker']);;
+		});
 		
 		return $controllers;
 	}

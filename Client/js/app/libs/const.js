@@ -16,6 +16,7 @@ var EVENT_THREAD_MODE = 'eventThreadMode';
 var EVENT_LIST_MODE = 'eventListMode';
 var EVENT_FILE_DROP = 'eventFileDrop';
 var EVENT_OPEN_PROFLIE = 'openProflie';
+var EVENT_NEW_GROUP = 'eventNewGroup';
 
 // message types
 var MESSAGE_TYPE_TEXT = 1;

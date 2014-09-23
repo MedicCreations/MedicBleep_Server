@@ -24,6 +24,22 @@ var SPIKA_MainColumnView = Backbone.View.extend({
         });
         
         
+        Backbone.on(EVENT_NEW_GROUP, function(files) {
+            
+            require(['app/views/maincolumn/roomEditView','thirdparty/text!templates/maincolumn/roomEdit.tpl'
+                    ],function (RoomEditTmp,TempRoomEdit) {
+                
+                self.roomEditView = new SPIKA_RoomEditView({
+                    template: TempRoomEdit
+                });
+                
+                self.showSubContent('group');
+                mainView.mainColumnView.setCenterColumnTitle("New Room");
+                windowManager.showCenterView();
+            });
+            
+        });
+         
         Backbone.on(EVENT_WINDOW_SIZE_CHANGED, function(sizeObj) {
             self.updateWindowSize();
         });
@@ -89,6 +105,11 @@ var SPIKA_MainColumnView = Backbone.View.extend({
             this.updateWindowSize();
         }
         
+        if(type == 'group'){
+            $(U.sel("#sub_content")).html(this.roomEditView.render().el);
+            this.updateWindowSize();
+        }
+        
     },
 
     updateWindowSize: function(){
@@ -99,6 +120,9 @@ var SPIKA_MainColumnView = Backbone.View.extend({
         $(U.sel('#sub_content')).height(mainViewHeight);
         $(U.sel('#main_content')).height(mainViewHeight);
         
+        if(!_.isUndefined(this.roomEditView))
+            this.roomEditView.updateWindowSize(mainViewHeight);
+            
         if(!_.isUndefined(this.profileEditView))
             this.profileEditView.updateWindowSize(mainViewHeight);
             

@@ -83,6 +83,10 @@ var SPIKA_LeftColumnView = Backbone.View.extend({
             location.href ="#logout";
         });
         
+        $(U.sel("#btn_newgroup")).click(function(){
+            Backbone.trigger(EVENT_NEW_GROUP,null);
+        });
+        
     },
     openPanel: function(panelId){
         
