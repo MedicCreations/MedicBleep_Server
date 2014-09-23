@@ -235,6 +235,7 @@ class ChatController extends SpikaBaseController {
 			}
 			
 			
+<<<<<<< HEAD
 			$chat = $mySql->getChatWithID($app, $chat_id);
 			if ($chat['name'] != ""){
 				$chat_name = $chat['name'];
@@ -250,6 +251,10 @@ class ChatController extends SpikaBaseController {
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK',
 					'chat' => $chat);
+=======
+			$result = array('code' => CODE_SUCCESS,
+					'message' => 'OK');
+>>>>>>> 4012e2aeeb14eee6009ed714605b1ea0cdefb8ea
 				
 			return $app->json($result, 200);
 			

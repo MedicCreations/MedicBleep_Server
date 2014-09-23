@@ -1,5 +1,6 @@
     <nav>
 		<div class="slide_menu">
+		    <a class="btn" id="btn_newgroup">New Room</a>
 			<span id="navigation_close_left"><i class="fa fa-bars"></i></span>
 		</div>
 		

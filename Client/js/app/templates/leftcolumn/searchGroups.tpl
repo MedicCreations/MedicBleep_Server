@@ -1,7 +1,7 @@
 
     		<div id="tab_groups_content">
 
-        		<div id="tab_search">
+        		<div class="tab_search">
         			<p>
         				<button type="submit"><i class="fa fa-search"></i></button>
         				<input id="tb_search_group" type="text" />

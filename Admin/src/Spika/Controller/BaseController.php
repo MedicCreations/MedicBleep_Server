@@ -49,18 +49,24 @@ class BaseController implements ControllerProviderInterface {
     	$origFileName = time() . $this->randomString();
     	$thumbFileName = time() . $this->randomString();
     	
+    	$originalFilePath = $tmpDir . "/" . $origFileName;
+    	$thumbFilePath = $tmpDir . "/" . $thumbFileName;
+    	
     	$pictureFile->move($tmpDir,$origFileName);
     	
     	$imagine = new Imagine();
     	$originalImage =  $imagine->open($tmpDir . "/" . $origFileName);
-    	$originalImage->save($tmpDir . "/" . $origFileName,array('format'=>'jpg'));
+    	$originalImage->save($originalFilePath,array('format'=>'jpg'));
     	
         $thumbnailImage = $this->resizeToFit(THUMB_SIZE,THUMB_SIZE,$tmpDir . "/" . $origFileName);
-        $thumbnailImage->save($tmpDir . "/" . $thumbFileName,array('format'=>'jpg'));
+        $thumbnailImage->save($thumbFilePath,array('format'=>'jpg'));
+
+    	$this->encryptFileAndSave($originalFilePath);
+    	$this->encryptFileAndSave($thumbFilePath);
     	
         $originalFileId = $this->uploadFile($tmpDir . "/" . $origFileName);
         $thumbnailFileId = $this->uploadFile($tmpDir . "/" . $thumbFileName);
-        
+
         if(!empty($originalFileId) && !empty($thumbnailFileId)){
             return array($originalFileId,$thumbnailFileId);
         }else{
@@ -154,5 +160,31 @@ class BaseController implements ControllerProviderInterface {
     	$this->app['session']->set('infomessage',$message);
 	}
 	
-	
+	public function encryptFileAndSave($filePath){
+        
+        /*
+        // encrypt original file
+        $fp = fopen($filePath, 'r');
+        
+        $byteArray = "";
+        if ($fp) {
+            while (false !== ($char = fgetc($fp))) {
+                $byteArray .= $char;
+            }
+        }
+        */
+        
+        //fclose($fp);
+        
+        
+        $fileBin = file_get_contents($filePath);
+        
+        $cryptor = new \RNCryptor\Encryptor();
+        $encryptedBinaryData = $cryptor->encrypt($fileBin, AES_PASSWORD);
+        
+        $encryptedHexData = bin2hex($encryptedBinaryData);
+        
+        file_put_contents($filePath, $encryptedHexData);
+        
+	}
 }

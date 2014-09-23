@@ -380,14 +380,14 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         _.each(this.messages.models,function(row){            
             row.set("content",self.generateContnt(row));
-            
         });
         
     },
     
     scrollToBottom: function(){
-        $(U.sel('#chat_view')).scrollTop($(U.sel('#chat_view'))[0].scrollHeight);
+        $(U.sel('#chat_view')).scrollTop($(U.sel('#chat_view'))[0].scrollHeight);   
     },
+    
     scrollToMessage : function(message){
         
         var sumHeight = 0;
@@ -432,7 +432,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
         
         else if(messageType == MESSAGE_TYPE_IMAGE){
-            content = '<img class="encrypted_image" src="data:image/png;base64,' + LOADING_IMAGE + '" fileid="' + message.get('thumb_id') + '" state="loading" />';
+            content = '<img width="' + THUMB_PIC_SIZE_INVIEW + '" height="' + THUMB_PIC_SIZE_INVIEW + '" class="encrypted_image" src="data:image/png;base64,' + LOADING_IMAGE + '" fileid="' + message.get('thumb_id') + '" state="loading" />';
             content += '<br /><span><a id="downloadlink_' + message.get('file_id') + '" href="javascript:EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'picture\')"><img src="img/btn_download.png" /></a></span>';
         }
 
@@ -688,7 +688,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             if(state == 'loading'){
                 
-                EncryptManager.decryptImage(this,fileId,150,apiClient);
+                EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
                     
             }
             

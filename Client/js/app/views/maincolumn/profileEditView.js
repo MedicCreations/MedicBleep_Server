@@ -219,6 +219,10 @@ var SPIKA_ProflieEditView = Backbone.View.extend({
     
     updateInfo: function(){
         
+        U.l(this.user);
+        
+        U.l('1');
+        
         var self = this;
         
         this.showLoading();
@@ -232,6 +236,8 @@ var SPIKA_ProflieEditView = Backbone.View.extend({
         this.showInfoFromDetail('mobile_num','moblile_num');
         
         EncryptManager.decryptImage($(U.sel('#profile_edit_avatarimage img')),this.user.get('image'),0,apiClient,function(){
+            self.hideLoading();
+        },function(){
             self.hideLoading();
         });
         

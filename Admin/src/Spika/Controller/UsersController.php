@@ -51,7 +51,7 @@ class UsersController extends BaseController {
 		$controllers->get('/view/{userId}', function (Request $request,$userId) use ($app, $self){
             
             $self->page = 'users';
-            $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+            $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
             
             return $self->render('users_view.twig', array(
                  'data' => $data,
@@ -64,7 +64,7 @@ class UsersController extends BaseController {
 		$controllers->get('/delete/{userId}', function (Request $request,$userId) use ($app, $self){
             
             $self->page = 'users';
-            $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+            $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
             
             return $self->render('users_view.twig', array(
                  'data' => $data,
@@ -76,7 +76,7 @@ class UsersController extends BaseController {
 		$controllers->post('/delete/{userId}', function (Request $request,$userId) use ($app, $self){
             
             $self->page = 'users';
-            $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+            $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
 
 			$values = array(
 					'is_deleted' => 1,
@@ -158,7 +158,7 @@ class UsersController extends BaseController {
 		$controllers->get('/edit/{userId}', function (Request $request,$userId) use ($app, $self){
             
             $self->page = 'users';
-            $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+            $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
             
             if(!isset($data['id'])){
                 return $app->redirect(ADMIN_ROOT_URL . '/users');
@@ -175,7 +175,7 @@ class UsersController extends BaseController {
             
             $self->page = 'users';
             $formValues = $request->request->all();
-            $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+            $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
             
             if(!isset($data['id'])){
                 return $app->redirect(ADMIN_ROOT_URL . '/user');
@@ -219,7 +219,7 @@ class UsersController extends BaseController {
     
         			$app['db']->update('user', $values,array('id' => $userId));
                     
-                    $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+                    $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
                     return $self->render('users_edit.twig', array(
                         'form' => $data,
                         'information' => $self->lang['users22'],
@@ -235,13 +235,13 @@ class UsersController extends BaseController {
                 $username = $formValues['username'];
                 
                 $checkDuplication = 
-                    $this->app['db']->fetchAll("select * from user where username = ? and id != ? ", 
+                    $self->app['db']->fetchAll("select * from user where username = ? and id != ? ", 
                                                     array($formValues['username'],$userId));
             
                 if(count($checkDuplication) > 0){
                     return $self->render('users_edit.twig', array(
                         'form' => $data,
-                        'error' => $this->lang['validateionError3'],
+                        'error' => $self->lang['validateionError3'],
                         'mode' => 'edit'
                     ));
                 }
@@ -252,7 +252,7 @@ class UsersController extends BaseController {
 
     			$app['db']->update('user', $values,array('id' => $userId));
                 
-                $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+                $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
                 return $self->render('users_edit.twig', array(
                     'form' => $data,
                     'information' => $self->lang['users22'],
@@ -268,7 +268,7 @@ class UsersController extends BaseController {
                 if(empty($password)){
                     return $self->render('users_edit.twig', array(
                         'form' => $data,
-                        'error' => $this->lang['validateionError2'],
+                        'error' => $self->lang['validateionError2'],
                         'mode' => 'edit'
                     ));
                 }
@@ -279,7 +279,7 @@ class UsersController extends BaseController {
 
     			$app['db']->update('user', $values,array('id' => $userId));
                 
-                $data = $this->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+                $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
                 return $self->render('users_edit.twig', array(
                     'form' => $data,
                     'information' => $self->lang['users22'],

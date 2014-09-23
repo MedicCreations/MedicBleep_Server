@@ -40,7 +40,7 @@
 
 #spika_window .formrow{
     line-height: 30px;
-    height: 30px;
+    min-height: 30px;
     vertical-align: middle;
     padding: 10px;
 }
@@ -66,10 +66,38 @@
     border-top: 1px #bbb dashed;
 }
 
+#spika_window .bottomline{
+    border-bottom: 1px #bbb dashed;
+}
+
+
 #spika_window .notice{
     font-weight: bold;
     font-size: 10px;
 }
+
+#spika_window #main_top i{
+    color: #fff;
+}
+
+#spika_window .slide_menu i{
+    color: #fff;
+}
+
+#spika_window .btn{
+    display: block;
+    font-size: 12px;
+    color: #111;
+    line-height: 25px;
+    vertical-align: middle;
+    text-align: center;
+    background-color: #eee;
+    cursor: pointer;
+    padding: 5px;
+    width: 80px;
+    margin: 10px 0px;
+}
+
 
 /*480 - 320*/
 /*==============================*/
@@ -284,24 +312,24 @@
 /*==============================*/
 /*			Search       		*/
 /*==============================*/
-#spika_window #tab_search {
+#spika_window .tab_search {
 	background: #E6E6E6;
 	padding: 5px;
 }
 
-#spika_window #tab_search > p:first-child {
+#spika_window .tab_search > p:first-child {
 	border: 1px solid #A8A8A8;
 	background: #FFFFFF;
 	margin: 0;
 }
 
-#spika_window #tab_search input[type="text"] {
-	width: 180px;
+#spika_window .tab_search input[type="text"] {
+	width: 75%;
 	border: none;
 	color: #000;
 }
 
-#spika_window #tab_search button {
+#spika_window .tab_search button {
 	background: none;
 	border: none;
 	width: 30px;
@@ -340,6 +368,10 @@
 #spika_window #main_column #main_top span#navigation_open_right {
 	float: right;
 }
+
+/*==============================*/
+/*			Chat View     		*/
+/*==============================*/
 
 #spika_window #main_column #chat_view {
 	background: #FFFFFF;
@@ -467,6 +499,19 @@
     background-color: #599eff;
     text-align: left;
     padding: 3px;
+}
+
+#spika_window #main_column #chat_view ul p {
+	line-height: 25px;
+	vertical-align: middle;
+}
+
+#spika_window #main_column #chat_view ul p i{
+	vertical-align: middle;
+}
+
+#spika_window #main_column #chat_view ul p img{
+	vertical-align: middle;
 }
 
 /*==============================*/
@@ -653,14 +698,94 @@
     display: none;
 }
 
+/*==============================*/
+/*			Edit Room    		*/
+/*==============================*/
 
+#spika_window #room_edit_view{
+    background-color: #efefef;
+    width: 100%;
+    height: 100%
+}
 
+#spika_window .room_editor_top{
+    display: table;
+    width: 100%;
+}
 
+#spika_window #room_info{
+    display: table-row;
+    height: 100px;
+    width: 100%;
+}
 
+#spika_window #room_info img{
+    display: table-cell;
+    width: 100px;
+    height: 100px;
+    padding: 10px;
+    cursor: pointer;
+}
 
+#spika_window #room_info #room_info_detail{
+    display: table-cell;
+    margin: 5px 10px;
+    width: 85%;
+    vertical-align: top;
+    padding: 10px;
+}
 
+#spika_window #room_info_members{
+    width: 100%;
+}
 
+#spika_window #room_info_members p{
+    padding: 0px;
+    margin: 0px;
+}
 
+#spika_window #room_info_members #room_info_allusers{
+    display: block;
+    float: left;
+    width: 45%;
+    padding: 5px 10px;
+    overflow-y: auto;
+    background-color: #E6E6E6;
+    margin: 0px 10px 0px 10px;
+}
 
+#spika_window #room_info_members .tab_search{
+    margin: 5px 0px 0px 0px;
+    padding: 0px;
+   
+}
 
+#spika_window #room_info_members #room_info_members{
+    display: block;
+    float: left;
+    width: 45%;
+    padding: 0px 5px;
+    overflow-y: auto;
+    background-color: #E6E6E6;
+   
+}
+
+#spika_window #room_info_members ul{
+    margin: 5px 0px 0px 0px;
+    padding: 0px;
+    list-style: none;
+}
+
+#spika_window #room_info_members li{
+    padding: 0px 0px 5px 0px;
+}
+
+#spika_window #room_info_members li img{
+    margin-right: 15px;
+}
+
+#spika_window #room_info_members li *{
+    line-height: 30px;
+    vertical-align: middle;
+}
 
