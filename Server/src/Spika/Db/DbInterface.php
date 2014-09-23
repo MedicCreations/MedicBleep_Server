@@ -26,7 +26,7 @@ interface DbInterface
 	
 	public function isPrivateChatAlreadyExist(Application $app, $custom_chat_id);
 	public function isGroupChatAlreadyExist(Application $app, $group_id);
-	public function createChat(Application $app, $name, $type, $group_id, $group_image, $group_image_thumb, $custom_chat_id);
+	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id);
 	public function addChatMembers(Application $app, $chat_id, $members);
 	public function getChatWithID(Application $app, $chat_id);
 	public function getPrivateChatData(Application $app, $chat_id, $user_id);
@@ -56,6 +56,9 @@ interface DbInterface
 	public function getRecentGroupChats(Application $app, $user_id, $offset);
 	public function getCountRecentGroupChats(Application $app, $user_id); 
 	public function getLastMessage(Application $app, $chat_id);
+	
+	public function getCategories(Application $app);
+	public function createCategory(Application $app, $name);
 	
 	
 }

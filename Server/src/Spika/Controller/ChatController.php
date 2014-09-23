@@ -20,7 +20,7 @@ class ChatController extends SpikaBaseController {
 		
 		$controllers = $app ['controllers_factory'];
 		
-		//create group chat
+		//create room chat
 		$controllers->post('/create', function (Request $request) use ($app, $self, $mySql){
 			
 			$paramsAry = $request->request->all();
@@ -28,6 +28,8 @@ class ChatController extends SpikaBaseController {
 			$name = "";
 			$image = DEFAULT_GROUP_IMAGE;
 			$image_thumb = DEFAULT_GROUP_IMAGE;
+			
+			$my_user_id = $app['user']['id'];
 			
 			if (array_key_exists('name', $paramsAry)){
 				$name = $paramsAry['name'];
@@ -44,7 +46,7 @@ class ChatController extends SpikaBaseController {
 			
 			$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 			
-			$chat_id = $mySql->createChat($app, $name, CHAT_USER_GROUP_TYPE, 0, $image, $image_thumb, $custom_chat_id);
+			$chat_id = $mySql->createChat($app, $name, CHAT_ROOM_TYPE, $my_user_id, 0, $image, $image_thumb, $custom_chat_id);
 				
 			$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
 			
@@ -91,7 +93,7 @@ class ChatController extends SpikaBaseController {
 				
 					$custom_chat_id = $self->createChatCustomID($all_members);
 				
-					$chat_id = $mySql->createChat($app, "", CHAT_USER_GROUP_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id);
+					$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id);
 					$mySql->addChatMembers($app, $chat_id, $all_members);
 					$messages = array();
 				
@@ -101,7 +103,12 @@ class ChatController extends SpikaBaseController {
 				
 					$chat_members = $mySql->getChatMembers($app, $chat_id);
 				
-					$chat_name = $self->createChatName($app, $mySql, $chat_members, $users_to_add_ary);
+					if ($chat['name'] != ""){
+						$chat_name = $chat['name'];
+					} else {
+						$chat_name = $self->createChatName($app, $mySql, $chat_members, $users_to_add_ary);
+					}
+					
 				
 					$messages = $mySql->getLastMessages($app, $chat_id);
 				
@@ -111,7 +118,7 @@ class ChatController extends SpikaBaseController {
 				
 				$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 				
-				$chat_id = $mySql->createChat($app, "", CHAT_USER_GROUP_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id);
+				$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id);
 				
 				$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
 				$messages = array();
@@ -126,8 +133,8 @@ class ChatController extends SpikaBaseController {
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK',
 					'chat' => $chat,
-					'total_count' => $total_count,
-					'messages' => $messages);
+					'total_count' => $total_count);
+					// 'messages' => $messages);
 			
 			return $app->json($result, 200);
 			
@@ -164,7 +171,7 @@ class ChatController extends SpikaBaseController {
 		})->before($app['beforeSpikaTokenChecker']);
 		
 		
-		//update chat name or image
+		//update chat 
 		$controllers->post('/update', function (Request $request) use ($app, $self, $mySql){
 			
 			$paramsAry = $request->request->all();
@@ -212,12 +219,37 @@ class ChatController extends SpikaBaseController {
 			
 			$user_id = $app['user']['id'];
 			
-			$values = array('is_deleted' => 1);
+			if (array_key_exists('user_ids', $paramsAry)){
+				
+				$user_ids = $paramsAry['user_ids'];
+				$user_ids_ary = explode(',', $user_ids);
+				
+				foreach ($user_ids_ary as $user_id){
+					$values = array('is_deleted' => 1);
+					$mySql->updateChatMember($app, $chat_id, $user_id, $values);
+				}
+				
+			} else {
+				$values = array('is_deleted' => 1);
+				$mySql->updateChatMember($app, $chat_id, $user_id, $values);
+			}
 			
-			$mySql->updateChatMember($app, $chat_id, $user_id, $values);
 			
+			$chat = $mySql->getChatWithID($app, $chat_id);
+			if ($chat['name'] != ""){
+				$chat_name = $chat['name'];
+			} else {
+				$chat_members = $mySql->getChatMembers($app, $chat_id);
+				$chat_name = $self->createChatName($app, $mySql, $chat_members, array());
+			}
+			
+			$chat['chat_name'] = $chat_name;
+			$chat['chat_id'] = $chat_id;
+			
+
 			$result = array('code' => CODE_SUCCESS,
-					'message' => 'OK');
+					'message' => 'OK',
+					'chat' => $chat);
 				
 			return $app->json($result, 200);
 			

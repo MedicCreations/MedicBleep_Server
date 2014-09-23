@@ -382,11 +382,12 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function createChat(Application $app, $name, $type, $group_id, $group_image, $group_image_thumb, $custom_chat_id){
+	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id){
 		
 		$values = array('custom_chat_id' => $custom_chat_id,
 				'name' => $name, 
 				'type' => $type, 
+				'admin_id' => $my_user_id,
 				'group_id' => $group_id,
 				'image' => $group_image,
 				'image_thumb' => $group_image_thumb,
@@ -466,7 +467,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getChatMembers(Application $app, $chat_id){
 		
-		$sql = "SELECT chat_member.user_id, chat_member.chat_id, user.firstname, user.lastname, user.image, user.image_thumb, user.android_push_token, user.ios_push_token FROM chat_member, user WHERE user.id = chat_member.user_id AND chat_member.chat_id = ? AND chat_member.is_deleted = 0 ";
+		$sql = "SELECT chat_member.user_id, chat_member.chat_id, chat_member.is_deleted, user.firstname, user.lastname, user.image, user.image_thumb, user.android_push_token, user.ios_push_token FROM chat_member, user WHERE user.id = chat_member.user_id AND chat_member.chat_id = ? AND chat_member.is_deleted = 0 ";
 		
 		$result = $app['db']->fetchAll($sql, array($chat_id));
 		
@@ -659,7 +660,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentAllChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image AS image_thumb, chat.modified, chat.type, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id));
 		
@@ -681,7 +682,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentGroupChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image AS image_thumb, chat.modified, chat.type, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND (chat.type = 2 OR chat.type = 3) ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND (chat.type = 2 OR chat.type = 3) ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id));
 		
@@ -703,7 +704,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentPrivateChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image AS image_thumb, chat.modified, chat.type, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1 ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1 ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id));
 		
@@ -730,6 +731,24 @@ class MySqlDb implements DbInterface{
 		$last_message = $app['db']->fetchAssoc($sql, array($chat_id));
 		
 		return $last_message;
+	}
+	
+	
+	public function getCategories(Application $app){
+		
+		$sql = "SELECT * FROM categories";
+		
+		$categories = $app['db']->fetchAssoc($sql);
+		
+		return $categories;
+	}
+	
+	
+	public function createCategory(Application $app, $name){
+		
+		$values = array('name' => $name);
+		
+		$app['db']->insert('categories', $values);
 	}
 	
 	

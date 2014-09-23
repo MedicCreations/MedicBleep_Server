@@ -54,6 +54,19 @@ class MessageController extends SpikaBaseController {
 				$parent_id = $paramsAry['parent_id'];
 			}
 			
+			$chat_data = $mySql->getChatWithID($app, $chat_id);
+			if ($chat_data['is_active'] == 0){
+				$result = array('code' => ER_CHAT_INACTIVE,
+							'message' => 'Chat is inactive');
+				return $app->json($result, 200);
+			}
+			
+			if ($chat_data['is_deleted'] == 1){
+				$result = array('code' => ER_CHAT_INACTIVE,
+							'message' => 'Chat is deleted');
+				return $app->json($result, 200);
+			}
+			
 			$user = $app['user'];
 			$user_id = $user['id'];
 			$user_firstname = $user['firstname'];
@@ -233,6 +246,13 @@ class MessageController extends SpikaBaseController {
 			$paramsAry = $request->query->all();
 				
 			$chat_id = $paramsAry['chat_id'];
+			
+			$chat_data = $mySql->getChatWithID($app, $chat_id);
+			if ($chat_data['is_deleted'] == 1){
+				$result = array('code' => ER_CHAT_INACTIVE,
+							'message' => 'Chat is deleted');
+				return $app->json($result, 200);
+			}
 			
 			if (array_key_exists('last_msg_id', $paramsAry)){
 				$last_msg_id = $paramsAry['last_msg_id'];
