@@ -55,15 +55,16 @@ class MessageController extends SpikaBaseController {
 			}
 			
 			$chat_data = $mySql->getChatWithID($app, $chat_id);
-			if ($chat_data['is_active'] == 0){
-				$result = array('code' => ER_CHAT_INACTIVE,
-							'message' => 'Chat is inactive');
+			
+			if ($chat_data['is_deleted'] == 1){
+				$result = array('code' => ER_CHAT_DELETED,
+							'message' => 'Chat is deleted');
 				return $app->json($result, 200);
 			}
 			
-			if ($chat_data['is_deleted'] == 1){
+			if ($chat_data['is_active'] == 0){
 				$result = array('code' => ER_CHAT_INACTIVE,
-							'message' => 'Chat is deleted');
+							'message' => 'Chat is inactive');
 				return $app->json($result, 200);
 			}
 			
@@ -71,6 +72,15 @@ class MessageController extends SpikaBaseController {
 			$user_id = $user['id'];
 			$user_firstname = $user['firstname'];
 			$user_lastname = $user['lastname'];
+			
+			$is_chat_member = $mySql->isChatMember($app, $user_id, $chat_id);
+			
+			if (!$is_chat_member){
+				$result = array('code' => ER_NOT_CHAT_MEMBER, 
+						'message' => 'Not chat member');
+				
+				return $app->json($result, 200);
+			}
 			
 			// get root id from parent
 			if($parent_id != 0){
@@ -249,7 +259,7 @@ class MessageController extends SpikaBaseController {
 			
 			$chat_data = $mySql->getChatWithID($app, $chat_id);
 			if ($chat_data['is_deleted'] == 1){
-				$result = array('code' => ER_CHAT_INACTIVE,
+				$result = array('code' => ER_CHAT_DELETED,
 							'message' => 'Chat is deleted');
 				return $app->json($result, 200);
 			}
@@ -321,6 +331,15 @@ class MessageController extends SpikaBaseController {
 			$first_msg_id = $paramsAry['first_msg_id'];
 			
 			$my_user_id = $app['user']['id'];
+			
+			$is_chat_member = $mySql->isChatMember($app, $my_user_id, $chat_id);
+			
+			if (!$is_chat_member){
+				$result = array('code' => ER_NOT_CHAT_MEMBER, 
+						'message' => 'Not chat member');
+				
+				return $app->json($result, 200);
+			}
 			
 			$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 			

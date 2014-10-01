@@ -702,6 +702,14 @@
 /*			Edit Room    		*/
 /*==============================*/
 
+#spika_window .user_select li{
+    cursor: pointer;
+}
+
+#spika_window .user_select li:hover{
+    background-color: #dcdcdc;
+}
+
 #spika_window #room_edit_view{
     background-color: #efefef;
     width: 100%;
@@ -719,12 +727,19 @@
     width: 100%;
 }
 
-#spika_window #room_info img{
-    display: table-cell;
-    width: 100px;
-    height: 100px;
-    padding: 10px;
+#spika_window #room_edit_avatarimage{
+    text-align: center;
     cursor: pointer;
+    position: relative;
+    margin: 5px;
+}
+
+#spika_window #room_edit_avatarimage i{
+    position: absolute;
+    left: 45%;
+    top: 45%;
+    color: #666;
+    display:none;
 }
 
 #spika_window #room_info #room_info_detail{
@@ -735,57 +750,72 @@
     padding: 10px;
 }
 
-#spika_window #room_info_members{
-    width: 100%;
-}
-
-#spika_window #room_info_members p{
+#spika_window #room_info_allusers p{
     padding: 0px;
     margin: 0px;
 }
 
-#spika_window #room_info_members #room_info_allusers{
-    display: block;
-    float: left;
-    width: 45%;
+#spika_window #room_info_allusers{   
     padding: 5px 10px;
-    overflow-y: auto;
     background-color: #E6E6E6;
-    margin: 0px 10px 0px 10px;
+    margin: 5px;
 }
 
-#spika_window #room_info_members .tab_search{
+#spika_window #room_info_member p{
+    padding: 0px;
+    margin: 0px;
+}
+
+#spika_window #room_info_member{   
+    padding: 5px 10px;
+    background-color: #E6E6E6;
+    margin: 5px;
+}
+
+#spika_window #room_info_member .user_member{
+    max-height: 50px;
+    overflow-y: auto;
+}
+
+#spika_window #room_info_allusers .user_select{
+    overflow-y: auto;
+}
+
+
+
+#spika_window #room_info_allusers .tab_search{
     margin: 5px 0px 0px 0px;
     padding: 0px;
    
 }
 
-#spika_window #room_info_members #room_info_members{
-    display: block;
-    float: left;
-    width: 45%;
-    padding: 0px 5px;
-    overflow-y: auto;
-    background-color: #E6E6E6;
-   
-}
 
-#spika_window #room_info_members ul{
+#spika_window #room_info_allusers ul{
     margin: 5px 0px 0px 0px;
     padding: 0px;
     list-style: none;
 }
 
-#spika_window #room_info_members li{
-    padding: 0px 0px 5px 0px;
+#spika_window #room_info_allusers li{
+    padding: 5px 5px 5px 0px;
+    margin: 5px 5px 5px 0px;
+    
 }
 
-#spika_window #room_info_members li img{
+#spika_window $room_info_allusers li img{
     margin-right: 15px;
 }
 
-#spika_window #room_info_members li *{
+#spika_window $room_info_allusers li *{
     line-height: 30px;
     vertical-align: middle;
+}
+
+#spika_window #room_info_member .user_member div{
+    float: left;
+    margin: 3px;
+    background-color: #dcdcdc;
+    padding: 3px;
+    cursor: pointer;
 }
 

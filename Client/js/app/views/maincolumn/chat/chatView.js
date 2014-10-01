@@ -75,7 +75,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         });
         
         Backbone.on(EVENT_START_CHAT_BY_CHATDATA, function(chatData) {
-            
+
             if(!_.isNull(chatData.get("chat_id"))){
                 self.startChat(chatData);
             }
@@ -261,7 +261,7 @@ var SPIKA_ChatView = Backbone.View.extend({
     },
     
     startChat : function(chatModel){
-        
+
         var self = this;
         
         this.viewmode = CHATVIEW_LISTMODE;
@@ -272,6 +272,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         mainView.mainColumnView.setCenterColumnTitle(chatModel.get('chat_name'));
         
         this.chatId = chatModel.get('chat_id');
+        
         this.postBoxView.setChatId(this.chatId);
         this.loadPage(true,0);
         this.chatData = chatModel;
@@ -330,8 +331,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             }, 500)();
 
         },function(data){
-            
-            
+
             
         });
         

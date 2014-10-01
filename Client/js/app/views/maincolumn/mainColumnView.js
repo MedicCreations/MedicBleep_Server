@@ -36,6 +36,7 @@ var SPIKA_MainColumnView = Backbone.View.extend({
                 self.showSubContent('group');
                 mainView.mainColumnView.setCenterColumnTitle("New Room");
                 windowManager.showCenterView();
+                self.updateWindowSize();
             });
             
         });

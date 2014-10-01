@@ -139,7 +139,7 @@ class UserController extends SpikaBaseController {
 		})->before($app['beforeSpikaTokenChecker']);
 		
 		
-		//return userId, if doesn't exist, create temp user
+		//create chat with user
 		$controllers->post('/chat/start', function (Request $request) use($app, $self, $mySql) {
 				
 			$paramsAry = $request->request->all();
@@ -172,7 +172,7 @@ class UserController extends SpikaBaseController {
 				
 			} else {
 				//create chat and chat_members
-				$chat_id = $mySql->createChat($app, "", CHAT_USER_TYPE, 0, "", "", $custom_chat_id);
+				$chat_id = $mySql->createChat($app, "", CHAT_USER_TYPE, $my_user_id, 0, "", "", $custom_chat_id);
 				$mySql->addChatMembers($app, $chat_id, $members);
 				$messages = array();
 			}

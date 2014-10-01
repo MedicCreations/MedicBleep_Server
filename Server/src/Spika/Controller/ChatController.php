@@ -35,10 +35,14 @@ class ChatController extends SpikaBaseController {
 				$name = $paramsAry['name'];
 			}
 			if (array_key_exists('image', $paramsAry)){
-				$image = $paramsAry['image'];
+				if ($paramsAry['image'] != ""){
+					$image = $paramsAry['image'];
+				}
 			}
 			if (array_key_exists('image_thumb', $paramsAry)){
-				$image_thumb = $paramsAry['image_thumb'];
+				if ($paramsAry['image_thumb'] != ""){
+					$image_thumb = $paramsAry['image_thumb'];
+				}
 			}
 			
 			$users_to_add = $paramsAry['users_to_add'];
@@ -210,6 +214,54 @@ class ChatController extends SpikaBaseController {
 		})->before($app['beforeSpikaTokenChecker']);
 		
 		
+		//get chat data from push
+		$controllers->get('/start', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->query->all();
+			
+			$chat_id = $paramsAry['chat_id'];
+			
+			$my_user_id = $app['user']['id'];
+			
+			$chat = $mySql->getChatWithID($app, $chat_id);
+			if ($chat['name'] != ""){
+				$chat_name = $chat['name'];
+			} else {
+				$chat_members = $mySql->getChatMembers($app, $chat_id);
+				$chat_name = $self->createChatName($app, $mySql, $chat_members, array());
+			}
+			
+			$chat['chat_name'] = $chat_name;
+			$chat['chat_id'] = $chat_id;
+			
+			$messages = $mySql->getLastMessages($app, $chat_id);
+			$total_messages = $mySql->getCountMessagesForChat($app, $chat_id);
+			
+			$result = array('code' => CODE_SUCCESS, 
+					'message' => 'OK', 
+					'chat' => $chat,
+					'messages' => $messages,
+					'total_count' => $total_messages);
+					
+			if ($chat['type'] == CHAT_USER_TYPE){
+					$data = $mySql->getPrivateChatData($app, $chat_id, $my_user_id);
+					$user = array('id' => $data['user_id'], 
+							'firstname' => $data['user_firstname'],
+							'lastname' => $data['user_lastname'],
+							'image' => $data['image'],
+							'image_thumb' => $data['image_thumb']);
+							
+					$result['user'] = $user;
+				}
+			
+			
+			
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
+		
+		
+		
 		//leave chat
 		$controllers->post('/leave', function (Request $request) use ($app, $self, $mySql){
 				
@@ -235,7 +287,6 @@ class ChatController extends SpikaBaseController {
 			}
 			
 			
-<<<<<<< HEAD
 			$chat = $mySql->getChatWithID($app, $chat_id);
 			if ($chat['name'] != ""){
 				$chat_name = $chat['name'];
@@ -251,10 +302,6 @@ class ChatController extends SpikaBaseController {
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK',
 					'chat' => $chat);
-=======
-			$result = array('code' => CODE_SUCCESS,
-					'message' => 'OK');
->>>>>>> 4012e2aeeb14eee6009ed714605b1ea0cdefb8ea
 				
 			return $app->json($result, 200);
 			

@@ -18,8 +18,8 @@ interface DbInterface
 	public function getUserByID(Application $app, $user_id);
 	public function updateUser(Application $app, $user_id, $values);
 	
-	public function getGroups(Application $app, $user_id, $search, $offset);
-	public function getGroupsCount(Application $app, $user_id, $search);
+	public function getGroups(Application $app, $user_id, $search, $offset, $category);
+	public function getGroupsCount(Application $app, $user_id, $search, $category);
 	public function getGroupMembers(Application $app, $group_id);
 	
 	public function calculateBadge(Application $app, $user_id);
@@ -31,6 +31,7 @@ interface DbInterface
 	public function getChatWithID(Application $app, $chat_id);
 	public function getPrivateChatData(Application $app, $chat_id, $user_id);
 	public function getChatMembers(Application $app, $chat_id);
+	public function getChatMembersAll(Application $app, $chat_id);
 	public function updateChat(Application $app, $chat_id, $values);
 	public function updateChatMember(Application $app, $chat_id, $user_id, $values);
 	public function isChatMember(Application $app, $user_id, $chat_id);

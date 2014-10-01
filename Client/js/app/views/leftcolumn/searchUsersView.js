@@ -70,7 +70,6 @@ var SPIKA_SearchUsersView = Backbone.View.extend({
 			self.currentPage = 0;
 			self.displayUsers = new UserResult([]); 
             var currentText = $(U.sel("#tb_search_user")).val();
-			
             self.searchUsers(currentText);
         });
         
@@ -80,11 +79,9 @@ var SPIKA_SearchUsersView = Backbone.View.extend({
         $(U.sel('#left_column_second')).scroll(function() {
 		
 			 if($(U.sel('#left_column_second')).scrollTop() + $(U.sel('#left_column_second')).height() == $(U.sel('#left_column_second')).prop("scrollHeight")) {
-				
 				var searchText = $(U.sel("#tb_search_user")).val();
 				self.currentPage++;
 				self.searchUsers(searchText);
-				
 			}
 			
 		});

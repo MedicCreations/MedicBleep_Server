@@ -27,8 +27,12 @@ class GroupController extends SpikaBaseController {
 			$paramsAry = $request->query->all();
 			
 			$search = "";
+			$category = 0;
 			if (array_key_exists('search', $paramsAry)){
 				$search = $paramsAry['search'];
+			}
+			if (array_key_exists('category', $paramsAry)){
+				$category = $paramsAry['category'];
 			}
 			$page = 0;
 			if (array_key_exists('page', $paramsAry)){
@@ -38,9 +42,9 @@ class GroupController extends SpikaBaseController {
 			
 			$user_id= $app['user']['id'];
 			
-			$groups = $mySql->getGroups($app, $user_id, $search, $offset);
+			$groups = $mySql->getGroups($app, $user_id, $search, $offset, $category);
 			
-			$groups_count = $mySql->getGroupsCount($app, $user_id, $search);
+			$groups_count = $mySql->getGroupsCount($app, $user_id, $search, $category);
 			
 // 			$groups = $ldap->getGroupsList($app, $search, $username);
 			
@@ -66,7 +70,7 @@ class GroupController extends SpikaBaseController {
 			$group_id = $paramsAry['group_id'];
 			$group_name = $paramsAry['groupname'];
 
-			$user_id = $app['user']['id'];
+			$my_user_id = $app['user']['id'];
 			
 			$chat_name = $group_name;
 			
@@ -79,13 +83,13 @@ class GroupController extends SpikaBaseController {
 				//get messages
 				$chat_id = $result['chat_id'];
 				$messages = $mySql->getLastMessages($app, $chat_id);
-				$mySql->resetUnreadMessagesForMember($app, $chat_id, $user_id);
+				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 				
 				//update seen
 				$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id);
 			} else {
 				//create chat and chat_members
-				$chat_id = $mySql->createChat($app, $chat_name, CHAT_GROUP_TYPE, $group_id, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, "");
+				$chat_id = $mySql->createChat($app, $chat_name, CHAT_GROUP_TYPE, $my_user_id, $group_id, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, "");
 				
 				//get users from ldap
 				//$ldap_user_id_ary = $ldap->getGroupMembers($app, $outside_group_id);
@@ -106,6 +110,8 @@ class GroupController extends SpikaBaseController {
 			}
 				
 			$chat = $self->getChatData($app, $mySql, $chat_id);
+			$chat['chat_name'] = $chat_name;
+			$chat['chat_id'] = $chat_id;
 			
 			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
 			

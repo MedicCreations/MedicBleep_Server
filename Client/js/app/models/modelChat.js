@@ -8,8 +8,11 @@
                                         chat_name: data.chat_name,
                                         group_id: data.group_id,
                                         image: data.image,
-                                        image_thumb: data.imag_thumb});   
-        }            
+                                        image_thumb: data.image_thumb});   
+        }
+
+
+                  
     };
     
     var ModelChat = Backbone.Model.extend({

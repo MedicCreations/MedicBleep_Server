@@ -650,6 +650,35 @@ SpikaClient.prototype.saveProfliePicture = function(userId,fileId,thumbId,succee
 
 };
 
+SpikaClient.prototype.createNewRoom = function(roomName,userList,fileId,thumbId,succeessListener,failedListener)
+{
+    
+    var self = this;
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/chat/create',
+        type: 'POST',
+        data: {name:roomName,users_to_add:userList,image:fileId,image_thumb:thumbId},
+        headers: {"token":this.token}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+
 
 SpikaClient.prototype.test = function()
 {
