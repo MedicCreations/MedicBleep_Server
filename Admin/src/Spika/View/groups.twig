@@ -65,7 +65,6 @@
                             <table class="table table-hover" id="sample-table-1">
 								<thead>
 									<tr>
-										<th class="hidden-xs" width="5%"></th>
 										<th width="70%">{{lang.groups10}}</th>
 										<th class="hidden-xs">{{lang.groups11}}</th>
 										<th></th>
@@ -76,9 +75,6 @@
                                     {% for row in list %}
 
                     				    <tr>
-    										<td class="hidden-xs">
-    										    <img width="40" src="{{FILE_DOWNLOAD_URL}}{{row.image_thumb}}" />
-                                            </td>
     										<td>
     										    <a href="{{ADMIN_ROOT_URL}}/groups/view/{{row.id}}">
     										        {{row.name}}

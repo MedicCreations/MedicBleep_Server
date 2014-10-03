@@ -63,7 +63,9 @@ class LoginController extends BaseController {
             }else{
 
                 return $self->render('login.twig', array(
-                    'error_alert' => $self->lang['loginError']
+                    'error_alert' => $self->lang['loginError'],
+                    'password' => $password,
+                    'username' => $username
                 ));
                 
             }
