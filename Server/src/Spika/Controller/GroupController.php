@@ -27,12 +27,12 @@ class GroupController extends SpikaBaseController {
 			$paramsAry = $request->query->all();
 			
 			$search = "";
-			$category = 0;
+			$category_id = 0;
 			if (array_key_exists('search', $paramsAry)){
 				$search = $paramsAry['search'];
 			}
-			if (array_key_exists('category', $paramsAry)){
-				$category = $paramsAry['category'];
+			if (array_key_exists('category_id', $paramsAry)){
+				$category_id = $paramsAry['category_id'];
 			}
 			$page = 0;
 			if (array_key_exists('page', $paramsAry)){
@@ -42,9 +42,15 @@ class GroupController extends SpikaBaseController {
 			
 			$user_id= $app['user']['id'];
 			
-			$groups = $mySql->getGroups($app, $user_id, $search, $offset, $category);
+			$groups = $mySql->getGroups($app, $user_id, $search, $offset, $category_id);
 			
-			$groups_count = $mySql->getGroupsCount($app, $user_id, $search, $category);
+			if ($page > 0 && count($groups) == 0){
+				$result = array('code' => ER_PAGE_NOT_FOUND, 
+					'message' => 'Page not found');
+				return $app->json($result, 200);
+			}
+			
+			$groups_count = $mySql->getGroupsCount($app, $user_id, $search, $category_id);
 			
 // 			$groups = $ldap->getGroupsList($app, $search, $username);
 			
@@ -89,7 +95,7 @@ class GroupController extends SpikaBaseController {
 				$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id);
 			} else {
 				//create chat and chat_members
-				$chat_id = $mySql->createChat($app, $chat_name, CHAT_GROUP_TYPE, $my_user_id, $group_id, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, "");
+				$chat_id = $mySql->createChat($app, $chat_name, CHAT_GROUP_TYPE, $my_user_id, $group_id, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, "", 0);
 				
 				//get users from ldap
 				//$ldap_user_id_ary = $ldap->getGroupMembers($app, $outside_group_id);
@@ -147,6 +153,12 @@ class GroupController extends SpikaBaseController {
 			$group_members = $mySql->getGroupMembers($app, $group_id);
 			
 			$page_group_members = array_slice($group_members, $offset, USERS_PAGE_SIZE);
+			
+			if ($page > 0 && count($page_group_members) == 0){
+				$result = array('code' => ER_PAGE_NOT_FOUND, 
+					'message' => 'Page not found');
+				return $app->json($result, 200);
+			}
 				
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK',

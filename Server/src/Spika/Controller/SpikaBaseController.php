@@ -228,5 +228,32 @@ class SpikaBaseController implements ControllerProviderInterface
     	
     	return $chat_seen;
     } 
+	
+	public function mergeGroupChatUsers(Application $app, $mySql, $group_id, $chat_id){
+	
+		$group_members_ids = array();
+		$chat_members_ids = array();
+	
+		$group_members = $mySql->getGroupMembers($app, $group_id);
+		foreach($group_members as $member){
+			array_push($group_members_ids, $member['id']);
+		}
+		
+		$chat_members = $mySql->getChatMembers($app, $chat_id);
+		foreach($chat_members as $member){
+			array_push($chat_members_ids, $member['user_id']);
+		}
+		
+		$users_to_add = array_diff($group_members_ids, $chat_members_ids);
+		$mySql->addChatMembers($app, $chat_id, $users_to_add);
+		
+		$users_to_delete = array_diff($chat_members_ids, $group_members_ids);
+		foreach ($users_to_delete as $user_id){
+					$values = array('is_deleted' => 1);
+					$mySql->updateChatMember($app, $chat_id, $user_id, $values);
+				}
+	}
+	
+	
     		
 }

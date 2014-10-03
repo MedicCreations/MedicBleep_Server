@@ -276,6 +276,16 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function getGroupMembersUserIDs(Application $app, $group_id){
+		
+		$sql = "SELECT user.id FROM group_member, user WHERE user.id = group_member.user_id AND group_member.group_id = ?";
+		
+		$result = $app['db']->fetchAll($sql, array($group_id));
+		
+		return $result;
+		
+	}
+	
 	public function getOrCreateUserWithOutsideID(Application $app, $outside_id, $firstname, $lastname){
 		
 		$sql = "SELECT * FROM user WHERE outside_id = ? ";
@@ -390,7 +400,7 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id){
+	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id, $category_id){
 		
 		$values = array('custom_chat_id' => $custom_chat_id,
 				'name' => $name, 
@@ -399,6 +409,7 @@ class MySqlDb implements DbInterface{
 				'group_id' => $group_id,
 				'image' => $group_image,
 				'image_thumb' => $group_image_thumb,
+				'category_id' => $category_id,
 				'created' => time(), 
 				'modified' => time()
 				);
@@ -486,6 +497,16 @@ class MySqlDb implements DbInterface{
 		
 	}
 	
+	
+	public function getChatMembersUserIDs(Application $app, $chat_id){
+		
+		$sql = "SELECT chat_member.user_id FROM chat_member WHERE chat_member.chat_id = ? AND chat_member.is_deleted = 0 ";
+		
+		$result = $app['db']->fetchAll($sql, array($chat_id));
+		
+		return $result;
+		
+	}
 	
 	public function getChatMembersAll(Application $app, $chat_id){
 		
@@ -764,7 +785,7 @@ class MySqlDb implements DbInterface{
 		
 		$sql = "SELECT * FROM categories";
 		
-		$categories = $app['db']->fetchAssoc($sql);
+		$categories = $app['db']->fetchAll($sql);
 		
 		return $categories;
 	}

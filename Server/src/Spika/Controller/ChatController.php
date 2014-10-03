@@ -28,6 +28,7 @@ class ChatController extends SpikaBaseController {
 			$name = "";
 			$image = DEFAULT_GROUP_IMAGE;
 			$image_thumb = DEFAULT_GROUP_IMAGE;
+			$category_id = 0;
 			
 			$my_user_id = $app['user']['id'];
 			
@@ -45,12 +46,16 @@ class ChatController extends SpikaBaseController {
 				}
 			}
 			
+			if (array_key_exists('category_id', $paramsAry)){
+				$category_id = $paramsAry['category_id'];
+			}
+			
 			$users_to_add = $paramsAry['users_to_add'];
 			$users_to_add_ary = explode(',', $users_to_add);
 			
 			$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 			
-			$chat_id = $mySql->createChat($app, $name, CHAT_ROOM_TYPE, $my_user_id, 0, $image, $image_thumb, $custom_chat_id);
+			$chat_id = $mySql->createChat($app, $name, CHAT_ROOM_TYPE, $my_user_id, 0, $image, $image_thumb, $custom_chat_id, $category_id);
 				
 			$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
 			
@@ -97,7 +102,7 @@ class ChatController extends SpikaBaseController {
 				
 					$custom_chat_id = $self->createChatCustomID($all_members);
 				
-					$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id);
+					$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id, 0);
 					$mySql->addChatMembers($app, $chat_id, $all_members);
 					$messages = array();
 				
@@ -122,7 +127,7 @@ class ChatController extends SpikaBaseController {
 				
 				$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 				
-				$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id);
+				$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id, 0);
 				
 				$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
 				$messages = array();
@@ -164,6 +169,12 @@ class ChatController extends SpikaBaseController {
 			
 			$page_members = array_slice($members, $offset, USERS_PAGE_SIZE);
 			
+			if ($page > 0 && count($page_members) == 0){
+				$result = array('code' => ER_PAGE_NOT_FOUND, 
+					'message' => 'Page not found');
+				return $app->json($result, 200);
+			}
+			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK',
 					'page' => $page, 
@@ -181,6 +192,21 @@ class ChatController extends SpikaBaseController {
 			$paramsAry = $request->request->all();
 			
 			$chat_id = $paramsAry['chat_id'];
+			
+			$my_user_id = $app['user']['id'];
+			
+			$chat = $mySql->getChatWithID($app, $chat_id);
+			
+			$admin_id = $chat['admin_id'];
+			
+			if ($admin_id != $my_user_id && array_key_exists('is_deleted', $paramsAry)){
+			
+				$result = array('code' => ER_NOT_GROUP_ADMIN, 
+					'message' => 'You are not a group admin');
+			
+				return $app->json($result, 200);
+			
+			}
 			
 			unset($paramsAry['chat_id']);
 			
@@ -229,6 +255,10 @@ class ChatController extends SpikaBaseController {
 			} else {
 				$chat_members = $mySql->getChatMembers($app, $chat_id);
 				$chat_name = $self->createChatName($app, $mySql, $chat_members, array());
+			}
+			
+			if ($chat['group_id'] > 0){
+				$self->mergeGroupChatUsers($app, $mySql, $chat_data['group_id'], $chat_id);
 			}
 			
 			$chat['chat_name'] = $chat_name;

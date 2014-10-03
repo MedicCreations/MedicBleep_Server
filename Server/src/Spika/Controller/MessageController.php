@@ -195,7 +195,9 @@ class MessageController extends SpikaBaseController {
 							'chat_name' => $chat_name, 
 							'firstname' => $user_firstname,
 							'chat_thumb' => $chat_thumb,
-							'chat_type' => $chat_type
+							'chat_type' => $chat_type,
+							'is_active' => $chat['is_active'],
+							'admin_id' => $chat['admin_id']
 							)
 			);
 				
@@ -262,6 +264,10 @@ class MessageController extends SpikaBaseController {
 				$result = array('code' => ER_CHAT_DELETED,
 							'message' => 'Chat is deleted');
 				return $app->json($result, 200);
+			}
+			
+			if ($chat_data['group_id'] > 0){
+				$self->mergeGroupChatUsers($app, $mySql, $chat_data['group_id'], $chat_id);
 			}
 			
 			if (array_key_exists('last_msg_id', $paramsAry)){

@@ -80,6 +80,13 @@ class LobbyController extends SpikaBaseController {
 				case LOBBY_USERS_TYPE:
 					
 					$recent_users_chats = $mySql->getRecentPrivateChats($app, $user_id, $offset);
+					
+					if ($page > 0 && count($recent_users_chats) == 0){
+						$result = array('code' => ER_PAGE_NOT_FOUND, 
+							'message' => 'Page not found');
+						return $app->json($result, 200);
+					}
+					
 					$recent_users_count = $mySql->getCountRecentPrivateChats($app, $user_id);
 					
 					foreach ($recent_users_chats as &$chat){
@@ -102,6 +109,13 @@ class LobbyController extends SpikaBaseController {
 				case LOBBY_GROUPS_TYPE:
 					
 					$recent_groups_chats = $mySql->getRecentGroupChats($app, $user_id, $offset);
+					
+					if ($page > 0 && count($recent_groups_chats) == 0){
+						$result = array('code' => ER_PAGE_NOT_FOUND, 
+							'message' => 'Page not found');
+						return $app->json($result, 200);
+					}
+					
 					$recent_groups_count = $mySql->getCountRecentGroupChats($app, $user_id);
 					
 					foreach ($recent_groups_chats as &$chat){
@@ -123,6 +137,13 @@ class LobbyController extends SpikaBaseController {
 				case LOBBY_ALL_TOGETHER_TYPE:
 					
 					$recent_all_chats = $mySql->getRecentAllChats($app, $user_id, $offset);
+					
+					if ($page > 0 && count($recent_all_chats) == 0){
+						$result = array('code' => ER_PAGE_NOT_FOUND, 
+							'message' => 'Page not found');
+						return $app->json($result, 200);
+					}
+					
 					$recent_all_chats_count = $mySql->getCountRecentAllChats($app, $user_id);
 					
 					foreach ($recent_all_chats as &$chat){

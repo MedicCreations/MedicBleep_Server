@@ -93,6 +93,13 @@ class UserController extends SpikaBaseController {
 			$offset = $page * USERS_PAGE_SIZE;
 			
 			$users = $mySql->getUsersNotMe($app, $my_user_id, $search, $offset);
+			
+			if ($page > 0 && count($users) == 0){
+				$result = array('code' => ER_PAGE_NOT_FOUND, 
+					'message' => 'Page not found');
+				return $app->json($result, 200);
+			}
+			
 			$users_count = $mySql->getUsersCountNotMe($app, $my_user_id, $search);
 			
 			if ($chat_id != ""){
@@ -108,24 +115,6 @@ class UserController extends SpikaBaseController {
 					}
 				}
 			}
-			
-// 			$outside_id = $app['user']['outside_id'];
-// 			$users = $ldap->getUsersList($app, $search, $outside_id);
-			
-// 			$page_users = array_slice($users, $offset, USERS_PAGE_SIZE);
-			
-// 			$mutual_users = $mySql->getAllUsersWithOutsideId($app, $page_users);
-			
-// 			foreach ($mutual_users as $mutual){
-// 				$outside_id = $mutual['outside_id'];
-// 				foreach ($page_users as &$user){
-// 					if ($user['id'] == $outside_id){
-// 						$user['image'] = $mutual['image'];
-// 						$user['image_thumb'] = $mutual['image_thumb'];
-// 						break;
-// 					}
-// 				}
-// 			}
 			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK',
@@ -172,7 +161,7 @@ class UserController extends SpikaBaseController {
 				
 			} else {
 				//create chat and chat_members
-				$chat_id = $mySql->createChat($app, "", CHAT_USER_TYPE, $my_user_id, 0, "", "", $custom_chat_id);
+				$chat_id = $mySql->createChat($app, "", CHAT_USER_TYPE, $my_user_id, 0, "", "", $custom_chat_id, 0);
 				$mySql->addChatMembers($app, $chat_id, $members);
 				$messages = array();
 			}
@@ -284,6 +273,9 @@ class UserController extends SpikaBaseController {
 			$user_id = $paramsAry['user_id'];
 		
 			$user = $mySql->getUserByID($app, $user_id);
+			
+			unset($user['password']);
+			
 			$details = json_decode($user['details'],true);
 			$user['details'] = $details;
 				
@@ -318,23 +310,7 @@ class UserController extends SpikaBaseController {
 		
 		$controllers->get('test', function (Request $request) use ($app, $self, $mySql, $ldap){
 			
-			for($i = 0; $i<200; $i++){
-				$firstname = "";
-				$index = 'abcdefghijklmnopqrstuvwxyz';
-				for ($j = 0; $j < 5; $j++) {
-					$firstname .= $index[rand(0, strlen($index) - 1)];
-				}
-				
-				$lastname = $i;
-				
-				$values = array('firstname' => $firstname,
-						'lastname' => $lastname,
-						'created' => time(),
-						'modified' => time());
-						
-				$app['db']->insert('user', $values);
-				
-			}
+			$self->mergeGroupChatUsers($app, $mySql, 8, 69);
 			
 			$result = "OK";
 			return $app->json($result, 200);

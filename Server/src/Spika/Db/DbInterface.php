@@ -21,16 +21,18 @@ interface DbInterface
 	public function getGroups(Application $app, $user_id, $search, $offset, $category);
 	public function getGroupsCount(Application $app, $user_id, $search, $category);
 	public function getGroupMembers(Application $app, $group_id);
+	public function getGroupMembersUserIDs(Application $app, $group_id);
 	
 	public function calculateBadge(Application $app, $user_id);
 	
 	public function isPrivateChatAlreadyExist(Application $app, $custom_chat_id);
 	public function isGroupChatAlreadyExist(Application $app, $group_id);
-	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id);
+	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id, $category_id);
 	public function addChatMembers(Application $app, $chat_id, $members);
 	public function getChatWithID(Application $app, $chat_id);
 	public function getPrivateChatData(Application $app, $chat_id, $user_id);
 	public function getChatMembers(Application $app, $chat_id);
+	public function getChatMembersUserIDs(Application $app, $chat_id);
 	public function getChatMembersAll(Application $app, $chat_id);
 	public function updateChat(Application $app, $chat_id, $values);
 	public function updateChatMember(Application $app, $chat_id, $user_id, $values);
