@@ -116,12 +116,19 @@ class UserController extends SpikaBaseController {
 				}
 			}
 			
+			$newUserAry = array();
+			
+			foreach($users as $user){
+			    unset($user['details']);
+			    $newUserAry[] = $user;   
+			}
+			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK',
 					'page' => $page,
 					'items_per_page' => USERS_PAGE_SIZE,
 					'total_count' => $users_count,
-					'users' => $users);
+					'users' => $newUserAry);
 			
 			return $app->json($result, 200);
 			

@@ -63,5 +63,8 @@ interface DbInterface
 	public function getCategories(Application $app);
 	public function createCategory(Application $app, $name);
 	
+	public function getRooms(Application $app, $user_id, $search, $offset, $category_id);
+	public function getRoomsCount($app, $user_id, $search, $category_id);
+	
 	
 }

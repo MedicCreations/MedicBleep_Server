@@ -185,9 +185,16 @@ class MySqlDb implements DbInterface{
 		
 		$sql = $sql . " ORDER BY user.firstname,user.id LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
 		
+		$resultFormated = array();
 		$result = $app['db']->fetchAll($sql, array($my_user_id));
 		
-		return $result;
+		foreach($result as $row){
+            if(empty($row['details']))
+                $row['details'] = array();
+                
+    		$resultFormated[] = $row;
+		}
+		return $resultFormated;
 		
 	}
 	
@@ -796,6 +803,47 @@ class MySqlDb implements DbInterface{
 		$values = array('name' => $name);
 		
 		$app['db']->insert('categories', $values);
+	}
+	
+	
+	public function getRooms(Application $app, $user_id, $search, $offset, $category_id){
+	
+		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 ";
+		
+		if ($search != ""){
+			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
+		}
+		
+		if ($category_id != 0){
+			$sql = $sql . " AND chat.category_id = " . $category_id;
+		}
+		
+		$sql = $sql . " ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		
+		$result = $app['db']->fetchAll($sql, array($user_id));
+		
+		return $result;
+	
+	}
+	
+	public function getRoomsCount($app, $user_id, $search, $category_id){
+	
+		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 ";
+		
+		if ($search != ""){
+			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
+		}
+		
+		if ($category_id != 0){
+			$sql = $sql . " AND chat.category_id = " . $category_id;
+		}
+		
+		$sql = $sql . " ORDER BY chat.modified DESC";
+		
+		$result = $app['db']->executeQuery($sql, array($user_id))->fetch();
+		
+		return $result["COUNT(*)"];
+	
 	}
 	
 	
