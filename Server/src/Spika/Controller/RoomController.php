@@ -114,6 +114,85 @@ class RoomController extends SpikaBaseController {
 			
 		})->before($app['beforeSpikaTokenChecker']);
 		
+		
+		//search users and groups
+		$controllers->get('/search/all', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->query->all();
+			
+			$search = "";
+			
+			if (array_key_exists('search', $paramsAry)){
+				$search = $paramsAry['search'];
+			}
+			
+			$page = 0;
+			if (array_key_exists('page', $paramsAry)){
+				$page = $paramsAry['page'];
+			}
+			$offset = $page * ROOMS_PAGE_SIZE;
+			
+			$user_id= $app['user']['id'];
+			
+			$search = $mySql->getSearchResult($app, $search);
+			
+			$search_slice = array_slice($result, $offset, ROOMS_PAGE_SIZE);
+			
+			if ($page > 0 && count($search) == 0){
+				$result = array('code' => ER_PAGE_NOT_FOUND, 
+					'message' => 'Page not found');
+				return $app->json($result, 200);
+			}
+			
+			$search_count = count($search);
+			
+			$result = array('code' => CODE_SUCCESS, 
+					'message' => 'OK',
+					'page' => $page,
+					'items_per_page' => ROOMS_PAGE_SIZE,
+					'total_count' => $search_count,
+					'search_result' => $search_slice);
+			
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
+		
+		
+		//return all user_ids
+		$controllers->get('/add/users', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->query->all();
+			
+			$users = array();
+			
+			$user_ids = "";
+			if (array_key_exists('user_ids', $paramsAry)){
+				$user_ids = $paramsAry['user_ids'];
+			}
+			
+			$group_ids = "";
+			if (array_key_exists('group_ids', $paramsAry)){
+				$group_ids = $paramsAry['group_ids'];
+			}
+			
+			//get users for room
+			$users = $mySql->getUsersForRoom($app, $user_ids);
+			
+			//get group members for room
+			$groups = $mySql->getGroupMembersForRoom($app, $group_ids);
+			
+			$result = array_merge($users, $groups);
+			$result = array_map("unserialize", array_unique(array_map("serialize", $result)));
+			
+			$result = array('code' => CODE_SUCCESS, 
+					'message' => 'OK',
+					'users' => $result);
+			
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
+		
+		
 		return $controllers;
 	}
 	

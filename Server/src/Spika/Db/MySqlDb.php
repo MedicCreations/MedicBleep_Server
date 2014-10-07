@@ -826,7 +826,7 @@ class MySqlDb implements DbInterface{
 	
 	}
 	
-	public function getRoomsCount($app, $user_id, $search, $category_id){
+	public function getRoomsCount(Application $app, $user_id, $search, $category_id){
 	
 		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 ";
 		
@@ -844,6 +844,58 @@ class MySqlDb implements DbInterface{
 		
 		return $result["COUNT(*)"];
 	
+	}
+	
+	
+	public function getSearchResult(Application $app, $search){
+		
+		$sql = "SELECT user.id, CONCAT (user.firstname, user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user";
+		if ($search != ""){
+			$sql = $sql . " WHERE CONCAT (user.firstname, user.lastname) LIKE '" . $search . "%'";
+		}
+		
+		$users = $app['db']->fetchAll($sql);
+		
+		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups";
+		if ($search != ""){
+			$sql = $sql . " WHERE groups.name LIKE '" . $search . "%'";
+		}
+		$groups = $app['db']->fetchAll($sql);
+		
+		$result = array_merge($groups,$users);
+		
+		usort(
+			$result,
+			function ($a, $b) {
+				if ($a['name'] == $b['name']) {
+					return 0;
+				}
+				return ($a['name'] < $b['name']) ? -1 : 1;
+			}
+		);
+		
+		return $result;
+	}
+	
+	
+	public function getUsersForRoom(Application $app, $user_ids){
+	
+		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb FROM user WHERE user.id IN (" . $user_ids . ")";
+		
+		$users = $app['db']->fetchAll($sql);
+	
+		return $users;
+		
+	}
+	
+	
+	public function getGroupMembersForRoom(Application $app, $group_ids){
+	
+		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb FROM group_member, user WHERE group_member.user_id = user.id AND group_member.group_id IN (" . $group_ids . ")";
+	
+		$groups = $app['db']->fetchAll($sql);
+	
+		return $groups;
 	}
 	
 	

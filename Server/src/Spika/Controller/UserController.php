@@ -315,9 +315,34 @@ class UserController extends SpikaBaseController {
 		})->before($app['beforeSpikaTokenChecker']);
 		
 		
+		$controllers->get('/information', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->query->all();
+			
+			$result = array('code' => CODE_SUCCESS,
+						'message' => 'OK',
+						'url' => INFORMATION_URL);
+			return $app->json($result, 200);
+			
+		});
+		
+		
 		$controllers->get('test', function (Request $request) use ($app, $self, $mySql, $ldap){
 			
-			$self->mergeGroupChatUsers($app, $mySql, 8, 69);
+			$paramsAry = $request->query->all();
+			
+			$search = "";
+			if (array_key_exists('search', $paramsAry)){
+				$search = $paramsAry['search'];
+			}
+			$page = 0;
+			if (array_key_exists('page', $paramsAry)){
+				$page = $paramsAry['page'];
+			}
+			
+			$offset = $page * USERS_PAGE_SIZE;
+			
+			$mySql->getSearchResult($app, $search, $offset);
 			
 			$result = "OK";
 			return $app->json($result, 200);
