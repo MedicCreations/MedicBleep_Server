@@ -1,0 +1,29 @@
+
+body{
+    overflow: hidden;
+}
+#login dl dd input[type="text"],
+#login dl dd input[type="password"] {
+	border: 1px solid #000000;
+	width: 100%;
+	font-size: 1.4em;
+	margin-bottom: 10px;
+}
+
+#alert_box #alert_content {
+	color: #000;
+}
+
+#tab_menu li{
+    cursor: pointer;
+}
+
+#tab_menu li:hover{
+    background-color: #fff;
+}
+
+.scrollable{
+    height: 100px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}

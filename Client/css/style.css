@@ -1,0 +1,579 @@
+/* Safari Hack*/
+/*@media screen and (-webkit-min-device-pixel-ratio:0){
+	# {
+		
+	}
+}*/
+/*IE6 Hack*/
+/**html #{
+	
+}*/
+/*IE7 Hack*/
+/**:first-child+html # {
+	
+}*/
+/*IE8 Hack*/
+/*html>/**//*body p {
+        color /*\**//*: blue\9;
+		font-size: 20px\9;
+}*/
+
+
+/*==============================*/
+/*			general				*/
+/*==============================*/
+*{
+	margin: 0;
+	padding: 0;
+	font-size: 100%;
+}
+
+ul {
+	list-style: none;
+}
+
+img{
+	border: 0;
+	vertical-align: bottom;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	font-size: 100%;
+	font-weight: normal;
+}
+
+a {
+	color: #4BA4DF;
+}
+
+html {
+	height: 100%;
+}
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 0.75em;
+	line-height: 1.5;
+	text-align: center;
+	color: #222222;
+}
+
+form {
+	border: none;
+}
+
+.invisible {
+	display: none;
+}
+
+.clear {
+	clear: both;
+}
+
+/*------------------------------*/
+/*           header				*/
+/*------------------------------*/
+
+/*------------------------------*/
+/*        END   header			*/
+/*------------------------------*/
+
+
+/*------------------------------*/
+/*      	 	body			*/
+/*------------------------------*/
+
+/*- - - - - - - - - - - - - - - */
+/*			main column			*/
+/*- - - - - - - - - - - - - - - */
+
+
+/*- - - - - - - - - - - - - - - */
+/*		END 	main column		*/
+/*- - - - - - - - - - - - - - - */
+
+
+/*- - - - - - - - - - - - - - - */
+/*			sub column			*/
+/*- - - - - - - - - - - - - - - */
+
+/*- - - - - - - - - - - - - - - */
+/*		END	sub column			*/
+/*- - - - - - - - - - - - - - - */
+
+/*------------------------------*/
+/*      END	 	body			*/
+/*------------------------------*/
+
+/*------------------------------*/
+/*      	 	footer			*/
+/*------------------------------*/
+
+
+/*------------------------------*/
+/*      END	 	footer			*/
+/*------------------------------*/
+
+
+/*==============================*/
+/*			END general			*/
+/*==============================*/
+
+/*==============================*/
+/*				Loading			*/
+/*==============================*/
+body#loading,
+body#login {
+	background: #4BA4DF;
+	color: #FFFFFF;
+	height: 100%;
+	position: relative;
+}
+
+#loading section {
+	width: 100%;
+	position: absolute;
+	top: 50%;
+	margin-top: -40px;
+}
+
+#loading p {
+	padding-bottom: 20px;
+}
+
+#loading h1 {
+	font-size: 2.0em;
+}
+
+/*==============================*/
+/*		END		Loading			*/
+/*==============================*/
+/*==============================*/
+/*				Login			*/
+/*==============================*/
+#login header {
+	font-size: 2.6em;
+	padding-top: 100px;
+}
+
+#login nav,
+#login article {
+	width: 450px;
+	margin: 0 auto;
+	margin-top: 30px;
+	padding: 15px 30px;
+	color: #000000;
+	text-align: left;
+	font-size: 1.4em;
+	background-color: #F8F8F8;
+}
+
+#login nav {
+	color: #F76861;
+}
+
+#login dl dd input[type="text"] {
+	border: 1px solid #000000;
+	width: 100%;
+	font-size: 1.2em;
+	margin-bottom: 10px;
+	padding: 5px 0;
+}
+
+#login p {
+	text-align: right;
+}
+
+#login p input[type="button"] {
+	background-color: #474747;
+	border: none;
+	color: #FFFFFF;
+	padding: 5px 10px;
+}
+
+/*==============================*/
+/*		END		Login			*/
+/*==============================*/
+/*==============================*/
+/*				Chat			*/
+/*==============================*/
+body#chat {
+	height: 100%;
+	position: relative;
+	min-width: 1024px;
+}
+
+#chat header {
+	position: absolute;
+	width: 100%;
+	height: 42px;
+	line-height: 42px;
+	top: 0px;
+	z-index: 100;
+	font-size: 1.8em;
+	background: #F8F8F8;
+	border-bottom: 1px solid #DFDFDF;
+}
+
+#chat img.icon1 {
+	width: 48px;
+	height: 48px;
+	border: 2px solid #DFDFDF;
+	-webkit-border-radius: 24px;
+	-moz-border-radius: 24px;
+	border-radius: 24px;
+}
+/*------------------------------*/
+/*       	navigation			*/
+/*------------------------------*/
+#chat nav {
+	position: absolute;
+	width: 324px;
+	height: 100%;
+	background: #F8F8F8;
+	border-right: 1px solid #DFDFDF;
+}
+
+#chat nav #tab_menu {
+	display: table;
+	margin-top: 43px;
+	width: 100%;
+}
+#chat nav #tab_menu ul {
+	display: table-row;
+}
+#chat nav #tab_menu ul li {
+	display: table-cell;
+	width: 33%;
+	padding: 5px 0;
+	color: #4BA4DF;
+	border-right: 1px solid #DFDFDF;
+	border-bottom: 4px solid #DFDFDF;
+}
+#chat nav #tab_menu ul li:last-child {
+	border-right: none;
+}
+#chat nav #tab_menu ul li.selected {
+	border-bottom: 4px solid #4BA4DF;
+}
+
+#chat nav #tab_menu ul li a {
+	color: #4BA4DF;
+	display: block;
+}
+
+#chat nav .menu_search {
+	padding: 10px 10px;
+	text-align: left;
+	background: #FFFFFF;
+}
+
+#chat nav .menu_search input[type="text"] {
+	width: 273px;
+	font-size: 1.6em;
+	border: none;
+}
+
+#chat nav .menu_search a {
+	color: #DFDFDF;
+}
+
+#chat nav ul#menu_list {
+	display: table;
+	border-collapse: collapse;
+	width: 100%;
+	margin-bottom: 48px;
+	border-top: 1px solid #E3E3E3;
+}
+#chat nav ul#menu_list li {
+	display: table-row;
+	border-bottom: 1px solid #E3E3E3;
+}
+#chat nav ul#menu_list li .cell {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: left;
+	padding: 5px 0;
+}
+#chat nav ul#menu_list li .cell.cell_2 {
+	line-height: 1.2em;
+}
+#chat nav ul#menu_list li .cell.cell_2 .name {
+	font-size: 1.4em;
+}
+
+#chat nav ul#menu_list li .cell.cell_1 {
+	width: 62px;
+	text-align: center;
+}
+#chat nav ul#menu_list li .cell.cell_3 {
+	width: 40px;
+	text-align: center;
+	color: #4BA4DF;
+}
+
+#chat nav ul#menu_list img {
+	vertical-align: middle;
+}
+
+#chat nav #nav_bottom {
+	height: 48px;
+	line-height: 48px;
+	width: 325px;
+	position: fixed;
+	left: 0;
+	bottom:0;
+	z-index: 100;
+	color: #FFFFFF;
+	background: #4BA4DF;
+}
+
+#chat nav #nav_bottom a {
+	color: #FFFFFF;
+}
+/*------------------------------*/
+/*   END    	navigation		*/
+/*------------------------------*/
+/*------------------------------*/
+/*   	    	footer			*/
+/*------------------------------*/
+footer {
+	position: fixed;
+	width: 100%;
+	height: 48px;
+	bottom: 0;
+	left: 0;
+	z-index: 50;
+	background: #FFFFFF;
+}
+
+footer #mess_type {
+	margin-left: 325px;
+}
+
+footer #mess_type  ul {
+	display: table;
+	width: 100%;
+	height: 48px;
+	border-top: 2px solid #DFDFDF;
+}
+
+footer #mess_type ul li {
+	display: table-cell;
+	text-align: left;
+	height: 48px;
+}
+
+footer #mess_type ul li.small {
+	width: 50px;
+	line-height: 48px;
+	text-align: center;
+}
+footer #mess_type ul li a  {
+	color: #000000;
+	display: block;
+	position: relative;
+	top: -5px;
+}
+
+footer #mess_type ul li textarea {
+	border: none;
+	width: 100%;
+	font-size: 1.2em;
+	height: 2.0em;
+	margin-top: 20px;
+}
+
+footer #mess_type ul li textarea.default{
+	color: #444444;
+	font-style: italic;
+}
+
+/*------------------------------*/
+/*   END    	footer			*/
+/*------------------------------*/
+#chat article {
+	padding-top: 43px;
+	margin-left: 325px;
+	margin-bottom: 48px;
+}
+
+#chat article section {
+	padding: 20px;
+	text-align: left;
+	position: relative;
+}
+
+#chat article section .icon {
+	float: left;
+	width: 42px;
+}
+
+#chat article section h2,
+#chat article section .text {
+	padding-left: 70px;
+}
+#chat article section h2 {
+	font-size: 1.4em;
+}
+
+#chat article section .text {
+	text-align: justify;
+}
+#chat article section .text img {
+	margin-right: 20px;
+}
+#chat article section .text input[type="button"].download {
+	border: none;
+	background: #4BA4DF;
+	color: #FFFFFF;
+	font-size: 1.2em;
+	padding:  12px 30px;
+}
+#chat article section .time_stamp {
+	clear: both;
+	text-align: right;
+	line-height: 1.4em;
+}
+
+#chat article section .replay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	text-align: right;
+	background: rgb(255,255,255);
+	background: rgba(255,255,255,0.5);
+}
+
+#chat article section .replay p {
+	display: inline-block;
+	text-align: center;
+	padding: 20px;
+	position: relative;
+	top: 10px;
+	right: 20px;
+}
+
+#chat article section .replay a {
+	color: #000000;
+	text-decoration: none;
+}
+/*------------------------------*/
+/*   	 	  Profile 			*/
+/*------------------------------*/
+#user_profile {
+	position: fixed;
+	z-index: 100;
+	width: 275px;
+	height: 100%;
+	top: 0;
+	right:0;
+	background: #2C2D32;
+}
+
+#user_profile img {
+	width: 150px;
+	height: 150px;
+	border: 2px solid #DFDFDF;
+	-webkit-border-radius: 75px;
+	-moz-border-radius: 75px;
+	border-radius: 75px;
+	margin-top: 30px;
+}
+
+#user_profile dl {
+	margin: 0 24px;
+	text-align: left;
+	color: #FFFFFF;
+	margin-top: 20px;
+}
+
+#user_profile dl dt {
+	font-size: 1.4em;
+	padding: 5px 0;
+}
+
+#user_profile p {
+	text-align: right;
+	padding: 10px 24px;
+}
+
+#user_profile p a {
+	display: inline-block;
+	background: #F8F8F8;
+	color: #2C2D32;
+	padding: 5px 10px;
+	text-decoration: none;
+	border: 1px solid #B4B4B6;
+}
+/*------------------------------*/
+/*   END	   Profile 			*/
+/*------------------------------*/
+/*------------------------------*/
+/*   	   Alert view 			*/
+/*------------------------------*/
+#dialog_view {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background: rgb(0,0,0);
+	background: rgba(0,0,0,0.5);
+	z-index: 200;
+}
+
+#dialog_view #alert_box {
+	width: 400px;
+	position: absolute;
+	left: 50%;
+	top: 100px;
+	margin-left: -200px;
+	background: #FFFFFF;
+}
+
+#alert_box #alert_title {
+	position: relative;
+	background: #2E2F33;
+	color: #FFFFFF;
+	font-size: 1.4em;
+	padding: 5px 10px;
+}
+
+#alert_box #alert_title a {
+	display: block;
+	position: absolute;
+	top: 0;
+	right:5px;
+	color: #444444;
+}
+
+#alert_box #alert_content {
+	text-align: left;
+	padding: 10px;
+}
+
+#alert_box #alert_bottom {
+	background: #F8F8F8;
+	padding: 7px 0;
+	text-align: right;
+}
+
+#alert_box #alert_bottom a {
+	display: inline-block;
+	width: 108px;
+	padding: 8px 0;
+	margin: 0 10px;
+	background: #4BA4DF;
+	color: #FFFFFF;
+	text-align: center;
+	text-decoration: none;
+}
+/*------------------------------*/
+/*   END	   Alert view 		*/
+/*------------------------------*/
+/*==============================*/
+/*		END		Chat			*/
+/*==============================*/

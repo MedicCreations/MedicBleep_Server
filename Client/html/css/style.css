@@ -1,0 +1,308 @@
+/* Safari Hack*/
+/*@media screen and (-webkit-min-device-pixel-ratio:0){
+	# {
+		
+	}
+}*/
+/*IE6 Hack*/
+/**html #{
+	
+}*/
+/*IE7 Hack*/
+/**:first-child+html # {
+	
+}*/
+/*IE8 Hack*/
+/*html>/**//*body p {
+        color /*\**//*: blue\9;
+		font-size: 20px\9;
+}*/
+
+
+/*==============================*/
+/*			general				*/
+/*==============================*/
+*{
+	margin: 0;
+	padding: 0;
+	font-size: 100%;
+}
+
+ul {
+	list-style: none;
+}
+
+img{
+	border: 0;
+	vertical-align: bottom;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	font-size: 100%;
+	font-weight: normal;
+}
+
+a {
+	color: #FF5A00;
+}
+
+html {
+	height: 100%;
+}
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 0.75em;
+	line-height: 1.5;
+	text-align: center;
+	color: #222222;
+}
+
+.invisible {
+	display: none;
+}
+
+.clear {
+	clear: both;
+}
+
+/*------------------------------*/
+/*           header				*/
+/*------------------------------*/
+
+/*------------------------------*/
+/*        END   header			*/
+/*------------------------------*/
+
+
+/*------------------------------*/
+/*      	 	body			*/
+/*------------------------------*/
+
+/*- - - - - - - - - - - - - - - */
+/*			main column			*/
+/*- - - - - - - - - - - - - - - */
+
+
+/*- - - - - - - - - - - - - - - */
+/*		END 	main column		*/
+/*- - - - - - - - - - - - - - - */
+
+
+/*- - - - - - - - - - - - - - - */
+/*			sub column			*/
+/*- - - - - - - - - - - - - - - */
+
+/*- - - - - - - - - - - - - - - */
+/*		END	sub column			*/
+/*- - - - - - - - - - - - - - - */
+
+/*------------------------------*/
+/*      END	 	body			*/
+/*------------------------------*/
+
+/*------------------------------*/
+/*      	 	footer			*/
+/*------------------------------*/
+
+
+/*------------------------------*/
+/*      END	 	footer			*/
+/*------------------------------*/
+
+
+/*==============================*/
+/*			END general			*/
+/*==============================*/
+
+/*==============================*/
+/*				Loading			*/
+/*==============================*/
+body#loading,
+body#login {
+	background: #4BA4DF;
+	color: #FFFFFF;
+	height: 100%;
+	position: relative;
+}
+
+#loading section {
+	width: 100%;
+	position: absolute;
+	top: 50%;
+	margin-top: -40px;
+}
+
+#loading p {
+	padding-bottom: 20px;
+}
+
+#loading h1 {
+	font-size: 2.0em;
+}
+
+/*==============================*/
+/*		END		Loading			*/
+/*==============================*/
+/*==============================*/
+/*				Login			*/
+/*==============================*/
+#login header {
+	font-size: 2.6em;
+	padding-top: 100px;
+}
+
+#login nav,
+#login article {
+	width: 450px;
+	margin: 0 auto;
+	margin-top: 30px;
+	padding: 15px 30px;
+	color: #000000;
+	text-align: left;
+	font-size: 1.4em;
+	background-color: #F8F8F8;
+}
+
+#login nav {
+	color: #F76861;
+}
+
+#login dl dd input[type="text"] {
+	border: 1px solid #000000;
+	width: 100%;
+	font-size: 1.4em;
+	margin-bottom: 10px;
+}
+
+#login p {
+	text-align: right;
+}
+
+#login p input[type="button"] {
+	background-color: #474747;
+	border: none;
+	color: #FFFFFF;
+	padding: 5px 10px;
+}
+
+/*==============================*/
+/*		END		Login			*/
+/*==============================*/
+/*==============================*/
+/*				Chat			*/
+/*==============================*/
+body#chat {
+	height: 100%;
+	position: relative;
+	min-width: 1024px;
+}
+
+#chat header {
+	position: absolute;
+	width: 100%;
+	height: 42px;
+	top: 0px;
+	z-index: 100;
+	background: #F8F8F8;
+	border-bottom: 1px solid #DFDFDF;
+}
+
+#chat img.icon1 {
+	width: 48px;
+	height: 48px;
+	border: 2px solid #DFDFDF;
+	-webkit-border-radius: 24px;
+	-moz-border-radius: 24px;
+	border-radius: 24px;
+}
+/*------------------------------*/
+/*       	navigation			*/
+/*------------------------------*/
+#chat nav {
+	position: absolute;
+	width: 324px;
+	height: 100%;
+	background: #F8F8F8;
+	border-right: 1px solid #DFDFDF;
+}
+
+#chat nav #tab_menu {
+	display: table;
+	margin-top: 43px;
+	width: 100%;
+}
+#chat nav #tab_menu ul {
+	display: table-row;
+}
+#chat nav #tab_menu ul li {
+	display: table-cell;
+	width: 33%;
+	padding: 5px 0;
+	color: #4BA4DF;
+	border-right: 1px solid #DFDFDF;
+	border-bottom: 4px solid #DFDFDF;
+}
+#chat nav #tab_menu ul li:last-child {
+	border-right: none;
+}
+#chat nav #tab_menu ul li.selected {
+	border-bottom: 4px solid #4BA4DF;
+}
+#chat nav ul#menu_list {
+	display: table;
+	border-collapse: collapse;
+	width: 100%;
+	margin-bottom: 48px;
+}
+#chat nav ul#menu_list li {
+	display: table-row;
+	border-bottom: 1px solid #E3E3E3;
+}
+#chat nav ul#menu_list li .cell {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: left;
+	padding: 5px 0;
+}
+#chat nav ul#menu_list li .cell.cell_2 {
+	line-height: 1.2em;
+}
+#chat nav ul#menu_list li .cell.cell_2 .name {
+	font-size: 1.4em;
+}
+
+#chat nav ul#menu_list li .cell.cell_1 {
+	width: 62px;
+	text-align: center;
+}
+#chat nav ul#menu_list li .cell.cell_3 {
+	width: 40px;
+	text-align: center;
+	color: #4BA4DF;
+}
+
+#chat nav ul#menu_list img {
+	vertical-align: middle;
+}
+
+#chat nav #nav_bottom {
+	height: 48px;
+	line-height: 48px;
+	width: 325px;
+	position: fixed;
+	left: 0;
+	bottom:0;
+	z-index: 100;
+	color: #FFFFFF;
+	background: #4BA4DF;
+}
+/*------------------------------*/
+/*   END    	navigation		*/
+/*------------------------------*/
+#chat article {
+	padding-top: 43px;
+	margin-left: 325px;
+}
+/*==============================*/
+/*		END		Chat			*/
+/*==============================*/
