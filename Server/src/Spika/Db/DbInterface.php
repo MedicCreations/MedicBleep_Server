@@ -50,7 +50,7 @@ interface DbInterface
 	public function updateMessage(Application $app, $message_id, $values);
 	public function getMessageByID(Application $app, $message_id);
 	public function getChildMessages(Application $app, $child_id_list);
-	public function getModifiedMessages(Application $app, $chat_id, $modified);
+	public function getModifiedMessages(Application $app, $chat_id, $modified, $last_msg_id);
 	
 	public function getRecentAllChats(Application $app, $user_id, $offset);
 	public function getCountRecentAllChats(Application $app, $user_id);

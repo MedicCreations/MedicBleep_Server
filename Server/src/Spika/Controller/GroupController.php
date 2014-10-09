@@ -147,12 +147,15 @@ class GroupController extends SpikaBaseController {
 			if (array_key_exists('page', $paramsAry)){
 				$page = $paramsAry['page'];
 			}
-				
-			$offset = $page*USERS_PAGE_SIZE;
 			
 			$group_members = $mySql->getGroupMembers($app, $group_id);
 			
-			$page_group_members = array_slice($group_members, $offset, USERS_PAGE_SIZE);
+			if ($page == -1){
+				$page_group_members = $group_members;
+			} else {
+				$offset = $page*USERS_PAGE_SIZE;
+				$page_group_members = array_slice($group_members, $offset, USERS_PAGE_SIZE);
+			}
 			
 			if ($page > 0 && count($page_group_members) == 0){
 				$result = array('code' => ER_PAGE_NOT_FOUND, 

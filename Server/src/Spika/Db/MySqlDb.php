@@ -180,7 +180,7 @@ class MySqlDb implements DbInterface{
 		$sql = $sql . " WHERE user.id <> ? ";
 		
 		if ($search != ""){
-			$sql = $sql . " AND firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%'";
+			$sql = $sql . " AND firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%'";
 		}
 		
 		$sql = $sql . " ORDER BY user.firstname,user.id LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
@@ -701,11 +701,11 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function getModifiedMessages(Application $app, $chat_id, $modified) {
+	public function getModifiedMessages(Application $app, $chat_id, $modified, $last_msg_id) {
 	
-		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 AND message.modified >= ? ORDER BY message.id DESC";
+		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 AND message.modified >= ? AND message.id >= ? ORDER BY message.id DESC";
 		
-		$messages = $app['db']->fetchAll($sql, array($chat_id, $modified));
+		$messages = $app['db']->fetchAll($sql, array($chat_id, $modified, $last_msg_id));
 		
 		return $messages;
 	
@@ -849,9 +849,9 @@ class MySqlDb implements DbInterface{
 	
 	public function getSearchResult(Application $app, $search){
 		
-		$sql = "SELECT user.id, CONCAT (user.firstname, user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user";
+		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user";
 		if ($search != ""){
-			$sql = $sql . " WHERE CONCAT (user.firstname, user.lastname) LIKE '" . $search . "%'";
+			$sql = $sql . " WHERE CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
 		}
 		
 		$users = $app['db']->fetchAll($sql);
@@ -867,10 +867,7 @@ class MySqlDb implements DbInterface{
 		usort(
 			$result,
 			function ($a, $b) {
-				if ($a['name'] == $b['name']) {
-					return 0;
-				}
-				return ($a['name'] < $b['name']) ? -1 : 1;
+				return strcasecmp($a['name'], $b['name']);
 			}
 		);
 		
