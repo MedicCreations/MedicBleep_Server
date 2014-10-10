@@ -24,7 +24,7 @@
 	
 
 	<div id="nav_bottom">
-		<a href="">
+		<a href="javascript:void(0)">
 		<span class="fa-stack fa-lg">
 		  <i class="fa fa-plus fa-stack-1x"></i>
 		</span>

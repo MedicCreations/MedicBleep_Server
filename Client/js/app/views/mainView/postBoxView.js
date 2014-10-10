@@ -5,6 +5,9 @@ var SPIKA_PostBoxView = Backbone.View.extend({
     replyMeessageId: 0,
     filesQueue:null,
     processingFileIndex:0,
+    chatBoxMaxHeight: 100,
+    chatBoxDefaultHeight: 28,
+    chatBoxGrowHeight: 20,
     initialize: function(options) {
         
         var self = this;
@@ -115,6 +118,8 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         
         var self = this;
         var message = $$('#chat_textbox').val();
+        $$('#chat_textbox').height(self.chatBoxDefaultHeight);   
+        
         var encryptedHex = EncryptManager.encryptText(message);
 
         this.isSending = true;
@@ -263,7 +268,14 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         SPIKA_ProgressManager.setTitle(filename);
         SPIKA_ProgressManager.setText(text);
         SPIKA_ProgressManager.setProgress(progress);
-    }
+    },
+    growHeight:function(){
+        
+        if($$('#chat_textbox').height() <= this.chatBoxMaxHeight){
+            $$('#chat_textbox').height($("#chat_textbox").height() + this.chatBoxGrowHeight);        
+        }
+        
+    },
     
     
 });

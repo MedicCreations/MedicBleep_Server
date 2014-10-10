@@ -6,8 +6,7 @@ var SPIKA_ProgressView = Backbone.View.extend({
 
     render: function() {
         
-        var template = _.template(this.template);
-        $(this.el).html(template(LANG));
+        $(this.el).html(U.simpleLocalizationFilter(this.template,LANG));
         
         var self = this;
         

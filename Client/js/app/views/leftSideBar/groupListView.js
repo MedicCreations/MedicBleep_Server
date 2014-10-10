@@ -98,13 +98,11 @@ var SPIKA_GroupListView = Backbone.View.extend({
         
         apiClient.getGroupById(groupId,function(data){
             
-            U.l(data);
-            
             var modelGroup = groupFactory.createModelByAPIResponse(data.group);
             
-            U.l(modelGroup);
-            
-            apiClient.startPrivateChat(modelGroup,function(data){
+            apiClient.startGroupChat(modelGroup,function(data){
+                
+                U.l(data);
                 
                 if(!_.isUndefined(data.chat_id)){
                     

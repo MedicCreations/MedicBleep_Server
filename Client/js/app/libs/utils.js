@@ -215,7 +215,7 @@ var U = {
         });
         
         // predefined constants
-        html = html.replace('{rooturl}', WEB_ROOT);
+        html = html.replace(/\{rooturl\}/g, WEB_ROOT);
         
         return html;
     }

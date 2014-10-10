@@ -1,5 +1,6 @@
     var AppRouter = Backbone.Router.extend({
         routes: {
+            "createroom": "createRoomRoute",
             "main": "mainRoute",
             "login": "loginRoute",
             "logout": "logoutRoute",
@@ -66,6 +67,32 @@
         
     });
     
+    app_router.on('route:createRoomRoute', function(actions) {
+        
+        if(apiClient == null || SPIKA_UserManager.isAuthorised() == false){
+            U.goPage('login');
+            return;
+        }
+        
+        // load models
+        require([
+                    'app/views/featureViews/createRoomView',
+                    'thirdparty/text!templates/featureViews/createRoomView.tpl'
+                ], function (CreateRoomView,Template) {
+            
+            var createRoomView = new SPIKA_CreateRoomView({
+                template: Template
+            });
+            
+            $(HOLDER).fadeOut('fast',function(){
+                $(HOLDER).attr('id', 'chat');
+                $(HOLDER).html(createRoomView.render().el);
+                $(HOLDER).fadeIn('fast');
+            });
+            
+        });
+        
+    });
     
     
     // Start Backbone history a necessary step for bookmarkable URL's

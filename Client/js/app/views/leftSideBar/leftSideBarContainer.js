@@ -77,5 +77,11 @@ var SPIKA_LeftSideBar = Backbone.View.extend({
             
         });
         
+        $$('#nav_bottom').click(function(){
+        
+            U.goPage('createroom'); 
+            
+        });
+        
     }
 });

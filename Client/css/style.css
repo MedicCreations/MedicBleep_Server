@@ -339,7 +339,6 @@ body#chat {
 footer {
 	position: fixed;
 	width: 100%;
-	height: 48px;
 	bottom: 0;
 	left: 0;
 	z-index: 50;
@@ -365,14 +364,14 @@ footer #mess_type ul li {
 
 footer #mess_type ul li.small {
 	width: 50px;
-	line-height: 48px;
+	vertical-align: top;
 	text-align: center;
 }
 footer #mess_type ul li a  {
 	color: #000000;
 	display: block;
 	position: relative;
-	top: -5px;
+	top: 5px;
 }
 
 footer #mess_type ul li textarea {

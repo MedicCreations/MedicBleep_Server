@@ -11,5 +11,9 @@ LANG = {
       chat_nochat: "No room,user or groups is selected. Please select room,user or group to start chat.",
       chat_loadfailed: "Failed to load chat. Please check your internet connection.",
       general_errortitle: "Error",
+      title_new_room: "New Room",
+      roomname_placeholder: "Enter room name here.",
+      createroom:"Create Room",
+      cancel:"Cancel",
       dummy : 'dummy'
 };

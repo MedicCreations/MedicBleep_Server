@@ -149,6 +149,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             
         });
         
+        self.updateWindowSize();
     },
     
     updateWindowSize: function(){
