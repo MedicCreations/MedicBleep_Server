@@ -134,7 +134,7 @@ class RoomController extends SpikaBaseController {
 			
 			$user_id= $app['user']['id'];
 			
-			$all = $mySql->getSearchResult($app, $search);
+			$all = $mySql->getSearchUsersGroups($app, $search);
 			
 			$search_slice = array_slice($all, $offset, ROOMS_PAGE_SIZE);
 			

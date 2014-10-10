@@ -151,6 +151,15 @@ class MessageController extends SpikaBaseController {
 				}
 			}
 			
+			$chat_image = $chat['image'];
+			if ($chat_image == ""){
+				if ($chat['type'] == CHAT_USER_TYPE){
+					$chat_image = $user['image'];
+				} else {
+					$chat_image = DEFAULT_GROUP_IMAGE;
+				}
+			}
+			
 			$chat_type = $chat['type'];
 			
 			
@@ -195,6 +204,7 @@ class MessageController extends SpikaBaseController {
 							'chat_name' => $chat_name, 
 							'firstname' => $user_firstname,
 							'chat_thumb' => $chat_thumb,
+							'chat_image' => $chat_image,
 							'chat_type' => $chat_type,
 							'is_active' => $chat['is_active'],
 							'admin_id' => $chat['admin_id']
