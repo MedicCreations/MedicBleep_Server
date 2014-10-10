@@ -188,9 +188,20 @@ class RoomController extends SpikaBaseController {
 			$result = array_merge($users, $groups);
 			$result = array_map("unserialize", array_unique(array_map("serialize", $result)));
 			
+			// var_dump($result);
+			$pretty_res = array();
+			 foreach ($result as $res){
+			
+				 array_push($pretty_res, $res);
+			
+			 }
+			
+			// var_dump($pretty_res);
+			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK',
-					'users' => $result);
+					'users' => $result,
+					'users_array' => $pretty_res);
 			
 			return $app->json($result, 200);
 			

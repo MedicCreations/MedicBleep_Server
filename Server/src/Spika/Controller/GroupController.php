@@ -172,6 +172,25 @@ class GroupController extends SpikaBaseController {
 			return $app->json($result, 200);
 				
 		})->before($app['beforeSpikaTokenChecker']);
+		
+		
+		//get group by id
+		$controllers->get('/profile', function (Request $request) use ($app, $self, $mySql){
+				
+			$paramsAry = $request->query->all();
+				
+			$group_id = $paramsAry['group_id'];
+
+			$group = $mySql->getGroupWithID($app, $group_id);
+				
+			$result = array('code' => CODE_SUCCESS,
+					'message' => 'OK',
+					'group' => $group);
+				
+			return $app->json($result, 200);
+				
+		})->before($app['beforeSpikaTokenChecker']);
+		
 			
 		
 		return $controllers;

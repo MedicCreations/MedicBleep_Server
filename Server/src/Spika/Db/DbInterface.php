@@ -22,6 +22,7 @@ interface DbInterface
 	public function getGroupsCount(Application $app, $user_id, $search, $category);
 	public function getGroupMembers(Application $app, $group_id);
 	public function getGroupMembersUserIDs(Application $app, $group_id);
+	public function getGroupWithID(Application $app, $group_id);
 	
 	public function calculateBadge(Application $app, $user_id);
 	

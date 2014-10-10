@@ -293,6 +293,18 @@ class MySqlDb implements DbInterface{
 		
 	}
 	
+	
+	public function getGroupWithID(Application $app, $group_id){
+	
+		$sql = "SELECT * FROM groups WHERE id = ?";
+
+		$result = $app['db']->fetchAssoc($sql, array($group_id));
+		
+		return $result;
+	
+	}
+	
+	
 	public function getOrCreateUserWithOutsideID(Application $app, $outside_id, $firstname, $lastname){
 		
 		$sql = "SELECT * FROM user WHERE outside_id = ? ";
