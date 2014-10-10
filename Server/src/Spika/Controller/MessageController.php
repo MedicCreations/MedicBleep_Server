@@ -339,6 +339,11 @@ class MessageController extends SpikaBaseController {
 			$chat_id = $paramsAry['chat_id'];
 			$first_msg_id = $paramsAry['first_msg_id'];
 			
+			$last_msg_id = 0;
+			if (array_key_exists('last_msg_id', $paramsAry)){
+				$last_msg_id = $paramsAry['last_msg_id'];
+			}
+			
 			$my_user_id = $app['user']['id'];
 			
 			$is_chat_member = $mySql->isChatMember($app, $my_user_id, $chat_id);
@@ -356,7 +361,7 @@ class MessageController extends SpikaBaseController {
 			
 			$message = $mySql->getMessageByID($app, $first_msg_id);
 			
-			$modified_messages = $mySql->getModifiedMessages($app, $chat_id, $message['modified']);
+			$modified_messages = $mySql->getModifiedMessages($app, $chat_id, $message['modified'], $last_msg_id);
 			
 			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
 			

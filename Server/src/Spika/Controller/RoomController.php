@@ -134,17 +134,17 @@ class RoomController extends SpikaBaseController {
 			
 			$user_id= $app['user']['id'];
 			
-			$search = $mySql->getSearchResult($app, $search);
+			$all = $mySql->getSearchResult($app, $search);
 			
-			$search_slice = array_slice($result, $offset, ROOMS_PAGE_SIZE);
+			$search_slice = array_slice($all, $offset, ROOMS_PAGE_SIZE);
 			
-			if ($page > 0 && count($search) == 0){
+			if ($page > 0 && count($all) == 0){
 				$result = array('code' => ER_PAGE_NOT_FOUND, 
 					'message' => 'Page not found');
 				return $app->json($result, 200);
 			}
 			
-			$search_count = count($search);
+			$search_count = count($all);
 			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK',
@@ -164,6 +164,7 @@ class RoomController extends SpikaBaseController {
 			$paramsAry = $request->query->all();
 			
 			$users = array();
+			$groups = array();
 			
 			$user_ids = "";
 			if (array_key_exists('user_ids', $paramsAry)){
@@ -174,19 +175,33 @@ class RoomController extends SpikaBaseController {
 			if (array_key_exists('group_ids', $paramsAry)){
 				$group_ids = $paramsAry['group_ids'];
 			}
+			if ($user_ids != ""){
+				//get users for room
+				$users = $mySql->getUsersForRoom($app, $user_ids);
+			}
 			
-			//get users for room
-			$users = $mySql->getUsersForRoom($app, $user_ids);
-			
-			//get group members for room
-			$groups = $mySql->getGroupMembersForRoom($app, $group_ids);
+			if ($group_ids != ""){
+				//get group members for room
+				$groups = $mySql->getGroupMembersForRoom($app, $group_ids);
+			}
 			
 			$result = array_merge($users, $groups);
 			$result = array_map("unserialize", array_unique(array_map("serialize", $result)));
 			
+			// var_dump($result);
+			$pretty_res = array();
+			 foreach ($result as $res){
+			
+				 array_push($pretty_res, $res);
+			
+			 }
+			
+			// var_dump($pretty_res);
+			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK',
-					'users' => $result);
+					'users' => $result,
+					'users_array' => $pretty_res);
 			
 			return $app->json($result, 200);
 			
