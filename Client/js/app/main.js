@@ -28,7 +28,7 @@ requirejs.config({
 
 // load core library
 define(['jQuery','underscore','backbone','Notification'], function($, _, Backbone) {
-    
+
     // load all required thirdparty library here
     require(['app/libs/apiclient',
                 'app/libs/UserManager',
@@ -48,16 +48,19 @@ define(['jQuery','underscore','backbone','Notification'], function($, _, Backbon
                 'app/models/modelMessage',
                 'app/models/modelHistory',
                 'app/models/modelChat',
+                'app/models/modelRoom',
                 'app/libs/SoundManager',
                 'app/libs/FileUploadHandler',
                 'app/libs/EncryptionManager',
                 'app/views/alertView',
+                'app/views/progressView',
                 'thirdparty/base64'], function() {
         
         
         // global variables
         window.apiClient = new SpikaClient(API_URL);
         window.mainView = null;
+        SPIKA_notificationManger.init();
         SPIKA_soundManager.init();
         
         // start app

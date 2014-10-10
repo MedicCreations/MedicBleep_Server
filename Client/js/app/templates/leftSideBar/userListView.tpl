@@ -17,24 +17,25 @@
         	</ul>
     	</div>
     	
-	<script type="text/template" id="template_roomlist_row">
+	<script type="text/template" id="template_userlist_row">
 	
-        <% _.each(rooms, function(room) { %>
+        <% _.each(users, function(user) { %>
 
-    	       <li chatid="<%= room.get('chat_id') %>">
+    	       <li data-userid="<%= user.get('id') %>">
         			<p class="cell cell_1">
-        				<img class="encrypted_image icon1" src="{rooturl}/img/default_group.png" fileid="<%= room.get('image_thumb') %>" state="loading" width="40"/>
+                        <img class="encrypted_image icon1" src="{rooturl}/img/default_user.png" fileid="<%= user.get('image_thumb') %>" state="loading" width="40"/>
+
         			</p>
         			<div class="cell cell_2">
         				<p class="name">
-        					<%= room.get('chat_name') %> <%= room.get('unread_formatted') %>
+        					<%= user.get('firstname') %> <%= user.get('lastname') %>
         				</p>
         				<p>
         					
         				</p>
         			</div>
         			<p class="cell cell_3">
-        				<a href="">
+        				<a href="javascript:void(0)">
         					<span class="fa-stack fa-lg">
         					  <i class="fa fa-angle-right fa-stack-1x"></i>
         					</span>

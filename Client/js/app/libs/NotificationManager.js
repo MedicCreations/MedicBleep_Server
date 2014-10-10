@@ -65,6 +65,8 @@ var SPIKA_notificationManger = {
                 
             });
             
+            self.unreadMessageNum = unread;
+            
             if(lobbyData.length != self.lastLobbyData.length){
 
                 // new chat is generated or chat is removed
@@ -93,7 +95,7 @@ var SPIKA_notificationManger = {
                 
                 }
                 
-                U.updateUnread(unread);
+                //U.updateUnread(unread);
                 
             }
             

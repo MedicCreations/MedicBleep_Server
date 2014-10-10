@@ -28,10 +28,7 @@ SpikaClient.prototype.handleLogicalErrors = function(data,listener){
 // error handling
 SpikaClient.prototype.handleCriticalErrors = function(jqXHR,listener){
     
-    if(this.error == true){
-        return;
-    }
-    
+
     this.error = true;
     
     if(jqXHR.status == 403){
@@ -41,6 +38,8 @@ SpikaClient.prototype.handleCriticalErrors = function(jqXHR,listener){
         //alert('Something is wrong with server or internet connection. Plase ask your administrator for detail.');
         //Backbone.trigger(EVENT_FORCE_LOGOUT);
     }
+
+    listener(jqXHR);
     
 }
 
@@ -154,6 +153,44 @@ SpikaClient.prototype.searchGroups = function(page,search,succeessListener,faile
             succeessListener(data);
         } else {
            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+// get rooms
+SpikaClient.prototype.searchRooms = function(page,search,succeessListener,failedListener)
+{
+    
+    var self = this;
+	
+	var requestParams = {};
+    
+    requestParams.search = search;
+	
+	if (page > 0){
+		requestParams.page = page;
+    }
+    
+
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/room/list',
+        type: 'GET',
+        data: requestParams,
+        headers: {"token":this.token}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
         }
         
     });
@@ -479,6 +516,38 @@ SpikaClient.prototype.getUserById = function(userId,succeessListener,failedListe
         
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/profile',
+        type: 'GET',
+        data: requestParams,
+        headers: {"token":this.token}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+SpikaClient.prototype.getGroupById = function(groupId,succeessListener,failedListener)
+{
+    
+    var self = this;
+    
+    var requestParams = {};
+    
+    requestParams.group_id = groupId;
+        
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/groups/profile',
         type: 'GET',
         data: requestParams,
         headers: {"token":this.token}

@@ -277,41 +277,41 @@ body#chat {
 	color: #DFDFDF;
 }
 
-#chat nav ul#menu_list {
+#chat nav ul.menu_list {
 	display: table;
 	border-collapse: collapse;
 	width: 100%;
 	margin-bottom: 48px;
 	border-top: 1px solid #E3E3E3;
 }
-#chat nav ul#menu_list li {
+#chat nav ul.menu_list li {
 	display: table-row;
 	border-bottom: 1px solid #E3E3E3;
 }
-#chat nav ul#menu_list li .cell {
+#chat nav ul.menu_list li .cell {
 	display: table-cell;
 	vertical-align: middle;
 	text-align: left;
 	padding: 5px 0;
 }
-#chat nav ul#menu_list li .cell.cell_2 {
+#chat nav ul.menu_list li .cell.cell_2 {
 	line-height: 1.2em;
 }
-#chat nav ul#menu_list li .cell.cell_2 .name {
+#chat nav ul.menu_list li .cell.cell_2 .name {
 	font-size: 1.4em;
 }
 
-#chat nav ul#menu_list li .cell.cell_1 {
+#chat nav ul.menu_list li .cell.cell_1 {
 	width: 62px;
 	text-align: center;
 }
-#chat nav ul#menu_list li .cell.cell_3 {
+#chat nav ul.menu_list li .cell.cell_3 {
 	width: 40px;
 	text-align: center;
 	color: #4BA4DF;
 }
 
-#chat nav ul#menu_list img {
+#chat nav ul.menu_list img {
 	vertical-align: middle;
 }
 
@@ -383,10 +383,6 @@ footer #mess_type ul li textarea {
 	margin-top: 20px;
 }
 
-footer #mess_type ul li textarea.default{
-	color: #444444;
-	font-style: italic;
-}
 
 /*------------------------------*/
 /*   END    	footer			*/
@@ -413,10 +409,11 @@ footer #mess_type ul li textarea.default{
 	padding-left: 70px;
 }
 #chat article section h2 {
-	font-size: 1.4em;
+	font-size: 1.0em;
 }
 
 #chat article section .text {
+    font-size: 1.2em;
 	text-align: justify;
 }
 #chat article section .text img {

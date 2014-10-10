@@ -3,25 +3,34 @@ var SPIKA_MainView = Backbone.View.extend({
     currentWindowWidth: 0,
     currentWindowHeight: 0,
     leftSideBar: null,
+    chatView: null,
     initialize: function(options) {
         this.template = options.template;
     },
 
     render: function() {
         
-        var template = _.template(this.template);
-        $(this.el).html(template(LANG));
+        $(this.el).html(U.simpleLocalizationFilter(this.template,LANG));
         
         var self = this;
         
         // load sidebar
         require([
             'app/views/leftSideBar/leftSideBarContainer',
-            'thirdparty/text!templates/leftSideBar/leftSiderBarContainer.tpl'
-        ], function (LeftSideBar,LeftSideBarTemplate) {
+            'thirdparty/text!templates/leftSideBar/leftSiderBarContainer.tpl',
+            'app/views/mainView/chatView',
+            'thirdparty/text!templates/mainView/chatView.tpl'
+        ], function (
+            LeftSideBar,LeftSideBarTemplate,
+            ChatView,ChatViewTemplate
+            ) {
             
             self.leftSideBar = new SPIKA_LeftSideBar({
                 template: LeftSideBarTemplate
+            });
+            
+            self.chatView = new SPIKA_ChatView({
+                template: ChatViewTemplate
             });
             
             self.onload();
@@ -37,7 +46,8 @@ var SPIKA_MainView = Backbone.View.extend({
     onload : function(){
 
         var self = this;
-        $('#left_sidebar').html(self.leftSideBar.render().el);
+        $$('#left_sidebar').html(self.leftSideBar.render().el);
+        $$('#main_container').html(self.chatView.render().el);
 
     },
     
@@ -51,6 +61,13 @@ var SPIKA_MainView = Backbone.View.extend({
         
         Backbone.trigger(EVENT_WINDOW_SIZE_CHANGED);
 
+    }, 
+    
+    setTitle:function(title){
+        
+        $$('header').text(title);
+        document.title = title;
+        
     }
     
     

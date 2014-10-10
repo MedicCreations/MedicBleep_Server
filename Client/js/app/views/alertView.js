@@ -45,7 +45,18 @@ var SPIKA_AlertManager = {
         
         $$('#alert_bottom_cancel').unbind();
         $$('#alert_bottom_ok').unbind();
-    
+        
+        if(_.isUndefined(onOK)){
+            
+            $$('#alert_bottom_cancel').hide();
+            //$$('#alert_bottom_ok').hide();
+            
+        }else{
+            $$('#alert_bottom_cancel').show();
+            $$('#alert_bottom_ok').show();
+
+        }
+
         $$('#alert_bottom_cancel').click(function(){
             self.hide(onCancel);
         });
@@ -53,7 +64,7 @@ var SPIKA_AlertManager = {
         $$('#alert_bottom_ok').click(function(){
              self.hide(onOK);
         });
-        
+                    
         $$('#dialog_view').fadeIn();
         
     },
@@ -62,7 +73,9 @@ var SPIKA_AlertManager = {
         $$('#dialog_view').fadeOut(function(){
             
             $$('#dialog_view').remove();
-            callback();
+            
+            if(!_.isUndefined(callback))
+                callback();
         });
             
     }

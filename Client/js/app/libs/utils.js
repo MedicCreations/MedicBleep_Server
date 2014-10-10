@@ -202,11 +202,22 @@ var U = {
         // calc outerview's height
         _.each(outerViews,function(view){
             outerViewHeightSum += $(view).outerHeight();
-            U.l($(view).outerHeight());
         });
         
         $(targetView).height(windowHeight - outerViewHeightSum);
         
+    },
+    simpleLocalizationFilter:function(html,lang){
+        
+        _.each(lang,function(val,key){
+            var keyword = '{' + key + '}';
+            html = html.replace(keyword, val);
+        });
+        
+        // predefined constants
+        html = html.replace('{rooturl}', WEB_ROOT);
+        
+        return html;
     }
 
 }

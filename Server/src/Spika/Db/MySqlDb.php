@@ -818,7 +818,7 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND chat.category_id = " . $category_id;
 		}
 		
-		$sql = $sql . " ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = $sql . " ORDER BY chat.modified DESC LIMIT " . $offset . ", " . ROOMS_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id));
 		

@@ -76,6 +76,9 @@ EncryptManager = {
 
     decryptImage : function(imgElement,fileId,width,apiClient,successListner,failedListner){
         
+        if(_.isEmpty(fileId))
+            return;
+
         var self = this;
         
         var chacedFile = self.localchacheGetImage(fileId);
@@ -117,7 +120,6 @@ EncryptManager = {
                     successListner();
                 
             } catch(ex){
-                U.l(ex);
                 
                 if(_.isFunction(failedListner))
                     failedListner();
@@ -129,8 +131,6 @@ EncryptManager = {
             $(imgElement).attr('state','loaded');
             
         },function(data){
-            console.log('fail');
-            console.log(data);
         
         });
         
@@ -139,7 +139,10 @@ EncryptManager = {
     downloadFile:function(fileId,fileName,encryptedFileName){
         
         $('#downloadlink_' + fileId + " img").attr('src','img/btn_decrypting.png');
-        
+
+        if(_.isEmpty(fileId))
+            return;
+            
         var decryptedFileName = '';
         
         if(!_.isUndefined(encryptedFileName)){
@@ -159,7 +162,7 @@ EncryptManager = {
             }
             
         }
-            
+
         // download file first  
         apiClient.downloadFile(fileId,function(data){
             
@@ -195,8 +198,6 @@ EncryptManager = {
 
             
         },function(data){
-            console.log('fail');
-            console.log(data);
         
         });
         

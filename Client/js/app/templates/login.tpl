@@ -1,5 +1,5 @@
     
-    <header><%= LANG.spika_title %></header>
+    <header>{spika_title}</header>
     
     <nav id="login_div_alert"></nav>
     
@@ -7,13 +7,13 @@
     	<section>
     		<dl>
     			<dt>
-    				User name
+    				{username_label}
     			</dt>
     			<dd>
     				<input type="text" id="login_tb_username"/>
     			</dd>
     			<dt>
-    				Password
+    				{password_label}
     			</dt>
     			<dd>
     				<input type="password" id="login_tb_password"/>

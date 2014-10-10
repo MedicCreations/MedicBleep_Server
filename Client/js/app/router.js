@@ -54,6 +54,8 @@
                 template: Template
             });
             
+            window.mainView = mainView;
+            
             $(HOLDER).fadeOut('slow',function(){
                 $(HOLDER).attr('id', 'chat');
                 $(HOLDER).html(mainView.render().el);

@@ -17,12 +17,12 @@ var fileUploadHandler = {
                 // resize thumbnail
                 U.resize(file,THUMB_PIC_SIZE,THUMB_PIC_SIZE,100,"image/jpeg",function(blobSmallImage){
                     
-                    progressListener(0,"Encrypting File...");
+                    progressListener(0,"Encrypting File...",file.name);
                         
                     // encrypt 
                     EncryptManager.encryptFile(blobBigImage,function(encryptedHexBig){
                         
-                       progressListener(0,"Encrypting File...");
+                       progressListener(0,"Encrypting File...",file.name);
                         
                         // encrypt 
                         EncryptManager.encryptFile(blobSmallImage,function(encryptedHexThumb){
@@ -54,7 +54,7 @@ var fileUploadHandler = {
                                         
                                     },function(progress){
                                         
-                                        progressListener(80 + progress*0.2);
+                                        progressListener(80 + progress*0.2,"Uploading...",file.name);
                                         
                                     }); // apiClient.fileUpload(blobSmallImage,function(data){
             
@@ -83,7 +83,7 @@ var fileUploadHandler = {
         
         else if(fileType.match(typeFilterVideo)){
             
-            progressListener(0,"Encrypting File...");
+            progressListener(0,"Encrypting File...",file.name);
             
             EncryptManager.encryptFile(file,function(encryptedFile){
             
@@ -109,7 +109,7 @@ var fileUploadHandler = {
                         
                 },function(progress){
                                     
-                    progressListener(progress);       
+                    progressListener(progress,"Uploading...",file.name);       
                 });
                 
             });
@@ -120,7 +120,7 @@ var fileUploadHandler = {
         
         else if(fileType.match(typeFilterAudio)){
 
-            progressListener(0,"Encrypting File...");
+            progressListener(0,"Encrypting File...",file.name);
             
             EncryptManager.encryptFile(file,function(encryptedFile){
             
@@ -146,7 +146,7 @@ var fileUploadHandler = {
                     
                 },function(progress){
                                     
-                    progressListener(progress);          
+                    progressListener(progress,"Uploading...",file.name);          
                 });
                 
             });
@@ -156,7 +156,7 @@ var fileUploadHandler = {
         
         else {
             
-            progressListener(0,"Encrypting File...");
+            progressListener(0,"Encrypting File...",file.name);
             
             EncryptManager.encryptFile(file,function(encryptedFile){
             
@@ -182,7 +182,7 @@ var fileUploadHandler = {
                     
                 },function(progress){
                                     
-                    progressListener(progress);   
+                    progressListener(progress,"Uploading...",file.name);   
                            
                 });           
             });

@@ -1,4 +1,4 @@
-var SPIKA_RoomListView = Backbone.View.extend({
+var SPIKA_GroupListView = Backbone.View.extend({
     
     currentKeyword : '',
     initialize: function(options) {
@@ -8,18 +8,10 @@ var SPIKA_RoomListView = Backbone.View.extend({
         Backbone.on(EVENT_WINDOW_SIZE_CHANGED, function() {
             self.updateWindowSize();
         });
-
-        Backbone.on(EVENT_NEW_MESSAGE, function(chatId) {
-        
-            // if chat id is null the signal is for rehresshing lobby
-            if(_.isNull(chatId))
-                self.roomListView.refresh();
-
-        });
         
         this.roomListView = new SpikaPagingListView({
-            parentElmSelector : "#menu_container_room .menu_list",
-            scrollerSelector : "#menu_container_room .scrollable",
+            parentElmSelector : "#menu_container_group .menu_list",
+            scrollerSelector : "#menu_container_group .scrollable",
             source :  this
         });
     },
@@ -46,16 +38,16 @@ var SPIKA_RoomListView = Backbone.View.extend({
         this.roomListView.init();
         this.roomListView.loadCurrentPage();
         
-        $$('#menu_container_room input').keyup(function(evt) {
-            self.currentKeyword = $$('#menu_container_room input').val();
+        $$('#menu_container_group input').keyup(function(evt) {
+            self.currentKeyword = $$('#menu_container_group input').val();
             self.roomListView.refresh();
         });
         
     },
     
     updateWindowSize: function(){
-        U.setViewHeight($$("#menu_container_room .scrollable"),[
-            $$('header'),$$('#tab_menu'),$$('#nav_bottom'),$$('#menu_container_room .menu_search')
+        U.setViewHeight($$("#menu_container_group .scrollable"),[
+            $$('header'),$$('#tab_menu'),$$('#nav_bottom'),$$('#menu_container_group .menu_search')
         ])
     },
     
@@ -65,7 +57,7 @@ var SPIKA_RoomListView = Backbone.View.extend({
     
     listviewRequest: function(page,succeessListener,failedListener){
         
-        apiClient.searchRooms(page,this.currentKeyword,function(data){
+        apiClient.searchGroups(page,this.currentKeyword,function(data){
 
             succeessListener(data);
             
@@ -77,28 +69,14 @@ var SPIKA_RoomListView = Backbone.View.extend({
         
     },
     listviewGetListFromResponse: function(response){
-        
-        var collection = roomFactory.createCollectionByAPIResponse(response);
-        
-        _.each(collection.models,function(model){
-            
-            var unreadText = "";
-            
-            if(model.get('unread') > 0)
-                unreadText = '(' + model.get('unread') + ')';
-                
-            model.set('unread_formatted',unreadText);
-            
-        });
-        
-        return collection;
+        return groupFactory.createCollectionByAPIResponse(response)
     },
     listviewRender: function(data){
-        return _.template($$('#template_roomlist_row').html(), {rooms: data.models});
+        return _.template($$('#template_grouplist_row').html(), {groups: data.models});
     },
     listViewAfterRender: function(){
         
-        $$('#menu_container_room .encrypted_image').each(function(){
+        $$('#menu_container_group .encrypted_image').each(function(){
         
             var state = $(this).attr('state');
             var fileId = $(this).attr('fileid');
@@ -113,9 +91,41 @@ var SPIKA_RoomListView = Backbone.View.extend({
         
     },
     listviewOnClick: function(elm){
-        var chatId = $(elm).attr('chatid');
-        Backbone.trigger(EVENT_START_CHAT,chatId);
-    },
-    
+        
+        var groupId = $(elm).attr('data-groupid');
+        
+        U.l(groupId);
+        
+        apiClient.getGroupById(groupId,function(data){
+            
+            U.l(data);
+            
+            var modelGroup = groupFactory.createModelByAPIResponse(data.group);
+            
+            U.l(modelGroup);
+            
+            apiClient.startPrivateChat(modelGroup,function(data){
+                
+                if(!_.isUndefined(data.chat_id)){
+                    
+                    Backbone.trigger(EVENT_START_CHAT,data.chat_id);
+                    
+                }
+            
+            },function(data){
+            
+            
+            
+            });
+        
+        
+        },function(data){
+        
+        
+        
+        });
+        
+    }
+
     
 });

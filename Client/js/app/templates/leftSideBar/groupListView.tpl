@@ -17,17 +17,17 @@
         	</ul>
     	</div>
     	
-	<script type="text/template" id="template_roomlist_row">
+	<script type="text/template" id="template_grouplist_row">
 	
-        <% _.each(rooms, function(room) { %>
+        <% _.each(groups, function(group) { %>
 
-    	       <li chatid="<%= room.get('chat_id') %>">
+    	       <li data-groupid="<%= group.get('id') %>">
         			<p class="cell cell_1">
-        				<img class="encrypted_image icon1" src="{rooturl}/img/default_group.png" fileid="<%= room.get('image_thumb') %>" state="loading" width="40"/>
+        				<img class="encrypted_image icon1" src="{rooturl}/img/default_group.png" fileid="<%= group.get('image_thumb') %>" state="loading" width="40"/>
         			</p>
         			<div class="cell cell_2">
         				<p class="name">
-        					<%= room.get('chat_name') %> <%= room.get('unread_formatted') %>
+        					<%= group.get('groupname') %>
         				</p>
         				<p>
         					
