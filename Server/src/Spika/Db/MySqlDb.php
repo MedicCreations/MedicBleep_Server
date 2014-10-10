@@ -859,11 +859,13 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function getSearchResult(Application $app, $search){
+	public function getSearchUsersGroups(Application $app, $search){
 		
 		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user";
 		if ($search != ""){
 			$sql = $sql . " WHERE CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
+			$sql = $sql . " OR user.firstname LIKE '" . $search . "%'";
+			$sql = $sql . " OR user.lastname LIKE '" . $search . "%'";
 		}
 		
 		$users = $app['db']->fetchAll($sql);
