@@ -185,9 +185,16 @@ class MySqlDb implements DbInterface{
 		
 		$sql = $sql . " ORDER BY user.firstname,user.id LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
 		
+		$resultFormated = array();
 		$result = $app['db']->fetchAll($sql, array($my_user_id));
 		
-		return $result;
+		foreach($result as $row){
+            if(empty($row['details']))
+                $row['details'] = array();
+                
+    		$resultFormated[] = $row;
+		}
+		return $resultFormated;
 		
 	}
 	
@@ -796,6 +803,99 @@ class MySqlDb implements DbInterface{
 		$values = array('name' => $name);
 		
 		$app['db']->insert('categories', $values);
+	}
+	
+	
+	public function getRooms(Application $app, $user_id, $search, $offset, $category_id){
+	
+		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 ";
+		
+		if ($search != ""){
+			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
+		}
+		
+		if ($category_id != 0){
+			$sql = $sql . " AND chat.category_id = " . $category_id;
+		}
+		
+		$sql = $sql . " ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		
+		$result = $app['db']->fetchAll($sql, array($user_id));
+		
+		return $result;
+	
+	}
+	
+	public function getRoomsCount(Application $app, $user_id, $search, $category_id){
+	
+		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 ";
+		
+		if ($search != ""){
+			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
+		}
+		
+		if ($category_id != 0){
+			$sql = $sql . " AND chat.category_id = " . $category_id;
+		}
+		
+		$sql = $sql . " ORDER BY chat.modified DESC";
+		
+		$result = $app['db']->executeQuery($sql, array($user_id))->fetch();
+		
+		return $result["COUNT(*)"];
+	
+	}
+	
+	
+	public function getSearchResult(Application $app, $search){
+		
+		$sql = "SELECT user.id, CONCAT (user.firstname, user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user";
+		if ($search != ""){
+			$sql = $sql . " WHERE CONCAT (user.firstname, user.lastname) LIKE '" . $search . "%'";
+		}
+		
+		$users = $app['db']->fetchAll($sql);
+		
+		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups";
+		if ($search != ""){
+			$sql = $sql . " WHERE groups.name LIKE '" . $search . "%'";
+		}
+		$groups = $app['db']->fetchAll($sql);
+		
+		$result = array_merge($groups,$users);
+		
+		usort(
+			$result,
+			function ($a, $b) {
+				if ($a['name'] == $b['name']) {
+					return 0;
+				}
+				return ($a['name'] < $b['name']) ? -1 : 1;
+			}
+		);
+		
+		return $result;
+	}
+	
+	
+	public function getUsersForRoom(Application $app, $user_ids){
+	
+		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb FROM user WHERE user.id IN (" . $user_ids . ")";
+		
+		$users = $app['db']->fetchAll($sql);
+	
+		return $users;
+		
+	}
+	
+	
+	public function getGroupMembersForRoom(Application $app, $group_ids){
+	
+		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb FROM group_member, user WHERE group_member.user_id = user.id AND group_member.group_id IN (" . $group_ids . ")";
+	
+		$groups = $app['db']->fetchAll($sql);
+	
+		return $groups;
 	}
 	
 	

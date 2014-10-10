@@ -320,8 +320,11 @@ class MessageController extends SpikaBaseController {
 					'message' => 'OK', 
 					'messages' => $messages, 
 					'total_count' => $total_messages, 
-					'seen_by' => $chat_seen_by,
-					'user' => $user);
+					'seen_by' => $chat_seen_by);
+					
+			if (count($user)>0){
+				$result['user'] = $user;
+			}
 				
 			return $app->json($result, 200);
 				
