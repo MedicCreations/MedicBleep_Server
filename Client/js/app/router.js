@@ -39,6 +39,26 @@
         
     });
 
+    app_router.on('route:logoutRoute', function(actions) {
+        
+        // load models
+        require(['app/views/loginView',
+                    'thirdparty/text!templates/login.tpl'
+                ], function (DashboardPage,Template) {
+            
+            var loginView = new SPIKA_LoginView({
+                template: Template
+            });
+            
+            $(HOLDER).fadeOut('slow',function(){
+                $(HOLDER).attr('id', 'login');
+                $(HOLDER).html(loginView.render().el);
+                $(HOLDER).fadeIn('slow');
+            });
+            
+        });
+        
+    });
     app_router.on('route:mainRoute', function(actions) {
         
         if(apiClient == null || SPIKA_UserManager.isAuthorised() == false){
