@@ -48,7 +48,21 @@ var SPIKA_MainView = Backbone.View.extend({
         var self = this;
         $$('#left_sidebar').html(self.leftSideBar.render().el);
         $$('#main_container').html(self.chatView.render().el);
-
+        
+        $$('header .userprofile').click(function(){
+            self.showContextMenu(); 
+        });
+        
+        $$('header .userprofile').mouseover(function(){
+            self.showContextMenu(); 
+        });
+        
+        $$('#user_menu').mouseleave(function(){
+            self.hideContextMenu(); 
+        });
+        
+        this.updateUserInfo();
+        
     },
     
     updateWindowSize:function(){
@@ -65,10 +79,42 @@ var SPIKA_MainView = Backbone.View.extend({
     
     setTitle:function(title){
         
-        $$('header').text(title);
+        $$('header span#maintitle').text(title);
         document.title = title;
         
+    },
+    
+    showContextMenu: function(){
+        $$('#user_menu').css('display','block');        
+    },
+    
+    hideContextMenu: function(){
+        $$('#user_menu').css('display','none');
+    },
+    
+    updateUserInfo: function(){
+        
+        apiClient.getUserById(SPIKA_UserManager.getUser().get('id'),function(data){
+            
+            var modelUser = userFactory.createModelByAPIResponse(data.user);
+            SPIKA_UserManager.setUser(modelUser);
+            
+            $$('.userprofile span').text(modelUser.get('firstname') + " " + modelUser.get('lastname'));
+            
+            EncryptManager.decryptImage($$('.userprofile img'),modelUser.get('image_thumb'),0,apiClient,function(){
+
+            },function(){
+
+            });
+    
+        },function(data){
+            
+            
+            
+        });
+        
     }
+    
     
     
 });

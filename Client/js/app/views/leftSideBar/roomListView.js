@@ -17,6 +17,13 @@ var SPIKA_RoomListView = Backbone.View.extend({
 
         });
         
+        Backbone.on(EVENT_START_CHAT, function(chatId) {
+
+            if(_.isNull(chatId))
+                self.roomListView.refresh();
+            
+        });
+        
         this.roomListView = new SpikaPagingListView({
             parentElmSelector : "#menu_container_room .menu_list",
             scrollerSelector : "#menu_container_room .scrollable",

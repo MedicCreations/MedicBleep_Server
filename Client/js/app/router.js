@@ -1,5 +1,6 @@
     var AppRouter = Backbone.Router.extend({
         routes: {
+            "editprofile": "editprofileRoute",
             "createroom": "createRoomRoute",
             "main": "mainRoute",
             "login": "loginRoute",
@@ -60,7 +61,9 @@
             $(HOLDER).fadeOut('slow',function(){
                 $(HOLDER).attr('id', 'chat');
                 $(HOLDER).html(mainView.render().el);
-                $(HOLDER).fadeIn('slow');
+                $(HOLDER).fadeIn('slow',function(){
+                    mainView.updateUserInfo();
+                });
             });
             
         });
@@ -93,7 +96,34 @@
         });
         
     });
-    
+
+    app_router.on('route:editprofileRoute', function(actions) {
+        
+        if(apiClient == null || SPIKA_UserManager.isAuthorised() == false){
+            U.goPage('login');
+            return;
+        }
+        
+        
+        // load models
+        require([
+                    'app/views/featureViews/editProfileView',
+                    'thirdparty/text!templates/featureViews/editProfileView.tpl'
+                ], function (EditProflieView,Template) {
+            
+            var editProfileView = new SPIKA_EditProflieView({
+                template: Template
+            });
+            
+            $(HOLDER).fadeOut('fast',function(){
+                $(HOLDER).attr('id', 'chat');
+                $(HOLDER).html(editProfileView.render().el);
+                $(HOLDER).fadeIn('fast');
+            });
+            
+        });
+        
+    }); 
     
     // Start Backbone history a necessary step for bookmarkable URL's
     Backbone.history.start();

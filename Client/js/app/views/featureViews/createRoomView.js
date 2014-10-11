@@ -3,6 +3,8 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     currentKeyword:'',
     selectedUserIdList:[],
     userModelsPool:[],
+    profileImageFileId:null,
+    profileThumbFileId:null,    
     initialize: function(options) {
         var self = this;
         this.template = options.template;
@@ -53,6 +55,10 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             U.goPage('main'); 
         });
 
+        $$('#btn_create_room').click(function(){
+            self.save();
+        });
+
         $$('#createroom_container .room_profile_image').click(function(){
             $$("#btn_dummy_file_upload_profile").click();
         });
@@ -77,7 +83,10 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                     self.hideAvatarLoading();
                     return;
                 }
-        
+                
+                self.profileImageFileId = data.fileId;
+                self.profileThumbFileId = data.thumbId;
+                
                 EncryptManager.decryptImage($$('#createroom_container .room_profile_image'),data.thumbId,0,apiClient,function(){
                     self.hideAvatarLoading();
                 },function(){
@@ -164,7 +173,51 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     hideAvatarLoading: function(){
         $$('#createroom_container .img_with_loader i').css('display','none');
     },
-    
+    save: function(){
+        
+        // validation
+        var roomName = $$("#createroom_container input").val();
+        
+        if(_.isEmpty(roomName)){
+            
+            SPIKA_AlertManager.show(LANG.general_errortitle,LANG.createroom_validation_error_noname);
+            return;
+        }
+        
+        if(this.selectedUserIdList.length == 0){
+            
+            SPIKA_AlertManager.show(LANG.general_errortitle,LANG.createroom_validation_error_nomember);
+            return;
+        }
+        
+        var userIds = '';
+        
+        _.each(this.selectedUserIdList,function(userId){
+            
+            userIds += userId + ",";
+            
+        });
+        
+        userIds += SPIKA_UserManager.getUser().get('id');
+        
+        apiClient.createNewRoom(roomName,userIds,this.profileImageFileId,this.profileThumbFileId,function(data){
+            
+            if(!_.isNull(data.chat)){
+            
+                U.goPage('main'); 
+                
+                _.debounce(function() {
+                   Backbone.trigger(EVENT_START_CHAT,data.chat.chat_id);
+                }, 1000)();
+        
+            }
+
+        },function(data){
+            
+            SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to create room");
+
+        });
+    },
     ////////////////////////////////////////////////////////////////////////////////
     // listview functions
     ////////////////////////////////////////////////////////////////////////////////
