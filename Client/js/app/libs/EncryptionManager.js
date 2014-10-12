@@ -1,21 +1,26 @@
+//http://stackoverflow.com/questions/26329807/fast-multiple-copy-of-img-dom
+
 EncryptManager = {
     
-    localchacheSaveImage:function(fileId,data){
+    invalidFileIdList:[],
+    memoryCache:[],
+    localchacheSaveImage:function(fileId,imgElement){
+    
+        var imageSelector = '#cached_image img[fileid=\'' + fileId +'\']';
 
-        if(typeof(Storage) == "undefined") {
-            return null;
-        } 
-        
-        localStorage[fileId] = data;
+        if(_.isUndefined($$(imageSelector).get(0))){
+            $(imgElement).clone().prependTo('#cached_image');
+        }
         
     },
     localchacheGetImage:function(fileId){
-
-        if(typeof(Storage) == "undefined") {
-            return null;
-        } 
         
-        return localStorage[fileId];
+        var imageSelector = '#cached_image img[fileid=\'' + fileId +'\']';
+        
+        if(_.isUndefined($$(imageSelector).get(0)))
+            return null;
+
+        return $$(imageSelector).get(0);
         
     },    
     encryptText : function(text){
@@ -76,16 +81,21 @@ EncryptManager = {
 
     decryptImage : function(imgElement,fileId,width,apiClient,successListner,failedListner){
         
+        if(_.indexOf(this.invalidFileIdList,fileId) != -1)
+            return;
+            
         if(_.isEmpty(fileId))
             return;
-
+        
         var self = this;
         
-        var chacedFile = self.localchacheGetImage(fileId);
+        $(imgElement).attr('state','loaded');
         
-        if(!_.isUndefined(chacedFile) && !_.isNull(chacedFile)){
+        var cachedElm = self.localchacheGetImage(fileId);
 
-            $(imgElement).attr('src','data:image/jpeg;base64,' + chacedFile);
+        if(!_.isUndefined(cachedElm) && !_.isNull(cachedElm)){
+            
+            $(imgElement).replaceWith($(cachedElm).clone());
             
             if(width > 0)
                 $(imgElement).attr('width',width);
@@ -96,13 +106,15 @@ EncryptManager = {
             return;
         }
         
+
         // download file first  
         apiClient.downloadFile(fileId,function(data){
             
             var hexText = data;
 
-            if( hexText.length == 0)
+            if( hexText.length == 0){
                 return '';
+            }
             
             try{
                 var decryptedBin = RNCryptor.Decrypt(AES_PASSWORD,
@@ -110,11 +122,12 @@ EncryptManager = {
                 );
     
                 $(imgElement).attr('src','data:image/jpeg;base64,' + sjcl.codec.base64.fromBits(decryptedBin));
+                //$(imgElement).attr('src',decryptedBin);
                 
                 if(width > 0)
                     $(imgElement).attr('width',width);
                 
-                self.localchacheSaveImage(fileId,sjcl.codec.base64.fromBits(decryptedBin));
+                self.localchacheSaveImage(fileId,imgElement);
                 
                 if(_.isFunction(successListner))
                     successListner();
@@ -123,23 +136,22 @@ EncryptManager = {
                 
                 if(_.isFunction(failedListner))
                     failedListner();
-
-
+                    
             }
-
-                
-            $(imgElement).attr('state','loaded');
             
         },function(data){
-        
+            self.invalidFileIdList.push(fileId);
         });
         
     },
     
     downloadFile:function(fileId,fileName,encryptedFileName){
         
-        $('#downloadlink_' + fileId + " img").attr('src','img/btn_decrypting.png');
+        var self = this;
 
+        if(_.indexOf(this.invalidFileIdList,fileId) != -1)
+            return;
+            
         if(_.isEmpty(fileId))
             return;
             
@@ -158,7 +170,7 @@ EncryptManager = {
                 fileName = decryptedFileName;
                 
             } catch(ex){
-
+                
             }
             
         }
@@ -179,8 +191,6 @@ EncryptManager = {
                 
                 var base64encoded = sjcl.codec.base64.fromBits(decryptedBin);
                 
-                $('#downloadlink_' + fileId + " img").attr('src','img/btn_download.png');
-                
                 var byteCharacters = atob(base64encoded);
                 var byteNumbers = new Array(byteCharacters.length);
                 for (var i = 0; i < byteCharacters.length; i++) {
@@ -193,12 +203,12 @@ EncryptManager = {
                 
                     
             } catch(ex){
-                U.l(ex);
+                self.invalidFileIdList.push(fileId);
             }
 
             
         },function(data){
-        
+            self.invalidFileIdList.push(fileId);
         });
         
     }

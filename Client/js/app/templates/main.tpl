@@ -51,3 +51,6 @@
 		</a>
 	</p>
 </div>
+
+<div id="cached_image" style="display:none">
+</div>

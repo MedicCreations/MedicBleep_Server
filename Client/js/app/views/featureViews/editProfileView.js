@@ -2,6 +2,9 @@ var SPIKA_EditProflieView = Backbone.View.extend({
     
     user:null,
     initialize: function(options) {
+        
+        var self = this;
+        
         this.template = options.template;
 
         Backbone.on(EVENT_WINDOW_SIZE_CHANGED, function() {

@@ -176,6 +176,11 @@ var SPIKA_ChatView = Backbone.View.extend({
             this.messages = new MessageResult([]);
         }
         
+        
+        //reached to last page
+        if(self.messages.models.length > 0 && self.messages.models.length >= this.totalMessageCount)
+            return;
+            
         var lastMessageId = null;
         
         if(this.messages.models.length > 0)
@@ -200,6 +205,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             if(refresh){
                 self.scrollToBottom();
+                Backbone.trigger(EVENT_REFRESH_ROOMLIST);
             }else{
                 $$("#main_container .scrollable").scrollTop(afterHeight - beforeHeight);
             }

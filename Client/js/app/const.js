@@ -5,6 +5,7 @@ var EVENT_START_CHAT = 'startChat';
 var EVENT_MESSAGE_SENT = 'messageSent';
 var EVENT_NEW_MESSAGE = 'newMessage';
 var EVENT_FILE_DROP = 'eventFileDrop';
+var EVENT_REFRESH_ROOMLIST = 'eventRefreshRoomList';
 
 var EVENT_START_PRIVATE_CHAT = 'startPrivateChat';
 var EVENT_START_GROUP_CHAT = 'startGroupChat';

@@ -1,6 +1,7 @@
 var SPIKA_RoomListView = Backbone.View.extend({
     
     currentKeyword : '',
+    isLoaded : false,
     initialize: function(options) {
         var self = this;
         this.template = options.template;
@@ -10,13 +11,14 @@ var SPIKA_RoomListView = Backbone.View.extend({
         });
 
         Backbone.on(EVENT_NEW_MESSAGE, function(chatId) {
-        
-            // if chat id is null the signal is for rehresshing lobby
-            if(_.isNull(chatId))
-                self.roomListView.refresh();
-
+            self.roomListView.refresh();
         });
-        
+
+
+        Backbone.on(EVENT_REFRESH_ROOMLIST, function(chatId) {
+            self.roomListView.refresh();
+        });
+                
         Backbone.on(EVENT_START_CHAT, function(chatId) {
 
             if(_.isNull(chatId))
@@ -50,8 +52,6 @@ var SPIKA_RoomListView = Backbone.View.extend({
         var self = this;
         
         this.updateWindowSize();
-        this.roomListView.init();
-        this.roomListView.loadCurrentPage();
         
         $$('#menu_container_room input').keyup(function(evt) {
             self.currentKeyword = $$('#menu_container_room input').val();
@@ -64,6 +64,14 @@ var SPIKA_RoomListView = Backbone.View.extend({
         U.setViewHeight($$("#menu_container_room .scrollable"),[
             $$('header'),$$('#tab_menu'),$$('#nav_bottom'),$$('#menu_container_room .menu_search')
         ])
+    },
+    
+    onOpen: function(){
+        if(!this.isLoaded){
+            this.roomListView.init();
+            this.roomListView.loadCurrentPage();
+            this.isLoaded = true;
+        }
     },
     
     ////////////////////////////////////////////////////////////////////////////////

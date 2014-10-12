@@ -75,6 +75,15 @@ var SPIKA_LeftSideBar = Backbone.View.extend({
             var clickedTabIndex = $(clickedTab).attr('tab');
             $$("#" + clickedTabIndex).css('display','block');
             
+            if(clickedTabIndex.search('room') != -1)
+                self.roomListView.onOpen();
+                
+            if(clickedTabIndex.search('user') != -1)
+                self.userListView.onOpen();
+                
+            if(clickedTabIndex.search('group') != -1)
+                self.groupListView.onOpen();
+                
         });
         
         $$('#nav_bottom').click(function(){
@@ -82,6 +91,8 @@ var SPIKA_LeftSideBar = Backbone.View.extend({
             U.goPage('createroom'); 
             
         });
+        
+        this.roomListView.onOpen();
         
     }
 });

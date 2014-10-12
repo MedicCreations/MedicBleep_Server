@@ -1,6 +1,7 @@
 var SPIKA_GroupListView = Backbone.View.extend({
     
     currentKeyword : '',
+    isLoaded: false,
     initialize: function(options) {
         var self = this;
         this.template = options.template;
@@ -35,8 +36,6 @@ var SPIKA_GroupListView = Backbone.View.extend({
         var self = this;
         
         this.updateWindowSize();
-        this.roomListView.init();
-        this.roomListView.loadCurrentPage();
         
         $$('#menu_container_group input').keyup(function(evt) {
             self.currentKeyword = $$('#menu_container_group input').val();
@@ -51,6 +50,13 @@ var SPIKA_GroupListView = Backbone.View.extend({
         ])
     },
     
+    onOpen: function(){
+        if(!this.isLoaded){
+            this.roomListView.init();
+            this.roomListView.loadCurrentPage();
+            this.isLoaded = true;
+        }
+    },
     ////////////////////////////////////////////////////////////////////////////////
     // listview functions
     ////////////////////////////////////////////////////////////////////////////////

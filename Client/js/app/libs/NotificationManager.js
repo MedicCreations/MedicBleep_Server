@@ -4,9 +4,56 @@ var SPIKA_notificationManger = {
     lastUnreadNum : null,
     unreadMessageNum : 0,
     flgStopPooling:false,
+    wsConnection : null,
     init : function(){
         
         var self = this;
+
+        try{
+                        
+            //create a new WebSocket object.
+            self.wsConnection = new WebSocket(NOTIFICATION_SERVER_URL);
+            
+            self.wsConnection.onopen = function(e) {
+                U.l('WS MODE connection established');
+            };
+            
+            self.wsConnection.onmessage = function(e) {
+                
+                var chatId = e.data;
+                
+                Backbone.trigger(EVENT_NEW_MESSAGE,chatId);
+                
+            };
+
+            self.wsConnection.onerror = function(e) {
+                U.l(e);
+                self.usePoing();
+            };
+
+        } catch (ex){
+            U.l(ex);
+            self.usePoing();
+            
+        }
+        
+        Backbone.on(EVENT_MESSAGE_SENT, function(chatId) {
+
+            self.sendNotification(chatId);
+            
+        });
+        
+    },
+    
+    //////////////////////////////////////////////////////////
+    //  Poling mode logics
+    //////////////////////////////////////////////////////////
+    
+    usePoing : function(){
+        
+        var self = this;
+        
+        U.l('POLING MODE');
         
         window.setTimeout(function(){
             self.doPooling();
@@ -15,13 +62,15 @@ var SPIKA_notificationManger = {
         Backbone.on(EVENT_FORCE_LOGOUT, function(page) {
             self.flgStopPooling = true;
         });
-        
     },
     stopPooling : function(){
         this.flgStopPooling = true;
     },
     doPooling : function(){
-
+        
+        if(!POLING_ENABLED)
+            return;
+            
         var self = this;
         
         self.flgStopPooling = false;
@@ -122,6 +171,19 @@ var SPIKA_notificationManger = {
         
 
         
+    },
+    
+    //////////////////////////////////////////////////////////
+    //  Websocket mode logics
+    //////////////////////////////////////////////////////////
+    
+    sendNotification: function(chatId){
+    
+        if(_.isNull(this.wsConnection))
+            return;
+
+        this.wsConnection.send(chatId);
     }
+    
     
 }

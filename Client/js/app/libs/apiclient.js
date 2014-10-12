@@ -651,8 +651,19 @@ SpikaClient.prototype.downloadFile = function(fileId,succeessListener,failedList
         headers: {"token":this.token}
     });
     
+
     requestLogin.done(function( data ) {
         
+        if(data.search('code') != -1){
+            
+            data = JSON.parse(data);
+            
+            if(data.code == 1010){
+                failedListener(data);
+                return;
+            }
+            
+        }
         succeessListener(data);
         
     });
