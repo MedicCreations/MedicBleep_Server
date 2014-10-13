@@ -180,7 +180,7 @@ class MySqlDb implements DbInterface{
 		$sql = $sql . " WHERE user.id <> ? ";
 		
 		if ($search != ""){
-			$sql = $sql . " AND firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%'";
+			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
 		}
 		
 		$sql = $sql . " ORDER BY user.firstname,user.id LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
@@ -204,7 +204,7 @@ class MySqlDb implements DbInterface{
 		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ? ";
 		
 		if ($search != ""){
-			$sql = $sql . " AND firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%'";
+			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
 		}
 		
 		$result = $app['db']->executeQuery($sql, array($my_user_id))->fetch();
@@ -859,16 +859,16 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function getSearchUsersGroups(Application $app, $search){
+	public function getSearchUsersGroups(Application $app, $search, $my_user_id){
 		
-		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user";
+		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user WHERE user.id <> ? ";
 		if ($search != ""){
-			$sql = $sql . " WHERE CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
+			$sql = $sql . " AND (CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
 			$sql = $sql . " OR user.firstname LIKE '" . $search . "%'";
-			$sql = $sql . " OR user.lastname LIKE '" . $search . "%'";
+			$sql = $sql . " OR user.lastname LIKE '" . $search . "%')";
 		}
 		
-		$users = $app['db']->fetchAll($sql);
+		$users = $app['db']->fetchAll($sql, array($my_user_id));
 		
 		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups";
 		if ($search != ""){

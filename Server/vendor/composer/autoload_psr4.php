@@ -6,11 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'React\\Stream\\' => array($vendorDir . '/react/stream/src'),
-    'React\\Socket\\' => array($vendorDir . '/react/socket/src'),
-    'React\\SocketClient\\' => array($vendorDir . '/react/socket-client'),
-    'React\\EventLoop\\' => array($vendorDir . '/react/event-loop'),
-    'React\\Dns\\' => array($vendorDir . '/react/dns'),
-    'React\\Cache\\' => array($vendorDir . '/react/cache'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
 );

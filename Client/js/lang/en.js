@@ -28,5 +28,8 @@ LANG = {
       moblie: "Mobile Number",
       email: "Email",
       editprofile_validation_error_noname: "Please input first name and last name.",
+      browser_doesnt_support: "Sorry your browser is not supported.",
+      unread_messages_singlar : "unread message",
+      unread_messages_plural : "unread messages",
       dummy : 'dummy'
 };

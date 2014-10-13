@@ -42,6 +42,10 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             if(chatId == self.chatData.get('chat_id')){
                 
+                // refresh lobby data if first post in the chat
+                if(self.totalMessageCount == 0)
+                    Backbone.trigger(EVENT_REFRESH_ROOMLIST);
+                    
                 self.loadNewMessages();
                 
                 /*

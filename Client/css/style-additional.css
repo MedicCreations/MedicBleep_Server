@@ -83,6 +83,9 @@ footer #mess_type ul li textarea.disabled{
 	background: #FFFFFF;
 }
 
+#chat nav #tab_menu ul li {
+	width: 25%;
+}
 
 /*------------------------------*/
 /*   	   Progress view 		*/
@@ -121,6 +124,9 @@ footer #mess_type ul li textarea.disabled{
 	text-decoration: none;
 }
 
+.textred{
+	color: #E94B4D;
+}
 .red{
 	background: #E94B4D;
 }

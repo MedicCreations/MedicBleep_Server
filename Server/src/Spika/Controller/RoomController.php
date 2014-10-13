@@ -72,7 +72,7 @@ class RoomController extends SpikaBaseController {
 		})->before($app['beforeSpikaTokenChecker']);
 		
 		
-		//get chat members list
+		//get rooms list
 		$controllers->get('/list', function (Request $request) use ($app, $self, $mySql){
 			
 			$paramsAry = $request->query->all();
@@ -132,9 +132,9 @@ class RoomController extends SpikaBaseController {
 			}
 			$offset = $page * ROOMS_PAGE_SIZE;
 			
-			$user_id= $app['user']['id'];
+			$my_user_id= $app['user']['id'];
 			
-			$all = $mySql->getSearchUsersGroups($app, $search);
+			$all = $mySql->getSearchUsersGroups($app, $search, $my_user_id);
 			
 			$search_slice = array_slice($all, $offset, ROOMS_PAGE_SIZE);
 			

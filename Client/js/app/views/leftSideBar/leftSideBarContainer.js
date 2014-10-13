@@ -1,5 +1,6 @@
 var SPIKA_LeftSideBar = Backbone.View.extend({
     
+    lobbyListView: null,
     roomListView: null,
     userListView: null,
     groupListView: null,
@@ -18,6 +19,8 @@ var SPIKA_LeftSideBar = Backbone.View.extend({
 
         // load all subcontent
         require([
+            'app/views/leftSideBar/lobbyListView',
+            'thirdparty/text!templates/leftSideBar/lobbyListView.tpl',
             'app/views/leftSideBar/roomListView',
             'thirdparty/text!templates/leftSideBar/roomListView.tpl',
             'app/views/leftSideBar/userListView',
@@ -25,9 +28,14 @@ var SPIKA_LeftSideBar = Backbone.View.extend({
             'app/views/leftSideBar/groupListView',
             'thirdparty/text!templates/leftSideBar/groupListView.tpl',
             'app/views/leftSideBar/listView'
-        ], function (roomListView,RoomListViewTemplate,
+        ], function (lobbyListView,LobbyListViewTemplate,
+                        roomListView,RoomListViewTemplate,
                         userListView,UserListViewTemplate,
                         groupListView,GroupListViewTemplate) {
+            
+            self.lobbyListView = new SPIKA_LobbyListView({
+                template: LobbyListViewTemplate
+            });
             
             self.roomListView = new SPIKA_RoomListView({
                 template: RoomListViewTemplate
@@ -53,10 +61,13 @@ var SPIKA_LeftSideBar = Backbone.View.extend({
 
         var self = this;
         
+        $$('#menu_container_lobby').html(self.lobbyListView.render().el);
         $$('#menu_container_room').html(self.roomListView.render().el);
         $$('#menu_container_user').html(self.userListView.render().el);
         $$('#menu_container_group').html(self.groupListView.render().el);
 
+        $$('#menu_container_lobby').css('display','block');
+        $$('#menu_container_room').css('display','none');
         $$('#menu_container_user').css('display','none');
         $$('#menu_container_group').css('display','none');
 
@@ -75,6 +86,9 @@ var SPIKA_LeftSideBar = Backbone.View.extend({
             var clickedTabIndex = $(clickedTab).attr('tab');
             $$("#" + clickedTabIndex).css('display','block');
             
+            if(clickedTabIndex.search('lobby') != -1)
+                self.lobbyListView.onOpen();
+
             if(clickedTabIndex.search('room') != -1)
                 self.roomListView.onOpen();
                 
@@ -92,7 +106,7 @@ var SPIKA_LeftSideBar = Backbone.View.extend({
             
         });
         
-        this.roomListView.onOpen();
+        this.lobbyListView.onOpen();
         
     }
 });

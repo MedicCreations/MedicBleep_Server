@@ -56,6 +56,7 @@ var SPIKA_GroupListView = Backbone.View.extend({
             this.roomListView.loadCurrentPage();
             this.isLoaded = true;
         }
+        this.roomListView.refresh();
     },
     ////////////////////////////////////////////////////////////////////////////////
     // listview functions

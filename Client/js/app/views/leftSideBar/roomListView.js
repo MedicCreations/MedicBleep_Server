@@ -9,22 +9,6 @@ var SPIKA_RoomListView = Backbone.View.extend({
         Backbone.on(EVENT_WINDOW_SIZE_CHANGED, function() {
             self.updateWindowSize();
         });
-
-        Backbone.on(EVENT_NEW_MESSAGE, function(chatId) {
-            self.roomListView.refresh();
-        });
-
-
-        Backbone.on(EVENT_REFRESH_ROOMLIST, function(chatId) {
-            self.roomListView.refresh();
-        });
-                
-        Backbone.on(EVENT_START_CHAT, function(chatId) {
-
-            if(_.isNull(chatId))
-                self.roomListView.refresh();
-            
-        });
         
         this.roomListView = new SpikaPagingListView({
             parentElmSelector : "#menu_container_room .menu_list",
@@ -72,6 +56,7 @@ var SPIKA_RoomListView = Backbone.View.extend({
             this.roomListView.loadCurrentPage();
             this.isLoaded = true;
         }
+        this.roomListView.refresh();
     },
     
     ////////////////////////////////////////////////////////////////////////////////
@@ -95,16 +80,6 @@ var SPIKA_RoomListView = Backbone.View.extend({
         
         var collection = roomFactory.createCollectionByAPIResponse(response);
         
-        _.each(collection.models,function(model){
-            
-            var unreadText = "";
-            
-            if(model.get('unread') > 0)
-                unreadText = '(' + model.get('unread') + ')';
-                
-            model.set('unread_formatted',unreadText);
-            
-        });
         
         return collection;
     },

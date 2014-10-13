@@ -5,7 +5,7 @@
             "main": "mainRoute",
             "login": "loginRoute",
             "logout": "logoutRoute",
-            "forcelogout": "forcelogoutRoute",
+            "forcelogout": "loginRoute",
             "*actions": "defaultRoute"
         }
     });

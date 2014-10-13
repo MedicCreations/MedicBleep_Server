@@ -1,7 +1,7 @@
 // config
-var API_URL = 'http://www.spikaent.com/dev/server/v1';
-var WEB_ROOT = 'http://www.spikaent.com/dev/web'
-var NOTIFICATION_SERVER_URL = 'ws://www.spikaent.com:8080/chat';
+var API_URL = 'https://www.spikaent.com/dev/server/v1';
+var WEB_ROOT = 'https://www.spikaent.com/dev/web'
+var NOTIFICATION_SERVER_URL = 'wss://www.spikaent.com:8443/chat';
 var AES_PASSWORD = 'jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB';
 
 var POOLING_INTERVAL = 500; // ms

@@ -5,6 +5,7 @@ var SPIKA_notificationManger = {
     unreadMessageNum : 0,
     flgStopPooling:false,
     wsConnection : null,
+    websocketMode : false,
     init : function(){
         
         var self = this;
@@ -16,6 +17,7 @@ var SPIKA_notificationManger = {
             
             self.wsConnection.onopen = function(e) {
                 U.l('WS MODE connection established');
+                self.websocketMode = true;
             };
             
             self.wsConnection.onmessage = function(e) {
@@ -126,7 +128,7 @@ var SPIKA_notificationManger = {
                 // new message
                 if(unread > self.lastUnreadNum){
 
-                    SPIKA_soundManager.playNewMessage();
+                    //SPIKA_soundManager.playNewMessage();
     
                     var noticifaction = notify.createNotification("SPIKA", {
                         body:"You have new message.",
@@ -135,9 +137,7 @@ var SPIKA_notificationManger = {
                     
                     _.debounce(function() {
                         noticifaction.close();
-                    }, 2000)();
-                
-                
+                    }, 1000)();
                 
                 }
                 

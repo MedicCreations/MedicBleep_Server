@@ -99,10 +99,16 @@ var SPIKA_MainView = Backbone.View.extend({
             var modelUser = userFactory.createModelByAPIResponse(data.user);
             SPIKA_UserManager.setUser(modelUser);
             
-            $$('.userprofile span').text(modelUser.get('firstname') + " " + modelUser.get('lastname'));
+            var text = modelUser.get('firstname') + " " + modelUser.get('lastname');
+            
+            // add websocket icon
+            if(SPIKA_notificationManger.websocketMode)
+                text += ' <i class="fa fa-plug"></i>';
+                
+            $$('.userprofile span').html(text);
             
             EncryptManager.decryptImage($$('.userprofile img'),modelUser.get('image_thumb'),0,apiClient,function(){
-
+                
             },function(){
 
             });

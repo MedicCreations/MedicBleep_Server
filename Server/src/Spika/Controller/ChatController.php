@@ -77,6 +77,8 @@ class ChatController extends SpikaBaseController {
 			
 			$paramsAry = $request->request->all();
 			
+			$my_user_id = $app['user']['id'];
+			
 			$chat_id = "";
 			if (array_key_exists('chat_id', $paramsAry)){
 				$chat_id = $paramsAry['chat_id'];
@@ -102,7 +104,7 @@ class ChatController extends SpikaBaseController {
 				
 					$custom_chat_id = $self->createChatCustomID($all_members);
 				
-					$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id, 0);
+					$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, $my_user_id, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id, 0);
 					$mySql->addChatMembers($app, $chat_id, $all_members);
 					$messages = array();
 				
@@ -127,7 +129,7 @@ class ChatController extends SpikaBaseController {
 				
 				$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 				
-				$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id, 0);
+				$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, $my_user_id, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id, 0);
 				
 				$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
 				$messages = array();

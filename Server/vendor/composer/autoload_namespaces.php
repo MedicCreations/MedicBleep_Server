@@ -6,14 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Zend\\Validator\\' => array($vendorDir . '/zendframework/zend-validator'),
-    'Zend\\Uri\\' => array($vendorDir . '/zendframework/zend-uri'),
-    'Zend\\Stdlib\\' => array($vendorDir . '/zendframework/zend-stdlib'),
-    'Zend\\ServiceManager\\' => array($vendorDir . '/zendframework/zend-servicemanager'),
-    'Zend\\Log\\' => array($vendorDir . '/zendframework/zend-log'),
-    'Zend\\Loader\\' => array($vendorDir . '/zendframework/zend-loader'),
-    'Zend\\Http\\' => array($vendorDir . '/zendframework/zend-http'),
-    'Zend\\Escaper\\' => array($vendorDir . '/zendframework/zend-escaper'),
     'Symfony\\Component\\Routing\\' => array($vendorDir . '/symfony/routing'),
     'Symfony\\Component\\Locale\\' => array($vendorDir . '/symfony/locale'),
     'Symfony\\Component\\Intl\\' => array($vendorDir . '/symfony/intl'),
@@ -25,13 +17,11 @@ return array(
     'Symfony\\Bridge\\Monolog\\' => array($vendorDir . '/symfony/monolog-bridge'),
     'Spika\\' => array($baseDir . '/src'),
     'Silex' => array($vendorDir . '/silex/silex/src'),
-    'React\\Promise' => array($vendorDir . '/react/promise/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log'),
     'Pimple' => array($vendorDir . '/pimple/pimple/lib'),
     'Imagine' => array($vendorDir . '/imagine/imagine/lib'),
     'Guzzle\\Tests' => array($vendorDir . '/guzzle/guzzle/tests'),
     'Guzzle' => array($vendorDir . '/guzzle/guzzle/src'),
-    'Evenement' => array($vendorDir . '/evenement/evenement/src'),
     'Doctrine\\DBAL' => array($vendorDir . '/doctrine/dbal/lib'),
     'Doctrine\\Common\\Lexer\\' => array($vendorDir . '/doctrine/lexer/lib'),
     'Doctrine\\Common\\Inflector\\' => array($vendorDir . '/doctrine/inflector/lib'),
@@ -39,5 +29,4 @@ return array(
     'Doctrine\\Common\\Cache\\' => array($vendorDir . '/doctrine/cache/lib'),
     'Doctrine\\Common\\Annotations\\' => array($vendorDir . '/doctrine/annotations/lib'),
     'Doctrine\\Common\\' => array($vendorDir . '/doctrine/common/lib'),
-    'Devristo\\Phpws\\' => array($vendorDir . '/devristo/phpws/src'),
 );

@@ -6,6 +6,7 @@ function SpikaPagingListView(options)
     this.currentPage = 0;
     this.list = new Backbone.Collection([]);
     this.reachedToEnd = false;
+    this.enablePaging = true;
 };
 
 SpikaPagingListView.prototype.init = function(){
@@ -15,6 +16,9 @@ SpikaPagingListView.prototype.init = function(){
 	//handle paging
     $$(this.scrollerSelector).scroll(function() {
         
+        if(self.enablePaging == false)
+            return;
+            
         if(self.reachedToEnd)
             return;
             
@@ -62,7 +66,7 @@ SpikaPagingListView.prototype.afterRender = function(){
 	var listHeight = $$(this.parentElmSelector).height();
 	
 	// load next page if list view is not filled
-	if(listHeight < actualHeight){
+	if(listHeight < actualHeight && this.enablePaging == true){
     	this.currentPage++;
     	this.loadCurrentPage();
 	}

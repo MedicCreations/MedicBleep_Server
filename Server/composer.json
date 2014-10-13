@@ -13,8 +13,7 @@
         "swiftmailer/swiftmailer": ">=4.1.2",
         "guzzle/guzzle": "~3.7",
         "doctrine/dbal": ">=2.2.0,<2.4.0-dev",
-        "imagine/imagine": "~0.5.0",
-        "devristo/phpws": "dev-master"
+        "imagine/imagine": "~0.5.0"
     },
     "autoload": {
         "psr-0": {"Spika\\": "src/"}

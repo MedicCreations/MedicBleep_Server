@@ -175,7 +175,7 @@ define(['module'], function (module) {
                 url = req.toUrl(nonStripName),
                 useXhr = (masterConfig.useXhr) ||
                          text.useXhr;
-
+            
             // Do not load if it is an empty: url
             if (url.indexOf('empty:') === 0) {
                 onLoad();
@@ -192,6 +192,7 @@ define(['module'], function (module) {
                     }
                 });
             } else {
+                
                 //Need to fetch the resource across domains. Assume
                 //the resource has been optimized into a JS module. Fetch
                 //by the module name + extension, but do not include the
