@@ -35,6 +35,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             
         });
 
+/*
         Backbone.on(EVENT_MESSAGE_SENT, function(chatId) {
 
             if(_.isNull(self.chatData))
@@ -48,17 +49,18 @@ var SPIKA_ChatView = Backbone.View.extend({
                     
                 self.loadNewMessages();
                 
-                /*
+
                 if(self.viewmode == CHATVIEW_LISTMODE)
                     self.loadNewMessages();
                 else
                     self.openThreadMode(self.threadId);
-                */
+
             }
         });
-          
-        Backbone.on(EVENT_NEW_MESSAGE, function(chatId) {
+                */
 
+        Backbone.on(EVENT_NEW_MESSAGE, function(chatId) {
+            
             if(_.isNull(self.chatData))
                 return;
                 
@@ -195,14 +197,22 @@ var SPIKA_ChatView = Backbone.View.extend({
             if(!_.isUndefined(data.total_count))
                 self.totalMessageCount = data.total_count;
             
-            self.messages.add(messageFactory.createCollectionByAPIResponse(data).models);
+            var newMessages = messageFactory.createCollectionByAPIResponse(data).models;
+            
+            self.messages.add(newMessages);
 
             self.formatMessages(true);
             
             var beforeHeight = $$('#main_container article')[0].scrollHeight
+                        
+            if(refresh){
+                var template = _.template($$('#template_message_row').html(), {messages: self.messages.models}); 
+                $$('#main_container article').html(template);
+            }else{
+                var template = _.template($$('#template_message_row').html(), {messages: newMessages}); 
+                $$('#main_container article').prepend(template);
+            }
             
-            var template = _.template($$('#template_message_row').html(), {messages: self.messages.models});
-            $$('#main_container article').html(template);
             $$('#main_container article').removeClass('nochat');
             
             var afterHeight = $$('#main_container article')[0].scrollHeight
@@ -239,12 +249,16 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             if(!_.isUndefined(data.total_count))
                 self.totalMessageCount = data.total_count;
-                
-            self.messages.add(messageFactory.createCollectionByAPIResponse(data).models);
+            
+            var newMessages = messageFactory.createCollectionByAPIResponse(data).models;
+            
+            self.messages.add(newMessages);
             self.formatMessages(true);
             
-            var template = _.template($$('#template_message_row').html(), {messages: self.messages.models});
-            $$('#main_container article').html(template);
+            U.l(newMessages);
+            
+            var template = _.template($$('#template_message_row').html(), {messages: newMessages});
+            $$('#main_container article').append(template);
             $$('#main_container article').removeClass('nochat');
 
             self.scrollToBottom();

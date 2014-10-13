@@ -20,6 +20,7 @@
     
     app_router.on('route:loginRoute', function(actions) {
         
+
         // load models
         require(['app/views/loginView',
                     'thirdparty/text!templates/login.tpl'
@@ -40,7 +41,7 @@
     });
 
     app_router.on('route:logoutRoute', function(actions) {
-        
+
         // load models
         require(['app/views/loginView',
                     'thirdparty/text!templates/login.tpl'
@@ -65,6 +66,9 @@
             U.goPage('login');
             return;
         }
+        // reset all event listener
+        Backbone.off();
+
         
         // load models
         require([
@@ -97,6 +101,9 @@
             return;
         }
         
+        // reset all event listener
+        Backbone.off();
+        
         // load models
         require([
                     'app/views/featureViews/createRoomView',
@@ -124,6 +131,8 @@
             return;
         }
         
+        // reset all event listener
+        Backbone.off();
         
         // load models
         require([

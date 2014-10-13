@@ -87,6 +87,9 @@ EncryptManager = {
         if(_.isEmpty(fileId))
             return;
         
+        if(fileId.search('default') != -1)
+            return;
+            
         var self = this;
         
         $(imgElement).attr('state','loaded');

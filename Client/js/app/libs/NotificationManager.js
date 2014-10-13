@@ -23,7 +23,7 @@ var SPIKA_notificationManger = {
             self.wsConnection.onmessage = function(e) {
                 
                 var chatId = e.data;
-                
+
                 Backbone.trigger(EVENT_NEW_MESSAGE,chatId);
                 
             };
