@@ -18,7 +18,6 @@ return array(
     'Symfony\\Bridge\\Monolog\\' => array($vendorDir . '/symfony/monolog-bridge'),
     'Spika\\' => array($baseDir . '/src'),
     'Silex' => array($vendorDir . '/silex/silex/src'),
-    'RNCryptor' => array($vendorDir . '/rncryptor/rncryptor/lib'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log'),
     'Pimple' => array($vendorDir . '/pimple/pimple/lib'),
     'Imagine' => array($vendorDir . '/imagine/imagine/lib'),
