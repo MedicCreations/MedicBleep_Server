@@ -257,6 +257,9 @@ class MessageController extends SpikaBaseController {
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'Message created');
 			
+			// send websocket notification
+			$self->sendWebSocketSignal($chat_id,$app);
+			
 			return $app->json($result, 200);
 			
 		})->before($app['beforeSpikaTokenChecker']);

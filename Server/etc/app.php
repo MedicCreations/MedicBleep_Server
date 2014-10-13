@@ -20,9 +20,9 @@ $app = new Silex\Application ( isset ( $dependencies ) ? $dependencies : array (
 $app ['debug'] = true;
 
 // logging
-// $app->register(new MonologServiceProvider(), array(
-// 'monolog.logfile' => __DIR__.'/../logs/debug.log',
-// ));
+$app->register(new MonologServiceProvider(), array(
+    'monolog.logfile' => __DIR__.'/../logs/debug.log',
+));
 
 $app->register ( new Silex\Provider\DoctrineServiceProvider (), array (
 		'db.options' => array (
@@ -41,6 +41,10 @@ $app->register ( new Silex\Provider\DoctrineServiceProvider (), array (
 
 $app->register ( new Spika\Provider\TokenServiceProvider () );
 
+$app->register(new Spika\Provider\WebSocketNotificationProvider(), array(
+    'host' => WEBSOCKET_SERVER_HOST,
+    'port' => WEBSOCKET_SERVER_PORT
+));
 
 $app->register(new Silex\Provider\SessionServiceProvider(), array(
 ));

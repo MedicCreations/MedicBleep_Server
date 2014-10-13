@@ -68,9 +68,6 @@ var SPIKA_notificationManger = {
     },
     doPooling : function(){
         
-        if(!POLING_ENABLED)
-            return;
-            
         var self = this;
         
         self.flgStopPooling = false;
@@ -178,11 +175,12 @@ var SPIKA_notificationManger = {
     //////////////////////////////////////////////////////////
     
     sendNotification: function(chatId){
-    
+        
+        // this goes from server side
         if(_.isNull(this.wsConnection))
             return;
 
-        this.wsConnection.send(chatId);
+        //this.wsConnection.send(chatId);
     }
     
     

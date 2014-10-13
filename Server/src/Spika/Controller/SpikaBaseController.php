@@ -254,6 +254,11 @@ class SpikaBaseController implements ControllerProviderInterface
 				}
 	}
 	
-	
+	public function sendWebSocketSignal($message,$app){
+        
+        $app['monolog']->addDebug('connecting to ws server');
+        $result = $app['websocket_send']($message);
+        $app['monolog']->addDebug('sent:'.$result);
+	}
     		
 }
