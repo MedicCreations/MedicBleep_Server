@@ -95,6 +95,15 @@ class RoomController extends SpikaBaseController {
 			
 			$rooms = $mySql->getRooms($app, $user_id, $search, $offset, $category_id);
 			
+			foreach ($rooms as &$room){
+						
+						if ($room['chat_name'] == ""){
+							$chat_members = $mySql->getChatMembers($app, $room['chat_id']);
+							$room['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
+						}
+						
+					}
+			
 			if ($page > 0 && count($rooms) == 0){
 				$result = array('code' => ER_PAGE_NOT_FOUND, 
 					'message' => 'Page not found');
