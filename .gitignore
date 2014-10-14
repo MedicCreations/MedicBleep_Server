@@ -9,7 +9,7 @@ Server/uploads/
 !logs/.gitkeep
 Admin/init.php
 Server/init.php
-Client/js/app/libs/init.js
+Client/js/app/init.js
 Client/apps/
 
 sourcetreeconfig
