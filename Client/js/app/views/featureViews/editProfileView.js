@@ -122,21 +122,19 @@ var SPIKA_EditProflieView = Backbone.View.extend({
             return false;
             
         if(_.isEmpty(details))
-            return false;        
-
-        if(_.isUndefined(details[param]))
-            return false;
-            
-        if(_.isNull(details[param]))
-            return false;
-            
-        if(_.isEmpty(details[param]))
-            return false;          
-
-        $$('input[name="' + formName + '"]').val(details[param]);
+            return false;               
         
+        _.each(details,function(value){
+                      
+            if(!_.isUndefined(value[param])){
+                U.l(value[param]);
+                $$('input[name="' + formName + '"]').val(value[param]);
+            }
+        });
+
     },    
-    
+
+
     updateInfo: function(){
 
         var self = this;
@@ -146,9 +144,9 @@ var SPIKA_EditProflieView = Backbone.View.extend({
         $$('input[name="firstname"]').val(this.user.get('firstname'));
         $$('input[name="lastname"]').val(this.user.get('lastname'));
         
-        this.showInfoFromDetail('tel_num','tel_num');
+        this.showInfoFromDetail('phone_number','tel_num');
         this.showInfoFromDetail('email','email');
-        this.showInfoFromDetail('mobile_num','moblile_num');
+        this.showInfoFromDetail('mobile_number','moblile_num');
         
         EncryptManager.decryptImage($$('#profile_edit_view img'),this.user.get('image'),0,apiClient,function(){
             self.hideLoading();
@@ -181,11 +179,11 @@ var SPIKA_EditProflieView = Backbone.View.extend({
         var email = $$('input[name="email"]').val();
         var mobileNum = $$('input[name="moblile_num"]').val();
         
-        var detailDataObj = {
-            tel_num:telnum,
-            email:email,
-            mobile_num:mobileNum
-        };
+        var detailDataObj = [
+            {phone_number:telnum,'public':'1'},
+            {mobile_number:mobileNum,'public':'1'},
+            {email:email,'public':'1'}
+        ];
         
         var values = {
             firstname:firstname,
