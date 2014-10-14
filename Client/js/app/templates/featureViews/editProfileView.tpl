@@ -40,8 +40,8 @@
         </div>
         
         <div class="button_container">
-            <a href="javascript:(0)" class="button red">{cancel}</a>
-            <a href="javascript:(0)" class="button" id="btn_save_profile">{updateproflie}</a>
+            <a href="javascript:void(0)" class="button red">{cancel}</a>
+            <a href="javascript:void(0)" class="button" id="btn_save_profile">{updateproflie}</a>
         </div>
         
     </div>

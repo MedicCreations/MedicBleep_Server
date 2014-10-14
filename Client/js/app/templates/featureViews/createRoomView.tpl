@@ -61,8 +61,8 @@
     <br style="clear: both"/>
     
     <div class="button_container">
-        <a href="javascript:(0)" class="button red">{cancel}</a>
-        <a href="javascript:(0)" class="button" id="btn_create_room">{createroom}</a>
+        <a href="javascript:void(0)" class="button red">{cancel}</a>
+        <a href="javascript:void(0)" class="button" id="btn_create_room">{createroom}</a>
     </div>
     
 
