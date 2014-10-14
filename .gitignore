@@ -10,6 +10,7 @@ Server/uploads/
 Admin/init.php
 Server/init.php
 Client/js/app/libs/init.js
+Client/apps/
 
 sourcetreeconfig
 Admin/wwwroot/.htaccess
