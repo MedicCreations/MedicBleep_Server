@@ -75,8 +75,9 @@ var SPIKA_LobbyListView = Backbone.View.extend({
             this.listView.init();
             this.listView.loadCurrentPage();
             this.isLoaded = true;
+        }else{
+            this.listView.refresh();        
         }
-        this.listView.refresh();
     },
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -146,7 +147,19 @@ var SPIKA_LobbyListView = Backbone.View.extend({
             }
             
         });
-        
+
+                
+        $$('#menu_container_lobby .menu_list li').each(function(){
+            
+            var chatIdElm = $(this).attr('chatid');
+            
+            if(!_.isNull(mainView.chatView.chatData)){
+                if(chatIdElm == mainView.chatView.chatData.get('chat_id'))
+                    $(this).addClass('selected');        
+            }
+                
+        });
+            
 
     },
     listviewOnClick: function(elm){

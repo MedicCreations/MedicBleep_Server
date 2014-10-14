@@ -4,8 +4,8 @@
 <div id="profile_edit_view">
     
     <div class="img_with_loader">
-        <img src="{rooturl}/img/default_group.png" class="user_profile_image" width="200" />
-        <i class="fa fa-spinner fa-spin fa-4x"></i>
+        <img src="{rooturl}/img/default_user.png" class="user_profile_image" width="200" />
+        <i class="fa fa-spinner fa-spin fa-4x" style="display:none"></i>
     </div>
     
 	<div class="choose_file" style="display:none">

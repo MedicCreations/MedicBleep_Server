@@ -55,8 +55,9 @@ var SPIKA_RoomListView = Backbone.View.extend({
             this.roomListView.init();
             this.roomListView.loadCurrentPage();
             this.isLoaded = true;
+        }else{
+            this.roomListView.refresh();        
         }
-        this.roomListView.refresh();
     },
     
     ////////////////////////////////////////////////////////////////////////////////
@@ -100,11 +101,27 @@ var SPIKA_RoomListView = Backbone.View.extend({
             }
             
         });
+
+        $$('#menu_container_room li').each(function(){
+            
+            var chatIdElm = $(this).attr('chatid');
+
+            if(!_.isNull(mainView.chatView.chatData)){
+                if(chatIdElm == mainView.chatView.chatData.get('chat_id'))
+                    $(this).addClass('selected');        
+            }
+                
+        });
         
     },
     listviewOnClick: function(elm){
         var chatId = $(elm).attr('chatid');
         Backbone.trigger(EVENT_START_CHAT,chatId);
+
+        $$('#menu_container_room li.selected').removeClass('selected');        
+        $(elm).addClass('selected');
+
+
     },
     
     

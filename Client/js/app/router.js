@@ -42,22 +42,7 @@
 
     app_router.on('route:logoutRoute', function(actions) {
 
-        // load models
-        require(['app/views/loginView',
-                    'thirdparty/text!templates/login.tpl'
-                ], function (DashboardPage,Template) {
-            
-            var loginView = new SPIKA_LoginView({
-                template: Template
-            });
-            
-            $(HOLDER).fadeOut('slow',function(){
-                $(HOLDER).attr('id', 'login');
-                $(HOLDER).html(loginView.render().el);
-                $(HOLDER).fadeIn('slow');
-            });
-            
-        });
+        U.goPage("login");
         
     });
     app_router.on('route:mainRoute', function(actions) {
@@ -68,7 +53,6 @@
         }
         // reset all event listener
         Backbone.off();
-
         
         // load models
         require([
@@ -161,7 +145,6 @@
     // global events
     Backbone.on(EVENT_SHOW_PAGE, function(page) {
         U.goPage(page);
-        document.location.href = "#" + page;
     });
     
     Backbone.on(EVENT_FORCE_LOGOUT, function(page) {

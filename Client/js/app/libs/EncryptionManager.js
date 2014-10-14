@@ -81,14 +81,31 @@ EncryptManager = {
 
     decryptImage : function(imgElement,fileId,width,apiClient,successListner,failedListner){
         
-        if(_.indexOf(this.invalidFileIdList,fileId) != -1)
+        if(_.indexOf(this.invalidFileIdList,fileId) != -1){
+
+            if(_.isFunction(failedListner))
+                failedListner();
+                    
             return;
+        }
             
-        if(_.isEmpty(fileId))
+        if(_.isEmpty(fileId)){
+
+            if(_.isFunction(failedListner))
+                failedListner();
+                    
             return;
+        }
+            
         
-        if(fileId.search('default') != -1)
+        if(fileId.search('default') != -1){
+
+            if(_.isFunction(failedListner))
+                failedListner();
+                    
             return;
+        }
+            
             
         var self = this;
         

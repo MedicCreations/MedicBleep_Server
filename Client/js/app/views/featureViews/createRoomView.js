@@ -165,6 +165,17 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             var userId = $(this).attr('data-userid');        
             self.tuggleUserId(userId);
         });
+
+        $$('.encrypted_image').each(function(){
+        
+            var state = $(this).attr('state');
+            var fileId = $(this).attr('fileid');
+            
+            if(state == 'loading'){
+                EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
+            }
+            
+        });    
         
     },
     showAvatarLoading: function(){
@@ -238,17 +249,6 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         return _.template($$('#template_userlist_row').html(), {users: data.models});
     },
     listViewAfterRender: function(){
-        
-        $$('#menu_container_selectuser .encrypted_image').each(function(){
-        
-            var state = $(this).attr('state');
-            var fileId = $(this).attr('fileid');
-            
-            if(state == 'loading'){
-                EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
-            }
-            
-        });    
         
         this.updateRowState();
         

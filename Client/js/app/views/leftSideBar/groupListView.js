@@ -2,6 +2,7 @@ var SPIKA_GroupListView = Backbone.View.extend({
     
     currentKeyword : '',
     isLoaded: false,
+    selectedGroupId:0,
     initialize: function(options) {
         var self = this;
         this.template = options.template;
@@ -55,8 +56,9 @@ var SPIKA_GroupListView = Backbone.View.extend({
             this.roomListView.init();
             this.roomListView.loadCurrentPage();
             this.isLoaded = true;
+        }else{
+            this.roomListView.refresh();        
         }
-        this.roomListView.refresh();
     },
     ////////////////////////////////////////////////////////////////////////////////
     // listview functions
@@ -83,6 +85,8 @@ var SPIKA_GroupListView = Backbone.View.extend({
     },
     listViewAfterRender: function(){
         
+        var self = this;
+        
         $$('#menu_container_group .encrypted_image').each(function(){
         
             var state = $(this).attr('state');
@@ -96,20 +100,33 @@ var SPIKA_GroupListView = Backbone.View.extend({
             
         });
         
+        $$('#menu_container_group li').each(function(){
+            
+            var groupId = $(this).attr('data-groupid');
+            
+            
+            if(groupId == self.selectedGroupId)
+                $(this).addClass('selected'); 
+            else
+                $(this).removeClass('selected'); 
+                 
+        });
+        
     },
     listviewOnClick: function(elm){
         
         var groupId = $(elm).attr('data-groupid');
+        this.selectedGroupId = groupId;
         
-        U.l(groupId);
+        $$('#menu_container_group li.selected').removeClass('selected');        
+        $(elm).addClass('selected');
         
         apiClient.getGroupById(groupId,function(data){
             
             var modelGroup = groupFactory.createModelByAPIResponse(data.group);
             
             apiClient.startGroupChat(modelGroup,function(data){
-                
-                U.l(data);
+  
                 
                 if(!_.isUndefined(data.chat_id)){
                     

@@ -130,7 +130,7 @@
 
             	<section style="padding-left: 20px;">
             		<p class="icon">
-            			<img class="encrypted_image_profile" src="{rooturl}/img/default_user.png" fileid="<%= message.get('image_thumb') %>" state="loading" width="40"/>
+            			<img class="encrypted_image_profile icon1" src="{rooturl}/img/default_user.png" fileid="<%= message.get('image_thumb') %>" state="loading" width="40"/>
             		</p>
             		<div class="chat_content">
             			<h2>

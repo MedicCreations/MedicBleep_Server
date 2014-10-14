@@ -2,6 +2,7 @@ var SPIKA_UserListView = Backbone.View.extend({
     
     currentKeyword : '',
     isLoaded: false,
+    selectedUserId:0,
     initialize: function(options) {
         var self = this;
         this.template = options.template;
@@ -55,8 +56,9 @@ var SPIKA_UserListView = Backbone.View.extend({
             this.roomListView.init();
             this.roomListView.loadCurrentPage();
             this.isLoaded = true;
+        }else{
+            this.roomListView.refresh();        
         }
-        this.roomListView.refresh();
     },
     
     
@@ -85,7 +87,7 @@ var SPIKA_UserListView = Backbone.View.extend({
     },
     listViewAfterRender: function(){
 
-
+        var self = this;
             
         $$('#menu_container_user .encrypted_image').each(function(){
         
@@ -100,12 +102,26 @@ var SPIKA_UserListView = Backbone.View.extend({
             
         });
         
-
+        $$('#menu_container_user li').each(function(){
+            
+            var userId = $(this).attr('data-userid');
+            
+            if(userId == self.selectedUserId)
+                $(this).addClass('selected'); 
+            else
+                $(this).removeClass('selected'); 
+                 
+        });
+        
     },
     listviewOnClick: function(elm){
         
         var userId = $(elm).attr('data-userid');
-
+        this.selectedUserId = userId;
+        
+        $$('#menu_container_user li.selected').removeClass('selected');        
+        $(elm).addClass('selected');
+        
         apiClient.getUserById(userId,function(data){
 
             var modelUser = userFactory.createModelByAPIResponse(data.user);
