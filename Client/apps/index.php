@@ -16,8 +16,8 @@ li {
 </head>
 <body>
 <ul>
-    <li><a href="itms-services://?action=download-manifest&url=https://www.spikaent.com/dev/web/apps/spikaent.plist">Install iOS App</a></li>
-    <li><a href="./spikaent.apl">Install Android App</a></li>
+    <li><a href="itms-services://?action=download-manifest&url=https://www.spikaent.com/clover/web/apps/spikaent.plist">Install iOS App</a></li>
+    <li><a href="./spikaent.apk">Install Android App</a></li>
 </ul>
 </body>
 </html>
