@@ -81,9 +81,9 @@ var SPIKA_ChatView = Backbone.View.extend({
             var totalUnread = SPIKA_notificationManger.unreadMessageNum;
 
             if( totalUnread == 0 )
-                mainView.setTitle(self.chatData.get("chat_name"));
+                mainView.setRoomTitle(self.chatData.get("chat_name"),self.chatData.get("chat_id"));
             else
-                mainView.setTitle(self.chatData.get("chat_name") + '(' + totalUnread + ')');
+                mainView.setRoomTitle(self.chatData.get("chat_name") + '(' + totalUnread + ')',self.chatData.get("chat_id"));
                 
         });
 
