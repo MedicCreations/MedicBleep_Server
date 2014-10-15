@@ -218,6 +218,30 @@ var U = {
         html = html.replace(/\{rooturl\}/g, WEB_ROOT);
         
         return html;
+    },
+    getInfoFromDetail : function(param,details){
+        
+        if(_.isUndefined(details))
+            return false;
+            
+        if(_.isNull(details))
+            return false;
+            
+        if(_.isEmpty(details))
+            return false;               
+        
+        var theValue = '';
+        
+        _.each(details,function(value){
+
+            if(!_.isUndefined(value[param])){
+                theValue = value[param];
+            }
+            
+        });
+
+        return theValue;
+        
     }
 
 }

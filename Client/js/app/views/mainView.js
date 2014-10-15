@@ -4,8 +4,37 @@ var SPIKA_MainView = Backbone.View.extend({
     currentWindowHeight: 0,
     leftSideBar: null,
     chatView: null,
+    infoView: null,
     initialize: function(options) {
+    
+        var self = this;
+        
         this.template = options.template;
+
+        Backbone.on(EVENT_OPEN_CHATPROFLIE, function(chatId) {
+            
+            if(_.isEmpty(chatId) || chatId == 0)
+                return;
+            
+            self.infoView.showChatProfile(chatId);
+
+            
+        });
+        
+        Backbone.on(EVENT_OPEN_PROFLIE, function(userId) {
+            
+            if(_.isEmpty(userId) || userId == 0)
+                return;
+            
+            self.infoView.showUserProfile(userId);
+
+            
+        });
+
+        Backbone.on(EVENT_CLICK_ANYWHARE, function() {
+            self.infoView.hide();
+        });
+         
     },
 
     render: function() {
@@ -16,15 +45,22 @@ var SPIKA_MainView = Backbone.View.extend({
         
         // load sidebar
         require([
+            'app/views/infoView/infoView',
+            'thirdparty/text!templates/infoView/infoView.tpl',
             'app/views/leftSideBar/leftSideBarContainer',
             'thirdparty/text!templates/leftSideBar/leftSiderBarContainer.tpl',
             'app/views/mainView/chatView',
             'thirdparty/text!templates/mainView/chatView.tpl'
         ], function (
+            InfoView,InfoViewTemplate,
             LeftSideBar,LeftSideBarTemplate,
             ChatView,ChatViewTemplate
             ) {
             
+            self.infoView = new SPIKA_InfoView({
+                template: InfoViewTemplate
+            });
+
             self.leftSideBar = new SPIKA_LeftSideBar({
                 template: LeftSideBarTemplate
             });
@@ -48,6 +84,7 @@ var SPIKA_MainView = Backbone.View.extend({
         var self = this;
         $$('#left_sidebar').html(self.leftSideBar.render().el);
         $$('#main_container').html(self.chatView.render().el);
+        $$('').append(self.infoView.render().el);
         
         $$('header .userprofile').click(function(){
             self.showContextMenu(); 
@@ -60,6 +97,11 @@ var SPIKA_MainView = Backbone.View.extend({
         $$('#user_menu').mouseleave(function(){
             self.hideContextMenu(); 
         });
+        
+        $$('').click(function(){
+            Backbone.trigger(EVENT_CLICK_ANYWHARE); 
+        });
+
         
         this.updateUserInfo();
         
@@ -81,6 +123,22 @@ var SPIKA_MainView = Backbone.View.extend({
         
         $$('header span#maintitle').text(title);
         document.title = title;
+        
+    },
+    
+    setRoomTitle:function(title,chatId){
+        
+        $$('header span#maintitle').html(title + ' <i chatid="' + chatId + '" class="fa fa-info-circle"></i>');
+        document.title = title;
+
+        
+        $$('header #maintitle i').click(function(){
+            
+            var chatId = $(this).attr('chatid');
+            
+            Backbone.trigger(EVENT_OPEN_CHATPROFLIE,chatId);
+                
+        });
         
     },
     

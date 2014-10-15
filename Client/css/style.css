@@ -69,6 +69,28 @@ form {
 	clear: both;
 }
 
+.scrollable{
+    height: 100px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.button{
+	border: none;
+	background: #4BA4DF;
+	color: #FFFFFF;
+	font-size: 1.2em;
+	padding:  12px 30px;
+	text-decoration: none;
+}
+
+.textred{
+	color: #E94B4D;
+}
+.red{
+	background: #E94B4D;
+}
+
 /*------------------------------*/
 /*           header				*/
 /*------------------------------*/
@@ -129,6 +151,14 @@ body#login {
 	position: relative;
 }
 
+#login dl dd input[type="text"],
+#login dl dd input[type="password"] {
+	border: 1px solid #000000;
+	width: 100%;
+	font-size: 1.4em;
+	margin-bottom: 10px;
+}
+
 #loading section {
 	width: 100%;
 	position: absolute;
@@ -142,6 +172,10 @@ body#login {
 
 #loading h1 {
 	font-size: 2.0em;
+}
+
+#alert_box #alert_content {
+	color: #000;
 }
 
 /*==============================*/
@@ -188,6 +222,7 @@ body#login {
 	border: none;
 	color: #FFFFFF;
 	padding: 5px 10px;
+	cursor: pointer;
 }
 
 /*==============================*/
@@ -208,10 +243,30 @@ body#chat {
 	height: 42px;
 	line-height: 42px;
 	top: 0px;
-	z-index: 100;
+	z-index: 110;
 	font-size: 1.8em;
 	background: #F8F8F8;
 	border-bottom: 1px solid #DFDFDF;
+	vertical-align: middle;
+}
+
+#chat header #maintitle i{
+    color: #4BA4DF;
+    cursor: pointer;
+}
+#chat header .userprofile{
+    line-height: 43px;
+    float: right;
+    margin-right: 20px;
+    font-size: 0.8em;
+    cursor: pointer;
+}
+
+#chat header .userprofile img{
+    vertical-align: middle;
+    width: 30px;
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
 }
 
 #chat img.icon1 {
@@ -222,6 +277,17 @@ body#chat {
 	-moz-border-radius: 24px;
 	border-radius: 24px;
 }
+
+#chat .nochat{
+    background-color: #F8F8F8;
+    height: 100%;
+}
+
+#chat .nochat #nochatbox{
+    padding: 20px;
+    font-size: 16px;
+}
+
 /*------------------------------*/
 /*       	navigation			*/
 /*------------------------------*/
@@ -230,6 +296,7 @@ body#chat {
 	width: 324px;
 	height: 100%;
 	background: #F8F8F8;
+	z-index: 100;
 	border-right: 1px solid #DFDFDF;
 }
 
@@ -243,9 +310,10 @@ body#chat {
 }
 #chat nav #tab_menu ul li {
 	display: table-cell;
-	width: 33%;
+	width: 25%;
 	padding: 5px 0;
 	color: #4BA4DF;
+	cursor: pointer;
 	border-right: 1px solid #DFDFDF;
 	border-bottom: 4px solid #DFDFDF;
 }
@@ -254,6 +322,9 @@ body#chat {
 }
 #chat nav #tab_menu ul li.selected {
 	border-bottom: 4px solid #4BA4DF;
+}
+#chat nav #tab_menu ul li:hover {
+    background-color: #fff;
 }
 
 #chat nav #tab_menu ul li a {
@@ -310,9 +381,22 @@ body#chat {
 	text-align: center;
 	color: #4BA4DF;
 }
+#chat nav ul.menu_list li:hover{
+    background-color: #fff;
+    cursor: pointer;
+}
 
 #chat nav ul.menu_list img {
 	vertical-align: middle;
+}
+
+#chat nav ul.menu_list li.selected {
+    background: #4BA4DF;
+    color: #fff;
+}
+
+#chat nav ul.menu_list li.selected a{
+    color: #fff;
 }
 
 #chat nav #nav_bottom {
@@ -325,11 +409,20 @@ body#chat {
 	z-index: 100;
 	color: #FFFFFF;
 	background: #4BA4DF;
+	cursor: pointer;
 }
 
 #chat nav #nav_bottom a {
 	color: #FFFFFF;
 }
+
+#chat nav #menu_container_selectuser .menu_search {
+    margin-top: 43px;
+	padding: 10px 10px;
+	text-align: left;
+	background: #FFFFFF;
+}
+
 /*------------------------------*/
 /*   END    	navigation		*/
 /*------------------------------*/
@@ -342,11 +435,12 @@ footer {
 	bottom: 0;
 	left: 0;
 	z-index: 50;
-	background: #FFFFFF;
+	min-height: 48px;
 }
 
 footer #mess_type {
 	margin-left: 325px;
+	background: #fff;
 }
 
 footer #mess_type  ul {
@@ -377,11 +471,14 @@ footer #mess_type ul li a  {
 footer #mess_type ul li textarea {
 	border: none;
 	width: 100%;
-	font-size: 1.2em;
+	color: #222;
+	font-style: normal;
 	height: 2.0em;
-	margin-top: 20px;
+	margin-top: 10px;
 }
-
+footer #mess_type ul li textarea.disabled{
+    color: #ccc;
+}
 
 /*------------------------------*/
 /*   END    	footer			*/
@@ -393,7 +490,7 @@ footer #mess_type ul li textarea {
 }
 
 #chat article section {
-	padding: 20px;
+	padding: 5px;
 	text-align: left;
 	position: relative;
 }
@@ -401,6 +498,7 @@ footer #mess_type ul li textarea {
 #chat article section .icon {
 	float: left;
 	width: 42px;
+	cursor: pointer;
 }
 
 #chat article section h2,
@@ -422,8 +520,9 @@ footer #mess_type ul li textarea {
 	border: none;
 	background: #4BA4DF;
 	color: #FFFFFF;
-	font-size: 1.2em;
-	padding:  12px 30px;
+	font-size: 0.8em;
+	padding:  6px 15px;
+	cursor: pointer;
 }
 #chat article section .time_stamp {
 	clear: both;
@@ -441,6 +540,9 @@ footer #mess_type ul li textarea {
 	text-align: right;
 	background: rgb(255,255,255);
 	background: rgba(255,255,255,0.5);
+}
+#chat article section .replay {
+	display: none;
 }
 
 #chat article section .replay p {
@@ -461,7 +563,7 @@ footer #mess_type ul li textarea {
 /*------------------------------*/
 #user_profile {
 	position: fixed;
-	z-index: 100;
+	z-index: 1000;
 	width: 275px;
 	height: 100%;
 	top: 0;
@@ -469,7 +571,7 @@ footer #mess_type ul li textarea {
 	background: #2C2D32;
 }
 
-#user_profile img {
+#user_profile img.profile_pic {
 	width: 150px;
 	height: 150px;
 	border: 2px solid #DFDFDF;
@@ -504,6 +606,23 @@ footer #mess_type ul li textarea {
 	text-decoration: none;
 	border: 1px solid #B4B4B6;
 }
+
+#user_profile .chat_member_list{
+    margin-left: 25px;    
+}
+
+#user_profile .chat_member_list li{
+	margin-bottom: 10px;
+	line-height: 50px;
+	vertical-align: middle;
+	color: #fff;
+	text-align: left;
+}
+
+#user_profile .chat_member_list li a{
+	color: #fff;
+}
+
 /*------------------------------*/
 /*   END	   Profile 			*/
 /*------------------------------*/
@@ -573,3 +692,246 @@ footer #mess_type ul li textarea {
 /*==============================*/
 /*		END		Chat			*/
 /*==============================*/
+
+
+/*------------------------------*/
+/*   	   Progress view 		*/
+/*------------------------------*/
+#progress_view {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background: rgb(0,0,0);
+	background: rgba(0,0,0,0.5);
+	z-index: 200;
+}
+
+#progress_view #progress_box {
+	width: 400px;
+	position: absolute;
+	left: 50%;
+	top: 100px;
+	margin-left: -200px;
+	background: #FFFFFF;
+}
+
+#progress_box p {
+	text-align: left;
+	padding: 10px;
+}
+
+/*------------------------------*/
+/*   Context menu           	*/
+/*------------------------------*/
+
+ul#user_menu{
+    position: absolute;
+    z-index: 1000;
+    width: 150px;
+    right: 10px;
+    top: 50px;
+    background: #f9f9f9;
+    border: 1px solid #DFDFDF;
+    text-align: left;
+    padding: 10px;
+    font-size: 1.2em;
+    display: none;
+}
+
+ul#user_menu li{
+    padding: 10px;
+    cursor: pointer;
+}
+ul#user_menu li:hover{
+    background: #fff;
+}
+ul#user_menu li a{
+    color: #222;
+    text-decoration: none;
+}
+
+.button_container{
+    margin-top: 20px;
+    margin-right: 20px;
+    text-align: right;
+}
+
+/*------------------------------*/
+/*   END Context menu    		*/
+/*------------------------------*/
+
+
+/*------------------------------*/
+/*   	   Create room  view 	*/
+/*------------------------------*/
+#chat nav #nav_bottom_createroom {
+	height: 48px;
+	line-height: 48px;
+	width: 325px;
+	position: fixed;
+	left: 0;
+	bottom:0;
+	z-index: 100;
+	color: #FFFFFF;
+	background: #E94B4D;
+	cursor: pointer;
+}
+
+#chat nav #nav_bottom_createroom a {
+	color: #FFFFFF;
+}
+
+#createroom_container{
+    margin-left: 325px;
+    text-align: left;
+    padding-left: 20px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+#createroom_container .room_info{
+    margin-top: 43px;
+    padding-top: 20px; /* 43px for header 20px for actual padding */
+}
+
+
+#createroom_container .img_with_loader{
+    position: relative;    
+    width: 200px;
+	height: 200px;
+	float: left;
+}
+
+#createroom_container .img_with_loader i{
+    top: 80px;
+    left: 80px;
+	position: absolute;
+	color: #fff;
+	display: none;
+}
+
+#createroom_container .img_with_loader .room_profile_image{
+    border: 1px solid #eee;
+    width: 200px;
+	height: 200px;
+	border-radius: 100px;
+	-webkit-border-radius: 100px;
+	-moz-border-radius: 100px;
+	cursor: pointer;
+	position: absolute;
+}
+
+#createroom_container input{
+    margin-left: 25px;
+    margin-top: 90px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    font-size: 1.2em;
+    width: 250px;
+    float: left;
+    display: block;
+}
+
+#createroom_container .members img{
+    width: 40px;
+    height: 40px;
+    line-height: 50px;
+    vertical-align: middle;
+}
+
+#createroom_container .members li{
+    width: 150px;
+    line-height: 50px;
+    margin: 5px;
+    float: left;
+    background-color: #f9f9f9;
+    display: block;
+    vertical-align: middle;
+    padding: 0px 5px 0px 5px;
+    position: relative;
+    cursor: pointer;
+}
+
+#createroom_container .members li i{
+    position: absolute;
+    right: 10px;
+    top: 20px;
+}
+/*------------------------------*/
+/*   END Create room view 		*/
+/*------------------------------*/
+
+/*------------------------------*/
+/*   Proflie Edit View        	*/
+/*------------------------------*/
+
+#profile_edit_view{
+    background: #f9f9f9;
+    padding-top: 63px;
+    text-align: left;
+}
+
+#profile_edit_view .img_with_loader{
+    margin-left: 100px;
+    position: relative;    
+    width: 200px;
+	height: 200px;
+	float: left;
+}
+
+#profile_edit_view .img_with_loader i{
+    top: 80px;
+    left: 80px;
+	position: absolute;
+	color: #fff;
+	display: none;
+}
+
+#profile_edit_view .img_with_loader .user_profile_image{
+    border: 1px solid #eee;
+    width: 200px;
+	height: 200px;
+	border-radius: 100px;
+	-webkit-border-radius: 100px;
+	-moz-border-radius: 100px;
+	cursor: pointer;
+	position: absolute;
+}
+
+#profile_edit_view #profile_edit_profliedata{
+    margin-left: 50px;
+    width: 600px;
+    float: left;
+    text-align: left;
+}
+
+#profile_edit_view .formrow{
+    width: 550px;
+    margin-bottom: 20px;
+    background: #fff;
+    border-bottom: 1px solid #ccc;
+    padding: 5px;
+}
+
+#profile_edit_view .formrow label{
+    display: inline-block;
+    width: 100px;
+}
+
+
+#profile_edit_view .formrow input{
+    padding: 5px;
+    width: 350px;
+    border: none;
+    padding-bottom: 5px;
+    font-size: 1.2em;
+}
+
+/*------------------------------*/
+/*   END Proflie Edit View    	*/
+/*------------------------------*/
+

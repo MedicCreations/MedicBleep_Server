@@ -6,6 +6,10 @@ var EVENT_MESSAGE_SENT = 'messageSent';
 var EVENT_NEW_MESSAGE = 'newMessage';
 var EVENT_FILE_DROP = 'eventFileDrop';
 var EVENT_REFRESH_ROOMLIST = 'eventRefreshRoomList';
+var EVENT_OPEN_PROFLIE = 'openProflie';
+var EVENT_OPEN_CHATPROFLIE = 'openChatProflie';
+var EVENT_CLICK_ANYWHARE = 'clickAnyWhere';
+
 
 var EVENT_START_PRIVATE_CHAT = 'startPrivateChat';
 var EVENT_START_GROUP_CHAT = 'startGroupChat';
@@ -17,7 +21,6 @@ var EVENT_ADDUSER_TO_CHAT = 'eventAddUserToChat';
 var EVENT_SELECT_REPLY = 'eventSelectReply';
 var EVENT_THREAD_MODE = 'eventThreadMode';
 var EVENT_LIST_MODE = 'eventListMode';
-var EVENT_OPEN_PROFLIE = 'openProflie';
 var EVENT_NEW_GROUP = 'eventNewGroup';
 
 // message types

@@ -79,7 +79,10 @@ EncryptManager = {
             
     },
 
-    decryptImage : function(imgElement,fileId,width,apiClient,successListner,failedListner){
+    decryptImage : function(imgElement,fileId,width,apiClient,successListner,failedListner,useCache){
+        
+        if(_.isUndefined(useCache))
+            useCache = true;
         
         if(_.indexOf(this.invalidFileIdList,fileId) != -1){
 
@@ -113,7 +116,7 @@ EncryptManager = {
         
         var cachedElm = self.localchacheGetImage(fileId);
 
-        if(!_.isUndefined(cachedElm) && !_.isNull(cachedElm)){
+        if(!_.isUndefined(cachedElm) && !_.isNull(cachedElm) && useCache == true){
             
             $(imgElement).replaceWith($(cachedElm).clone());
             
@@ -147,7 +150,8 @@ EncryptManager = {
                 if(width > 0)
                     $(imgElement).attr('width',width);
                 
-                self.localchacheSaveImage(fileId,imgElement);
+                if(useCache == true)
+                    self.localchacheSaveImage(fileId,imgElement);
                 
                 if(_.isFunction(successListner))
                     successListner();

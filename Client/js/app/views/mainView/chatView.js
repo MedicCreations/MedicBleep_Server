@@ -20,7 +20,7 @@ var SPIKA_ChatView = Backbone.View.extend({
                 
                 self.chatData = roomFactory.createModelByAPIResponse(data.chat_data);
                 
-                mainView.setTitle(self.chatData.get("chat_name"));
+                mainView.setRoomTitle(self.chatData.get("chat_name"),self.chatData.get("chat_id"));
                  
                 if(!_.isNull(self.chatData.get("chat_id"))){
                     self.startChat();
@@ -393,6 +393,11 @@ var SPIKA_ChatView = Backbone.View.extend({
     attachMessageEvent : function(){
         
         var self = this;
+        
+        $$('.usericon').click(function(){
+            var userId = $(this).attr('userid');
+            Backbone.trigger(EVENT_OPEN_PROFLIE,userId);
+        });
         
         /*
         $(U.sel("#chat_view ul li")).unbind().click(function(){

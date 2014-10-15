@@ -17,7 +17,7 @@ LANG = {
       createroom_validation_error_noname:"Please enter room name.",
       createroom_validation_error_nomember:"Please select at least one user.",
       cancel:"Cancel",
-      edit_profile: "Edit Proflie",
+      edit_profile: "Edit Profile",
       logout: "Logout",
       close: "Close",
       title_edit_profile: "Edit Proflie",
@@ -31,5 +31,6 @@ LANG = {
       browser_doesnt_support: "Sorry your browser is not supported.",
       unread_messages_singlar : "unread message",
       unread_messages_plural : "unread messages",
+      start_private_chat : "Start private chat",
       dummy : 'dummy'
 };
