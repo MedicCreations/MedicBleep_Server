@@ -22,12 +22,14 @@ var SPIKA_RoomProfileView = Backbone.View.extend({
     onload : function(){
 
         var self = this;
-                
+        
+        
     },
     
     showRoom : function(chatId){
         
         var self = this;
+        var user = SPIKA_UserManager.getUser();
         
         if(_.isEmpty(chatId) || chatId == 0)
             return;
@@ -44,6 +46,16 @@ var SPIKA_RoomProfileView = Backbone.View.extend({
             $$('#user_profile #roomprofile_name').html(name);
             
             self.showMembers();
+            
+            if(self.chatData.get('admin_id') == user.get('id') || self.chatData.get('admin_id') == 0){
+                $$('#btn_edit_room').css('display','inline-block');
+                
+                $$('#btn_edit_room').click(function(){
+                    
+                    U.goPage('editroom');
+                     
+                });
+            }
             
         },function(data){
             

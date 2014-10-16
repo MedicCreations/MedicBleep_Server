@@ -32,6 +32,7 @@ var SPIKA_MainView = Backbone.View.extend({
         });
 
         Backbone.on(EVENT_CLICK_ANYWHARE, function() {
+            self.hideContextMenu(); 
             self.infoView.hide();
         });
          

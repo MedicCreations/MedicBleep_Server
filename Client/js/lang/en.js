@@ -32,5 +32,7 @@ LANG = {
       unread_messages_singlar : "unread message",
       unread_messages_plural : "unread messages",
       start_private_chat : "Start private chat",
+      editroom : "Edit Room",
+      save: "Save",
       dummy : 'dummy'
 };

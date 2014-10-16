@@ -80,8 +80,12 @@ form {
 	background: #4BA4DF;
 	color: #FFFFFF;
 	font-size: 1.2em;
-	padding:  12px 30px;
+	padding:  0px 30px;
 	text-decoration: none;
+	display: inline-block;
+	height: 30px;
+	line-height: 30px;
+	vertical-align: middle;
 }
 
 .textred{
@@ -606,6 +610,35 @@ footer #mess_type ul li textarea.disabled{
 	text-decoration: none;
 	border: 1px solid #B4B4B6;
 }
+
+#user_profile .chat_member_list{
+    margin-left: 24px;
+}
+
+#user_profile .chat_member_list li {
+    height: 60px;
+    text-align: left;
+    line-height: 60px;
+    vertical-align: middle;
+    margin: 0px;
+}
+
+#user_profile .chat_member_list li img{
+    margin: 0px;
+    vertical-align: middle;
+}
+#user_profile .chat_member_list li a{
+    color: #fff;
+    text-decoration: none;
+    vertical-align: middle;
+}
+
+#user_profile .room_buttons{
+    margin-top: 5px;
+    text-align: right;
+    padding-right: 5px;
+}
+
 /*------------------------------*/
 /*   END	   Profile 			*/
 /*------------------------------*/
