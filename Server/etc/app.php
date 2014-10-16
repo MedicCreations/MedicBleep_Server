@@ -19,6 +19,9 @@ use Silex\Provider\SwiftmailerServiceProvider;
 $app = new Silex\Application ( isset ( $dependencies ) ? $dependencies : array () );
 $app ['debug'] = true;
 
+// set default organization id
+$app['organization_id'] = 1;
+
 // logging
 $app->register(new MonologServiceProvider(), array(
     'monolog.logfile' => __DIR__.'/../logs/debug.log',

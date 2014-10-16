@@ -59,6 +59,7 @@ class TokenChecker {
 				// }
 					
 				$app ['user'] = $user;
+				$app ['organization_id'] = $user['organization_id'];
 					
 					
 			} else {
