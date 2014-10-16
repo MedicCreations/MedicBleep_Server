@@ -13,6 +13,9 @@ var SPIKA_notificationManger = {
         if(POLING_ENABLED == false){
             self.usePoing();
         }else{
+            self.usePoing();
+            
+        } else {
             try{
                             
                 //create a new WebSocket object.

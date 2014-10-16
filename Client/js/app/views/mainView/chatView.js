@@ -35,7 +35,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             
         });
 
-/*
+
         Backbone.on(EVENT_MESSAGE_SENT, function(chatId) {
 
             if(_.isNull(self.chatData))
@@ -57,7 +57,6 @@ var SPIKA_ChatView = Backbone.View.extend({
 
             }
         });
-                */
 
         Backbone.on(EVENT_NEW_MESSAGE, function(chatId) {
             
