@@ -9,35 +9,40 @@ var SPIKA_notificationManger = {
     init : function(){
         
         var self = this;
-
-        try{
-                        
-            //create a new WebSocket object.
-            self.wsConnection = new WebSocket(NOTIFICATION_SERVER_URL);
-            
-            self.wsConnection.onopen = function(e) {
-                U.l('WS MODE connection established');
-                self.websocketMode = true;
-            };
-            
-            self.wsConnection.onmessage = function(e) {
-                
-                var chatId = e.data;
-
-                Backbone.trigger(EVENT_NEW_MESSAGE,chatId);
-                
-            };
-
-            self.wsConnection.onerror = function(e) {
-                U.l(e);
-                self.usePoing();
-            };
-
-        } catch (ex){
-            U.l(ex);
+        
+        if(POLING_ENABLED == false){
             self.usePoing();
-            
+        }else{
+            try{
+                            
+                //create a new WebSocket object.
+                self.wsConnection = new WebSocket(NOTIFICATION_SERVER_URL);
+                
+                self.wsConnection.onopen = function(e) {
+                    U.l('WS MODE connection established');
+                    self.websocketMode = true;
+                };
+                
+                self.wsConnection.onmessage = function(e) {
+                    
+                    var chatId = e.data;
+    
+                    Backbone.trigger(EVENT_NEW_MESSAGE,chatId);
+                    
+                };
+    
+                self.wsConnection.onerror = function(e) {
+                    U.l(e);
+                    self.usePoing();
+                };
+    
+            } catch (ex){
+                U.l(ex);
+                self.usePoing();
+                
+            }
         }
+
         
         Backbone.on(EVENT_MESSAGE_SENT, function(chatId) {
 

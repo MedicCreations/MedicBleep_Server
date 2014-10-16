@@ -150,6 +150,9 @@ body#login {
 	height: 100%;
 	position: relative;
 }
+body#chat {
+	background: #FFFFFF;
+}
 
 #login dl dd input[type="text"],
 #login dl dd input[type="password"] {
@@ -247,13 +250,8 @@ body#chat {
 	font-size: 1.8em;
 	background: #F8F8F8;
 	border-bottom: 1px solid #DFDFDF;
-	vertical-align: middle;
 }
 
-#chat header #maintitle i{
-    color: #4BA4DF;
-    cursor: pointer;
-}
 #chat header .userprofile{
     line-height: 43px;
     float: right;
@@ -483,6 +481,9 @@ footer #mess_type ul li textarea.disabled{
 /*------------------------------*/
 /*   END    	footer			*/
 /*------------------------------*/
+#main_container {
+	min-height: 100px;
+}
 #chat article {
 	padding-top: 43px;
 	margin-left: 325px;
@@ -498,7 +499,6 @@ footer #mess_type ul li textarea.disabled{
 #chat article section .icon {
 	float: left;
 	width: 42px;
-	cursor: pointer;
 }
 
 #chat article section h2,
@@ -571,7 +571,7 @@ footer #mess_type ul li textarea.disabled{
 	background: #2C2D32;
 }
 
-#user_profile img.profile_pic {
+#user_profile img {
 	width: 150px;
 	height: 150px;
 	border: 2px solid #DFDFDF;
@@ -606,23 +606,6 @@ footer #mess_type ul li textarea.disabled{
 	text-decoration: none;
 	border: 1px solid #B4B4B6;
 }
-
-#user_profile .chat_member_list{
-    margin-left: 25px;    
-}
-
-#user_profile .chat_member_list li{
-	margin-bottom: 10px;
-	line-height: 50px;
-	vertical-align: middle;
-	color: #fff;
-	text-align: left;
-}
-
-#user_profile .chat_member_list li a{
-	color: #fff;
-}
-
 /*------------------------------*/
 /*   END	   Profile 			*/
 /*------------------------------*/
