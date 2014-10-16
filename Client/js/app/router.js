@@ -2,6 +2,7 @@
         routes: {
             "editprofile": "editprofileRoute",
             "createroom": "createRoomRoute",
+            "editroom": "editRoomRoute",
             "main": "mainRoute",
             "login": "loginRoute",
             "logout": "logoutRoute",
@@ -108,6 +109,44 @@
         
     });
 
+    app_router.on('route:editRoomRoute', function(actions) {
+        
+        if(apiClient == null || SPIKA_UserManager.isAuthorised() == false){
+            U.goPage('login');
+            return;
+        }
+        
+        if(_.isNull(mainView.chatView.chatData) || _.isUndefined(mainView.chatView.chatData))
+            return;
+            
+        
+        // reset all event listener
+        Backbone.off();
+        
+        // load models
+        require([
+                    'app/views/featureViews/createRoomView',
+                    'thirdparty/text!templates/featureViews/createRoomView.tpl'
+                ], function (CreateRoomView,Template) {
+            
+            var createRoomView = new SPIKA_CreateRoomView({
+                template: Template
+            });
+            
+            createRoomView.setChatData(mainView.chatView.chatData);
+            
+            $(HOLDER).fadeOut('fast',function(){
+                $(HOLDER).attr('id', 'chat');
+                $(HOLDER).html(createRoomView.render().el);
+                
+                
+                $(HOLDER).fadeIn('fast');
+            });
+            
+        });
+        
+    });
+    
     app_router.on('route:editprofileRoute', function(actions) {
         
         if(apiClient == null || SPIKA_UserManager.isAuthorised() == false){

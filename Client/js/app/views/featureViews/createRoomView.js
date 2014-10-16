@@ -4,7 +4,9 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     selectedUserIdList:[],
     userModelsPool:[],
     profileImageFileId:null,
-    profileThumbFileId:null,    
+    profileThumbFileId:null,
+    editingChatData:null,
+    userIdsBeforeEdit:[],  
     initialize: function(options) {
         var self = this;
         this.template = options.template;
@@ -103,8 +105,54 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         
         
         });
+        
+        if(!_.isNull(this.editingChatData)){
+            $$('#btn_create_room').text(LANG.save);
+            $$('header').text(LANG.editroom);
+        }
+    },
+    
+    setChatData: function(chatData){
+        
+        var self = this;
+        
+        this.showAvatarLoading();
+        this.selectedUserIdList = [];
+        this.userModelsPool = [];
+        this.userIdsBeforeEdit = [];
 
+        this.editingChatData = chatData;
+        
+        apiClient.getChatMembers(this.editingChatData.get('chat_id'),function(data){
 
+            var chatMembers = userFactory.createCollectionByAPIResponse(data)
+
+            _.each(chatMembers.models,function(userData){
+                
+                self.selectedUserIdList.push(userData.get('id'));
+                self.userIdsBeforeEdit.push(userData.get('id'));
+                self.userModelsPool[userData.get('id')] = userData;
+                
+            });
+            
+            $$('#createroom_container input[type="text"]').val(chatData.get('chat_name'));
+            
+            var roomName = $$("#createroom_container input").val();
+
+            EncryptManager.decryptImage($$('#createroom_container .room_profile_image'),chatData.get('image_thumb'),0,apiClient,function(){
+                self.hideAvatarLoading();
+            },function(){
+                self.hideAvatarLoading();
+            });
+
+            self.updateRowState();
+            
+        },function(data){
+            
+            
+            
+        });
+        
     },
     
     updateWindowSize: function(){
@@ -119,8 +167,11 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         
     },
     
-    updateRowState: function(){
+    updateRowState: function(updateSelectedUsers){
         
+        if(_.isUndefined(updateSelectedUsers))
+            updateSelectedUsers = true;
+            
         var self = this;
         
         $$('#menu_container_selectuser li').each(function(){
@@ -137,34 +188,36 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             
         });
         
-        // redraw selected members area
-        var listAllUsersInSelection = this.usersListView.list.models;
-        var listSelectedUsers = [];
-
-        _.each(listAllUsersInSelection,function(modelUser){
-           self.userModelsPool[modelUser.get('id')] = modelUser;
-        });
-        
-        _.each(this.userModelsPool,function(modelUser){
-           
-           _.each(self.selectedUserIdList,function(userId){
-              
-               if(userId == modelUser.get('id')){
-                   listSelectedUsers.push(modelUser);
-               }
-               
-           });
+        if(updateSelectedUsers == true){
+            // redraw selected members area
+            var listAllUsersInSelection = this.usersListView.list.models;
+            var listSelectedUsers = [];
+    
+            _.each(listAllUsersInSelection,function(modelUser){
+               self.userModelsPool[modelUser.get('id')] = modelUser;
+            });
             
-        });
-        
-        var memberListHTML = _.template($$('#template_memberlist_row').html(), {users: listSelectedUsers});
-        
-        $$('#createroom_container .members').html(memberListHTML);
-        
-        $$('#createroom_container .members li').click(function(){
-            var userId = $(this).attr('data-userid');        
-            self.tuggleUserId(userId);
-        });
+            _.each(this.userModelsPool,function(modelUser){
+                
+               _.each(self.selectedUserIdList,function(userId){
+                  
+                   if(userId == modelUser.get('id')){
+                       listSelectedUsers.push(modelUser);
+                   }
+                   
+               });
+                
+            });
+            
+            var memberListHTML = _.template($$('#template_memberlist_row').html(), {users: listSelectedUsers});
+            
+            $$('#createroom_container .members').html(memberListHTML);
+            
+            $$('#createroom_container .members li').click(function(){
+                var userId = $(this).attr('data-userid');        
+                self.tuggleUserId(userId);
+            });
+        }
 
         $$('.encrypted_image').each(function(){
         
@@ -186,6 +239,8 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     },
     save: function(){
         
+        var self = this;
+        
         // validation
         var roomName = $$("#createroom_container input").val();
         
@@ -201,33 +256,130 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             return;
         }
         
-        var userIds = '';
+        if(!_.isNull(this.editingChatData)){
         
-        _.each(this.selectedUserIdList,function(userId){
+            // Update
+            var userIdsToAdd = '';
+            var userIdsToDelete = '';
             
-            userIds += userId + ",";
-            
-        });
-        
-        userIds += SPIKA_UserManager.getUser().get('id');
-        
-        apiClient.createNewRoom(roomName,userIds,this.profileImageFileId,this.profileThumbFileId,function(data){
-            
-            if(!_.isNull(data.chat)){
-            
-                U.goPage('main'); 
+            _.each(self.selectedUserIdList,function(userIdToAdd){
                 
-                _.debounce(function() {
-                   Backbone.trigger(EVENT_START_CHAT,data.chat.chat_id);
-                }, 1000)();
-        
-            }
-
-        },function(data){
+                var isExist = false;
+                
+                _.each(self.userIdsBeforeEdit,function(userIdBefore){
+                    
+                    if(userIdToAdd == userIdBefore)
+                        isExist = true;
+                    
+                });
+                
+                if(isExist == false)
+                    userIdsToAdd += userIdToAdd + ",";
+                
+            });
             
-            SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to create room");
+            _.each(self.userIdsBeforeEdit,function(userIdToDelete){
+                
+                var isExist = false;
+                
+                _.each(self.selectedUserIdList,function(userIdBefore){
+                    
+                    if(userIdToDelete == userIdBefore)
+                        isExist = true;
+                    
+                });
+                
+                if(isExist == false && userIdToDelete != SPIKA_UserManager.getUser().get('id'))
+                    userIdsToDelete += userIdToDelete + ",";
 
-        });
+            });
+
+            // update room info
+            apiClient.updateRoom(
+                self.editingChatData.get('chat_id'),
+                roomName,
+                this.profileImageFileId,
+                this.profileThumbFileId,
+                '',
+                '',
+                function(data){
+                    
+                    
+                    // add users
+                    apiClient.addUsersToChat(
+                        self.editingChatData.get('chat_id'),
+                        userIdsToAdd,
+                        function(data){
+                            
+                            // delete users
+                            apiClient.deleteUsersFromChat(
+                                self.editingChatData.get('chat_id'),
+                                userIdsToDelete,
+                                function(data){
+
+                                    
+                                    U.goPage('main'); 
+                                    
+                                    _.debounce(function() {
+                                       Backbone.trigger(EVENT_START_CHAT,self.editingChatData.get('chat_id'));
+                                    }, 1000)();
+
+                    
+                                },function(data){
+                                
+                                    SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
+                    
+                            });
+                            
+            
+                        },function(data){
+                        
+                            SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
+            
+                    });
+                    
+    
+                },function(data){
+                
+                    SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
+    
+            });
+            
+            return;
+            
+        } else {
+            
+            // Create
+            var userIds = '';
+            
+            _.each(this.selectedUserIdList,function(userId){
+                
+                userIds += userId + ",";
+                
+            });
+            
+            userIds += SPIKA_UserManager.getUser().get('id');
+            
+            apiClient.createNewRoom(roomName,userIds,this.profileImageFileId,this.profileThumbFileId,function(data){
+                
+                if(!_.isNull(data.chat)){
+                
+                    U.goPage('main'); 
+                    
+                    _.debounce(function() {
+                       Backbone.trigger(EVENT_START_CHAT,data.chat.chat_id);
+                    }, 1000)();
+            
+                }
+    
+            },function(data){
+                
+                SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to create room");
+    
+            });
+
+            
+        }
     },
     ////////////////////////////////////////////////////////////////////////////////
     // listview functions
@@ -250,7 +402,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     },
     listViewAfterRender: function(){
         
-        this.updateRowState();
+        this.updateRowState(false);
         
     },
     listviewOnClick: function(elm){
@@ -258,14 +410,14 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         this.tuggleUserId(userId);
     },
     tuggleUserId: function(userId){
-
+        
         var self = this;
-        var index = _.indexOf(self.selectedUserIdList,userId);
+        var index = _.indexOf(this.selectedUserIdList,userId);
         
         if(index == -1){
-            self.selectedUserIdList.push(userId);
+            this.selectedUserIdList.push(userId);
         }else{
-            self.selectedUserIdList.splice(index, 1);   
+            this.selectedUserIdList.splice(index, 1);   
         }
         
         self.updateRowState();

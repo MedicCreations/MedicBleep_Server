@@ -758,6 +758,118 @@ SpikaClient.prototype.createNewRoom = function(roomName,userList,fileId,thumbId,
 
 };
 
+SpikaClient.prototype.updateRoom = function(chatId,roomName,fileId,thumbId,isDelete,isActive,succeessListener,failedListener)
+{
+    
+    var self = this;
+    var data = {};
+    
+    data.chat_id = chatId;
+
+    if(!_.isEmpty(roomName))
+        data.name = roomName;
+        
+    if(!_.isEmpty(fileId))
+        data.image = fileId;
+        
+    if(!_.isEmpty(thumbId))
+        data.image_thumb = thumbId;
+        
+    if(!_.isEmpty(isDelete))
+        data.is_deleted = isDelete;
+        
+    if(!_.isEmpty(isActive))
+        data.is_active = isActive;
+        
+    if(!_.isEmpty(roomName))
+        data.name = roomName;
+        
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/chat/update',
+        type: 'POST',
+        data: data,
+        headers: {"token":this.token}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+SpikaClient.prototype.addUsersToChat = function(chatId,usersToAdd,succeessListener,failedListener)
+{
+    
+    var self = this;
+    var data = {};
+    
+    data.chat_id = chatId;
+    data.users_to_add = usersToAdd;
+
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/chat/member/add',
+        type: 'POST',
+        data: data,
+        headers: {"token":this.token}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+SpikaClient.prototype.deleteUsersFromChat = function(chatId,usersToDelete,succeessListener,failedListener)
+{
+    
+    var self = this;
+    var data = {};
+    
+    data.chat_id = chatId;
+    data.user_ids = usersToDelete;
+
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/chat/leave',
+        type: 'POST',
+        data: data,
+        headers: {"token":this.token}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
 
 
 SpikaClient.prototype.test = function()

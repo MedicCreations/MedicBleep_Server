@@ -11,10 +11,7 @@ var SPIKA_notificationManger = {
         var self = this;
         
         if(POLING_ENABLED == false){
-            self.usePoing();
-        }else{
-            self.usePoing();
-            
+            self.usePoing();   
         } else {
             try{
                             
