@@ -1,5 +1,5 @@
 LANG = {
-      spika_title : 'Spika for enterprise',
+      spika_title : 'Spika Enterprise',
       username_label: 'Username',
       password_label: 'Password',      
       login_failed : 'Invlid username or password',
