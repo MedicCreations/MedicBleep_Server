@@ -20,7 +20,10 @@ class DashboardController extends BaseController {
 		$controllers = $app ['controllers_factory'];
 		
 		$controllers->get('/', function (Request $request) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'dashboard';
             
             return $self->render('dashboard.twig', array(

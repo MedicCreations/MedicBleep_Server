@@ -6,6 +6,10 @@ var SPIKA_RoomListView = Backbone.View.extend({
         var self = this;
         this.template = options.template;
 
+        Backbone.on(EVENT_LEAVE_CHAT, function() {
+             self.roomListView.refresh();
+        });
+        
         Backbone.on(EVENT_WINDOW_SIZE_CHANGED, function() {
             self.updateWindowSize();
         });

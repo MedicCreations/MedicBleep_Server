@@ -55,7 +55,9 @@
 	    <h4>{{lang.users41}}</h4>
 		<form class="form-inline form-editusername" role="form" method="post" action="{{ADMIN_ROOT_URL}}/users/edit/{{form.id}}">
 			<div class="form-group">
-				<input type="text" name="username" id="form-field-1" class="form-control" value="{{form.username}}">
+			    <div class="col-md-6">
+				    <input type="text" name="username" id="form-field-1" class="form-control" value="{{form.username}}">
+				</div>
 			</div>
 			<input type="submit" class="btn btn-primary" value="{{lang.general10}}" name="edit_username" />
 		</form>
@@ -67,11 +69,16 @@
 	    <h4>{{lang.users42}}</h4>
 		<form class="form-inline form-password" role="form" method="post" action="{{ADMIN_ROOT_URL}}/users/edit/{{form.id}}">
 			<div class="form-group">
-				<input type="text" name="password" id="input_password" class="form-control">
-				<input type="text" name="password_confirm" id="form-field-1" class="form-control">
+			    <div class="col-md-6">
+				    <input type="text" name="password" id="input_password" class="form-control">
+				</div>
+				<div class="col-md-6">
+				    <input type="text" name="password_confirm" id="form-field-1" class="form-control">
+				</div>
 			</div>
 			<input type="submit" class="btn btn-primary" value="{{lang.general10}}" name="edit_password" />
 		</form>
+		
 	</div>
 </div>
 

@@ -8,9 +8,17 @@ var SPIKA_ChatView = Backbone.View.extend({
         var self = this;
         
         this.template = options.template;
-        
+
         Backbone.on(EVENT_WINDOW_SIZE_CHANGED, function() {
             self.updateWindowSize();
+        });
+
+        Backbone.on(EVENT_LEAVE_CHAT, function() {
+            self.messages = new MessageResult([]);
+            self.chatData = null;
+            $$('#main_container article').html('<div id="nochatbox"><i class="fa fa-exclamation-triangle"></i> ' + LANG.chat_nochat + '</div>');
+            $$('#main_container article').addClass('nochat');
+            mainView.setTitle(LANG.title_initial);
         });
         
         Backbone.on(EVENT_START_CHAT, function(chatId) {
@@ -24,7 +32,9 @@ var SPIKA_ChatView = Backbone.View.extend({
                  
                 if(!_.isNull(self.chatData.get("chat_id"))){
                     self.startChat();
+                    Backbone.trigger(EVENT_ENTER_CHAT,chatId);
                 }
+                
             
             },function(data){
                 
@@ -49,11 +59,12 @@ var SPIKA_ChatView = Backbone.View.extend({
                     
                 self.loadNewMessages();
                 
-
+/*
                 if(self.viewmode == CHATVIEW_LISTMODE)
                     self.loadNewMessages();
                 else
                     self.openThreadMode(self.threadId);
+*/
 
             }
         });
@@ -253,9 +264,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             self.messages.add(newMessages);
             self.formatMessages(true);
-            
-            U.l(newMessages);
-            
+
             var template = _.template($$('#template_message_row').html(), {messages: newMessages});
             $$('#main_container article').append(template);
             $$('#main_container article').removeClass('nochat');
@@ -308,6 +317,8 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         if(messageType == MESSAGE_TYPE_TEXT){
             content = decryptedText;
+            content = U.escapeHTML(content);
+            content = content.autoLink({ target: "_blank", rel: "nofollow", id: "1" });
             content = content.split("\n").join("<br />");
         }
         
@@ -392,6 +403,13 @@ var SPIKA_ChatView = Backbone.View.extend({
     attachMessageEvent : function(){
         
         var self = this;
+        
+        $$("#main_container .chat_content .text").each(function(){
+                
+            var elm = this;
+
+    
+        });
         
         $$('.usericon').click(function(){
             var userId = $(this).attr('userid');

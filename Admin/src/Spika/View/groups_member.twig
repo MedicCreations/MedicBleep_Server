@@ -62,7 +62,6 @@
 					<div class="row">
 					    <div class="col-md-3">
 					        
-					        <img src="{{FILE_DOWNLOAD_URL}}{{data.image_thumb}}" alt="" class="img-thumbnail"><br />
 					        <H4>
 					            {{data.name}}
 					        </H4>
@@ -87,7 +86,6 @@
                                         
                                         <form role="form" class="form-horizontal form-groups" method="post" action="{{ADMIN_ROOT_URL}}/groups/members/{{data.id}}" enctype="multipart/form-data">
                                             <tr>
-                                                <td></td>
                                                 <td colspan="2">
     
                                                     <select multiple data-placeholder="{{lang.general14}}" name="usersselect[]" id="usersselect" class="chosen-select" style="width:100%">
@@ -111,10 +109,7 @@
                                         {% for row in list %}
 
                     				    <tr>
-    										<td class="hidden-xs">
-    										    <img width="40" src="{{FILE_DOWNLOAD_URL}}{{row.image_thumb}}" />
-                                            </td>
-                                            
+
     										<td>
     										    <a href="{{ADMIN_ROOT_URL}}/users/view/{{row.id}}">
     										        {{row.username}}

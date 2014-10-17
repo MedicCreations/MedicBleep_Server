@@ -13,11 +13,27 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         var self = this;
         
         this.template = options.template;
+
+        Backbone.on(EVENT_LEAVE_CHAT, function() {
+             self.chatId = 0;
+        });
         
-        Backbone.on(EVENT_START_CHAT, function(chatId) {
+        Backbone.on(EVENT_ENTER_CHAT, function(chatId) {
             
             self.chatId = chatId;
             
+            if(mainView.chatView.chatData.get('is_active') == 0){
+                $$("#chat_textbox").attr('disabled','disabled');
+                $$("#chat_textbox").attr('placeholder',LANG.roomdisabled);
+                
+                
+            }else{
+                $$("#chat_textbox").removeAttr('disabled');
+                $$("#chat_textbox").attr('placeholder',LANG.textboxplaceholer);
+            }
+            
+            $$("#chat_textbox").val('');
+
         });
     
         // drop file
@@ -38,7 +54,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
     render: function() {
         
         var template = _.template(this.template);
-        $(this.el).html(template(LANG));
+        $(this.el).html(U.simpleLocalizationFilter(this.template,LANG));
         
         var self = this;
         
@@ -52,7 +68,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
     onload : function(){
 
         var self = this;
-        
+
         $$("#chat_textbox").keypress(function(event) {
             
             if(event.which == 13 && event.altKey){
@@ -118,6 +134,10 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         
         var self = this;
         var message = $$('#chat_textbox').val();
+        
+        if(_.isEmpty(message))
+            return;
+        
         $$('#chat_textbox').height(self.chatBoxDefaultHeight);   
         
         var encryptedHex = EncryptManager.encryptText(message);

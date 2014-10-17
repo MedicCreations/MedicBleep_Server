@@ -18,6 +18,7 @@ class BaseController implements ControllerProviderInterface {
 	var $app;
 	var $lang;
 	var $page='';
+	var $user;
 	
 	public function connect(Application $app) {
 	    $this->app = $app;
@@ -31,6 +32,7 @@ class BaseController implements ControllerProviderInterface {
         $params['lang'] = $this->lang;
         $params['page'] = $this->page;
         $params['FILE_DOWNLOAD_URL'] = FILE_DOWNLOAD_URL;
+        $params['user'] = $this->user;
         
         if($this->app['session']->has('infomessage')){
             
@@ -41,6 +43,17 @@ class BaseController implements ControllerProviderInterface {
         
         return $this->app['twig']->render($templateName,$params);
             
+    }
+    
+    public function checkLoginUser(){
+        
+        if($this->app['session']->has('loginuser')){
+            $this->user = $this->app['session']->get('loginuser');
+            return true;
+        }else{
+            return false;
+        }
+        
     }
     
 	function processPicture($pictureFile){

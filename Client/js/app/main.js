@@ -34,6 +34,7 @@ define(['jQuery','underscore','backbone','Notification'], function($, _, Backbon
                 'app/libs/UserManager',
                 'app/libs/utils',
                 'app/libs/SoundManager',
+                'thirdparty/autolink-min',
                 'thirdparty/CryptoJS/rollups/md5',
                 'thirdparty/CryptoJS/rollups/pbkdf2',
                 'thirdparty/CryptoJS/rollups/aes',

@@ -294,44 +294,50 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
 
             });
 
-            // update room info
-            apiClient.updateRoom(
+            // add users
+            apiClient.addUsersToChat(
                 self.editingChatData.get('chat_id'),
-                roomName,
-                this.profileImageFileId,
-                this.profileThumbFileId,
-                '',
-                '',
-                function(data){
-                    
-                    
-                    // add users
-                    apiClient.addUsersToChat(
-                        self.editingChatData.get('chat_id'),
-                        userIdsToAdd,
-                        function(data){
-                            
-                            // delete users
-                            apiClient.deleteUsersFromChat(
-                                self.editingChatData.get('chat_id'),
-                                userIdsToDelete,
-                                function(data){
+                userIdsToAdd,
+                function(dataChat1){
 
+                    if(_.isNull(dataChat1.chat)){
+                        SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
+                        return;
+                    }
+                                        
+                    // delete users
+                    apiClient.deleteUsersFromChat(
+                        dataChat1.chat.chat_id,
+                        userIdsToDelete,
+                        function(dataChat2){
+
+                            if(_.isNull(dataChat2.chat)){
+                                SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
+                                return;
+                            }
+                                                       
+                            // update room info
+                            apiClient.updateRoom(
+                                dataChat2.chat.chat_id,
+                                roomName,
+                                this.profileImageFileId,
+                                this.profileThumbFileId,
+                                '',
+                                '',
+                                function(updateResult){
                                     
                                     U.goPage('main'); 
                                     
                                     _.debounce(function() {
-                                       Backbone.trigger(EVENT_START_CHAT,self.editingChatData.get('chat_id'));
+                                        Backbone.trigger(EVENT_START_CHAT,dataChat2.chat.chat_id);
                                     }, 1000)();
-
                     
                                 },function(data){
                                 
                                     SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
                     
                             });
-                            
-            
+
                         },function(data){
                         
                             SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
@@ -344,6 +350,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                     SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
     
             });
+
             
             return;
             

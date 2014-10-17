@@ -587,9 +587,7 @@ li.dropdown.current-user .dropdown-menu li a {
 /* ---------------------------------------------------------------------- */
 /*	Buttons
  /* ---------------------------------------------------------------------- */
-.btn {
-	font-family: 'Open Sans';
-}
+
 .btn-teal {
 	background-color: #569099;
 	border-color: #4d8189;
@@ -4907,4 +4905,8 @@ td.column-right {
 .chosen-select{
     display: block;
     padding: 5px;
+}
+
+.form-editusername input[type="text"],.form-password input[type="text"]{
+    width: 150px
 }

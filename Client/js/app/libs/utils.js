@@ -242,8 +242,18 @@ var U = {
 
         return theValue;
         
-    }
+    },
+    escapeHTML : function(html){
 
+        var entityMap = {
+            "<": "&lt;",
+            ">": "&gt;"
+        };
+  
+        return String(html).replace(/[<>]/g, function (s) {
+            return entityMap[s];
+        });
+    }
 }
 
 function $$(selector){

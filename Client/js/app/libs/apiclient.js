@@ -872,6 +872,7 @@ SpikaClient.prototype.deleteUsersFromChat = function(chatId,usersToDelete,succee
 };
 
 
+
 SpikaClient.prototype.test = function()
 {
     alert('test');

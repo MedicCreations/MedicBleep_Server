@@ -33,6 +33,14 @@ LANG = {
       unread_messages_plural : "unread messages",
       start_private_chat : "Start private chat",
       editroom : "Edit Room",
+      deactivateroom : "Deactivate Room",
+      activateroom : "Activate Room",
+      roomdisabled: "Room is disabled",
+      textboxplaceholer: "Type Message Here",
+      leaveroom: "Leave",
       save: "Save",
+      confirm: "Confirm required",
+      confirm_general: "Press OK to proceed.",   
+      deleteroom: "Delete Room",   
       dummy : 'dummy'
 };

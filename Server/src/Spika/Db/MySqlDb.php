@@ -257,7 +257,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getGroupsCount(Application $app, $user_id, $search, $category){
 	
-		$sql = "SELECT COUNT(*) FROM groups, group_member WHERE groups.id = group_member.group_id AND group_member.user_id = ? groups.organization_id = ? ";
+		$sql = "SELECT COUNT(*) FROM groups, group_member WHERE groups.id = group_member.group_id AND group_member.user_id = ? and groups.organization_id = ? ";
 	
 		if ($search != ""){
 			$sql = $sql . " AND groups.name LIKE '" . $search . "%'";
@@ -865,20 +865,20 @@ class MySqlDb implements DbInterface{
 	
 	public function getSearchUsersGroups(Application $app, $search, $my_user_id){
 		
-		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user WHERE user.id <> ? ";
+		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user WHERE user.id <> ?  and user.organization_id = ? ";
 		if ($search != ""){
 			$sql = $sql . " AND (CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
 			$sql = $sql . " OR user.firstname LIKE '" . $search . "%'";
 			$sql = $sql . " OR user.lastname LIKE '" . $search . "%')";
 		}
 		
-		$users = $app['db']->fetchAll($sql, array($my_user_id));
+		$users = $app['db']->fetchAll($sql, array($my_user_id,$app['organization_id']));
 		
-		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups";
+		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups where groups.organization_id = ?";
 		if ($search != ""){
-			$sql = $sql . " WHERE groups.name LIKE '" . $search . "%'";
+			$sql = $sql . " and groups.name LIKE '" . $search . "%'";
 		}
-		$groups = $app['db']->fetchAll($sql);
+		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
 		$result = array_merge($groups,$users);
 		

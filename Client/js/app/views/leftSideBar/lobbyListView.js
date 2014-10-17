@@ -6,6 +6,10 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         var self = this;
         this.template = options.template;
 
+        Backbone.on(EVENT_LEAVE_CHAT, function() {
+             self.listView.refresh();
+        });
+        
         Backbone.on(EVENT_WINDOW_SIZE_CHANGED, function() {
             self.updateWindowSize();
         });

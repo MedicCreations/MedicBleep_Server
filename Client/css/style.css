@@ -635,8 +635,13 @@ footer #mess_type ul li textarea.disabled{
 
 #user_profile .room_buttons{
     margin-top: 5px;
+    margin-bottom: 5px;
     text-align: right;
     padding-right: 5px;
+}
+
+#user_profile .room_buttons a{
+    margin-top: 5px;
 }
 
 /*------------------------------*/

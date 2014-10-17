@@ -50,14 +50,19 @@ class LoginController extends BaseController {
             $username = $request->get('username');
             $password = $request->get('password');
             $remember = $request->get('remember');
-             
+            
+            
             if(!is_null($remember)){
                 setcookie("username", $username, time()+3600 * 24 * 30);
                 setcookie("password", $password, time()+3600 * 24 * 30);
             }
             
-            if(USERNAME == $username && PASSWORD == $password){
+            // check
+            $data = $self->app['db']->fetchAssoc("select * from organization where admin_name = ? and admin_password = ?", array($username,md5($password)));
+            
+            if(!empty($data['id'])){
                 
+                $self->app['session']->set('loginuser',$data);
                 return $app->redirect(ADMIN_ROOT_URL . '/dashboard');
                 
             }else{
@@ -70,6 +75,11 @@ class LoginController extends BaseController {
                 
             }
 
+		});
+		
+		$controllers->get('/logout', function (Request $request) use ($app, $self){
+            $self->app['session']->remove('loginuser');
+            return $app->redirect(ADMIN_ROOT_URL . '/');
 		});
 		
 		return $controllers;

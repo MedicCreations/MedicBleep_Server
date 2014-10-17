@@ -20,7 +20,10 @@ class GroupsController extends BaseController {
 		$controllers = $app ['controllers_factory'];
 		
 		$controllers->get('/', function (Request $request) use ($app, $self){
-		
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
 
             $page = $request->get('page');
@@ -28,7 +31,7 @@ class GroupsController extends BaseController {
                 $page = 1;
             
             $offset = ($page - 1) * PAGINATOR_PAGESIZE;
-            $list = $self->app['db']->fetchAll("select * from groups where is_deleted = 0 limit " . PAGINATOR_PAGESIZE . " offset {$offset} ");
+            $list = $self->app['db']->fetchAll("select * from groups where is_deleted = 0 and organization_id = {$self->user['id']} limit " . PAGINATOR_PAGESIZE . " offset {$offset} ");
             $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from groups where is_deleted = 0");
             $count = $countAssoc['count'];
             
@@ -47,9 +50,12 @@ class GroupsController extends BaseController {
 		
         /* group view */
 		$controllers->get('/view/{groupId}', function (Request $request,$groupId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
-            $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
+            $data = $this->app['db']->fetchAssoc("select * from groups where id = ? and organization_id = {$self->user['id']} ", array($groupId));
             
             return $self->render('groups_view.twig', array(
                  'data' => $data,
@@ -60,9 +66,12 @@ class GroupsController extends BaseController {
 		
         /* group delete */
 		$controllers->get('/delete/{groupId}', function (Request $request,$groupId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
-            $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
+            $data = $this->app['db']->fetchAssoc("select * from groups where id = ? and organization_id = {$self->user['id']} ", array($groupId));
             
             return $self->render('groups_view.twig', array(
                  'data' => $data,
@@ -72,9 +81,12 @@ class GroupsController extends BaseController {
 		});
 
 		$controllers->post('/delete/{groupId}', function (Request $request,$groupId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
-            $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
+            $data = $this->app['db']->fetchAssoc("select * from groups where id = ? and organization_id = {$self->user['id']} ", array($groupId));
 
 			$values = array(
 					'is_deleted' => 1,
@@ -89,6 +101,10 @@ class GroupsController extends BaseController {
 		
 		/* add group */
 		$controllers->get('/add', function (Request $request) use ($app, $self){
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
             return $self->render('groups_add.twig', array(
                 'form' => $self->defaultFormValues(),
@@ -97,7 +113,10 @@ class GroupsController extends BaseController {
 		});		
 
 		$controllers->post('/add', function (Request $request) use ($app, $self){
-		
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
             $formValues = $request->request->all();
             
@@ -128,6 +147,7 @@ class GroupsController extends BaseController {
                 }
                 
     			$values = array(
+    			        'organization_id' => $self->user['id'],
     					'name' => $formValues['name'],
     					'image' => $image,
     					'image_thumb' => $imageThumb,
@@ -150,9 +170,12 @@ class GroupsController extends BaseController {
 		
 		/* Edit */
 		$controllers->get('/edit/{groupId}', function (Request $request,$groupId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
-            $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
+            $data = $this->app['db']->fetchAssoc("select * from groups where id = ? and organization_id = {$self->user['id']} ", array($groupId));
             
             if(!isset($data['id'])){
                 return $app->redirect(ADMIN_ROOT_URL . '/grups');
@@ -166,10 +189,13 @@ class GroupsController extends BaseController {
 		});
 
 		$controllers->post('/edit/{groupId}', function (Request $request,$groupId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
             $formValues = $request->request->all();
-            $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
+            $data = $this->app['db']->fetchAssoc("select * from groups where id = ? and organization_id = {$self->user['id']} ", array($groupId));
             
             if(!isset($data['id'])){
                 return $app->redirect(ADMIN_ROOT_URL . '/groups');
@@ -212,7 +238,7 @@ class GroupsController extends BaseController {
     
         			$app['db']->update('groups', $values,array('id' => $groupId));
                     
-                    $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
+                    $data = $this->app['db']->fetchAssoc("select * from groups where id = ? and organization_id = {$self->user['id']} ", array($groupId));
                     return $self->render('groups_edit.twig', array(
                         'form' => $data,
                         'information' => $self->lang['groups14'],
@@ -227,24 +253,27 @@ class GroupsController extends BaseController {
 
         /* group members */
 		$controllers->get('/members/{groupId}', function (Request $request,$groupId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
 
             $page = $request->get('page');
             if(empty($page))
                 $page = 1;
             
-            $data = $this->app['db']->fetchAssoc("select * from groups where id = ?", array($groupId));
+            $data = $this->app['db']->fetchAssoc("select * from groups where id = ? and organization_id = {$self->user['id']} ", array($groupId));
             
             $offset = ($page - 1) * PAGINATOR_PAGESIZE;
             
-            $list = $self->app['db']->fetchAll("select * from user where id in ( select user_id from group_member where group_id = ? ) and is_deleted = 0  order by created desc limit " . PAGINATOR_PAGESIZE . " offset {$offset} ", array($groupId));
+            $list = $self->app['db']->fetchAll("select * from user where id in ( select user_id from group_member where group_id = ? ) and is_deleted = 0  and organization_id = {$self->user['id']}  order by created desc limit " . PAGINATOR_PAGESIZE . " offset {$offset} ", array($groupId));
 
-            $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from user where id in ( select user_id from group_member where group_id = ? ) and is_deleted = 0", array($groupId));
+            $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from user where id in ( select user_id from group_member where group_id = ? ) and is_deleted = 0 and organization_id = {$self->user['id']} ", array($groupId));
             
             $count = $countAssoc['count'];
             
-            $memberList = $self->app['db']->fetchAll("select id,firstname,lastname from user where is_deleted = 0 and not id in ( select user_id from group_member where group_id = ? )", array($groupId));
+            $memberList = $self->app['db']->fetchAll("select id,firstname,lastname from user where is_deleted = 0 and not id in ( select user_id from group_member where group_id = ? ) and organization_id = {$self->user['id']} ", array($groupId));
             
             return $self->render('groups_member.twig', array(
                 'pager' => array(
@@ -262,7 +291,10 @@ class GroupsController extends BaseController {
 		});
 		
 		$controllers->post('/members/{groupId}', function (Request $request,$groupId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
             $self->setInfoMessage($self->lang['groups28']);
             
@@ -272,7 +304,7 @@ class GroupsController extends BaseController {
                 $usersToAdd = $formValues['usersselect'];
             }
             
-            $usersList = $self->app['db']->fetchAll("select user_id from group_member where group_id = ?", array($groupId));
+            $usersList = $self->app['db']->fetchAll("select user_id from group_member where group_id = ? and organization_id = {$self->user['id']} ", array($groupId));
             $originalUsers = array();
             
             foreach($usersList as $row){
@@ -284,6 +316,7 @@ class GroupsController extends BaseController {
                 if(!in_array($userId, $originalUsers)){
                     
                     $app['db']->insert('group_member', array(
+                        'organization_id' => $self->user['id'],
                         'group_id' => $groupId,
                         'user_id' => $userId,
                         'created' => time(),
@@ -299,7 +332,10 @@ class GroupsController extends BaseController {
 		});
 		
 		$controllers->get('/members_delete/{groupId}/{userId}', function (Request $request,$groupId,$userId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'groups';
             $self->setInfoMessage($self->lang['groups28']);
             

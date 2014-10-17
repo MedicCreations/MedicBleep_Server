@@ -65,12 +65,12 @@
 						<!-- start: USER DROPDOWN -->
 						<li class="dropdown current-user">
 							<a data-toggle="dropdown" data-hover="dropdown" class="dropdown-toggle" data-close-others="true" href="#">
-								<span class="username">{{lang.general1}}</span>
+								<span class="username">{{user.name}}</span>
 								<i class="clip-chevron-down"></i>
 							</a>
 							<ul class="dropdown-menu">
 								<li>
-									<a href="login.html">
+									<a href="{{ADMIN_ROOT_URL}}/logout">
 										<i class="clip-exit"></i>
 										&nbsp;{{lang.general2}}
 									</a>
@@ -113,11 +113,15 @@
 								<span class="title"> {{lang.general5}} </span>
 							</a>
 						</li>
+						
+						<!--
 						<li class="{% if page == 'chats' %}active open{% endif %}">
 							<a href="{{ADMIN_ROOT_URL}}/chats"><i class="fa fa-comments-o"></i></i>
 								<span class="title"> {{lang.general6}} </span>
 							</a>
 						</li>
+						-->
+						
 					</ul>
 					<!-- end: MAIN NAVIGATION MENU -->
 				</div>

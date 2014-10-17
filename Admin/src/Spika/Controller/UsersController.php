@@ -22,13 +22,16 @@ class UsersController extends BaseController {
 		
 		$controllers->get('/', function (Request $request) use ($app, $self){
             
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+                
             $page = $request->get('page');
             if(empty($page))
                 $page = 1;
             
             $offset = ($page - 1) * PAGINATOR_PAGESIZE;
-            $list = $self->app['db']->fetchAll("select * from user where is_deleted = 0 limit " . PAGINATOR_PAGESIZE . " offset {$offset} ");
-            $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from user where is_deleted = 0");
+            $list = $self->app['db']->fetchAll("select * from user where is_deleted = 0 and organization_id = {$self->user['id']} limit " . PAGINATOR_PAGESIZE . " offset {$offset} ");
+            $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from user where is_deleted = 0 and organization_id = {$self->user['id']} ");
             $count = $countAssoc['count'];
             
             $self->page = 'users';
@@ -49,9 +52,12 @@ class UsersController extends BaseController {
 
         /* user view */
 		$controllers->get('/view/{userId}', function (Request $request,$userId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'users';
-            $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+            $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
             
             return $self->render('users_view.twig', array(
                  'data' => $data,
@@ -62,9 +68,12 @@ class UsersController extends BaseController {
 		       
         /* user delete */
 		$controllers->get('/delete/{userId}', function (Request $request,$userId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'users';
-            $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+            $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
             
             return $self->render('users_view.twig', array(
                  'data' => $data,
@@ -74,9 +83,12 @@ class UsersController extends BaseController {
 		});
 
 		$controllers->post('/delete/{userId}', function (Request $request,$userId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'users';
-            $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+            $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
 
 			$values = array(
 					'is_deleted' => 1,
@@ -91,7 +103,10 @@ class UsersController extends BaseController {
 				       
         /* user add */
 		$controllers->get('/add', function (Request $request) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'users';
             
             return $self->render('users_add.twig', array(
@@ -102,7 +117,10 @@ class UsersController extends BaseController {
 		});
 		
 		$controllers->post('/add', function (Request $request) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'users';
             $formValues = $request->request->all();
             
@@ -112,7 +130,8 @@ class UsersController extends BaseController {
             
                 return $self->render('users_add.twig', array(
                     'form' => $formValues,
-                    'error' => $errorMessage
+                    'error' => $errorMessage,
+                    'mode' => 'add'
                 ));
                 
             }else{
@@ -131,8 +150,9 @@ class UsersController extends BaseController {
                     }
                     
                 }
-                
+
     			$values = array('outside_id' => 0,
+    			        'organization_id' => $self->user['id'],
     					'firstname' => $formValues['firstname'],
     					'lastname' => $formValues['lastname'],
     					'password' => md5($formValues['password']),
@@ -156,9 +176,12 @@ class UsersController extends BaseController {
 		
 		/* Edit */
 		$controllers->get('/edit/{userId}', function (Request $request,$userId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'users';
-            $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+            $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
             
             if(!isset($data['id'])){
                 return $app->redirect(ADMIN_ROOT_URL . '/users');
@@ -172,10 +195,13 @@ class UsersController extends BaseController {
 		});
 
 		$controllers->post('/edit/{userId}', function (Request $request,$userId) use ($app, $self){
-            
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
             $self->page = 'users';
             $formValues = $request->request->all();
-            $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+            $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
             
             if(!isset($data['id'])){
                 return $app->redirect(ADMIN_ROOT_URL . '/user');
@@ -219,7 +245,7 @@ class UsersController extends BaseController {
     
         			$app['db']->update('user', $values,array('id' => $userId));
                     
-                    $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+                    $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
                     return $self->render('users_edit.twig', array(
                         'form' => $data,
                         'information' => $self->lang['users22'],
@@ -235,7 +261,7 @@ class UsersController extends BaseController {
                 $username = $formValues['username'];
                 
                 $checkDuplication = 
-                    $self->app['db']->fetchAll("select * from user where username = ? and id != ? ", 
+                    $self->app['db']->fetchAll("select * from user where username = ? and id != ?  and organization_id = {$self->user['id']} ", 
                                                     array($formValues['username'],$userId));
             
                 if(count($checkDuplication) > 0){
@@ -252,7 +278,7 @@ class UsersController extends BaseController {
 
     			$app['db']->update('user', $values,array('id' => $userId));
                 
-                $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+                $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
                 return $self->render('users_edit.twig', array(
                     'form' => $data,
                     'information' => $self->lang['users22'],
@@ -279,7 +305,7 @@ class UsersController extends BaseController {
 
     			$app['db']->update('user', $values,array('id' => $userId));
                 
-                $data = $self->app['db']->fetchAssoc("select * from user where id = ?", array($userId));
+                $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
                 return $self->render('users_edit.twig', array(
                     'form' => $data,
                     'information' => $self->lang['users22'],
@@ -319,7 +345,7 @@ class UsersController extends BaseController {
         	if(isset($formValues['password']) && empty($formValues['password']))
         	    return $this->lang['validateionError2'];
         	    
-            $checkDuplication = $this->app['db']->fetchAll("select * from user where username = ?", array($formValues['username']));
+            $checkDuplication = $this->app['db']->fetchAll("select * from user where username = ? and organization_id = {$this->user['id']} ", array($formValues['username']));
             
             if(count($checkDuplication) > 0)
                 return $this->lang['validateionError3'];
