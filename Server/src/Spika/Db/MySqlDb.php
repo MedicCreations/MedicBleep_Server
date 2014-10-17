@@ -806,7 +806,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getCategories(Application $app){
 		
-		$sql = "SELECT * FROM categories and categories.organization_id = ?";
+		$sql = "SELECT * FROM categories WHERE categories.organization_id = ?";
 		
 		$categories = $app['db']->fetchAll($sql,array($app['organization_id']));
 		
