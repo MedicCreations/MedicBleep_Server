@@ -70,7 +70,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         });
 
         Backbone.on(EVENT_NEW_MESSAGE, function(chatId) {
-            
+     
             if(_.isNull(self.chatData))
                 return;
                 

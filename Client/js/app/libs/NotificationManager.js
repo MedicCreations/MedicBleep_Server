@@ -26,14 +26,15 @@ var SPIKA_notificationManger = {
                 
                 self.wsConnection.onmessage = function(e) {
                     
-                    var chatId = e.data;
-    
-                    Backbone.trigger(EVENT_NEW_MESSAGE,chatId);
+                    var data = JSON.parse(e.data);
+                    
+                    if(SPIKA_UserManager.getUser().get('id') != data.user_id)
+                        self.newMessage(data.chat_id);
                     
                 };
     
                 self.wsConnection.onerror = function(e) {
-                    U.l(e);
+                    U.l('web socket error');
                     self.usePoing();
                 };
     
@@ -105,7 +106,7 @@ var SPIKA_notificationManger = {
             }
             
             var unread = 0;
-                           
+
             _.each(self.lastLobbyData.models,function(historyOld){
                 
                 unread += parseInt(historyOld.get('unread'));
@@ -113,8 +114,11 @@ var SPIKA_notificationManger = {
                 var modelHistoryNew = lobbyData.searchById(historyOld.get('chat_id'));
                 
                 if(!_.isNull(modelHistoryNew) && modelHistoryNew.get('unread') != historyOld.get('unread')){
+
+                    if(modelHistoryNew.get('unread') > historyOld.get('unread')){
+                        self.newMessage(modelHistoryNew.get('chat_id'));
+                    }
                     
-                    Backbone.trigger(EVENT_NEW_MESSAGE,modelHistoryNew.get('chat_id'));
                     
                 }
                 
@@ -130,24 +134,19 @@ var SPIKA_notificationManger = {
             
             if(self.lastUnreadNum != unread){
 
+/*
                 Backbone.trigger(EVENT_NEW_MESSAGE,null);
                 
                 // new message
                 if(unread > self.lastUnreadNum){
-
+                    
+                    U.l('new message 2');
                     //SPIKA_soundManager.playNewMessage();
     
-                    var noticifaction = notify.createNotification("SPIKA", {
-                        body:"You have new message.",
-                        icon:WEB_ROOT+"/img/icon_desktop.png"
-                    });
-                    
-                    _.debounce(function() {
-                        noticifaction.close();
-                    }, 1000)();
+
                 
                 }
-                
+*/
                 //U.updateUnread(unread);
                 
             }
@@ -186,9 +185,44 @@ var SPIKA_notificationManger = {
         // this goes from server side
         if(_.isNull(this.wsConnection))
             return;
-
+        
+        
         //this.wsConnection.send(chatId);
-    }
+    },
     
+    attachUser: function(userId){
+        
+        // this goes from server side
+        if(_.isNull(this.wsConnection))
+            return;
+
+        this.wsConnection.send(JSON.stringify({
+            command:'setUser',
+            identifier:SYSTEM_IDENTIFIER,
+            userId:userId
+        }));
+    },
+    
+    //////////////////////////////////////////////////////////
+    //  On new message
+    //////////////////////////////////////////////////////////
+    
+    newMessage: function(chatId){
+
+        Backbone.trigger(EVENT_NEW_MESSAGE,chatId);
+        
+        SPIKA_soundManager.playNewMessage();
+        
+        var noticifaction = notify.createNotification("SPIKA", {
+            body:"You have new message.",
+            icon:WEB_ROOT+"/img/icon_desktop.png"
+        });
+        
+        _.debounce(function() {
+            noticifaction.close();
+        }, 1000)();
+        
+    }
+       
     
 }

@@ -22,7 +22,6 @@ class WebSocketNotificationProvider implements ServiceProviderInterface
 
 	public function boot(Application $app)
 	{
-	    $this->_connect(WEBSOCKET_SERVER_HOST, WEBSOCKET_SERVER_PORT);
 	}
 
 	public function __destruct()
@@ -32,15 +31,21 @@ class WebSocketNotificationProvider implements ServiceProviderInterface
  
 	public function sendData($data)
 	{
+	    $this->_connect(WEBSOCKET_SERVER_HOST, WEBSOCKET_SERVER_PORT);
+
 		// send actual data:
 		fwrite($this->_Socket, "\x00" . $data . "\xff" ) or die('Error:' . $errno . ':' . $errstr); 
 		$wsData = fread($this->_Socket, 2000);
-		$retData = trim($wsData,"\x00\xff");        
+		$retData = trim($wsData,"\x00\xff");  
+		
+        $this->_disconnect();
+      
 		return $retData;
 	}
  
 	private function _connect($host, $port)
 	{
+	
 		$key1 = $this->_generateRandomString(32);
 		$key2 = $this->_generateRandomString(32);
 		$key3 = $this->_generateRandomString(8, false, true);		
@@ -70,8 +75,11 @@ class WebSocketNotificationProvider implements ServiceProviderInterface
 	}
  
 	private function _disconnect()
-	{
-		fclose($this->_Socket);
+	{   
+        if(is_resource($this->_Socket)) {
+            fclose($this->_Socket);
+        }
+	    
 	}
  
 	private function _generateRandomString($length = 10, $addSpaces = true, $addNumbers = true)

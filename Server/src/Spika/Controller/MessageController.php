@@ -258,7 +258,13 @@ class MessageController extends SpikaBaseController {
 					'message' => 'Message created');
 			
 			// send websocket notification
-			$self->sendWebSocketSignal($chat_id,$app);
+			$payload = json_encode(array(
+			    'command' => 'sendMessage',
+			    'identifier' => SYSTEM_IDENTIFIER,
+			    'chat_id' => $chat_id,
+			    'user_id' => $user_id
+			));
+			$self->sendWebSocketSignal($payload,$app);
 			
 			return $app->json($result, 200);
 			

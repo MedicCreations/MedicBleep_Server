@@ -65,6 +65,7 @@ var SPIKA_LoginView = Backbone.View.extend({
                 apiClient.getUserById(data.user_id,function(data){
                     
                     SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
+                    SPIKA_notificationManger.attachUser(data.user.id);
                     
                     U.goPage("main");
                     
