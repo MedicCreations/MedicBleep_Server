@@ -8,27 +8,28 @@
         
 							<!-- start: PAGE TITLE & BREADCRUMB -->
 							<ol class="breadcrumb">
-								<li>
-									<i class="clip-home-3"></i>
-									<a href="{{ADMIN_ROOT_URL}}/dashboard">
-										{{lang.general11}}
-									</a>
-								</li>
-								<li>
-									<a href="{{ADMIN_ROOT_URL}}/chats">
-									    {{lang.chats1}}
-                                    </a>
-								</li>
-								<li class="active">
-									{{lang.chats3}}
-								</li>
+                    			<li>
+                    				<i class="clip-home-3"></i>
+                    				<a href="{{ADMIN_ROOT_URL}}/dashboard">
+                    				{{lang.category1}}
+                    				</a>
+                    			</li>
+                    			<li>
+                    				<a href="{{ADMIN_ROOT_URL}}/categories">
+                    				{{lang.category2}}
+                    				</a>
+                    			</li>
+                    			</li>
+                    			<li class="active">
+                    				{{lang.category16}}
+                    			</li>
 								
 								{% include 'searchbox.twig' %}
 								
 							</ol>
 							<div class="row page-header">
 							    <div class="col-md-6">
-								    <h1>{{lang.chats3}}</h1>
+								    <h1>{{lang.category16}}</h1>
 								</div>
 							</div>
 							<!-- end: PAGE TITLE & BREADCRUMB -->
@@ -38,13 +39,13 @@
 					<!-- start: PAGE CONTENT -->
 					     
 
-                    <form role="form" class="form-horizontal form-chats" method="post" action="{{ADMIN_ROOT_URL}}/chats/edit/{{form.id}}" enctype="multipart/form-data">
+                    <form role="form" class="form-horizontal form-groups" method="post" action="{{ADMIN_ROOT_URL}}/categories/edit/{{form.id}}" enctype="multipart/form-data">
                         
-                        {% include 'chats_form.twig' %}
+                        {% include 'categories_form.twig' %}
                         
                     	<div class="row">
                     		<div class="col-md-12 right">
-                    			<input type="submit" name="edit_profile" class="btn btn-primary" value="{{lang.chats4}}" / >
+                    			<input type="submit" name="edit_profile" class="btn btn-primary" value="{{lang.general10}}" / >
                     		</div>
                     	</div>
                     	
@@ -59,8 +60,8 @@
 	<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
 	<script>
 
-        var runChatFormValidator = function () {
-            var form = $('.form-chats');
+        var runGroupFormValidator = function () {
+            var form = $('.form-groups');
             var errorHandler = $('.errorHandler', form);
             form.validate({
                 rules: {
@@ -81,7 +82,7 @@
         
 		jQuery(document).ready(function() {
 			SpValidator.initValidator();
-			runChatFormValidator();
+			runGroupFormValidator();
 		});
 		
 	</script>

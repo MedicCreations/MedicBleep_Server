@@ -4,44 +4,41 @@
 <!-- start: PAGE HEADER -->
 <div class="row">
 	<div class="col-sm-12">
-
 		<!-- start: PAGE TITLE & BREADCRUMB -->
 		<ol class="breadcrumb">
 			<li>
 				<i class="clip-home-3"></i>
 				<a href="{{ADMIN_ROOT_URL}}/dashboard">
-					{{lang.general11}}
+				{{lang.category1}}
 				</a>
 			</li>
 			<li>
-				<a href="{{ADMIN_ROOT_URL}}/groups">
-				    {{lang.groups1}}
-                </a>
+				<a href="{{ADMIN_ROOT_URL}}/categories">
+				{{lang.category2}}
+				</a>
+			</li>
 			</li>
 			<li class="active">
-
 			    {% if mode == 'view' %}
-				    {{lang.groups15}}
+				    {{lang.category11}}
 				{% endif %}
 			    {% if mode == 'delete' %}
-				    {{lang.groups24}}
+				    {{lang.category12}}
 				{% endif %}
-				
 			</li>
 			
 			{% include 'searchbox.twig' %}
 			
 		</ol>
 		<div class="row page-header">
-		    <div class="col-md-6">
-			    <h1>{{data.name}}</h1>
+			<div class="col-md-6">
+				<h1>{{data.name}}</h1>
 			</div>
 		</div>
 		<!-- end: PAGE TITLE & BREADCRUMB -->
 	</div>
 </div>
 <!-- end: PAGE HEADER -->
-<!-- start: PAGE CONTENT -->
 
 <!-- start: PAGE CONTENT -->
 <div class="row">
@@ -53,42 +50,34 @@
             <div class="alert alert-warning">
             	<i class="fa fa-exclamation-triangle"></i>
             	<strong>Warning!</strong> 
-            	{{lang.groups22}}
+            	{{lang.category13}}
             </div>
             
-            <form role="form" class="form-horizontal form-user right" method="post" action="{{ADMIN_ROOT_URL}}/groups/delete/{{data.id}}">
-
+            <form role="form" class="form-horizontal form-user right" method="post" action="{{ADMIN_ROOT_URL}}/categories/delete/{{data.id}}">
+                
                 <button type="button" class="btn btn-success" onclick="history.back()">{{lang.general9}}</button>
-                <button type="submit" class="btn btn-warning">{{lang.groups29}}</button>
+                <button type="submit" class="btn btn-warning">{{lang.category14}}</button>
 
             </form>
             
         </div>
         
     {% endif %}
-    		
+    
     <div class="col-md-9">
 
         <table class="table table-hover" id="sample-table-1">
 
     		<tr>
-    			<td>{{lang.groups17}}</td>
-    			<td>{{data.id}}</td>
-    		</tr>
-    		<tr>
-    			<td>{{lang.groups16}}</td>
+    			<td>{{lang.category9}}</td>
     			<td>{{data.name}}</td>
     		</tr>
     		<tr>
-    			<td>{{lang.category2}}</td>
-    			<td>{{categoryList[data.category]}}</td>
-    		</tr>
-    		<tr>
-    			<td>{{lang.groups18}}</td>
+    			<td>{{lang.users32}}</td>
     			<td>{{data.created|date("Y.m.d")}}</td>
     		</tr>
     		<tr>
-    			<td>{{lang.groups19}}</td>
+    			<td>{{lang.users33}}</td>
     			<td>{{data.modified|date("Y.m.d")}}</td>
     		</tr>
 

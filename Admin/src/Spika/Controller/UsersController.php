@@ -30,7 +30,7 @@ class UsersController extends BaseController {
                 $page = 1;
             
             $offset = ($page - 1) * PAGINATOR_PAGESIZE;
-            $list = $self->app['db']->fetchAll("select * from user where is_deleted = 0 and organization_id = {$self->user['id']} limit " . PAGINATOR_PAGESIZE . " offset {$offset} ");
+            $list = $self->app['db']->fetchAll("select * from user where is_deleted = 0 and organization_id = {$self->user['id']} order by username limit " . PAGINATOR_PAGESIZE . " offset {$offset} ");
             $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from user where is_deleted = 0 and organization_id = {$self->user['id']} ");
             $count = $countAssoc['count'];
             

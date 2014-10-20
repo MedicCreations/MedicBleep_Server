@@ -40,6 +40,11 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
 
         var self = this;
 
+        this.selectedUserIdList = [];
+        this.userModelsPool = [];
+        this.userIdsBeforeEdit = [];
+
+
         this.updateWindowSize();
         this.usersListView.init();
         this.usersListView.loadCurrentPage();

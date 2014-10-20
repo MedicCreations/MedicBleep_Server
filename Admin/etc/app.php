@@ -44,6 +44,12 @@ $app->register ( new Silex\Provider\DoctrineServiceProvider(), array (
 		) 
 ) );
 
+/*
+$app->error(function (\Exception $e, $code) use($app) {
+    return $app->redirect(ADMIN_ROOT_URL . '/');
+});
+*/
+
 $app->register(new Silex\Provider\SessionServiceProvider());
 
 $app->mount ( '/', new Spika\Controller\LoginController() );
@@ -51,3 +57,4 @@ $app->mount ( '/dashboard', new Spika\Controller\DashboardController() );
 $app->mount ( '/users', new Spika\Controller\UsersController() );
 $app->mount ( '/groups', new Spika\Controller\GroupsController() );
 $app->mount ( '/chats', new Spika\Controller\ChatsController() );
+$app->mount ( '/categories', new Spika\Controller\CategoryController() );

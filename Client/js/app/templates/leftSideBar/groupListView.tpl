@@ -1,11 +1,10 @@
 
     	<div class="menu_search">
-    		<form>
+
     			<input type="text" placeholder="Search" />
     			<a>
     				<i class="fa fa-search fa-2x"></i>
     			</a>
-    		</form>
     	</div>
     	
     	<div class="scrollable">

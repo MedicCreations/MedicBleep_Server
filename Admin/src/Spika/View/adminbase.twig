@@ -54,7 +54,7 @@
 					</button>
 					<!-- end: RESPONSIVE MENU TOGGLER -->
 					<!-- start: LOGO -->
-					<a class="navbar-brand" href="index.html">
+					<a class="navbar-brand" href="#">
 						{{lang.titleWeb1}} <i class="{{lang.titleIcon}}"></i> {{lang.titleWeb2}}
 					</a>
 					<!-- end: LOGO -->
@@ -111,6 +111,11 @@
 						<li class="{% if page == 'groups' %}active open{% endif %}">
 							<a href="{{ADMIN_ROOT_URL}}/groups"><i class="fa fa-users"></i></i>
 								<span class="title"> {{lang.general5}} </span>
+							</a>
+						</li>
+						<li class="{% if page == 'categories' %}active open{% endif %}">
+							<a href="{{ADMIN_ROOT_URL}}/categories"><i class="fa fa-book"></i></i>
+								<span class="title"> {{lang.general17}} </span>
 							</a>
 						</li>
 						

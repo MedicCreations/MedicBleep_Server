@@ -174,6 +174,9 @@ CREATE TABLE IF NOT EXISTS `user` (
   `organization_id` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=201298 ;
 
+ALTER TABLE `categories` ADD `is_deleted` INT NOT NULL DEFAULT '0' AFTER `organization_id`;
+ALTER TABLE `categories` ADD `modified` INT NOT NULL AFTER `is_deleted`;
+ALTER TABLE `categories` ADD `created` INT NOT NULL AFTER `modified`;
 --
 -- Indexes for dumped tables
 --

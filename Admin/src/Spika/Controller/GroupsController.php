@@ -43,7 +43,8 @@ class GroupsController extends BaseController {
                     'count' => $count,
                     'pageSize' => PAGINATOR_PAGESIZE
                 ),
-                'list' => $list
+                'list' => $list,
+                'categoryList' => $self->getCategoryList()
             ));
         
         });
@@ -59,7 +60,8 @@ class GroupsController extends BaseController {
             
             return $self->render('groups_view.twig', array(
                  'data' => $data,
-                 'mode' => 'view'
+                 'mode' => 'view',
+                 'categoryList' => $self->getCategoryList()
             ));
             			
 		});
@@ -75,7 +77,8 @@ class GroupsController extends BaseController {
             
             return $self->render('groups_view.twig', array(
                  'data' => $data,
-                 'mode' => 'delete'
+                 'mode' => 'delete',
+                 'categoryList' => $self->getCategoryList()
             ));
             			
 		});
@@ -108,7 +111,8 @@ class GroupsController extends BaseController {
             $self->page = 'groups';
             return $self->render('groups_add.twig', array(
                 'form' => $self->defaultFormValues(),
-                'mode' => 'add'
+                'mode' => 'add',
+                'categoryList' => $self->getCategoryList()
             ));
 		});		
 
@@ -126,7 +130,9 @@ class GroupsController extends BaseController {
             
                 return $self->render('groups_add.twig', array(
                     'form' => $formValues,
-                    'error' => $errorMessage
+                    'error' => $errorMessage,
+                    'mode' => 'add',
+                    'categoryList' => $self->getCategoryList()
                 ));
                 
             }else{
@@ -149,13 +155,20 @@ class GroupsController extends BaseController {
     			$values = array(
     			        'organization_id' => $self->user['id'],
     					'name' => $formValues['name'],
+    					'category' => $formValues['category'],
     					'image' => $image,
     					'image_thumb' => $imageThumb,
     					'created' => time(), 
     					'modified' => time());
 
     			$app['db']->insert('groups', $values);
-			
+                
+                $lastGourpIdAry = $this->app['db']->fetchAssoc("select max(id) as maxid from groups");
+                $lastGourpId = $lastGourpIdAry['maxid'];
+                
+                $self->setInfoMessage($self->lang['groups5']);
+                return $app->redirect(ADMIN_ROOT_URL . '/groups/members/' . $lastGourpId);
+                
                 return $self->render('groups_add.twig', array(
                     'form' => $self->defaultFormValues(),
                     'information' => $self->lang['groups9'],
@@ -183,7 +196,8 @@ class GroupsController extends BaseController {
             
             return $self->render('groups_edit.twig', array(
                  'form' => $data,
-                 'mode' => 'edit'
+                 'mode' => 'edit',
+                 'categoryList' => $self->getCategoryList()
             ));
             			
 		});
@@ -210,7 +224,8 @@ class GroupsController extends BaseController {
                     return $self->render('groups_edit.twig', array(
                         'form' => array_merge($data,$formValues),
                         'error' => $errorMessage,
-                        'mode' => 'edit'
+                        'mode' => 'edit',
+                        'categoryList' => $self->getCategoryList()
                     ));
                     
                 }else{
@@ -232,6 +247,7 @@ class GroupsController extends BaseController {
                     
         			$values = array(
         					'name' => $formValues['name'],
+        					'category' => $formValues['category'],
         					'image' => $image,
         					'image_thumb' => $imageThumb,
         					'modified' => time());
@@ -242,7 +258,8 @@ class GroupsController extends BaseController {
                     return $self->render('groups_edit.twig', array(
                         'form' => $data,
                         'information' => $self->lang['groups14'],
-                        'mode' => 'edit'
+                        'mode' => 'edit',
+                        'categoryList' => $self->getCategoryList()
                     ));
                     
                 }	
@@ -357,7 +374,8 @@ class GroupsController extends BaseController {
 	function defaultFormValues(){
     	return array(
     	    'id' => '',
-    	    'name' => ''
+    	    'name' => '',
+    	    'category' => 0
     	);
 	}
 	
@@ -365,18 +383,46 @@ class GroupsController extends BaseController {
     	
     	$formValues = $request->request->all();
 
-        
-        if($isEdit == false){
     
-        	if(empty($formValues['name']))
-        	    return $this->lang['validateionError4'];
+    	if(empty($formValues['name']))
+    	    return $this->lang['validateionError4'];
+        	    
 
+        if($isEdit == false){
+
+            $checkDuplication = $this->app['db']->fetchAll("select * from groups where name = ? and organization_id = {$this->user['id']} ", array($formValues['name']));
+
+            if(count($checkDuplication) > 0)
+                return $this->lang['validateionError5'];
+
+        } else {
+            
+            $checkDuplication = $this->app['db']->fetchAll("select * from groups where name = ? and organization_id = {$this->user['id']} and id != ? ", array($formValues['name'],$formValues['id']));
+            
+            if(count($checkDuplication) > 0)
+                return $this->lang['validateionError5'];
+                
         }
+
 
         return '';
     	
 	}
 	
+	function getCategoryList(){
+    	
+    	$categories = $this->app['db']->fetchAll("select * from categories where organization_id = {$this->user['id']} and is_deleted = 0", array());
+        
+        $categoryList = array();
+        
+        $categoryList[0] = '';
+        
+        foreach($categories as $row){
+            $categoryList[$row['id']] = $row['name'];
+        }
+        
+        return $categoryList;
+	}
 	
 	
 }

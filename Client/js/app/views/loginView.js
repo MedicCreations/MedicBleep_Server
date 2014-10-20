@@ -45,45 +45,16 @@ var SPIKA_LoginView = Backbone.View.extend({
         }
 
         $$('#login_btn_login').click(function(){
-            
-            self.hideAlert(true);
-             
-            var username = $$("#login_tb_username").val();
-            var password = $$("#login_tb_password").val();
-            
-            if(_.isEmpty(username) || _.isEmpty(password)){
-                
-                self.showAlert(LANG.login_validation_failed1);
-                return;
-            }
-            
-            $.cookie(COOKIE_USERNAME, username, { expires: COOKIE_EXPIRES });
-            $.cookie(COOKIE_PASSWORD, password, { expires: COOKIE_EXPIRES });
-
-            apiClient.login(username,password,function(data){
-                
-                apiClient.getUserById(data.user_id,function(data){
-                    
-                    SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
-                    SPIKA_notificationManger.attachUser(data.user.id);
-                    
-                    U.goPage("main");
-                    
-                },function(data){
-                    
-                    self.showAlert(LANG.login_failed);
-                    
-                });
-    
-                
-            },function(data){
-                
-                self.showAlert(LANG.login_failed);
-                
-            });
-            
+            self.doLogin();            
         });
-        
+
+        $$("#login_tb_password").keyup(function(e){
+            if(e.keyCode == 13)
+            {
+                self.doLogin();
+            }
+        });
+
         
     },
     showAlert:function(text){
@@ -117,7 +88,8 @@ var SPIKA_LoginView = Backbone.View.extend({
 
             
         }else if(notificationPermission === notify.PERMISSION_DENIED){
-
+            
+            /* if denied doesn't show up again
             SPIKA_AlertManager.show(LANG.login_notification_alert_title,LANG.login_notification_alert,function(){
                 
                 notify.requestPermission(function(){
@@ -129,7 +101,8 @@ var SPIKA_LoginView = Backbone.View.extend({
             },function(){
                 
             })
-
+            */
+            
         }else{
             
             
@@ -137,6 +110,47 @@ var SPIKA_LoginView = Backbone.View.extend({
         }
 
         
+    },
+    doLogin : function(){
+        
+        var self = this;
+        
+        self.hideAlert(true);
+         
+        var username = $$("#login_tb_username").val();
+        var password = $$("#login_tb_password").val();
+        
+        if(_.isEmpty(username) || _.isEmpty(password)){
+            
+            self.showAlert(LANG.login_validation_failed1);
+            return;
+        }
+        
+        $.cookie(COOKIE_USERNAME, username, { expires: COOKIE_EXPIRES });
+        $.cookie(COOKIE_PASSWORD, password, { expires: COOKIE_EXPIRES });
+
+        apiClient.login(username,password,function(data){
+            
+            apiClient.getUserById(data.user_id,function(data){
+                
+                SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
+                SPIKA_notificationManger.attachUser(data.user.id);
+                
+                U.goPage("main");
+                
+            },function(data){
+                
+                self.showAlert(LANG.login_failed);
+                
+            });
+
+            
+        },function(data){
+            
+            self.showAlert(LANG.login_failed);
+            
+        });
+    
     }
     
 });

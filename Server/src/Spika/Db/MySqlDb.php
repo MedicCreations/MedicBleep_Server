@@ -246,7 +246,7 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND groups.category = " . $category;
 		}
 		
-		$sql = $sql . " and groups.organization_id = ? LIMIT " . $offset . ", " . GROUPS_PAGE_SIZE;
+		$sql = $sql . " and groups.organization_id = ?  and groups.is_deleted = 0 LIMIT " . $offset . ", " . GROUPS_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -257,7 +257,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getGroupsCount(Application $app, $user_id, $search, $category){
 	
-		$sql = "SELECT COUNT(*) FROM groups, group_member WHERE groups.id = group_member.group_id AND group_member.user_id = ? and groups.organization_id = ? ";
+		$sql = "SELECT COUNT(*) FROM groups, group_member WHERE groups.id = group_member.group_id AND group_member.user_id = ? and groups.organization_id = ?  and groups.is_deleted = 0 ";
 	
 		if ($search != ""){
 			$sql = $sql . " AND groups.name LIKE '" . $search . "%'";
@@ -806,7 +806,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getCategories(Application $app){
 		
-		$sql = "SELECT * FROM categories WHERE categories.organization_id = ?";
+		$sql = "SELECT * FROM categories WHERE categories.organization_id = ? and is_deleted = 0";
 		
 		$categories = $app['db']->fetchAll($sql,array($app['organization_id']));
 		

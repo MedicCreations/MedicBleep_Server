@@ -260,7 +260,7 @@ class ChatController extends SpikaBaseController {
 			}
 			
 			if ($chat['group_id'] > 0){
-				$self->mergeGroupChatUsers($app, $mySql, $chat_data['group_id'], $chat_id);
+				$self->mergeGroupChatUsers($app, $mySql, $chat['group_id'], $chat_id);
 			}
 			
 			$chat['chat_name'] = $chat_name;

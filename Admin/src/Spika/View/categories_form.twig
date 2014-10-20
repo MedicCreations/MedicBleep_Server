@@ -15,7 +15,7 @@
         {% if error is not defined %}
             <div class="col-md-12 errorHandler no-display">
         		<div class="alert alert-danger">
-        			<i class="fa fa-remove-sign"></i>{{lang.general12}}
+        			<i class="fa fa-remove-sign"></i>{{lang.users15}}
         		</div>
             </div>
         {% else %}
@@ -25,33 +25,19 @@
         		</div>
             </div>
         {% endif %}
-
+    
+        
 		<div class="col-md-9">
-			
+		
     		<div class="form-group">
-    			<label class="col-sm-2 control-label" for="form-field-1">
-    			{{lang.groups8}}
+    			<label class="col-sm-3 control-label" for="form-field-1">
+    			{{lang.category9}}
     			</label>
-    			<div class="col-sm-9">
-    				<input type="text" name="name" {% if mode == 'add' %}placeholder="{{lang.groups8}}"{% endif %} id="form-field-1" class="form-control" value="{{form.name}}">
+    			<div class="col-sm-8">
+    				<input type="text" name="name" {% if mode == 'add' %}placeholder="{{lang.category9}}"{% endif %} id="form-field-1" class="form-control" value="{{form.name}}">
     			</div>
     		</div>
-			
-    		<div class="form-group">
-    			<label class="col-sm-2 control-label" for="form-field-1">
-    			{{lang.category2}}
-    			</label>
-    			<div class="col-sm-9">
-    			    <select name="category" class="form-control" >
-    			        
-                        {% for id, name in categoryList %}
-                            <option value="{{ id }}" {% if form.category == id %} selected {% endif %}>{{ name }}</option>
-                        {% endfor %}
-    			        
-    			    </select>
-    			</div>
-    		</div>
-			
+		
 
 		</div>
 	</div>
