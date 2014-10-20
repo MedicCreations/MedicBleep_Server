@@ -710,7 +710,7 @@ class MySqlDb implements DbInterface{
 		
 		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id and message.id IN (" . $child_id_list . ") and message.organization_id = ? ORDER BY message.id";
 		
-		$messages = $app['db']->executeQuery($sql)->fetchAll($app['organization_id']);
+		$messages = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
 		return $messages;
 		
