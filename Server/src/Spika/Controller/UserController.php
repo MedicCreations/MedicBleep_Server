@@ -105,11 +105,11 @@ class UserController extends SpikaBaseController {
 			if ($chat_id != ""){
 				$chat_members = $mySql->getChatMembers($app, $chat_id);
 				
-				foreach($users as &$user){
-					$user['is_member'] = false;
+				foreach($users as &$temp_user){
+					$temp_user['is_member'] = false;
 					foreach ($chat_members as $member){
-						if ($user['id'] == $member['user_id']){
-							$user['is_member'] = true;
+						if ($temp_user['id'] == $member['user_id']){
+							$temp_user['is_member'] = true;
 							break;
 						}
 					}
