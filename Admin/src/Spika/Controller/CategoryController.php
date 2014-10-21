@@ -138,6 +138,7 @@ class CategoryController extends BaseController {
 
     			$values = array(
     					'name' => $formValues['name'],
+    					'organization_id' => $self->user['id'],
     					'created' => time(), 
     					'modified' => time());
 

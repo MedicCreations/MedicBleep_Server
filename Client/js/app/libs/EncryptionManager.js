@@ -79,6 +79,71 @@ EncryptManager = {
             
     },
 
+
+    decryptMedia : function(videoElm,fileId,type,apiClient,successListner,failedListner,useCache){
+        
+        if(_.isUndefined(useCache))
+            useCache = true;
+        
+        if(_.indexOf(this.invalidFileIdList,fileId) != -1){
+
+            if(_.isFunction(failedListner))
+                failedListner();
+                    
+            return;
+        }
+            
+        if(_.isEmpty(fileId)){
+
+            if(_.isFunction(failedListner))
+                failedListner();
+                    
+            return;
+        }
+        
+        if($(videoElm).attr('state') != 'loading')
+            return;
+            
+        var self = this;
+        
+        $(videoElm).attr('state','loaded');
+    
+        // download file first  
+        apiClient.downloadFile(fileId,function(data){
+            
+            var hexText = data;
+
+            if( hexText.length == 0){
+                return '';
+            }
+            
+            U.l('3');
+            
+            try{
+                var decryptedBin = RNCryptor.Decrypt(AES_PASSWORD,
+                    sjcl.codec.hex.toBits(hexText)
+                );
+    
+                $(videoElm).children().attr('src','data:' + type + ';base64,' + sjcl.codec.base64.fromBits(decryptedBin));
+                
+                $(videoElm).load();
+                
+                if(_.isFunction(successListner))
+                    successListner();
+                
+            } catch(ex){
+                
+                if(_.isFunction(failedListner))
+                    failedListner();
+                    
+            }
+            
+        },function(data){
+            self.invalidFileIdList.push(fileId);
+        });
+        
+    },
+    
     decryptImage : function(imgElement,fileId,width,apiClient,successListner,failedListner,useCache){
         
         if(_.isUndefined(useCache))

@@ -328,7 +328,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
 
         else if(messageType == MESSAGE_TYPE_VIDEO){
-            content = '<i class="fa fa-file-video-o fa-2x"></i>';
+            content = '<video controls class="encrypted_video" fileid="' + message.get('file_id') + '" state="loading"><source type="video/mp4" src="" ></video>';
             content += '<br /><input class="download" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
             
         }
@@ -342,7 +342,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
         
         else if(messageType == MESSAGE_TYPE_VOICE){
-            content = '<i class="fa fa-file-sound-o fa-2x"></i>';    
+            content = '<audio controls class="encrypted_audio" fileid="' + message.get('file_id') + '" state="loading"><source type="audio/wav" src="" ></audio>';    
             content += '<br /><input class="download" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
                 
         }
@@ -384,9 +384,35 @@ var SPIKA_ChatView = Backbone.View.extend({
             
         });
 
+
+        $$('.encrypted_video').each(function(){
+
+            var state = $(this).attr('state');
+            var fileId = $(this).attr('fileid');
+            
+            if(state == 'loading'){
+                
+                EncryptManager.decryptMedia(this,fileId,'video/mp4',apiClient);
+                    
+            }
+
+        });
+
+        $$('.encrypted_audio').each(function(){
+
+            var state = $(this).attr('state');
+            var fileId = $(this).attr('fileid');
+            
+            if(state == 'loading'){
+                
+                EncryptManager.decryptMedia(this,fileId,'audio/wav',apiClient);
+                    
+            }
+
+        });
         
         $$('.encrypted_image_profile').each(function(){
-        
+            
             var state = $(this).attr('state');
             var fileId = $(this).attr('fileid');
             
@@ -395,7 +421,7 @@ var SPIKA_ChatView = Backbone.View.extend({
                 EncryptManager.decryptImage(this,fileId,0,apiClient);
                     
             }
-            
+
         });
         
     },
