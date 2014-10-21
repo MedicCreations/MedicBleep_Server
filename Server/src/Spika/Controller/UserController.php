@@ -229,17 +229,32 @@ class UserController extends SpikaBaseController {
 		})->before($app['beforeSpikaTokenChecker']);
 		
 		
-		//update user image
+		//update user image, firstname, lastname, details
 		$controllers->post('/update', function (Request $request) use ($app, $self, $mySql){
 			
 			$paramsAry = $request->request->all();
 			
-			$image = $paramsAry['image'];
-			$image_thumb = $paramsAry['image_thumb'];
+			$values = array();
+			
+			if (array_key_exists('image', $paramsAry)){
+				$values['image'] = $paramsAry['image'];
+			}
+			if (array_key_exists('image_thumb', $paramsAry)){
+				$values['image_thumb'] = $paramsAry['image_thumb'];
+			}
+			if (array_key_exists('details', $paramsAry)){
+				$values['details'] = $paramsAry['details'];
+			}
+			if (array_key_exists('firstname', $paramsAry)){
+				$values['firstname'] = $paramsAry['firstname'];
+			}
+			if (array_key_exists('lastname', $paramsAry)){
+				$values['lastname'] = $paramsAry['lastname'];
+			}
 						
 			$user_id = $app['user']['id'];
 			
-			$mySql->updateUserImage($app, $user_id, $image, $image_thumb);
+			$mySql->updateUser($app, $user_id, $values);
 			
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK');
