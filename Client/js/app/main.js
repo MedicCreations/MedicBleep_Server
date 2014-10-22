@@ -42,6 +42,7 @@ define(['jQuery','underscore','backbone','Notification'], function($, _, Backbon
                 'thirdparty/rncryptor/sjcl',
                 'thirdparty/sprintf',
                 'thirdparty/FileSaver',
+                'thirdparty/DataStream',
                 'app/libs/NotificationManager',
                 'thirdparty/jquery.cookie',
                 'app/models/modelUser',

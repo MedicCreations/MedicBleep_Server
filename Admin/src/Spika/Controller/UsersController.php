@@ -260,11 +260,20 @@ class UsersController extends BaseController {
                 
                 $username = $formValues['username'];
                 
-                $checkDuplication = 
-                    $self->app['db']->fetchAll("select * from user where username = ? and id != ?  and organization_id = {$self->user['id']} ", 
-                                                    array($formValues['username'],$userId));
+                $userData = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
+                
+               
+                $checkDuplication1 = 
+                    $self->app['db']->fetchAll(
+                        "select * from user where username = ? and id != ?  and organization_id = {$self->user['id']} and is_deleted = 0", 
+                        array($formValues['username'],$userId));
             
-                if(count($checkDuplication) > 0){
+                $checkDuplication2 = 
+                    $self->app['db']->fetchAll(
+                        "select * from user where username = ? and id != ? and password = ? and is_deleted = 0", 
+                        array($formValues['username'],$userId,$userData['password']));
+                    
+                if(count($checkDuplication1) > 0 || count($checkDuplication2) > 0 ){
                     return $self->render('users_edit.twig', array(
                         'form' => $data,
                         'error' => $self->lang['validateionError3'],
@@ -290,6 +299,7 @@ class UsersController extends BaseController {
             if(isset($formValues['edit_password'])){
             
                 $password = $formValues['password'];
+                $userData = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
 
                 if(empty($password)){
                     return $self->render('users_edit.twig', array(
@@ -299,6 +309,20 @@ class UsersController extends BaseController {
                     ));
                 }
                 
+                $checkDuplication1 = 
+                    $self->app['db']->fetchAll(
+                        "select * from user where username = ? and id != ? and password = ? and is_deleted = 0", 
+                        array($userData['username'],$userId,md5($password)));
+                    
+                if(count($checkDuplication1) > 0){
+                    return $self->render('users_edit.twig', array(
+                        'form' => $data,
+                        'error' => $self->lang['validateionError3'],
+                        'mode' => 'edit'
+                    ));
+                }
+
+
     			$values = array(
     					'password' => md5($password),
     					'modified' => time());
@@ -306,6 +330,7 @@ class UsersController extends BaseController {
     			$app['db']->update('user', $values,array('id' => $userId));
                 
                 $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
+                
                 return $self->render('users_edit.twig', array(
                     'form' => $data,
                     'information' => $self->lang['users22'],
@@ -345,9 +370,18 @@ class UsersController extends BaseController {
         	if(isset($formValues['password']) && empty($formValues['password']))
         	    return $this->lang['validateionError2'];
         	    
-            $checkDuplication = $this->app['db']->fetchAll("select * from user where username = ? and organization_id = {$this->user['id']} ", array($formValues['username']));
+            $checkDuplication1 = $this->app['db']->fetchAll("
+                select * from user where username = ? and organization_id = {$this->user['id']} and is_deleted = 0", 
+                array($formValues['username']));
             
-            if(count($checkDuplication) > 0)
+            if(count($checkDuplication1) > 0)
+                return $this->lang['validateionError3'];
+        
+            $checkDuplication2 = $this->app['db']->fetchAll("
+                select * from user where username = ? and password = ? and is_deleted = 0", 
+                array($formValues['username'],md5($formValues['password'])));
+            
+            if(count($checkDuplication2) > 0)
                 return $this->lang['validateionError3'];
         
         }

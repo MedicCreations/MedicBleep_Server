@@ -390,14 +390,14 @@ class GroupsController extends BaseController {
 
         if($isEdit == false){
 
-            $checkDuplication = $this->app['db']->fetchAll("select * from groups where name = ? and organization_id = {$this->user['id']} ", array($formValues['name']));
+            $checkDuplication = $this->app['db']->fetchAll("select * from groups where name = ? and organization_id = {$this->user['id']} and is_deleted = 0", array($formValues['name']));
 
             if(count($checkDuplication) > 0)
                 return $this->lang['validateionError5'];
 
         } else {
             
-            $checkDuplication = $this->app['db']->fetchAll("select * from groups where name = ? and organization_id = {$this->user['id']} and id != ? ", array($formValues['name'],$formValues['id']));
+            $checkDuplication = $this->app['db']->fetchAll("select * from groups where name = ? and organization_id = {$this->user['id']} and id != ? and is_deleted = 0", array($formValues['name'],$formValues['id']));
             
             if(count($checkDuplication) > 0)
                 return $this->lang['validateionError5'];

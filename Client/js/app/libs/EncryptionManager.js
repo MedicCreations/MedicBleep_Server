@@ -66,10 +66,46 @@ EncryptManager = {
         reader.onload = function(readerEvt) {
             
             var base64data = reader.result.split(',')[1];
-            var encryptedBin = RNCryptor.Encrypt(AES_PASSWORD,sjcl.codec.base64.toBits(base64data));
-            var encryptedHex = sjcl.codec.hex.fromBits(encryptedBin);
-             
-            var file = new Blob([encryptedHex], {type: "text/plain"}); 
+            var originalBytes = sjcl.codec.base64.toBits(base64data);
+            
+            var length = originalBytes.length; // 1 elm is 4 bytes
+            var blockSize = 32 * 1024 * 20000; // 32KB / 4B
+            
+            var startIndex = 0;
+            var encryptedHex1 = '';
+
+            while(startIndex < length){
+                
+                var bytes = [];
+                var stopIndex = startIndex + blockSize;
+                
+                if(stopIndex > length)
+                    stopIndex = length;
+                
+                U.l(stopIndex + ":" + length);
+                
+                for(i = startIndex ; i < stopIndex ; i++){
+                    
+                    bytes.push(originalBytes[i])
+                    
+                }
+                
+                var encryptedBin = RNCryptor.Encrypt(AES_PASSWORD,bytes);
+                var blockEncryptedHex = sjcl.codec.hex.fromBits(encryptedBin);
+                
+                startIndex += blockSize;
+                encryptedHex1 += blockEncryptedHex;
+            }
+            
+
+            var encryptedBin = RNCryptor.Encrypt(AES_PASSWORD,originalBytes);
+            var encryptedHex2 = sjcl.codec.hex.fromBits(encryptedBin);
+
+            U.l(encryptedHex1.substr(0, 50));
+            U.l(encryptedHex2.substr(0, 50));
+            
+            
+            var file = new Blob([encryptedHex1], {type: "text/plain"}); 
                      
             done(file);
             

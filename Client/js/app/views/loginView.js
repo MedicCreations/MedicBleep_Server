@@ -69,6 +69,9 @@ var SPIKA_LoginView = Backbone.View.extend({
     },
     handleNotificationSettinge:function(){
         
+        if(USE_DESKTOPNOTIFICATION == false)
+            return;
+            
         var notificationPermission = notify.permissionLevel();
         
         if(notificationPermission === notify.PERMISSION_DEFAULT){

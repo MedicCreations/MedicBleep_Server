@@ -31,6 +31,10 @@ class WebSocketNotificationProvider implements ServiceProviderInterface
  
 	public function sendData($data)
 	{
+
+	    if(USEWEBSOCKET === false)
+	        return;
+        
 	    $this->_connect(WEBSOCKET_SERVER_HOST, WEBSOCKET_SERVER_PORT);
 
 		// send actual data:
