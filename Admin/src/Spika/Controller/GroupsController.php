@@ -94,8 +94,15 @@ class GroupsController extends BaseController {
 			$values = array(
 					'is_deleted' => 1,
 					'modified' => time());
-
-			$app['db']->update('groups', $values,array('id' => $groupId));
+                    
+            if(USE_LOGICAL_DELETE_GROUP){
+    			$app['db']->update('groups', $values,array('id' => $groupId));
+                $app['db']->update('chat', $values,array('group_id' => $groupId));
+            }else{
+    			$app['db']->delete('groups',array('id' => $groupId));
+                $app['db']->delete('chat',array('group_id' => $groupId));
+                
+            }
     			
             $self->setInfoMessage($self->lang['groups23']);
             return $app->redirect(ADMIN_ROOT_URL . '/groups');
