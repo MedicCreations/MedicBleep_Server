@@ -113,7 +113,9 @@ var SPIKA_EditProflieView = Backbone.View.extend({
 
     showInfoFromDetail : function(param,formName){
         var details = this.user.get('details');
-        $$('input[name="' + formName + '"]').val(U.getInfoFromDetail(param,details));
+        
+        if(U.getInfoFromDetail(param,details))
+            $$('input[name="' + formName + '"]').val(U.getInfoFromDetail(param,details));
     },    
 
 
