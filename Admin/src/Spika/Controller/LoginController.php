@@ -55,6 +55,9 @@ class LoginController extends BaseController {
             if(!is_null($remember)){
                 setcookie("username", $username, time()+3600 * 24 * 30);
                 setcookie("password", $password, time()+3600 * 24 * 30);
+            }else{
+                setcookie("username", "", time()+3600 * 24 * 30);
+                setcookie("password", "", time()+3600 * 24 * 30);                
             }
             
             // check

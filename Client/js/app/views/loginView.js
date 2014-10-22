@@ -36,8 +36,11 @@ var SPIKA_LoginView = Backbone.View.extend({
         }, 1000)();
         
         
-        if(!_.isNull($.cookie(COOKIE_USERNAME)) && !_.isUndefined($.cookie(COOKIE_USERNAME))){
+        if(!_.isNull($.cookie(COOKIE_USERNAME)) && !_.isUndefined($.cookie(COOKIE_USERNAME)) && !_.isEmpty($.cookie(COOKIE_USERNAME))){
             $$("#login_tb_username").val($.cookie(COOKIE_USERNAME));
+            $$("#login_checkbox").prop("checked",true);
+        }else{
+            $$("#login_checkbox").prop("checked",false);
         }
 
         if(!_.isNull($.cookie(COOKIE_PASSWORD)) && !_.isUndefined($.cookie(COOKIE_PASSWORD))){
@@ -129,8 +132,15 @@ var SPIKA_LoginView = Backbone.View.extend({
             return;
         }
         
-        $.cookie(COOKIE_USERNAME, username, { expires: COOKIE_EXPIRES });
-        $.cookie(COOKIE_PASSWORD, password, { expires: COOKIE_EXPIRES });
+        var savePassword = $$("#login_checkbox").prop("checked");
+
+        if(savePassword){
+            $.cookie(COOKIE_USERNAME, username, { expires: COOKIE_EXPIRES });
+            $.cookie(COOKIE_PASSWORD, password, { expires: COOKIE_EXPIRES });
+        } else {
+            $.cookie(COOKIE_USERNAME, '', { expires: COOKIE_EXPIRES });
+            $.cookie(COOKIE_PASSWORD, '', { expires: COOKIE_EXPIRES });
+        }
 
         apiClient.login(username,password,function(data){
             

@@ -18,7 +18,13 @@
     			<dd>
     				<input type="password" id="login_tb_password"/>
     			</dd>
-    		</dl>
+    			<dt>
+    			</dt>
+    			<dd>
+    				<input type="checkbox" id="login_checkbox" value="1"/>
+    				    {savelogin_label}
+    			</dd> 
+            </dl>
     		<p>
     			<input type="button" id="login_btn_login" value="Login" />
     		</p>

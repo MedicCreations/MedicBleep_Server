@@ -236,7 +236,7 @@ class MySqlDb implements DbInterface{
 	public function getGroups(Application $app, $user_id, $search, $offset, $category){
         
 
-		$sql = "SELECT groups.id, groups.name AS groupname, groups.image, groups.image_thumb FROM groups, group_member WHERE groups.id = group_member.group_id AND group_member.user_id = ? ";
+		$sql = "SELECT groups.id, groups.name AS groupname, groups.image, groups.image_thumb FROM groups, group_member WHERE groups.is_deleted = 0 and groups.id = group_member.group_id AND group_member.user_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND groups.name LIKE '" . $search . "%'";
@@ -257,7 +257,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getGroupsCount(Application $app, $user_id, $search, $category){
 	
-		$sql = "SELECT COUNT(*) FROM groups, group_member WHERE groups.id = group_member.group_id AND group_member.user_id = ? and groups.organization_id = ?  and groups.is_deleted = 0 ";
+		$sql = "SELECT COUNT(*) FROM groups, group_member WHERE  groups.is_deleted = 0 and groups.id = group_member.group_id AND group_member.user_id = ? and groups.organization_id = ?  and groups.is_deleted = 0 ";
 	
 		if ($search != ""){
 			$sql = $sql . " AND groups.name LIKE '" . $search . "%'";
