@@ -65,49 +65,19 @@ EncryptManager = {
         
         reader.onload = function(readerEvt) {
             
+            var worker = new Worker(WEB_ROOT + '/js/app/libs/FileEncryptWorker.js');
+
+            worker.addEventListener('message', function(e) {
+                
+                var encryptedHex = e.data;
+                var file = new Blob([encryptedHex], {type: "text/plain"}); 
+                done(file);
+                
+            }, false);
+
             var base64data = reader.result.split(',')[1];
-            var originalBytes = sjcl.codec.base64.toBits(base64data);
             
-            var length = originalBytes.length; // 1 elm is 4 bytes
-            var blockSize = 32 * 1024 * 20000; // 32KB / 4B
-            
-            var startIndex = 0;
-            var encryptedHex1 = '';
-
-            while(startIndex < length){
-                
-                var bytes = [];
-                var stopIndex = startIndex + blockSize;
-                
-                if(stopIndex > length)
-                    stopIndex = length;
-                
-                U.l(stopIndex + ":" + length);
-                
-                for(i = startIndex ; i < stopIndex ; i++){
-                    
-                    bytes.push(originalBytes[i])
-                    
-                }
-                
-                var encryptedBin = RNCryptor.Encrypt(AES_PASSWORD,bytes);
-                var blockEncryptedHex = sjcl.codec.hex.fromBits(encryptedBin);
-                
-                startIndex += blockSize;
-                encryptedHex1 += blockEncryptedHex;
-            }
-            
-
-            var encryptedBin = RNCryptor.Encrypt(AES_PASSWORD,originalBytes);
-            var encryptedHex2 = sjcl.codec.hex.fromBits(encryptedBin);
-
-            U.l(encryptedHex1.substr(0, 50));
-            U.l(encryptedHex2.substr(0, 50));
-            
-            
-            var file = new Blob([encryptedHex1], {type: "text/plain"}); 
-                     
-            done(file);
+            worker.postMessage({rootUrl:WEB_ROOT,fileBase64Data:base64data,password:AES_PASSWORD});
             
         };
     
@@ -153,20 +123,25 @@ EncryptManager = {
                 return '';
             }
             
-            U.l('3');
-            
             try{
-                var decryptedBin = RNCryptor.Decrypt(AES_PASSWORD,
-                    sjcl.codec.hex.toBits(hexText)
-                );
-    
-                $(videoElm).children().attr('src','data:' + type + ';base64,' + sjcl.codec.base64.fromBits(decryptedBin));
+            
+                var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
                 
-                $(videoElm).load();
-                
-                if(_.isFunction(successListner))
-                    successListner();
-                
+                worker.addEventListener('message', function(e) {
+                    
+                    var decryptedBin = e.data;
+        
+                    $(videoElm).children().attr('src','data:' + type + ';base64,' + sjcl.codec.base64.fromBits(decryptedBin));
+                    
+                    $(videoElm).load();
+                    
+                    if(_.isFunction(successListner))
+                        successListner();
+
+                }, false);
+
+                worker.postMessage({rootUrl:WEB_ROOT,hexData:hexText,password:AES_PASSWORD});
+
             } catch(ex){
                 
                 if(_.isFunction(failedListner))
@@ -241,21 +216,28 @@ EncryptManager = {
             }
             
             try{
-                var decryptedBin = RNCryptor.Decrypt(AES_PASSWORD,
-                    sjcl.codec.hex.toBits(hexText)
-                );
-    
-                $(imgElement).attr('src','data:image/jpeg;base64,' + sjcl.codec.base64.fromBits(decryptedBin));
-                //$(imgElement).attr('src',decryptedBin);
+            
+                var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
                 
-                if(width > 0)
-                    $(imgElement).attr('width',width);
-                
-                if(useCache == true)
-                    self.localchacheSaveImage(fileId,imgElement);
-                
-                if(_.isFunction(successListner))
-                    successListner();
+                worker.addEventListener('message', function(e) {
+                    
+                    var decryptedBin = e.data;
+        
+                    $(imgElement).attr('src','data:image/jpeg;base64,' + sjcl.codec.base64.fromBits(decryptedBin));
+                    //$(imgElement).attr('src',decryptedBin);
+                    
+                    if(width > 0)
+                        $(imgElement).attr('width',width);
+                    
+                    if(useCache == true)
+                        self.localchacheSaveImage(fileId,imgElement);
+                    
+                    if(_.isFunction(successListner))
+                        successListner();
+
+                }, false);
+
+                worker.postMessage({rootUrl:WEB_ROOT,hexData:hexText,password:AES_PASSWORD});
                 
             } catch(ex){
                 
@@ -309,21 +291,28 @@ EncryptManager = {
                 return '';
             
             try{
+
+                var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
                 
-                var decryptedBin = RNCryptor.Decrypt(AES_PASSWORD,
-                    sjcl.codec.hex.toBits(hexText)
-                );
-                
-                var base64encoded = sjcl.codec.base64.fromBits(decryptedBin);
-                
-                var byteCharacters = atob(base64encoded);
-                var byteNumbers = new Array(byteCharacters.length);
-                for (var i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
-                }
-                var byteArray = new Uint8Array(byteNumbers);
-                var blob = new Blob([byteArray], {type: "application/octet-stream"});
-                saveAs(blob, fileName);
+                worker.addEventListener('message', function(e) {
+                    
+                    var decryptedBin = e.data;
+        
+                    var base64encoded = sjcl.codec.base64.fromBits(decryptedBin);
+                    
+                    var byteCharacters = atob(base64encoded);
+                    var byteNumbers = new Array(byteCharacters.length);
+                    for (var i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    var byteArray = new Uint8Array(byteNumbers);
+                    var blob = new Blob([byteArray], {type: "application/octet-stream"});
+                    saveAs(blob, fileName);
+
+
+                }, false);
+
+                worker.postMessage({rootUrl:WEB_ROOT,hexData:hexText,password:AES_PASSWORD});
 
                 
                     
