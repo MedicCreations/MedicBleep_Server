@@ -874,7 +874,7 @@ class MySqlDb implements DbInterface{
 		
 		$users = $app['db']->fetchAll($sql, array($my_user_id,$app['organization_id']));
 		
-		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups where groups.organization_id = ?";
+		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups WHERE groups.is_deleted = 0 AND groups.organization_id = ?";
 		if ($search != ""){
 			$sql = $sql . " and groups.name LIKE '" . $search . "%'";
 		}
