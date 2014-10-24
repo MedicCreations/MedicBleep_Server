@@ -291,6 +291,12 @@ class UserController extends SpikaBaseController {
 		$controllers->get('/profile', function (Request $request) use ($app, $self, $mySql){
 				
 			$paramsAry = $request->query->all();
+			
+			$get_detail_values = 0;
+			
+			if (array_key_exists('get_detail_values', $paramsAry)){
+				$get_detail_values = $paramsAry['get_detail_values'];
+			}
 				
 			$user_id = $paramsAry['user_id'];
 		
@@ -304,6 +310,11 @@ class UserController extends SpikaBaseController {
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK', 
 					'user' => $user);
+					
+			if ($get_detail_values){
+				$detail_values = $mySql->getDetailValues($app);
+				$result['detail_values'] = $detail_values;
+			}
 		
 			return $app->json($result, 200);
 				

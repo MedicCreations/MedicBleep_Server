@@ -70,4 +70,6 @@ interface DbInterface
 	public function getUsersForRoom(Application $app, $user_ids);
 	public function getGroupMembersForRoom(Application $app, $group_ids);
 	
+	public function getDetailValues(Application $app);
+	
 }

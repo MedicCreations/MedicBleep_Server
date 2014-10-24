@@ -914,6 +914,17 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function getDetailValues(Application $app){
+	
+		$sql = "SELECT * FROM user_details WHERE is_deleted = 0 ";
+		
+		$detail_values = $app['db']->fetchAll($sql);
+		
+		return $detail_values;
+	
+	}
+	
+	
 	public function randomString($min = 5, $max = 8)
 	{
 		$length = rand($min, $max);
