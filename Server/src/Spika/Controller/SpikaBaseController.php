@@ -260,5 +260,21 @@ class SpikaBaseController implements ControllerProviderInterface
         $result = $app['websocket_send']($message);
         $app['monolog']->addDebug('sent:'.$result);
 	}
+	
+	public function getDeviceType($userAgent){
+
+        // detect iOS or Android or Web
+        $deviceType = DEVICE_WEB;
+        if(preg_match("/iOS/i", $userAgent)){
+            $deviceType = DEVICE_IOS;
+        }
+        
+        if(preg_match("/android/i", $userAgent)){
+            $deviceType = DEVICE_ANDROID;
+        }
+        
+        return $deviceType;
+        
+	}
     		
 }

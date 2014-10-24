@@ -5,6 +5,7 @@ namespace Spika\Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Spika\Db\MySqlDb;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -41,12 +42,24 @@ class FileController extends SpikaBaseController {
 		
 		//image download
 		$controllers->get ( '/download', function (Request $request) use($app, $self, $mySql) {
+
 			$requestBodyAry = $request->query->all();
 			$fileID = $requestBodyAry['file_id'];
 			$filePath = __DIR__.'/../../../'.FileController::$fileDirName."/".basename($fileID);
-				
+            
+            $fileContent = file_get_contents($filePath);
+            $size = filesize($filePath);
+            
 			if(file_exists($filePath)){
-				return $app->sendFile($filePath, 200);
+			    
+			    $response = new Response();
+                $response->setContent($fileContent);
+                $response->setStatusCode(Response::HTTP_OK);
+                $response->headers->set('Content-Type', 'application/text');
+                $response->headers->set('Content-length', $size);
+
+				return $response;
+				
 			}else{
 				return $self->returnErrorResponse("File doesn't exists.", "1010");
 			}

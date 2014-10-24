@@ -26,7 +26,7 @@ class UserController extends SpikaBaseController {
 		
 		// register user
 		$controllers->post ( '/login', function (Request $request) use($app, $self, $mySql, $ldap) {
-			
+						
 			$paramsAry = $request->request->all();
 			
 			$username = $paramsAry['username'];
@@ -63,6 +63,15 @@ class UserController extends SpikaBaseController {
 						'lastname' => $login_result['user']['lastname'],
 						'image' => $login_result['user']['image'],
 						'image_thumb' => $login_result['user']['image_thumb']);
+				
+				// regist device
+                $userAgent = $request->headers->get('user-agent');
+
+                $mySql->registDevice($app,
+                                    $login_result['user']['id'],
+                                    $login_result['user']['token'],
+                                    $self->getDeviceType($request->headers->get('user-agent')));
+				
 			}
 			
 			//$result = $mySql->registerUser($app, $ldap_result['uid_number'], $ldap_result['firstname'], $ldap_result['lastname'], $password, $username, $android_push_token, $ios_push_token);
@@ -205,6 +214,8 @@ class UserController extends SpikaBaseController {
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK');
 			
+            $mySql->saveDeviceToken($app,$app['user']['token'],$push_token);
+            
 			return $app->json($result, 200);
 			
 		})->before($app['beforeSpikaTokenChecker']);
@@ -223,7 +234,9 @@ class UserController extends SpikaBaseController {
 				
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK');
-				
+					
+            $mySql->saveDeviceToken($app,$app['user']['token'],$push_token);
+
 			return $app->json($result, 200);
 				
 		})->before($app['beforeSpikaTokenChecker']);
@@ -335,7 +348,13 @@ class UserController extends SpikaBaseController {
 		
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK');
-		
+
+            $mySql->unRegistDevice($app,
+                                $user_id,
+                                $app['user']['token'],
+                                $self->getDeviceType($request->headers->get('user-agent')));
+
+
 			return $app->json($result, 200);
 		
 		})->before($app['beforeSpikaTokenChecker']);

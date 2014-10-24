@@ -42,6 +42,9 @@ LANG = {
       save: "Save",
       confirm: "Confirm required",
       confirm_general: "Press OK to proceed.",   
-      deleteroom: "Delete Room",   
+      deleteroom: "Delete Room",
+      downloading: "Downloading",  
+      decrypting: "Decrypting", 
+      loading_video: "Loading Video...",
       dummy : 'dummy'
 };

@@ -539,7 +539,19 @@ class MySqlDb implements DbInterface{
 		return $result;
 		
 	}
-	
+
+	public function getChatDevicesAll(Application $app, $chat_id){
+		
+		$sql = "
+		    Select * from device
+		    Where user_id in ( select user_id from chat_member where chat_id = ? )
+		    and  device.organization_id = ? and device.is_valid = 1";
+		
+		$result = $app['db']->fetchAll($sql, array($chat_id,$app['organization_id']));
+		
+		return $result;
+		
+	}
 	
 	public function updateChat(Application $app, $chat_id, $values){
 		
@@ -948,5 +960,62 @@ class MySqlDb implements DbInterface{
 		
 	}
 	
-	
+	public function registDevice(Application $app, $userId,$userToken,$deviceType){
+        
+        // registered device
+        $device =$app['db']->fetchAssoc("select * from device where user_id = ? and type = ? order by modified desc",array($userId,$deviceType));
+        
+        //if()
+        if(isset($device['id'])){
+
+            $app['db']->update('device', array(
+                'is_valid' => 1,
+                'user_token' => $userToken,
+    			'modified' => time()
+            ), array(
+                'id' => $device['id']
+            ));
+        
+        }else{
+
+    		$values = array(
+    	        'organization_id' => $app['organization_id'],
+    			'user_id' => $userId, 
+    			'user_token' => $userToken, 
+    			'type' => $deviceType, 
+    			'device_token' => '',
+    			'is_valid' => 1,
+    			'created' => time(), 
+    			'modified' => time()
+            );
+    		
+    		$app['db']->insert('device', $values);
+		
+        }
+ 
+		
+	}
+
+	public function saveDeviceToken(Application $app, $userToken, $deviceToken){
+    
+        $app['db']->update('device', array(
+            'device_token' => $deviceToken
+        ), array(
+            'user_token' => $userToken
+        ));
+		
+	}
+
+	public function unRegistDevice(Application $app, $userId,$userToken,$deviceType){
+        
+        $app['db']->update('device', array(
+            'is_valid' => 0,
+			'modified' => time()
+        ), array(
+            'user_id' => $userId,
+            'type' => $deviceType
+        ));
+ 
+		
+	}
 }

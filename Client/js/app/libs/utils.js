@@ -133,7 +133,9 @@ var U = {
                 context.drawImage(imageObj, left, top, size, size, 0, 0, max_width, max_height);
     
                 blob = dataURItoBlob(canvas.toDataURL(imageEncoding));
-    
+                
+                document.getElementById(canvas.id).remove();
+
                 listener(blob);
             }       
         };
@@ -250,9 +252,34 @@ var U = {
             ">": "&gt;"
         };
   
-        return String(html).replace(/[<>]/g, function (s) {
+        html = String(html).replace(/[<>]/g, function (s) {
             return entityMap[s];
         });
+        
+        html = String(html).replace(/[ \t]/g, '&nbsp;');
+        
+        return html;
+    },
+    generalMessageFilter : function(html){
+        
+        // youtube
+        if(html.search('http://www.youtube.com') == 0){
+
+            var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            var match = html.match(regExp);
+            
+            if (match && match[2].length == 11) {
+                var myId = match[2];
+                
+                return '<iframe width="560" height="315" src="//www.youtube.com/embed/' + myId + '" frameborder="0" allowfullscreen></iframe>';
+                
+            } else {
+                
+            }
+    
+        }
+        
+        return html;
     }
 }
 

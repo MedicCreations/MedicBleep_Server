@@ -22,8 +22,13 @@ var SPIKA_LoginView = Backbone.View.extend({
         var self = this;
         this.hideAlert(false);
         
-        // Check for the various File API support.
-        if (window.File && window.FileReader && window.FileList && window.Blob && window.WebSocket) {
+        // Browser compatibility check
+        if (window.File && 
+            window.FileReader && 
+            window.FileList && 
+            window.Blob && 
+            window.WebSocket && 
+            typeof(Worker) !== "undefined") {
           // Great success! All the File APIs are supported.
         } else {
             SPIKA_AlertManager.show(LANG.general_errortitle,LANG.browser_doesnt_support);

@@ -175,25 +175,58 @@ class MessageController extends SpikaBaseController {
 			$ios_push_members = array();
 			$android_push_members = array();
 			
+			$memberPushTokenListRaw = $mySql->getChatDevicesAll($app, $chat_id);
+			$memberPushTokenListFormatted = array();
+			
+			foreach($memberPushTokenListRaw as $row){
+    			if(!isset($memberPushTokenListFormatted[$row['user_id']]))
+    			    $memberPushTokenListFormatted[$row['user_id']] = array();
+                
+                $memberPushTokenListFormatted[$row['user_id']][] = $row;
+    			 
+			}
+
 			foreach ($chat_members as $member){
 				
 // 				//update unread messages
 // 				$mySql->updateUnreadMessagesForMember($app, $rally_id, $member['user_id']);
 				
 // 				// prepare arrays for push notifications
-					if ($member['android_push_token'] != '' && $member['android_push_token'] != $user_push_token ){
-						array_push($android_push_members, $member['android_push_token']);
-					}
-					
-					if ($member['ios_push_token'] != '' && $member['ios_push_token'] != $user_push_token){
+                
+                if(!isset($memberPushTokenListFormatted[$member['user_id']]))
+                    continue;
+                    
+				$badge = $mySql->calculateBadge($app, $member['user_id']);
+				
+                $devices = $memberPushTokenListFormatted[$member['user_id']];
+                
+                foreach($devices as $device){
+                    
+                    if($device['type'] == DEVICE_ANDROID)
+                        array_push($android_push_members, $device['device_token']);
+
+				    if($device['type'] == DEVICE_IOS)
+				        array_push($ios_push_members, array('ios_push_token'=>$device['device_token'],'badge'=>$badge));
+
+				    if($device['type'] == DEVICE_WEB){
+                        
+                        $app['monolog']->addDebug('sent: 11 '. print_r($device,true));
+                        
+            			// send websocket notification
+            			$payload = json_encode(array(
+            			    'command' => 'sendMessage',
+            			    'identifier' => SYSTEM_IDENTIFIER,
+            			    'chat_id' => $chat_id,
+            			    'user_id' => $user_id
+            			));
+            			
+            			$self->sendWebSocketSignal($payload,$app);
+
+				    }
+
+                }
+
 						
-						$badge = $mySql->calculateBadge($app, $member['user_id']);
-						
-						$ios_member = array('ios_push_token' => $member['ios_push_token'], 
-								'badge' => $badge);
-						
-						array_push($ios_push_members, $ios_member);
-					}
 			}
 			
 // 			//create android fields
@@ -256,16 +289,7 @@ class MessageController extends SpikaBaseController {
 			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'Message created');
-			
-			// send websocket notification
-			$payload = json_encode(array(
-			    'command' => 'sendMessage',
-			    'identifier' => SYSTEM_IDENTIFIER,
-			    'chat_id' => $chat_id,
-			    'user_id' => $user_id
-			));
-			$self->sendWebSocketSignal($payload,$app);
-			
+
 			return $app->json($result, 200);
 			
 		})->before($app['beforeSpikaTokenChecker']);

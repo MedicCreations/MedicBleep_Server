@@ -29,7 +29,7 @@ self.addEventListener('message', function(e) {
     importScripts(rootUrl + '/js/thirdparty/sjcl/srp.js');
     importScripts(rootUrl + '/js/thirdparty/sjcl/random.js');
     
-    sjcl.random.setDefaultParanoia(Math.random() * 1000,true);
+    sjcl.random.setDefaultParanoia(0,true);
         
     var originalBytes = sjcl.codec.base64.toBits(base64data);
     var encryptedBin = RNCryptor.Encrypt(aesPassword,originalBytes);

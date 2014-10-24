@@ -507,9 +507,14 @@ footer #mess_type ul li textarea.disabled{
 }
 
 #chat article section h2,
-#chat article section .text {
+#chat article section .text,
+#chat article section .media_loading_holder{
 	padding-left: 70px;
 }
+#chat article section .marginfix {
+	margin-left: 70px;
+}
+
 #chat article section h2 {
 	font-size: 1.0em;
 }
@@ -521,7 +526,7 @@ footer #mess_type ul li textarea.disabled{
 #chat article section .text img {
 	margin-right: 20px;
 }
-#chat article section .text input[type="button"].download {
+#chat input[type="button"].download {
 	border: none;
 	background: #4BA4DF;
 	color: #FFFFFF;
@@ -529,6 +534,7 @@ footer #mess_type ul li textarea.disabled{
 	padding:  6px 15px;
 	cursor: pointer;
 }
+
 #chat article section .time_stamp {
 	clear: both;
 	text-align: right;
@@ -743,6 +749,56 @@ footer #mess_type ul li textarea.disabled{
 	text-align: left;
 	padding: 10px;
 }
+
+.progress_view {
+
+}
+
+.progress_view .progress_box {
+    display: inline-block;
+	width: 200px;
+
+}
+
+.progress_view .progress_box .meter {
+    display: inline-block;
+	width: 100%;
+}
+
+.media_loading_holder{
+    position: relative;
+}
+
+.media_loading_holder video{
+    
+}
+
+.media_loading_holder .loading_cover{
+    position: absolute;
+    width: 300px;
+    height: 100%;
+    background-color: #fff;
+    opacity: 0.8;
+    top: 0px;
+    left: 0px;
+    margin-left: 70px;
+    
+}
+
+.video .meter{
+    margin-top: 50px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+
+.voice .meter{
+    margin-top: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-top: 0px;
+}
+
 
 /*------------------------------*/
 /*   Context menu           	*/

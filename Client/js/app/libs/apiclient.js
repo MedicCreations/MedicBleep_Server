@@ -4,6 +4,7 @@ function SpikaClient(apiEndPointUrl)
     this.currentUser = null;
     this.authorized = false;
     this.error = false;
+    this.UA = 'SpikaEnterprise Web v1.0';
 };
 
 // error handling
@@ -56,7 +57,8 @@ SpikaClient.prototype.login = function(userName,password,succeessListener,failed
         url: this.apiEndPointUrl + '/user/login',
         type: 'POST',
         data: 'json',
-        data:{'username':userName,'password':password}
+        data:{'username':userName,'password':password},
+        headers: {"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -107,7 +109,7 @@ SpikaClient.prototype.searchUsers = function(page,search,succeessListener,failed
         url: this.apiEndPointUrl + '/user/list',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -144,7 +146,7 @@ SpikaClient.prototype.searchGroups = function(page,search,succeessListener,faile
         url: this.apiEndPointUrl + '/groups/list',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -182,7 +184,7 @@ SpikaClient.prototype.searchRooms = function(page,search,succeessListener,failed
         url: this.apiEndPointUrl + '/room/list',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -211,7 +213,7 @@ SpikaClient.prototype.lobby = function(succeessListener,failedListener)
         url: this.apiEndPointUrl + '/lobby/list?type=3',
         type: 'GET',
         data: 'json',
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -245,7 +247,7 @@ SpikaClient.prototype.startPrivateChat = function(userModel,succeessListener,fai
                 firstname:userModel.get('firstname'),
                 lastname:userModel.get('lastname')
             },
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -278,7 +280,7 @@ SpikaClient.prototype.startGroupChat = function(groupModel,succeessListener,fail
                 group_id:groupModel.get('id'),
                 groupname:groupModel.get('groupname')
             },
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -307,7 +309,7 @@ SpikaClient.prototype.sendMessage = function(data,succeessListener,failedListene
         url: this.apiEndPointUrl + '/message/send',
         type: 'POST',
         data: data,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -343,7 +345,7 @@ SpikaClient.prototype.getMessages = function(chatId,lastMessageId,succeessListen
         url: this.apiEndPointUrl + '/message/paging',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -377,7 +379,7 @@ SpikaClient.prototype.getNewMessages = function(chatId,firstMessageId,succeessLi
         url: this.apiEndPointUrl + '/message/new',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -413,7 +415,7 @@ SpikaClient.prototype.fileUpload = function(file,succeessListener,failedListener
         data: formData,
         processData: false,
         contentType: false,
-        headers: {"token":this.token},
+        headers: {"token":this.token,"api-agent":this.UA},
         xhr: function() {
             var myXhr = $.ajaxSettings.xhr();
             if (myXhr.upload) {
@@ -457,7 +459,7 @@ SpikaClient.prototype.getChatMembers = function(chat_id,succeessListener,failedL
         url: this.apiEndPointUrl + '/chat/member/list',
         type: 'GET',
         data: {chat_id:chat_id},
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -485,7 +487,7 @@ SpikaClient.prototype.addUserToChat = function(chatId,userId,succeessListener,fa
         url: this.apiEndPointUrl + '/chat/member/add',
         type: 'POST',
         data: {chat_id:chatId,users_to_add:userId},
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -518,7 +520,7 @@ SpikaClient.prototype.getUserById = function(userId,succeessListener,failedListe
         url: this.apiEndPointUrl + '/user/profile',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -550,7 +552,7 @@ SpikaClient.prototype.getGroupById = function(groupId,succeessListener,failedLis
         url: this.apiEndPointUrl + '/groups/profile',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -583,7 +585,7 @@ SpikaClient.prototype.getThreadMessages = function(rootMessageId,succeessListene
         url: this.apiEndPointUrl + '/message/child/list',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -615,7 +617,7 @@ SpikaClient.prototype.getChatById = function(chatId,succeessListener,failedListe
         url: this.apiEndPointUrl + '/chat/data',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -635,7 +637,7 @@ SpikaClient.prototype.getChatById = function(chatId,succeessListener,failedListe
 };
 
 
-SpikaClient.prototype.downloadFile = function(fileId,succeessListener,failedListener)
+SpikaClient.prototype.downloadFile = function(fileId,succeessListener,failedListener,progressListener)
 {
     
     var self = this;
@@ -648,7 +650,26 @@ SpikaClient.prototype.downloadFile = function(fileId,succeessListener,failedList
         url: this.apiEndPointUrl + '/file/download',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA},
+        xhr: function() {
+
+            var xhr = new window.XMLHttpRequest();
+            xhr.upload.addEventListener("progress", function(evt) {
+                if (evt.lengthComputable) {
+                    var percentComplete = evt.loaded / evt.total;
+
+                }
+           }, false);
+    
+           xhr.addEventListener("progress", function(evt) {
+               if (evt.lengthComputable) {
+                   var percentComplete = evt.loaded / evt.total;
+
+               }
+           }, false);
+    
+           return xhr;
+        }
     });
     
 
@@ -683,7 +704,7 @@ SpikaClient.prototype.saveProflie = function(userId,values,succeessListener,fail
         url: this.apiEndPointUrl + '/user/updateProflie',
         type: 'POST',
         data: values,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -711,7 +732,7 @@ SpikaClient.prototype.saveProfliePicture = function(userId,fileId,thumbId,succee
         url: this.apiEndPointUrl + '/user/update',
         type: 'POST',
         data: {image:fileId,image_thumb:thumbId},
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -739,7 +760,7 @@ SpikaClient.prototype.createNewRoom = function(roomName,userList,fileId,thumbId,
         url: this.apiEndPointUrl + '/chat/create',
         type: 'POST',
         data: {name:roomName,users_to_add:userList,image:fileId,image_thumb:thumbId},
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -788,7 +809,7 @@ SpikaClient.prototype.updateRoom = function(chatId,roomName,fileId,thumbId,isDel
         url: this.apiEndPointUrl + '/chat/update',
         type: 'POST',
         data: data,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -820,7 +841,7 @@ SpikaClient.prototype.addUsersToChat = function(chatId,usersToAdd,succeessListen
         url: this.apiEndPointUrl + '/chat/member/add',
         type: 'POST',
         data: data,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {
@@ -852,7 +873,7 @@ SpikaClient.prototype.deleteUsersFromChat = function(chatId,usersToDelete,succee
         url: this.apiEndPointUrl + '/chat/leave',
         type: 'POST',
         data: data,
-        headers: {"token":this.token}
+        headers: {"token":this.token,"api-agent":this.UA}
     });
     
     requestLogin.done(function( data ) {

@@ -130,14 +130,10 @@ EncryptManager = {
                 worker.addEventListener('message', function(e) {
                     
                     var decryptedBin = e.data;
-        
-                    $(videoElm).children().attr('src','data:' + type + ';base64,' + sjcl.codec.base64.fromBits(decryptedBin));
-                    
-                    $(videoElm).load();
                     
                     if(_.isFunction(successListner))
-                        successListner();
-
+                        successListner(sjcl.codec.base64.fromBits(decryptedBin));
+                        
                 }, false);
 
                 worker.postMessage({rootUrl:WEB_ROOT,hexData:hexText,password:AES_PASSWORD});
@@ -281,10 +277,21 @@ EncryptManager = {
             }
             
         }
+        
+        SPIKA_ProgressManager.show();
+        SPIKA_ProgressManager.setTitle(fileName);
+        SPIKA_ProgressManager.setText(LANG.downloading);
+        SPIKA_ProgressManager.setProgress(10);
 
         // download file first  
         apiClient.downloadFile(fileId,function(data){
             
+            SPIKA_ProgressManager.show();
+            SPIKA_ProgressManager.setTitle(fileName);
+            SPIKA_ProgressManager.setText(LANG.decrypting);
+            SPIKA_ProgressManager.setProgress(50);
+
+
             var hexText = data;
 
             if( hexText.length == 0)
@@ -294,8 +301,12 @@ EncryptManager = {
 
                 var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
                 
+                U.l('start worker');
+                
                 worker.addEventListener('message', function(e) {
                     
+                    U.l('finish worker');
+
                     var decryptedBin = e.data;
         
                     var base64encoded = sjcl.codec.base64.fromBits(decryptedBin);
@@ -309,7 +320,8 @@ EncryptManager = {
                     var blob = new Blob([byteArray], {type: "application/octet-stream"});
                     saveAs(blob, fileName);
 
-
+                    SPIKA_ProgressManager.hide();
+                    
                 }, false);
 
                 worker.postMessage({rootUrl:WEB_ROOT,hexData:hexText,password:AES_PASSWORD});
@@ -323,6 +335,8 @@ EncryptManager = {
             
         },function(data){
             self.invalidFileIdList.push(fileId);
+        },function(progress){
+            U.l(progress);
         });
         
     }

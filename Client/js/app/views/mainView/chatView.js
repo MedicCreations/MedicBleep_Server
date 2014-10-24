@@ -56,7 +56,7 @@ var SPIKA_ChatView = Backbone.View.extend({
                 // refresh lobby data if first post in the chat
                 if(self.totalMessageCount == 0)
                     Backbone.trigger(EVENT_REFRESH_ROOMLIST);
-                    
+                
                 self.loadNewMessages();
                 
 /*
@@ -75,10 +75,8 @@ var SPIKA_ChatView = Backbone.View.extend({
                 return;
                 
             if(!_.isNull(chatId) && chatId == self.chatData.get('chat_id')){
-                
+
                 self.loadNewMessages();
-                
-               
                 
                 /*
                 if(self.viewmode == CHATVIEW_LISTMODE)
@@ -86,6 +84,7 @@ var SPIKA_ChatView = Backbone.View.extend({
                 else
                     self.openThreadMode(self.threadId);
                 */
+                
             }
 
             var totalUnread = SPIKA_notificationManger.unreadMessageNum;
@@ -261,11 +260,29 @@ var SPIKA_ChatView = Backbone.View.extend({
                 self.totalMessageCount = data.total_count;
             
             var newMessages = messageFactory.createCollectionByAPIResponse(data).models;
+            var newMessagesFiltered = [];
+
+            for(index in newMessages){
+
+                var mes = newMessages[index];
+                
+                /*
+                if(_.isEmpty(mes.get('text'))){
+                    
+                    continue;
+                }
+                */
+
+                newMessagesFiltered.push(mes);
+                
+            }
             
-            self.messages.add(newMessages);
+            //U.l(newMessagesFiltered);
+            
+            self.messages.add(newMessagesFiltered);
             self.formatMessages(true);
 
-            var template = _.template($$('#template_message_row').html(), {messages: newMessages});
+            var template = _.template($$('#template_message_row').html(), {messages: newMessagesFiltered});
             $$('#main_container article').append(template);
             $$('#main_container article').removeClass('nochat');
 
@@ -318,6 +335,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         if(messageType == MESSAGE_TYPE_TEXT){
             content = decryptedText;
             content = U.escapeHTML(content);
+            content = U.generalMessageFilter(content);
             content = content.autoLink({ target: "_blank", rel: "nofollow", id: "1" });
             content = content.split("\n").join("<br />");
         }
@@ -328,8 +346,9 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
 
         else if(messageType == MESSAGE_TYPE_VIDEO){
-            content = '<video controls class="encrypted_video" fileid="' + message.get('file_id') + '" state="loading"><source type="video/mp4" src="" ></video>';
-            content += '<br /><input class="download" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
+            content = '<div class="media_loading_holder video"><video controls class="encrypted_video" fileid="' + message.get('file_id') + '" state="loading"><source type="video/mp4" src="" ></video>';
+            content += '<div class="loading_cover"><div class="meter"><span style="width: 100%"></span></div></div></div>';
+            content += '<input class="download marginfix" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
             
         }
         
@@ -342,8 +361,9 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
         
         else if(messageType == MESSAGE_TYPE_VOICE){
-            content = '<audio controls class="encrypted_audio" fileid="' + message.get('file_id') + '" state="loading"><source type="audio/wav" src="" ></audio>';    
-            content += '<br /><input class="download" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
+            content = '<div class="media_loading_holder voice"><audio controls class="encrypted_audio" fileid="' + message.get('file_id') + '" state="loading"><source type="audio/wav" src="" ></audio>';    
+            content += '<div class="loading_cover"><div class="meter"><span style="width: 100%"></span></div></div></div>';
+            content += '<input class="download marginfix" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
                 
         }
         
@@ -389,10 +409,15 @@ var SPIKA_ChatView = Backbone.View.extend({
 
             var state = $(this).attr('state');
             var fileId = $(this).attr('fileid');
+            var videoElm = this;
             
             if(state == 'loading'){
                 
-                EncryptManager.decryptMedia(this,fileId,'video/mp4',apiClient);
+                EncryptManager.decryptMedia(this,fileId,'video/mp4',apiClient,function(base64Data){
+                    $(videoElm).parent().find('.loading_cover').remove();
+                    $(videoElm).children().attr('src','data:video/mp4;base64,' + base64Data);  
+                    $(videoElm).load(); 
+                });
                     
             }
 
@@ -402,10 +427,15 @@ var SPIKA_ChatView = Backbone.View.extend({
 
             var state = $(this).attr('state');
             var fileId = $(this).attr('fileid');
-            
+            var audioElm = this;
+
             if(state == 'loading'){
                 
-                EncryptManager.decryptMedia(this,fileId,'audio/wav',apiClient);
+                EncryptManager.decryptMedia(this,fileId,'audio/wav',apiClient,function(base64Data){
+                    $(audioElm).parent().find('.loading_cover').remove();
+                    $(audioElm).children().attr('src','data:audio/wav;base64,' + base64Data);  
+                    $(audioElm).load();
+                });
                     
             }
 
