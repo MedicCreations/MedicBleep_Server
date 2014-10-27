@@ -12,7 +12,7 @@
                 user_id = data.id;
             }
             
-            return new ModelUser({ id:user_id,firstname: data.firstname, lastname: data.lastname, image: data.image, image_thumb: data.image_thumb,details: data.details});   
+            return new ModelUser({ id:user_id,firstname: data.firstname, lastname: data.lastname, image: data.image, image_thumb: data.image_thumb,details: data.details,device: data.last_device_id});   
             
         },
         createCollectionByAPIResponse : function(data){

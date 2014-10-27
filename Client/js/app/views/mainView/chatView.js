@@ -404,7 +404,6 @@ var SPIKA_ChatView = Backbone.View.extend({
             
         });
 
-
         $$('.encrypted_video').each(function(){
 
             var state = $(this).attr('state');
@@ -417,7 +416,7 @@ var SPIKA_ChatView = Backbone.View.extend({
                     $(videoElm).parent().find('.loading_cover').remove();
                     $(videoElm).children().attr('src','data:video/mp4;base64,' + base64Data);  
                     $(videoElm).load(); 
-                });
+                },function(){},true,true);
                     
             }
 

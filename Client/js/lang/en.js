@@ -46,5 +46,7 @@ LANG = {
       downloading: "Downloading",  
       decrypting: "Decrypting", 
       loading_video: "Loading Video...",
+      device_type_prefix: "Using ",
+      device_type_suffix: "client ",
       dummy : 'dummy'
 };

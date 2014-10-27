@@ -51,7 +51,10 @@ class UserController extends SpikaBaseController {
 			//$ldap_result = $ldap->checkUser($app, $password, $username);
 			
 			//login
-			$login_result = $mySql->loginUser($app, $password, $username, $android_push_token, $ios_push_token );
+			$login_result = $mySql->loginUser($app, $password, $username, $android_push_token, $ios_push_token,$self->getDeviceType($request->headers->get('user-agent')) );
+			
+			
+			$app['monolog']->addDebug(" login device " . $self->getDeviceType($request->headers->get('user-agent')) . "::" . $request->headers->get('user-agent'));  
 			
 			if ($login_result['auth_status'] === FALSE) {
 				$result = array('code' => ER_INVALID_LOGIN, 'message' => 'Invalid username or password');
@@ -66,7 +69,7 @@ class UserController extends SpikaBaseController {
 				
 				// regist device
                 $userAgent = $request->headers->get('user-agent');
-
+                
                 $mySql->registDevice($app,
                                     $login_result['user']['id'],
                                     $login_result['user']['token'],
@@ -80,7 +83,30 @@ class UserController extends SpikaBaseController {
 			
 		});
 		
+		//return list of users
+		$controllers->get('/webkeepalive', function (Request $request) use ($app, $self, $mySql, $ldap){
+			
+			$paramsAry = $request->query->all();
 		
+			$user_id = $app['user']['id'];
+			
+			$values = array(
+			        'web_opened' => 1,
+			        'web_lastkeepalive' => time()
+            );
+			
+			$mySql->updateUser($app, $user_id, $values);
+		
+			$result = array(
+			        'code' => CODE_SUCCESS,
+					'message' => 'OK'
+            );
+
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
+
+        
 		//return list of users
 		$controllers->get('/list', function (Request $request) use ($app, $self, $mySql, $ldap){
 			
@@ -341,7 +367,11 @@ class UserController extends SpikaBaseController {
 		
 			$user_id = $app['user']['id'];
 			
-			$values = array('ios_push_token' => '', 
+			$values = array(
+			        'web_opened' => 0,
+			        'token' => 0,
+			        'last_device_id' => 0,
+			        'ios_push_token' => '', 
 					'android_push_token' => '');
 			
 			$mySql->updateUser($app, $user_id, $values);

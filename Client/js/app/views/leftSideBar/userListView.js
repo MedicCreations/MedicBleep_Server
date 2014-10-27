@@ -80,7 +80,30 @@ var SPIKA_UserListView = Backbone.View.extend({
         
     },
     listviewGetListFromResponse: function(response){
-        return userFactory.createCollectionByAPIResponse(response)
+
+        var collection = userFactory.createCollectionByAPIResponse(response);
+        
+        for( i in collection.models){
+            
+            var userModel = collection.models[i];
+            
+            if(userModel.get('device') == DEVICE_WEB){
+                userModel.set('device_name',LANG.device_type_prefix + ' Web ' + LANG.device_type_suffix);
+            }
+            
+            if(userModel.get('device') == DEVICE_IOS){
+                userModel.set('device_name',LANG.device_type_prefix + ' iOS ' + LANG.device_type_suffix);
+            }
+            
+            if(userModel.get('device') == DEVICE_ANDROID){
+                userModel.set('device_name',LANG.device_type_prefix + ' Android ' + LANG.device_type_suffix);
+            }
+            
+            
+        }
+        
+        return collection;
+        
     },
     listviewRender: function(data){
         return _.template($$('#template_userlist_row').html(), {users: data.models});

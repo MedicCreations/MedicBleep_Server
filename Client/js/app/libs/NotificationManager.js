@@ -26,6 +26,8 @@ var SPIKA_notificationManger = {
                 
                 self.wsConnection.onmessage = function(e) {
                     
+                    U.l('onmessage');
+                    
                     var data = JSON.parse(e.data);
                     
                     if(SPIKA_UserManager.getUser().get('id') != data.user_id)
@@ -202,6 +204,21 @@ var SPIKA_notificationManger = {
             userId:userId
         }));
     },
+    
+    
+    deattachUser: function(userId){
+        
+        // this goes from server side
+        if(_.isNull(this.wsConnection))
+            return;
+
+        this.wsConnection.send(JSON.stringify({
+            command:'removeUser',
+            identifier:SYSTEM_IDENTIFIER,
+            userId:userId
+        }));
+    },
+    
     
     //////////////////////////////////////////////////////////
     //  On new message

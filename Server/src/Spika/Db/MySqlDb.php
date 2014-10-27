@@ -87,7 +87,7 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function loginUser(Application $app, $password, $username, $android_push_token, $ios_push_token){
+	public function loginUser(Application $app, $password, $username, $android_push_token, $ios_push_token, $deviceType){
 		
 		if ($android_push_token !=''){
 			$where = array('android_push_token' => $android_push_token);
@@ -117,8 +117,10 @@ class MySqlDb implements DbInterface{
 					'token_timestamp' => time(),
 					'android_push_token' => $android_push_token,
 					'ios_push_token' => $ios_push_token,
+					'last_device_id' => $deviceType,
+					'web_opened' => 0, //web_opened this will be 1 with webkeepalive
 					'modified' => time(),);
-				
+            
 			$stmt = $app['db']->update('user', $values, $where);
 			
 			$user['token'] = $token;
@@ -175,7 +177,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getUsersNotMe(Application $app, $my_user_id, $search, $offset){
 		
-		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, user.details FROM user";
+		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id FROM user";
 		
 		$sql = $sql . " WHERE user.id <> ? ";
 		
@@ -275,7 +277,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getGroupMembers(Application $app, $group_id){
 		
-		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, group_member.group_id FROM group_member, user WHERE user.id = group_member.user_id AND group_member.group_id = ? and user.organization_id = ?";
+		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, user.last_device_id, group_member.group_id FROM group_member, user WHERE user.id = group_member.user_id AND group_member.group_id = ? and user.organization_id = ?";
 		
 		$result = $app['db']->fetchAll($sql, array($group_id,$app['organization_id']));
 		
@@ -511,7 +513,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getChatMembers(Application $app, $chat_id){
 		
-		$sql = "SELECT chat_member.user_id, chat_member.chat_id, chat_member.is_deleted, user.firstname, user.lastname, user.image, user.image_thumb, user.android_push_token, user.ios_push_token FROM chat_member, user WHERE user.id = chat_member.user_id AND chat_member.chat_id = ? AND chat_member.is_deleted = 0 AND chat_member.organization_id = ?";
+		$sql = "SELECT chat_member.user_id, chat_member.chat_id, chat_member.is_deleted, user.firstname, user.lastname, user.image, user.image_thumb, user.android_push_token, user.ios_push_token, user.last_device_id, user.web_opened FROM chat_member, user WHERE user.id = chat_member.user_id AND chat_member.chat_id = ? AND chat_member.is_deleted = 0 AND chat_member.organization_id = ?";
 		
 		$result = $app['db']->fetchAll($sql, array($chat_id,$app['organization_id']));
 		
@@ -936,6 +938,16 @@ class MySqlDb implements DbInterface{
 	
 	}
 	
+	public function getSeenBy(Application $app, $chat_id){
+	
+		$sql = "SELECT chat.seen_by FROM chat WHERE id = ?";
+		
+		$result = $app['db']->fetchAssoc($sql, array($chat_id));
+		
+		return $result['seen_by'];
+	
+	}
+	
 	
 	public function randomString($min = 5, $max = 8)
 	{
@@ -1016,6 +1028,12 @@ class MySqlDb implements DbInterface{
             'type' => $deviceType
         ));
  
+		
+	}
+	public function disconectWebUsers(Application $app){
+
+        $limitTime = time() - DISCONNECT_LIMIT_SEC;        
+        $app['db']->query("update user set web_opened = 0 where web_lastkeepalive < {$limitTime}");
 		
 	}
 }

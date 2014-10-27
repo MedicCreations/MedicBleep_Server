@@ -56,3 +56,7 @@ var CHATTYPE_PRIVATE = '1';
 var CHATTYPE_GROUP = '2';
 
 var LOADING_IMAGE = '';
+
+var DEVICE_WEB = 1;
+var DEVICE_IOS = 2;
+var DEVICE_ANDROID = 3;

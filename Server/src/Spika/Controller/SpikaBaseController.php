@@ -265,11 +265,11 @@ class SpikaBaseController implements ControllerProviderInterface
 
         // detect iOS or Android or Web
         $deviceType = DEVICE_WEB;
-        if(preg_match("/iOS/i", $userAgent)){
+        if(preg_match("/SpikaEnterprise|iOS/i", $userAgent)){
             $deviceType = DEVICE_IOS;
         }
         
-        if(preg_match("/android/i", $userAgent)){
+        if(preg_match("/SpikaEnterprise Android/i", $userAgent)){
             $deviceType = DEVICE_ANDROID;
         }
         

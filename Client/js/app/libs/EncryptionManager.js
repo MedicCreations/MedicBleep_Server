@@ -86,10 +86,13 @@ EncryptManager = {
     },
 
 
-    decryptMedia : function(videoElm,fileId,type,apiClient,successListner,failedListner,useCache){
+    decryptMedia : function(videoElm,fileId,type,apiClient,successListner,failedListner,useCache,useWorkerProcess){
         
         if(_.isUndefined(useCache))
             useCache = true;
+        
+        if(_.isUndefined(useWorkerProcess))
+            useWorkerProcess = false;
         
         if(_.indexOf(this.invalidFileIdList,fileId) != -1){
 
@@ -124,19 +127,36 @@ EncryptManager = {
             }
             
             try{
-            
-                var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
                 
-                worker.addEventListener('message', function(e) {
+                if(useWorkerProcess){
                     
-                    var decryptedBin = e.data;
-                    
-                    if(_.isFunction(successListner))
-                        successListner(sjcl.codec.base64.fromBits(decryptedBin));
-                        
-                }, false);
+                    U.l(" worker process");
 
-                worker.postMessage({rootUrl:WEB_ROOT,hexData:hexText,password:AES_PASSWORD});
+                    var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
+                    
+                    worker.addEventListener('message', function(e) {
+                        
+                        var decryptedBin = e.data;
+                        
+                        if(_.isFunction(successListner))
+                            successListner(sjcl.codec.base64.fromBits(decryptedBin));
+                            
+                    }, false);
+    
+                    worker.postMessage({rootUrl:WEB_ROOT,hexData:hexText,password:AES_PASSWORD});
+                    
+                } else {
+                    
+                    U.l("without worker process");
+                    
+                    var decryptedBin = RNCryptor.Decrypt(AES_PASSWORD,
+                        sjcl.codec.hex.toBits(hexText)
+                    );
+                    
+                    successListner(sjcl.codec.base64.fromBits(decryptedBin));
+                    
+                    
+                }
 
             } catch(ex){
                 
@@ -151,11 +171,15 @@ EncryptManager = {
         
     },
     
-    decryptImage : function(imgElement,fileId,width,apiClient,successListner,failedListner,useCache){
+    decryptImage : function(imgElement,fileId,width,apiClient,successListner,failedListner,useCache,useWorkerProcess){
         
         if(_.isUndefined(useCache))
             useCache = true;
+
+        if(_.isUndefined(useWorkerProcess))
+            useWorkerProcess = false;
         
+
         if(_.indexOf(this.invalidFileIdList,fileId) != -1){
 
             if(_.isFunction(failedListner))
@@ -212,13 +236,42 @@ EncryptManager = {
             }
             
             try{
-            
-                var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
                 
-                worker.addEventListener('message', function(e) {
+                if(useWorkerProcess){
                     
-                    var decryptedBin = e.data;
-        
+                    U.l(" worker process");
+                    
+                    var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
+                    
+                    worker.addEventListener('message', function(e) {
+                        
+                        var decryptedBin = e.data;
+            
+                        $(imgElement).attr('src','data:image/jpeg;base64,' + sjcl.codec.base64.fromBits(decryptedBin));
+                        //$(imgElement).attr('src',decryptedBin);
+                        
+                        if(width > 0)
+                            $(imgElement).attr('width',width);
+                        
+                        if(useCache == true)
+                            self.localchacheSaveImage(fileId,imgElement);
+                        
+                        if(_.isFunction(successListner))
+                            successListner();
+    
+                    }, false);
+    
+                    worker.postMessage({rootUrl:WEB_ROOT,hexData:hexText,password:AES_PASSWORD});
+    
+                }else{
+                    
+                    
+                    U.l("without worker process");
+                    
+                    var decryptedBin = RNCryptor.Decrypt(AES_PASSWORD,
+                        sjcl.codec.hex.toBits(hexText)
+                    );
+                    
                     $(imgElement).attr('src','data:image/jpeg;base64,' + sjcl.codec.base64.fromBits(decryptedBin));
                     //$(imgElement).attr('src',decryptedBin);
                     
@@ -230,10 +283,9 @@ EncryptManager = {
                     
                     if(_.isFunction(successListner))
                         successListner();
-
-                }, false);
-
-                worker.postMessage({rootUrl:WEB_ROOT,hexData:hexText,password:AES_PASSWORD});
+                    
+                    
+                }
                 
             } catch(ex){
                 
@@ -301,11 +353,7 @@ EncryptManager = {
 
                 var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
                 
-                U.l('start worker');
-                
                 worker.addEventListener('message', function(e) {
-                    
-                    U.l('finish worker');
 
                     var decryptedBin = e.data;
         

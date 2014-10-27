@@ -6,7 +6,7 @@ use Silex\Application;
 interface DbInterface
 {
 	public function registerUser(Application $app, $outside_id, $firstname, $lastname, $password, $username, $android_push_token, $ios_push_token);
-	public function loginUser(Application $app, $password, $username, $android_push_token, $ios_push_token);
+	public function loginUser(Application $app, $password, $username, $android_push_token, $ios_push_token, $deviceType);
 	public function getUserByToken(Application $app, $token_received);
 	public function updateUserIOSPushToken(Application $app, $user_id, $push_token);
 	public function updateUserAndroidPushToken(Application $app, $user_id, $push_token);
@@ -71,5 +71,6 @@ interface DbInterface
 	public function getGroupMembersForRoom(Application $app, $group_ids);
 	
 	public function getDetailValues(Application $app);
+	public function getSeenBy(Application $app, $chat_id);
 	
 }

@@ -91,6 +91,34 @@ SpikaClient.prototype.login = function(userName,password,succeessListener,failed
 
 };
 
+SpikaClient.prototype.logout = function(succeessListener,failedListener)
+{
+    
+    this.error = false;
+    var self = this;
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/user/logout',
+        type: 'POST',
+        headers: {"token":this.token,"api-agent":this.UA}
+    });
+    
+    requestLogin.done(function( data ) {
+        this.currentUser = null;
+        self.token = '';
+        self.authorized = false;
+        succeessListener(data);
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        this.currentUser = null;
+        self.token = '';
+        self.authorized = false;
+        succeessListener(textStatus);
+    });
+
+};
+
 // get users
 SpikaClient.prototype.searchUsers = function(page,search,succeessListener,failedListener)
 {
@@ -893,6 +921,34 @@ SpikaClient.prototype.deleteUsersFromChat = function(chatId,usersToDelete,succee
 };
 
 
+// get users
+SpikaClient.prototype.sendKeepAlive = function(succeessListener,failedListener)
+{
+    
+    var self = this;
+
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/user/webkeepalive',
+        type: 'GET',
+        headers: {"token":this.token,"api-agent":this.UA}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            // ignore error its not important when failed this
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        // ignore error its not important when failed this
+    });
+
+};
 
 SpikaClient.prototype.test = function()
 {

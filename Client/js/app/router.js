@@ -43,7 +43,22 @@
 
     app_router.on('route:logoutRoute', function(actions) {
 
-        U.goPage("login");
+
+        apiClient.logout(function(data){
+        
+            SPIKA_notificationManger.deattachUser(SPIKA_UserManager.getUser().get('id'));
+            SPIKA_UserManager.setUser(null);
+
+            U.goPage("login");
+        
+        },function(data){
+
+            SPIKA_notificationManger.deattachUser(SPIKA_UserManager.getUser().get('id'));
+            SPIKA_UserManager.setUser(null);
+
+            U.goPage("login");
+
+        });
         
     });
     app_router.on('route:mainRoute', function(actions) {

@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Silex\Provider\MonologServiceProvider;
 use Silex\Provider\SwiftmailerServiceProvider;
+use Knp\Provider\ConsoleServiceProvider;
 
 $app = new Silex\Application ( isset ( $dependencies ) ? $dependencies : array () );
 $app ['debug'] = true;
@@ -51,6 +52,16 @@ $app->register(new Spika\Provider\WebSocketNotificationProvider(), array(
 
 $app->register(new Silex\Provider\SessionServiceProvider(), array(
 ));
+
+// setup console
+$app->register(
+    new ConsoleServiceProvider(),
+    array(
+        'console.name' => 'UserBatch',
+        'console.version' => '0.1.0',
+        'console.project_directory' => __DIR__ . "/.."
+    )
+);
 
 //ldap
 //$ldapconn = ldap_connect(LDAP_SERVER, LDAP_PORT);

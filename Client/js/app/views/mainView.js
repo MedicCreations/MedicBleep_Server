@@ -35,9 +35,38 @@ var SPIKA_MainView = Backbone.View.extend({
             self.hideContextMenu(); 
             self.infoView.hide();
         });
-         
+        
+        this.sendKeepAlive();
     },
+    
+    sendKeepAlive: function(){
+        
+        if(SPIKA_UserManager.isAuthorised() == false){
+            U.l('user not logined');
+            return;
+        }
+        
+        var self = this;
 
+        apiClient.sendKeepAlive(function(data){
+
+            _.debounce(function() {
+                
+                self.sendKeepAlive();
+                
+            }, 10000)();
+            
+        },function(data){
+            
+            _.debounce(function() {
+                
+                self.sendKeepAlive();
+                
+            }, 10000)();
+
+        });
+
+    },
     render: function() {
         
         $(this.el).html(U.simpleLocalizationFilter(this.template,LANG));
@@ -183,3 +212,4 @@ var SPIKA_MainView = Backbone.View.extend({
     
     
 });
+

@@ -195,35 +195,52 @@ class MessageController extends SpikaBaseController {
                 
                 if(!isset($memberPushTokenListFormatted[$member['user_id']]))
                     continue;
+                
+                if($user_id == $member['user_id'])
+                    continue;
                     
 				$badge = $mySql->calculateBadge($app, $member['user_id']);
 				
                 $devices = $memberPushTokenListFormatted[$member['user_id']];
                 
+                $app['monolog']->addDebug(" prepare push" . print_r($member,true));  
+                
                 foreach($devices as $device){
                     
-                    if($device['type'] == DEVICE_ANDROID)
-                        array_push($android_push_members, $device['device_token']);
-
-				    if($device['type'] == DEVICE_IOS)
-				        array_push($ios_push_members, array('ios_push_token'=>$device['device_token'],'badge'=>$badge));
-
-				    if($device['type'] == DEVICE_WEB){
+				    if($member['web_opened'] == 1){
+				    
+    				    if($device['type'] == DEVICE_WEB){
+                            
+                            $app['monolog']->addDebug(" send web push" . print_r($member,true));  
+                            
+                			// send websocket notification
+                			$payload = json_encode(array(
+                			    'command' => 'sendMessage',
+                			    'identifier' => SYSTEM_IDENTIFIER,
+                			    'chat_id' => $chat_id,
+                			    'user_id' => $user_id
+                			));
+                			
+                			$self->sendWebSocketSignal($payload,$app);
+                            
+                            // if send web push dont send mobile push
+                            break;
+                            
+    				    }
+    				    
+				    } else {
                         
-                        $app['monolog']->addDebug('sent: 11 '. print_r($device,true));
+                        $app['monolog']->addDebug(" send mobile push" . print_r($member,true)); 
                         
-            			// send websocket notification
-            			$payload = json_encode(array(
-            			    'command' => 'sendMessage',
-            			    'identifier' => SYSTEM_IDENTIFIER,
-            			    'chat_id' => $chat_id,
-            			    'user_id' => $user_id
-            			));
-            			
-            			$self->sendWebSocketSignal($payload,$app);
-
+                        if($device['type'] == DEVICE_ANDROID)
+                            array_push($android_push_members, $device['device_token']);
+    
+    				    if($device['type'] == DEVICE_IOS)
+    				        array_push($ios_push_members, array('ios_push_token'=>$device['device_token'],'badge'=>$badge));
+    				    
 				    }
 
+                    
                 }
 
 						
@@ -335,6 +352,7 @@ class MessageController extends SpikaBaseController {
 			if (isset($last_msg_id) && ($last_msg_id != "")){
 				//return messages before last_msg
 				$messages = $mySql->getMessagesPaging($app, $chat_id, $last_msg_id);
+				$chat_seen_by = $mySql->getSeenBy($app, $chat_id);
 			} else {
 				//reset unread messages
 				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
@@ -389,6 +407,9 @@ class MessageController extends SpikaBaseController {
 			
 			$my_user_id = $app['user']['id'];
 			
+			$chat_seen_by = "";
+			$chat_seen_by = $mySql->getSeenBy($app, $chat_id);
+			
 			$is_chat_member = $mySql->isChatMember($app, $my_user_id, $chat_id);
 			
 			if (!$is_chat_member){
@@ -412,7 +433,8 @@ class MessageController extends SpikaBaseController {
 					'message' => 'OK', 
 					'total_count' => $total_count,
 					'messages' => $messages, 
-					'modified_messages' => $modified_messages);
+					'modified_messages' => $modified_messages,
+					'seen_by' => $chat_seen_by);
 			
 			return $app->json($result, 200);
 			

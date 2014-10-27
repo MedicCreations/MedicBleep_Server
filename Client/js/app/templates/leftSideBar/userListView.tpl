@@ -29,7 +29,7 @@
         					<%= user.get('firstname') %> <%= user.get('lastname') %>
         				</p>
         				<p>
-        					
+        					<i><%= user.get('device_name') %></i>
         				</p>
         			</div>
         			<p class="cell cell_3">
