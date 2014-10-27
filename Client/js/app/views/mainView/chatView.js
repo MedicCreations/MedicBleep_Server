@@ -471,6 +471,11 @@ var SPIKA_ChatView = Backbone.View.extend({
             Backbone.trigger(EVENT_OPEN_PROFLIE,userId);
         });
         
+        U.l("click event");
+        $$("#chat article section").unbind().dblclick(function(){
+            U.l("dblclick");
+        });
+        
         /*
         $(U.sel("#chat_view ul li")).unbind().click(function(){
             

@@ -36,6 +36,11 @@ var SPIKA_MainView = Backbone.View.extend({
             self.infoView.hide();
         });
         
+
+        Backbone.on(EVENT_FORCE_LOGOUT, function() {
+            U.goPage("logout");
+        });
+        
         this.sendKeepAlive();
     },
     

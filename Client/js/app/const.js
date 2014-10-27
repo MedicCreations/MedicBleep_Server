@@ -11,11 +11,12 @@ var EVENT_OPEN_CHATPROFLIE = 'openChatProflie';
 var EVENT_CLICK_ANYWHARE = 'clickAnyWhere';
 var EVENT_ENTER_CHAT = 'eventEnterChat';
 var EVENT_LEAVE_CHAT = 'leaveChat';
+var EVENT_FORCE_LOGOUT = 'eventForceLogout';
+
 
 var EVENT_START_PRIVATE_CHAT = 'startPrivateChat';
 var EVENT_START_GROUP_CHAT = 'startGroupChat';
 var EVENT_TB_HEIGHT_UPDATED = 'tbHeightUpdated';
-var EVENT_FORCE_LOGOUT = 'eventForceLogout';
 var EVENT_OPEN_LEFTMENU = 'eventOpenLeftMenu';
 var EVENT_ADDUSER_TO_CHAT = 'eventAddUserToChat';
 var EVENT_SELECT_REPLY = 'eventSelectReply';
