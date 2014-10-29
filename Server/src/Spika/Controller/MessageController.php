@@ -185,7 +185,11 @@ class MessageController extends SpikaBaseController {
                 $memberPushTokenListFormatted[$row['user_id']][] = $row;
     			 
 			}
-
+            
+            $app['monolog']->addDebug(" chat members " . print_r($chat_members,true)); 
+            $app['monolog']->addDebug(" device json " . json_encode($memberPushTokenListFormatted)); 
+            $app['monolog']->addDebug(" device array count " . count($memberPushTokenListFormatted)); 
+            
 			foreach ($chat_members as $member){
 				
 // 				//update unread messages
@@ -218,7 +222,9 @@ class MessageController extends SpikaBaseController {
                 			    'command' => 'sendMessage',
                 			    'identifier' => SYSTEM_IDENTIFIER,
                 			    'chat_id' => $chat_id,
-                			    'user_id' => $user_id
+                			    'from_user_id' => $user_id,
+                			    'user_id' => $device['user_id'],
+                			    
                 			));
                 			
                 			$self->sendWebSocketSignal($payload,$app);

@@ -127,6 +127,10 @@ class MySqlDb implements DbInterface{
 			
 			$login_result['auth_status'] = TRUE;
 			$login_result['user'] = $user;
+			
+			$app['monolog']->addDebug(" user login : " . print_r($user,true));  
+			$app['organization_id'] = $user['organization_id'];
+			
 		} else {
 			$login_result['auth_status'] = FALSE;
 		}
@@ -350,7 +354,7 @@ class MySqlDb implements DbInterface{
 	
 	public function calculateBadge(Application $app, $user_id){
 		
-		$sql = "SELECT SUM(unread) FROM chat_member WHERE user_id = ? and chat_member.organization_id = {$app['organization_id']}";
+		$sql = "SELECT SUM(unread) FROM chat_member WHERE user_id = ? AND is_deleted = 0 and chat_member.organization_id = {$app['organization_id']}";
 		
 		$result = $app['db']->executeQuery($sql, array($user_id))->fetch();
 		
@@ -378,8 +382,8 @@ class MySqlDb implements DbInterface{
 // 			}
 // 		}
 
-		$sql = "SELECT * FROM chat WHERE custom_chat_id = ?";
-		$chat = $app['db']->fetchAssoc($sql, array($custom_chat_id));
+		$sql = "SELECT * FROM chat WHERE custom_chat_id = ? AND type = ?";
+		$chat = $app['db']->fetchAssoc($sql, array($custom_chat_id, CHAT_USER_TYPE));
 		
 		if (is_array($chat)){
 			
@@ -546,7 +550,7 @@ class MySqlDb implements DbInterface{
 		
 		$sql = "
 		    Select * from device
-		    Where user_id in ( select user_id from chat_member where chat_id = ? )
+		    Where user_id in ( select user_id from chat_member where chat_id = ? group by user_id )
 		    and  device.organization_id = ? and device.is_valid = 1";
 		
 		$result = $app['db']->fetchAll($sql, array($chat_id,$app['organization_id']));
@@ -744,7 +748,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentAllChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -755,18 +759,18 @@ class MySqlDb implements DbInterface{
 	
 	public function getCountRecentAllChats(Application $app, $user_id){
 		
-		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 and chat.organization_id = ? ORDER BY chat.modified DESC";
+		$sql = "SELECT COUNT(DISTINCT chat_member.chat_id) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 and chat.organization_id = ? ORDER BY chat.modified DESC";
 		
 		$result = $app['db']->executeQuery($sql, array($user_id,$app['organization_id']))->fetch();
 		
-		return $result["COUNT(*)"];
+		return $result["COUNT(DISTINCT chat_member.chat_id)"];
 		
 	}
 	
 	
 	public function getRecentGroupChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND (chat.type = 2 OR chat.type = 3) and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND (chat.type = 2 OR chat.type = 3) and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -777,18 +781,18 @@ class MySqlDb implements DbInterface{
 	
 	public function getCountRecentGroupChats(Application $app, $user_id){
 		
-		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND (chat.type = 2 OR chat.type = 3)  and chat.organization_id = ? ORDER BY chat.modified DESC";
+		$sql = "SELECT COUNT(DISTINCT chat_member.chat_id) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND (chat.type = 2 OR chat.type = 3)  and chat.organization_id = ? ORDER BY chat.modified DESC";
 		
 		$result = $app['db']->executeQuery($sql, array($user_id,$app['organization_id']))->fetch();
 		
-		return $result["COUNT(*)"];
+		return $result["COUNT(DISTINCT chat_member.chat_id)"];
 		
 	}
 	
 	
 	public function getRecentPrivateChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1  and chat.organization_id = ?  ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1  and chat.organization_id = ?  ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -799,11 +803,11 @@ class MySqlDb implements DbInterface{
 	
 	public function getCountRecentPrivateChats(Application $app, $user_id){
 		
-		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1 and chat.organization_id = ? ORDER BY chat.modified DESC";
+		$sql = "SELECT COUNT(DISTINCT chat_member.chat_id) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1 and chat.organization_id = ? ORDER BY chat.modified DESC";
 		
 		$result = $app['db']->executeQuery($sql, array($user_id,$app['organization_id']))->fetch();
 		
-		return $result["COUNT(*)"];
+		return $result["COUNT(DISTINCT chat_member.chat_id)"];
 		
 	}
 	
@@ -838,7 +842,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRooms(Application $app, $user_id, $search, $offset, $category_id){
 	
-		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3  and chat.organization_id = ? ";
+		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3  and chat.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
@@ -858,7 +862,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRoomsCount(Application $app, $user_id, $search, $category_id){
 	
-		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 and chat.organization_id = ? ";
+		$sql = "SELECT COUNT(DISTINCT chat_member.chat_id) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 and chat.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
@@ -872,7 +876,7 @@ class MySqlDb implements DbInterface{
 		
 		$result = $app['db']->executeQuery($sql, array($user_id,$app['organization_id']))->fetch();
 		
-		return $result["COUNT(*)"];
+		return $result["COUNT(DISTINCT chat_member.chat_id)"];
 	
 	}
 	
@@ -975,7 +979,9 @@ class MySqlDb implements DbInterface{
 	public function registDevice(Application $app, $userId,$userToken,$deviceType){
         
         // registered device
-        $device =$app['db']->fetchAssoc("select * from device where user_id = ? and type = ? order by modified desc",array($userId,$deviceType));
+        $device =$app['db']->fetchAssoc("select * from device where user_id = ? and type = ? and organization_id = ? order by modified desc",array($userId,$deviceType,$app['organization_id']));
+        
+        $app['monolog']->addDebug(" device : " . print_r($device,true));  
         
         //if()
         if(isset($device['id'])){
@@ -1000,6 +1006,8 @@ class MySqlDb implements DbInterface{
     			'created' => time(), 
     			'modified' => time()
             );
+    		
+    		$app['monolog']->addDebug(" add new device " . print_r($values,true));  
     		
     		$app['db']->insert('device', $values);
 		
