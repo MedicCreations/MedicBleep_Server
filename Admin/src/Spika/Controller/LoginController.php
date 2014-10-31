@@ -61,7 +61,7 @@ class LoginController extends BaseController {
             }
             
             // check
-            $data = $self->app['db']->fetchAssoc("select * from organization where admin_name = ? and admin_password = ?", array($username,md5($password)));
+            $data = $self->app['db']->fetchAssoc("select * from organization where admin_name = ? and admin_password = ? and email_verified = 1", array($username,md5($password)));
             
             if(!empty($data['id'])){
                 
@@ -85,6 +85,126 @@ class LoginController extends BaseController {
             return $app->redirect(ADMIN_ROOT_URL . '/');
 		});
 		
+		$controllers->get('/regist', function (Request $request) use ($app, $self){
+			
+            return $self->render('regist.twig', array(
+                    'error_alert' => '',
+                    'company_name' => '',
+                    'password' => '',
+                    'email' => '',
+                    'username' => ''
+            ));
+   
+   		});
+		
+		$controllers->post('/regist', function (Request $request) use ($app, $self){
+			
+			$errorMessage = '';
+            $companyName = $request->get('company_name');
+            $email = $request->get('email');
+            $username = $request->get('username');
+            $password = $request->get('password');
+			
+			// validation
+			$checkEmail = $self->app['db']->fetchAssoc("select * from organization where email = ?", array($email));
+			$checkUsername = $self->app['db']->fetchAssoc("select * from organization where admin_name = ?", array($username));
+			
+			if(isset($checkEmail['id'])){
+				$errorMessage = $self->lang['registError1'];
+			}
+			
+			if(isset($checkUsername['id'])){
+				$errorMessage = $self->lang['registError2'];
+			}
+			
+			if(empty($errorMessage)){
+				
+				// generate email
+				$verifyCode = $self->randomString(5);
+				$verifyURL = ROOT_URL . "/verify/" . $verifyCode;
+				$emailBody = "Welcome to your free trial of Spika Enterprise.
+	
+By signing up for Spika Enterprise, you're empowering your business to work smarter and faster, so you can focus on what really matters.
+
+Please open following URL and You're about to work better, together.
+
+{$verifyURL}
+
+Thanks for beginning your free trial of Spika Enterprise.
+
+Sincerely,
+Spika Enterprise Team
+	
+	";
+				
+				$values = array(
+						'name' => $companyName,
+						'email' => $email,
+						'admin_name' => $username,
+						'admin_password' => md5($password),
+						'email_verified' => 0,
+						'email_verification_code' => $verifyCode,
+						'created' => time(), 
+						'modified' => time());
+	
+				$app['db']->insert('organization', $values);
+				
+	            $transport = \Swift_SmtpTransport::newInstance('smtp.googlemail.com', 465, 'ssl')
+	                ->setUsername(GMAIL_USER)
+	                ->setPassword(GMAIL_PASSWORD);
+	
+	            $message = \Swift_Message::newInstance()
+	                ->setSubject($self->lang['registEmailSubject'])
+	                ->setFrom(GMAIL_USER)
+	                ->setTo($email)
+	                ->setBody($emailBody);
+	            
+	            $mailer = \Swift_Mailer::newInstance($transport);
+	            
+	            $mailer->send($message);
+
+	            return $self->render('regist_thankyou.twig', array(
+	            ));
+
+			}
+			
+            return $self->render('regist.twig', array(
+                    'error_alert' => $errorMessage,
+                    'company_name' => $companyName,
+                    'password' => '',
+                    'email' => $email,
+                    'username' => $username
+            ));
+   
+   		});
+   		
+   		$controllers->get('/verify/{code}', function (Request $request,$code) use ($app, $self){
+			
+			$data = $self->app['db']->fetchAssoc("select * from organization where email_verification_code = ? and email_verified = 0", array($code));
+			$result = false;
+			
+			if(!empty($data['id'])){
+
+    			$values = array(
+    					'email_verified' => 1,
+    					'email_verification_code' => '',
+    					'modified' => time());
+
+    			$app['db']->update('organization', $values,array('id' => $data['id']));
+    			
+				$result = true;
+				
+			}else {
+
+            
+			}
+
+            return $self->render('regist_verify.twig', array(
+                    'result' => $result
+            ));
+	            
+   		});
+   		
 		return $controllers;
 		
 	}

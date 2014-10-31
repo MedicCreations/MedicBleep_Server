@@ -256,7 +256,7 @@ var U = {
             return entityMap[s];
         });
         
-        html = String(html).replace(/[ \t]/g, '&nbsp;');
+        //html = String(html).replace(/[ \t]/g, '&nbsp;');
         
         return html;
     },

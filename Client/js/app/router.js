@@ -45,8 +45,10 @@
 
 
         apiClient.logout(function(data){
-        
-            SPIKA_notificationManger.deattachUser(SPIKA_UserManager.getUser().get('id'));
+        	
+        	if(SPIKA_UserManager.isAuthorised())
+            	SPIKA_notificationManger.deattachUser(SPIKA_UserManager.getUser().get('id'));
+            	
             SPIKA_UserManager.setUser(null);
 
             U.goPage("login");

@@ -8,44 +8,48 @@
  * file that was distributed with this source code.
  */
 
+
 /**
  * Handles LOGIN authentication.
- *
- * @author     Chris Corbyn
+ * @package Swift
+ * @subpackage Transport
+ * @author Chris Corbyn
  */
-class Swift_Transport_Esmtp_Auth_LoginAuthenticator implements Swift_Transport_Esmtp_Authenticator
+class Swift_Transport_Esmtp_Auth_LoginAuthenticator
+  implements Swift_Transport_Esmtp_Authenticator
 {
-    /**
-     * Get the name of the AUTH mechanism this Authenticator handles.
-     *
-     * @return string
-     */
-    public function getAuthKeyword()
+  
+  /**
+   * Get the name of the AUTH mechanism this Authenticator handles.
+   * @return string
+   */
+  public function getAuthKeyword()
+  {
+    return 'LOGIN';
+  }
+  
+  /**
+   * Try to authenticate the user with $username and $password.
+   * @param Swift_Transport_SmtpAgent $agent
+   * @param string $username
+   * @param string $password
+   * @return boolean
+   */
+  public function authenticate(Swift_Transport_SmtpAgent $agent,
+    $username, $password)
+  {
+    try
     {
-        return 'LOGIN';
+      $agent->executeCommand("AUTH LOGIN\r\n", array(334));
+      $agent->executeCommand(sprintf("%s\r\n", base64_encode($username)), array(334));
+      $agent->executeCommand(sprintf("%s\r\n", base64_encode($password)), array(235));
+      return true;
     }
-
-    /**
-     * Try to authenticate the user with $username and $password.
-     *
-     * @param Swift_Transport_SmtpAgent $agent
-     * @param string                    $username
-     * @param string                    $password
-     *
-     * @return bool
-     */
-    public function authenticate(Swift_Transport_SmtpAgent $agent, $username, $password)
+    catch (Swift_TransportException $e)
     {
-        try {
-            $agent->executeCommand("AUTH LOGIN\r\n", array(334));
-            $agent->executeCommand(sprintf("%s\r\n", base64_encode($username)), array(334));
-            $agent->executeCommand(sprintf("%s\r\n", base64_encode($password)), array(235));
-
-            return true;
-        } catch (Swift_TransportException $e) {
-            $agent->executeCommand("RSET\r\n", array(250));
-
-            return false;
-        }
+      $agent->executeCommand("RSET\r\n", array(250));
+      return false;
     }
+  }
+  
 }

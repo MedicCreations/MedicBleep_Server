@@ -54,6 +54,7 @@ class UserController extends SpikaBaseController {
 			$login_result = $mySql->loginUser($app, $password, $username, $android_push_token, $ios_push_token,$self->getDeviceType($request->headers->get('user-agent')) );
 			
 			
+			$app['monolog']->addDebug(" login user " . print_r($login_result,true));  
 			$app['monolog']->addDebug(" login device " . $self->getDeviceType($request->headers->get('user-agent')) . "::" . $request->headers->get('user-agent'));  
 			
 			if ($login_result['auth_status'] === FALSE) {

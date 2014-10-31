@@ -16,29 +16,7 @@ var SPIKA_notificationManger = {
     
             try{
                             
-                //create a new WebSocket object.
-                self.wsConnection = new WebSocket(NOTIFICATION_SERVER_URL);
-                
-                self.wsConnection.onopen = function(e) {
-                    U.l('WS MODE connection established');
-                    self.websocketMode = true;
-                };
-                
-                self.wsConnection.onmessage = function(e) {
-                    
-                    U.l('onmessage');
-                    
-                    var data = JSON.parse(e.data);
-                    
-                    if(SPIKA_UserManager.getUser().get('id') != data.user_id)
-                        self.newMessage(data.chat_id);
-                    
-                };
-    
-                self.wsConnection.onerror = function(e) {
-                    U.l('web socket error');
-                    self.usePoing();
-                };
+                self.resetWebSocket();
     
             } catch (ex){
                 U.l(ex);
@@ -56,7 +34,57 @@ var SPIKA_notificationManger = {
         });
         
     },
-    
+
+    //////////////////////////////////////////////////////////
+    //  Web Socket mode logics
+    //////////////////////////////////////////////////////////
+    resetWebSocket : function(){
+        
+        var self = this;
+        
+        if(!_.isNull(self.wsConnection)){
+            self.wsConnection.close();
+            self.wsConnection = null;
+        }
+
+        //create a new WebSocket object.
+        self.wsConnection = new WebSocket(NOTIFICATION_SERVER_URL);
+        
+        self.wsConnection.onopen = function(e) {
+        
+            U.l('WS MODE connection established');
+            self.websocketMode = true;
+            
+            if(SPIKA_UserManager.isAuthorised()){
+                U.l('attached user' + SPIKA_UserManager.getUser().get('id'));
+                SPIKA_notificationManger.attachUser(SPIKA_UserManager.getUser().get('id'));
+            }
+
+        };
+        
+        self.wsConnection.onmessage = function(e) {
+            
+            U.l('onmessage');
+            
+            var data = JSON.parse(e.data);
+            
+            if(SPIKA_UserManager.getUser().get('id') != data.from_user_id)
+                self.newMessage(data.chat_id);
+            
+        };
+
+        self.wsConnection.onerror = function(e) {
+            U.l('web socket error');
+            self.usePoing();
+        };
+
+
+        _.debounce(function() {
+            self.resetWebSocket();
+        }, 60 * 1000)();
+
+    },
+        
     //////////////////////////////////////////////////////////
     //  Poling mode logics
     //////////////////////////////////////////////////////////

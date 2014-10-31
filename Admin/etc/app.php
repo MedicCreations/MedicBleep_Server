@@ -44,6 +44,16 @@ $app->register ( new Silex\Provider\DoctrineServiceProvider(), array (
 		) 
 ) );
 
+$app->register(new Silex\Provider\SwiftmailerServiceProvider());
+$app['swiftmailer.options'] = array(
+    'host' => 'host',
+    'port' => '25',
+    'username' => 'username',
+    'password' => 'password',
+    'encryption' => null,
+    'auth_mode' => null
+);
+
 /*
 $app->error(function (\Exception $e, $code) use($app) {
     return $app->redirect(ADMIN_ROOT_URL . '/');

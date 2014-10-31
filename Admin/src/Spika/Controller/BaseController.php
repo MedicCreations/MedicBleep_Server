@@ -200,4 +200,5 @@ class BaseController implements ControllerProviderInterface {
         file_put_contents($filePath, $encryptedHexData);
         
 	}
+	
 }

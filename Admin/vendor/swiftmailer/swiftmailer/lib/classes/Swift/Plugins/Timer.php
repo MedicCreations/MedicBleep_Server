@@ -10,15 +10,17 @@
 
 /**
  * Provides timestamp data.
- *
- * @author     Chris Corbyn
+ * @package Swift
+ * @subpackage Plugins
+ * @author Chris Corbyn
  */
 interface Swift_Plugins_Timer
 {
-    /**
-     * Get the current UNIX timestamp.
-     *
-     * @return int
-     */
-    public function getTimestamp();
+  
+  /**
+   * Get the current UNIX timestamp.
+   * @return int
+   */
+  public function getTimestamp();
+  
 }

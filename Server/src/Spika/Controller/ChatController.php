@@ -255,8 +255,15 @@ class ChatController extends SpikaBaseController {
 			if ($chat['name'] != ""){
 				$chat_name = $chat['name'];
 			} else {
-				$chat_members = $mySql->getChatMembers($app, $chat_id);
-				$chat_name = $self->createChatName($app, $mySql, $chat_members, array());
+				if ($chat['type'] == CHAT_USER_TYPE){
+					$chat_data = $mySql->getPrivateChatData($app, $chat_id, $my_user_id);
+					$chat_name = $chat_data['name'];
+					$chat['image'] = $chat_data['image'];
+					$chat['image_thumb'] = $chat_data['image_thumb'];
+				} else {
+					$chat_members = $mySql->getChatMembers($app, $chat_id);
+					$chat_name = $self->createChatName($app, $mySql, $chat_members, array());
+				}
 			}
 			
 			if ($chat['group_id'] > 0){
@@ -265,6 +272,9 @@ class ChatController extends SpikaBaseController {
 			
 			$chat['chat_name'] = $chat_name;
 			$chat['chat_id'] = $chat_id;
+			
+			//reset unread messages
+			$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 			
 			$messages = $mySql->getLastMessages($app, $chat_id);
 			$total_messages = $mySql->getCountMessagesForChat($app, $chat_id);

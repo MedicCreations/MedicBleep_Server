@@ -10,71 +10,60 @@
 
 /**
  * General utility class in Swift Mailer, not to be instantiated.
- *
- *
+ * 
+ * @package Swift
+ * 
  * @author Chris Corbyn
  */
 abstract class Swift
 {
-    public static $initialized = false;
-    public static $inits = array();
-
-    /** Swift Mailer Version number generated during dist release process */
-    const VERSION = '@SWIFT_VERSION_NUMBER@';
-
-    /**
-     * Registers an initializer callable that will be called the first time
-     * a SwiftMailer class is autoloaded.
-     *
-     * This enables you to tweak the default configuration in a lazy way.
-     *
-     * @param mixed $callable A valid PHP callable that will be called when autoloading the first Swift class
-     */
-    public static function init($callable)
+  
+  static $initialized = false;
+  static $initPath;
+  
+  /** Swift Mailer Version number generated during dist release process */
+  const VERSION = '@SWIFT_VERSION_NUMBER@';
+  
+  /**
+   * Internal autoloader for spl_autoload_register().
+   * 
+   * @param string $class
+   */
+  public static function autoload($class)
+  {
+    //Don't interfere with other autoloaders
+    if (0 !== strpos($class, 'Swift_'))
     {
-        self::$inits[] = $callable;
+      return;
     }
 
-    /**
-     * Internal autoloader for spl_autoload_register().
-     *
-     * @param string $class
-     */
-    public static function autoload($class)
+    $path = dirname(__FILE__).'/'.str_replace('_', '/', $class).'.php';
+
+    if (!file_exists($path))
     {
-        // Don't interfere with other autoloaders
-        if (0 !== strpos($class, 'Swift_')) {
-            return;
-        }
-
-        $path = dirname(__FILE__).'/'.str_replace('_', '/', $class).'.php';
-
-        if (!file_exists($path)) {
-            return;
-        }
-
-        require $path;
-
-        if (self::$inits && !self::$initialized) {
-            self::$initialized = true;
-            foreach (self::$inits as $init) {
-                call_user_func($init);
-            }
-        }
+      return;
     }
 
-    /**
-     * Configure autoloading using Swift Mailer.
-     *
-     * This is designed to play nicely with other autoloaders.
-     *
-     * @param mixed $callable A valid PHP callable that will be called when autoloading the first Swift class
-     */
-    public static function registerAutoload($callable = null)
+    if (self::$initPath && !self::$initialized)
     {
-        if (null !== $callable) {
-            self::$inits[] = $callable;
-        }
-        spl_autoload_register(array('Swift', 'autoload'));
+      self::$initialized = true;
+      require self::$initPath;
     }
+
+    require $path;
+  }
+  
+  /**
+   * Configure autoloading using Swift Mailer.
+   * 
+   * This is designed to play nicely with other autoloaders.
+   *
+   * @param string $initPath The init script to load when autoloading the first Swift class
+   */
+  public static function registerAutoload($initPath = null)
+  {
+    self::$initPath = $initPath;
+    spl_autoload_register(array('Swift', 'autoload'));
+  }
+  
 }
