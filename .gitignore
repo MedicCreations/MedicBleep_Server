@@ -7,11 +7,6 @@ Admin/tmp/
 Server/logs/
 Server/uploads/
 !logs/.gitkeep
-Admin/init.php
-Server/init.php
-Client/js/app/init.js
 Client/apps/
 
 sourcetreeconfig
-Admin/wwwroot/.htaccess
-Server/wwwroot/.htaccess
