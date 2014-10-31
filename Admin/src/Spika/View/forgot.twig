@@ -43,53 +43,40 @@
 			</div>
 			<!-- start: LOGIN BOX -->
 			<div class="box-login">
-				<h3>{{lang.login1}}</h3>
+				<h3>{{lang.regist13}}</h3>
 				<p>
-					{{lang.login2}}
+					{{lang.regist14}}
 				</p>
-				<form class="form-login" method="post" action="{{ADMIN_ROOT_URL}}/login" autocorrect="off" autocapitalize="off" autocomplete="off" >
+				<form class="form-login" method="post" action="{{ADMIN_ROOT_URL}}/forgot" autocorrect="off" autocapitalize="off" autocomplete="off" >
 				
-                    {% if error_alert is not defined %}
-    					<div class="errorHandler alert alert-danger no-display">
-    						<i class="fa fa-remove-sign"></i> {{lang.login3}}
-    					</div>
-    				{% else %}
+                    {% if error_alert is not empty %}
     					<div class="errorHandler alert alert-danger">
     						<i class="fa fa-remove-sign"></i> {{error_alert}}
     					</div>
                     {% endif %}
 
+                    {% if info_alert is not empty %}
+
+						<div class="alert alert-success">
+							<i class="fa fa-check-circle"></i> {{info_alert}}
+						</div>
+									
+                    {% endif %}
+
 					<fieldset>
 						<div class="form-group">
 							<span class="input-icon">
-								<input type="text" class="form-control" name="username" placeholder="Username" value="{{username}}" autocomplete="off" >
-								<i class="fa fa-user"></i> </span>
+								<input type="text" class="form-control" name="email" placeholder="Email Address" value="" autocomplete="off" >
+								<i class="fa fa-envelope-o"></i> </span>
 						</div>
-						<div class="form-group form-actions">
-							<span class="input-icon">
-								<input type="password" class="form-control password" name="password" placeholder="Password" value="{{password}}" autocomplete="off" >
-								<i class="fa fa-lock"></i>
-								<a class="forgot" href="{{ADMIN_ROOT_URL}}/forgot">
-									{{lang.regist12}}
-								</a> </span>
 
-                            </span>
-						</div>
 						<div class="form-actions">
-							<label for="remember" class="checkbox-inline">
-								<input type="checkbox" class="grey remember" id="remember" name="remember" value="remember" {% if username is not empty %}checked{% endif %} autocomplete="off" >
-								{{lang.login5}}
-							</label>
-							<button type="submit" class="btn btn-bricky pull-right">
-								{{lang.login6}} <i class="fa fa-arrow-circle-right"></i>
-							</button>
-						</div>
-					
-						<div class="new-account">
-							<strong>{{lang.login7}} !!</strong>
-							<a href="{{ADMIN_ROOT_URL}}/regist" class="register">
-								{{lang.login8}}
+							<a href="{{ROOT_URL}}" class="btn btn-light-grey go-back">
+								<i class="fa fa-circle-arrow-left"></i> Back
 							</a>
+							<button type="submit" class="btn btn-bricky pull-right">
+								{{lang.regist17}} <i class="fa fa-arrow-circle-right"></i>
+							</button>
 						</div>
 
 
@@ -128,12 +115,12 @@
 		<!-- end: MAIN JAVASCRIPTS -->
 		<!-- start: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
 		<script src="{{ROOT_URL}}/assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
-		<script src="{{ROOT_URL}}/assets/js/login.js"></script>
+		<script src="{{ROOT_URL}}/assets/js/forgot.js"></script>
 		<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
 		<script>
 			jQuery(document).ready(function() {
 				Main.init();
-				Login.init();
+				Forgot.init();
 			});
 		</script>
 	</body>

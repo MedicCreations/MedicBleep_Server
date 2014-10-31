@@ -135,7 +135,7 @@ Thanks for beginning your free trial of Spika Enterprise.
 Sincerely,
 Spika Enterprise Team
 	
-	";
+";
 				
 				$values = array(
 						'name' => $companyName,
@@ -149,19 +149,7 @@ Spika Enterprise Team
 	
 				$app['db']->insert('organization', $values);
 				
-	            $transport = \Swift_SmtpTransport::newInstance('smtp.googlemail.com', 465, 'ssl')
-	                ->setUsername(GMAIL_USER)
-	                ->setPassword(GMAIL_PASSWORD);
-	
-	            $message = \Swift_Message::newInstance()
-	                ->setSubject($self->lang['registEmailSubject'])
-	                ->setFrom(GMAIL_USER)
-	                ->setTo($email)
-	                ->setBody($emailBody);
-	            
-	            $mailer = \Swift_Mailer::newInstance($transport);
-	            
-	            $mailer->send($message);
+				$self->sendEmail($email,$self->lang['registEmailSubject'],$emailBody);
 
 	            return $self->render('regist_thankyou.twig', array(
 	            ));
@@ -193,7 +181,28 @@ Spika Enterprise Team
     			$app['db']->update('organization', $values,array('id' => $data['id']));
     			
 				$result = true;
-				
+				$adminURL = ROOT_URL;
+				$clientURL = CLIENT_URL;
+				$emailBody = "Your Spika Enterprise setup is complete.
+
+Please add following URL to your bookmark.
+
+{$adminURL}
+
+Important!
+To use Spika Enterprise, you have to create user to login to Apps. This account is used only to login admin area.
+After making new user please login to web client from the link below.
+{$clientURL}
+
+To download mobile apps please open the link below with your iPhone or Android device.
+{$clientURL}/apps
+
+Sincerely,
+Spika Enterprise Team
+	
+";
+				$self->sendEmail($data['email'],$self->lang['registEmailSubjectFinish'],$emailBody);
+	            
 			}else {
 
             
@@ -202,9 +211,71 @@ Spika Enterprise Team
             return $self->render('regist_verify.twig', array(
                     'result' => $result
             ));
-	            
+
    		});
    		
+		$controllers->get('/forgot', function (Request $request) use ($app, $self){
+            return $self->render('forgot.twig', array(
+	            	'error_alert' => '',
+	            	'info_alert' => '',
+                    'result' => true
+            ));
+		});
+		
+		$controllers->post('/forgot', function (Request $request) use ($app, $self){
+			
+			$email = $request->get('email');
+			$data = $self->app['db']->fetchAssoc("select * from organization where email = ?", array($email));
+			$errorMessage = '';
+			$infoMessage = '';
+			$adminURL = ROOT_URL;
+
+            if(empty($data['id'])){
+                
+                $errorMessage = $self->lang['regist15'];
+                
+            } else {
+				
+
+				$password = $self->randomString(6,6);
+				
+    			$values = array(
+    					'admin_password' => md5($password),
+    					'modified' => time());
+
+    			$app['db']->update('organization', $values,array('id' => $data['id']));
+
+				$emailBody = "We reset your password. Please use this password to login admin console.
+
+{$password}
+
+You can login to admin console from here.
+{$adminURL}
+
+Sincerely,
+Spika Enterprise Team";
+				
+				$self->sendEmail($data['email'],$self->lang['regist18'],$emailBody);
+				    			
+                $infoMessage = $self->lang['regist16'];
+	            
+            }
+            
+            return $self->render('forgot.twig', array(
+	            	'error_alert' => $errorMessage,
+	            	'info_alert' => $infoMessage,
+                    'result' => true
+            ));
+		});
+		
+		/*
+		$controllers->get('/temp', function (Request $request) use ($app, $self){
+            return $self->render('regist_verify.twig', array(
+                    'result' => true
+            ));
+		});
+		*/
+		
 		return $controllers;
 		
 	}

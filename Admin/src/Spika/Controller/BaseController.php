@@ -201,4 +201,22 @@ class BaseController implements ControllerProviderInterface {
         
 	}
 	
+	public function sendEmail($toAddress,$subject,$body){
+		
+        $transport = \Swift_SmtpTransport::newInstance('smtp.googlemail.com', 465, 'ssl')
+            ->setUsername(GMAIL_USER)
+            ->setPassword(GMAIL_PASSWORD);
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject($subject)
+            ->setFrom(GMAIL_USER)
+            ->setTo($toAddress)
+            ->setBody($body);
+        
+        $mailer = \Swift_Mailer::newInstance($transport);
+        
+        $mailer->send($message);
+	            
+	}
+	
 }
