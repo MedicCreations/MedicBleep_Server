@@ -68,3 +68,4 @@ $app->mount ( '/users', new Spika\Controller\UsersController() );
 $app->mount ( '/groups', new Spika\Controller\GroupsController() );
 $app->mount ( '/chats', new Spika\Controller\ChatsController() );
 $app->mount ( '/categories', new Spika\Controller\CategoryController() );
+$app->mount ( '/account', new Spika\Controller\AccountController() );
