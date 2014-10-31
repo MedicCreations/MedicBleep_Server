@@ -43,7 +43,8 @@
 
     app_router.on('route:logoutRoute', function(actions) {
 
-
+		$.cookie(COOKIE_PASSWORD, '' , { expires: COOKIE_EXPIRES });
+		
         apiClient.logout(function(data){
         	
         	if(SPIKA_UserManager.isAuthorised())

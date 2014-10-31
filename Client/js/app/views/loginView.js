@@ -5,16 +5,56 @@ var SPIKA_LoginView = Backbone.View.extend({
     },
 
     render: function() {
+	    
+	    var self = this;
+	    
+        if(!_.isNull($.cookie(COOKIE_USERNAME)) 
+        	&& !_.isUndefined($.cookie(COOKIE_USERNAME)) 
+        	&& !_.isEmpty($.cookie(COOKIE_USERNAME))
+        	&& !_.isNull($.cookie(COOKIE_PASSWORD))
+        	&& !_.isUndefined($.cookie(COOKIE_PASSWORD))
+        	&& !_.isEmpty($.cookie(COOKIE_PASSWORD))){
+	        
+			var username = $.cookie(COOKIE_USERNAME);
+			var password = $.cookie(COOKIE_PASSWORD);
+			
+	        apiClient.login(username,password,function(data){
+	            
+	            apiClient.getUserById(data.user_id,function(data){
+	                
+	                SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
+	                SPIKA_notificationManger.attachUser(data.user.id);
+	                
+	                U.goPage("main");
+	                
+	            },function(data){
+	                
+	                self.showAlert(LANG.login_failed);
+	                
+	            });
+	
+	            
+	        },function(data){
+	            
+	            self.showAlert(LANG.login_failed);
+	            
+	        });
         
-        $(this.el).html(U.simpleLocalizationFilter(this.template,LANG));
-        
-        var self = this;
-        
-        _.debounce(function() {
-            self.onload();
-        }, 100)();
-              
-        return this;
+	        return this;
+	        
+        }else{
+
+	        $(this.el).html(U.simpleLocalizationFilter(this.template,LANG));
+	        
+	        var self = this;
+	        
+	        _.debounce(function() {
+	            self.onload();
+	        }, 100)();
+	              
+	        return this;
+        }
+
     },
     
     onload : function(){
@@ -51,7 +91,7 @@ var SPIKA_LoginView = Backbone.View.extend({
         if(!_.isNull($.cookie(COOKIE_PASSWORD)) && !_.isUndefined($.cookie(COOKIE_PASSWORD))){
             $$("#login_tb_password").val($.cookie(COOKIE_PASSWORD));
         }
-
+		
         $$('#login_btn_login').click(function(){
             self.doLogin();            
         });
