@@ -181,7 +181,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getUsersNotMe(Application $app, $my_user_id, $search, $offset){
 		
-		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id FROM user";
+		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened FROM user";
 		
 		$sql = $sql . " WHERE user.id <> ? ";
 		
@@ -194,12 +194,33 @@ class MySqlDb implements DbInterface{
 		$resultFormated = array();
 		$result = $app['db']->fetchAll($sql, array($my_user_id,$app['organization_id']));
 		
+		// add device information
+		$userIds = [];
+		foreach($result as $row){
+            $userIds[] = $row['id'];
+		}
+		
+		$userIdsStr = implode(',',$userIds);
+		$deviceInfo = $app['db']->fetchAll("select * from device where user_id in ({$userIdsStr})");
+				
 		foreach($result as $row){
             if(empty($row['details']))
                 $row['details'] = array();
                 
+            $devices = array();
+            
+            foreach($deviceInfo as $deviceRow){
+	            
+	            if($deviceRow['user_id'] == $row['id'])
+	            	$devices[] = $deviceRow;
+	            
+            }
+            
+            $row['devices'] = $devices;
+            
     		$resultFormated[] = $row;
 		}
+		
 		return $resultFormated;
 		
 	}
@@ -354,7 +375,7 @@ class MySqlDb implements DbInterface{
 	
 	public function calculateBadge(Application $app, $user_id){
 		
-		$sql = "SELECT SUM(unread) FROM chat_member WHERE user_id = ? AND is_deleted = 0 and chat_member.organization_id = {$app['organization_id']}";
+		$sql = "SELECT SUM(unread) FROM chat_member, chat WHERE chat_member.user_id = ? AND chat_member.chat_id = chat.id AND chat.is_deleted = 0 AND chat_member.is_deleted = 0 and chat_member.organization_id = {$app['organization_id']}";
 		
 		$result = $app['db']->executeQuery($sql, array($user_id))->fetch();
 		

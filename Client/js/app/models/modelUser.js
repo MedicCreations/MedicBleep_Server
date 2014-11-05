@@ -12,7 +12,29 @@
                 user_id = data.id;
             }
             
-            return new ModelUser({ id:user_id,firstname: data.firstname, lastname: data.lastname, image: data.image, image_thumb: data.image_thumb,details: data.details,device: data.last_device_id});   
+            var modelUser = new ModelUser({ id:user_id,firstname: data.firstname, lastname: data.lastname, image: data.image, image_thumb: data.image_thumb,details: data.details,device: data.last_device_id, webOpened: data.web_opened}); 
+            
+            modelUser.set('device_ios',0);
+            modelUser.set('device_android',0);
+            modelUser.set('device_web',0);
+            
+            _.each(data.devices,function(device){
+	        
+	        	if(device.type == DEVICE_WEB && device.is_valid == 1){
+		        	modelUser.set('device_web',1);
+	        	}
+	        
+	        	if(device.type == DEVICE_IOS && device.is_valid == 1){
+		        	modelUser.set('device_ios',1);
+	        	}
+	        
+	        	if(device.type == DEVICE_ANDROID && device.is_valid == 1){
+		        	modelUser.set('device_android',1);
+	        	}
+	        
+            });
+            
+            return modelUser;
             
         },
         createCollectionByAPIResponse : function(data){

@@ -383,6 +383,16 @@ body#chat {
 	text-align: center;
 	color: #4BA4DF;
 }
+
+#chat nav ul.menu_list li offline i {
+	color: #999;
+}
+
+#chat nav ul.menu_list li online i {
+	color: #f00;
+}
+
+
 #chat nav ul.menu_list li:hover{
     background-color: #fff;
     cursor: pointer;
@@ -478,6 +488,7 @@ footer #mess_type ul li textarea {
 	height: 2.0em;
 	margin-top: 10px;
 	font-size: 1.5em;
+	padding: 1px 0px 0px 5px;
 }
 footer #mess_type ul li textarea.disabled{
     color: #ccc;

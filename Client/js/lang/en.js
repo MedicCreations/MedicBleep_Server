@@ -48,5 +48,7 @@ LANG = {
       loading_video: "Loading Video...",
       device_type_prefix: "Using ",
       device_type_suffix: "client ",
+      new_message1: "You have new message.",
+      new_message2: "New Message.",
       dummy : 'dummy'
 };

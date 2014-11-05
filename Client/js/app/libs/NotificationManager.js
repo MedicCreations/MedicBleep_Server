@@ -59,6 +59,8 @@ var SPIKA_notificationManger = {
                 U.l('attached user' + SPIKA_UserManager.getUser().get('id'));
                 SPIKA_notificationManger.attachUser(SPIKA_UserManager.getUser().get('id'));
             }
+            
+            self.stopPooling();
 
         };
         
@@ -67,9 +69,9 @@ var SPIKA_notificationManger = {
             U.l('onmessage');
             
             var data = JSON.parse(e.data);
-            
+
             if(SPIKA_UserManager.getUser().get('id') != data.from_user_id)
-                self.newMessage(data.chat_id);
+                self.newMessage(data.chat_id,data.message);
             
         };
 
@@ -95,6 +97,8 @@ var SPIKA_notificationManger = {
         
         U.l('POLING MODE');
         
+        this.flgStopPooling = false;
+        
         window.setTimeout(function(){
             self.doPooling();
         }, POOLING_INTERVAL);
@@ -109,9 +113,7 @@ var SPIKA_notificationManger = {
     doPooling : function(){
         
         var self = this;
-        
-        self.flgStopPooling = false;
-        
+
         if(apiClient == null || apiClient.authorized == false){
             
             window.setTimeout(function(){
@@ -198,7 +200,13 @@ var SPIKA_notificationManger = {
                  
         },function(data){
             
-            
+            if(self.flgStopPooling == false){
+
+                window.setTimeout(function(){
+                    self.doPooling();
+                }, POOLING_INTERVAL);
+                
+            } 
 
         });
         
@@ -252,20 +260,40 @@ var SPIKA_notificationManger = {
     //  On new message
     //////////////////////////////////////////////////////////
     
-    newMessage: function(chatId){
+    newMessage: function(chatId,originalMessge){
+		
+		var modelData = DataCacheManager.getChatModelById(chatId);
+		originalMessge = EncryptManager.decryptText(originalMessge);
+		
+		if(_.isEmpty(originalMessge) || _.isUndefined(originalMessge)){
+			
+	        if(_.isUndefined(modelData))
+	        	message = LANG.new_message1;
+	        else
+	        	message = '[' + modelData.get('chat_name') + '] ' + LANG.new_message2;
+	        	
+		} else {
+
+	        if(_.isUndefined(modelData))
+	        	message = originalMessge;
+	        else
+	        	message = '[' + modelData.get('chat_name') + '] ' + originalMessge;
+	        	
+		}
 
         Backbone.trigger(EVENT_NEW_MESSAGE,chatId);
         
+        	
         SPIKA_soundManager.playNewMessage();
         
         var noticifaction = notify.createNotification("SPIKA", {
-            body:"You have new message.",
+            body:message,
             icon:WEB_ROOT+"/img/icon_desktop.png"
         });
         
         _.debounce(function() {
             noticifaction.close();
-        }, 1000)();
+        }, 3000)();
         
     }
        

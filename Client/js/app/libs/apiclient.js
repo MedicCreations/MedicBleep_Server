@@ -945,7 +945,7 @@ SpikaClient.prototype.sendKeepAlive = function(succeessListener,failedListener)
     });
     
     requestLogin.fail(function( jqXHR, textStatus ) {
-        // ignore error its not important when failed this
+        failedListener(textStatus);
     });
 
 };

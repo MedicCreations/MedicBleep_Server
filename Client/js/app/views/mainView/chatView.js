@@ -18,7 +18,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             self.chatData = null;
             $$('#main_container article').html('<div id="nochatbox"><i class="fa fa-exclamation-triangle"></i> ' + LANG.chat_nochat + '</div>');
             $$('#main_container article').addClass('nochat');
-            mainView.setTitle(LANG.title_initial);
+            //mainView.setTitle(LANG.title_initial);
         });
         
         Backbone.on(EVENT_START_CHAT, function(chatId) {
@@ -398,8 +398,10 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             if(state == 'loading'){
                 
-                EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
-                    
+                //EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient,null,null,true,true);
+                EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient,null,null,true,true);
+                AvatarManager.process(this,fileId);
+                
             }
             
         });
@@ -447,8 +449,9 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             if(state == 'loading'){
                 
-                EncryptManager.decryptImage(this,fileId,0,apiClient);
-                    
+                //EncryptManager.decryptImage(this,fileId,0,apiClient);
+                AvatarManager.process(this,fileId);
+                
             }
 
         });
@@ -471,10 +474,11 @@ var SPIKA_ChatView = Backbone.View.extend({
             Backbone.trigger(EVENT_OPEN_PROFLIE,userId);
         });
         
-        U.l("click event");
+        /*
         $$("#chat article section").unbind().dblclick(function(){
             U.l("dblclick");
         });
+        */
         
         /*
         $(U.sel("#chat_view ul li")).unbind().click(function(){

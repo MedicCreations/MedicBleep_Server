@@ -24,6 +24,7 @@ var SPIKA_LoginView = Backbone.View.extend({
 	                
 	                SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
 	                SPIKA_notificationManger.attachUser(data.user.id);
+	                AvatarManager.init();
 	                
 	                U.goPage("main");
 	                
@@ -68,6 +69,7 @@ var SPIKA_LoginView = Backbone.View.extend({
             window.FileList && 
             window.Blob && 
             window.WebSocket && 
+            window.localStorage && 
             typeof(Worker) !== "undefined") {
           // Great success! All the File APIs are supported.
         } else {
@@ -119,8 +121,13 @@ var SPIKA_LoginView = Backbone.View.extend({
         
         if(USE_DESKTOPNOTIFICATION == false)
             return;
+		
+		if(U.isIE())
+			return;
             
         var notificationPermission = notify.permissionLevel();
+        
+        U.l("permission " + notificationPermission);
         
         if(notificationPermission === notify.PERMISSION_DEFAULT){
 
@@ -193,6 +200,7 @@ var SPIKA_LoginView = Backbone.View.extend({
                 
                 SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
                 SPIKA_notificationManger.attachUser(data.user.id);
+                AvatarManager.init();
                 
                 U.goPage("main");
                 

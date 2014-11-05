@@ -187,8 +187,19 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             
             if(index == -1){
                 $(this).removeClass('selected');
+                                
+				// change plus icon to minus
+				$("#menu_container_selectuser li[data-userid='" + userId + "']").find('i').removeClass('fa-minus');
+				$("#menu_container_selectuser li[data-userid='" + userId + "']").find('i').addClass('fa-plus');
+				
+
             }else{
                 $(this).addClass('selected');   
+                                
+				// change plus icon to minus
+				$("#menu_container_selectuser li[data-userid='" + userId + "']").find('i').removeClass('fa-plus');
+				$("#menu_container_selectuser li[data-userid='" + userId + "']").find('i').addClass('fa-minus');
+				
             }
             
         });
@@ -230,7 +241,8 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             var fileId = $(this).attr('fileid');
             
             if(state == 'loading'){
-                EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
+                //EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
+                AvatarManager.process(this,fileId);
             }
             
         });    
@@ -325,8 +337,8 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                             apiClient.updateRoom(
                                 dataChat2.chat.chat_id,
                                 roomName,
-                                this.profileImageFileId,
-                                this.profileThumbFileId,
+                                self.profileImageFileId,
+                                self.profileThumbFileId,
                                 '',
                                 '',
                                 function(updateResult){

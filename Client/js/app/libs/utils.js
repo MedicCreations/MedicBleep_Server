@@ -134,7 +134,7 @@ var U = {
     
                 blob = dataURItoBlob(canvas.toDataURL(imageEncoding));
                 
-                document.getElementById(canvas.id).remove();
+				$$("#" + canvas.id).remove();
 
                 listener(blob);
             }       
@@ -149,6 +149,79 @@ var U = {
         };
     
     },
+    resizeFromBase64 : function(base64Data, max_width, max_height, compression_ratio, imageEncoding, listener){
+    
+        var fileLoader = new FileReader(),
+        canvas = document.createElement('canvas'),
+        context = null,
+        imageObj = new Image(),
+        blob = null;            
+    
+        //create a hidden canvas object we can use to create the new resized image data
+        canvas.id     = "hiddenCanvas";
+        canvas.width  = max_width;
+        canvas.height = max_height;
+        canvas.style.visibility   = "hidden";   
+        document.body.appendChild(canvas);  
+    
+        //get the context to use 
+        context = canvas.getContext('2d');  
+    
+        imageObj.src = 'data:image/jpeg;base64,' + base64Data;
+        
+        // set up the images onload function which clears the hidden canvas context, 
+        // draws the new image then gets the blob data from it
+        imageObj.onload = function() {  
+            
+            var self = this;
+            
+            var left = 0;
+            var top = 0;
+            var size = 0;
+            
+            if(this.height > this.width){            
+                left = 0;
+                top = (this.height - this.width) / 2;
+                size = this.width;
+            }else{
+                left = (this.width - this.height) / 2;
+                top = 0;
+                size = this.height;
+            }
+            
+            // Check for empty images
+            if(this.width == 0 || this.height == 0){
+                alert('Image is empty');
+            } else {                
+    
+                context.clearRect(0,0,max_width,max_height);
+                context.drawImage(imageObj, left, top, size, size, 0, 0, max_width, max_height);
+    
+                blob = dataURItoBlob(canvas.toDataURL(imageEncoding));
+                
+				$$("#" + canvas.id).remove();
+				
+				var reader = new window.FileReader();
+				reader.readAsDataURL(blob); 
+				reader.onloadend = function() {
+					base64data = reader.result;                
+					listener(base64data.replace("data:image/jpeg;base64,",""));	
+				}
+  
+                
+            }       
+        };
+    
+        imageObj.onabort = function() {
+            alert("Image load was aborted.");
+        };
+    
+        imageObj.onerror = function() {
+            alert("An error occured while loading image.");
+        };
+    
+    },
+
     getWidth : function(){
     
         if(WINDOW_MODE){
@@ -171,8 +244,6 @@ var U = {
         if(unreadnum > 0){
             title += " (" + unreadnum + ")"; 
         }
-        
-        document.title = title;
 
     },
     convertHexToString : function(input) {
@@ -263,7 +334,7 @@ var U = {
     generalMessageFilter : function(html){
         
         // youtube
-        if(html.search('http://www.youtube.com') == 0){
+        if(html.search('http://www.youtube.com') == 0 || html.search('https://www.youtube.com') == 0){
 
             var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             var match = html.match(regExp);
@@ -280,6 +351,22 @@ var U = {
         }
         
         return html;
+    },
+    isIE: function(){
+
+		var ua = window.navigator.userAgent;
+		var msie = ua.indexOf("MSIE ");
+
+		if (msie > 0)
+			return true;
+
+		var msie = ua.indexOf("Windows");
+
+		if (msie > 0)
+			return true;
+
+		return false;
+		
     }
 }
 

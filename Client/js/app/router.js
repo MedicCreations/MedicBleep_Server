@@ -20,7 +20,6 @@
     });
     
     app_router.on('route:loginRoute', function(actions) {
-        
 
         // load models
         require(['app/views/loginView',
@@ -112,8 +111,6 @@
                     'app/views/featureViews/createRoomView',
                     'thirdparty/text!templates/featureViews/createRoomView.tpl'
                 ], function (CreateRoomView,Template) {
-            
-            U.l('ddd');
             
             var createRoomView = new SPIKA_CreateRoomView({
                 template: Template

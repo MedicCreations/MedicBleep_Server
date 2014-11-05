@@ -216,8 +216,9 @@ var SPIKA_RoomProfileView = Backbone.View.extend({
                 
                 if(state == 'loading'){
                     
-                    EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
-                        
+                    //EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
+                    AvatarManager.process(this,fileId);
+                     
                 }
                 
             });

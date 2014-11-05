@@ -59,7 +59,7 @@ var SPIKA_MainView = Backbone.View.extend({
                 
                 self.sendKeepAlive();
                 
-            }, 10000)();
+            }, KEEPALIVE_INTERVAL)();
             
         },function(data){
             
@@ -67,7 +67,7 @@ var SPIKA_MainView = Backbone.View.extend({
                 
                 self.sendKeepAlive();
                 
-            }, 10000)();
+            }, KEEPALIVE_INTERVAL)();
 
         });
 
@@ -161,11 +161,19 @@ var SPIKA_MainView = Backbone.View.extend({
         
     },
     
+    updateUnreadCount:function(count){
+	  	
+	  	U.l('ee');
+	  	
+	  	if(count > 0)
+	  		document.title = '(' + count + ') ' + LANG.spika_title;
+	  	else
+	  		document.title = LANG.spika_title;
+	  	  
+    },
     setRoomTitle:function(title,chatId){
         
         $$('header span#maintitle').html(title + ' <i chatid="' + chatId + '" class="fa fa-info-circle"></i>');
-        document.title = title;
-
         
         $$('header #maintitle i').click(function(){
             

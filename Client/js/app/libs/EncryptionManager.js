@@ -116,7 +116,8 @@ EncryptManager = {
         var self = this;
         
         $(videoElm).attr('state','loaded');
-    
+		
+		
         // download file first  
         apiClient.downloadFile(fileId,function(data){
             
@@ -204,8 +205,7 @@ EncryptManager = {
                     
             return;
         }
-            
-            
+		
         var self = this;
         
         $(imgElement).attr('state','loaded');
@@ -225,7 +225,7 @@ EncryptManager = {
             return;
         }
         
-
+		
         // download file first  
         apiClient.downloadFile(fileId,function(data){
             

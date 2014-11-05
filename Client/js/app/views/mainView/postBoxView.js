@@ -71,7 +71,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
 
         $$("#chat_textbox").keypress(function(event) {
             
-            if(event.which == 13 && event.altKey){
+            if(event.which == 13 && event.shiftKey){
                 self.growHeight();
                 return true;
             }else if(event.which == 13){

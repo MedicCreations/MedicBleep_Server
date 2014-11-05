@@ -224,7 +224,7 @@ class MessageController extends SpikaBaseController {
                 			    'chat_id' => $chat_id,
                 			    'from_user_id' => $user_id,
                 			    'user_id' => $device['user_id'],
-                			    
+                			    'message' => $text,
                 			));
                 			
                 			$self->sendWebSocketSignal($payload,$app);

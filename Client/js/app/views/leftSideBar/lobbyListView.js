@@ -106,8 +106,10 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         
         var allUnreadCount = 0;
         
+        DataCacheManager.updateChatModelCacheByCollection(collection);
+
         _.each(collection.models,function(model){
-            
+           	           	
             var unreadText = "";
             
             if(model.get('unread') == 1){
@@ -131,6 +133,8 @@ var SPIKA_LobbyListView = Backbone.View.extend({
             
         }
         
+        mainView.updateUnreadCount(allUnreadCount);
+        
         return collection;
 
     },
@@ -146,8 +150,9 @@ var SPIKA_LobbyListView = Backbone.View.extend({
             
             if(state == 'loading'){
                 
-                EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
-                    
+                //EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
+                AvatarManager.process(this,fileId);
+                
             }
             
         });

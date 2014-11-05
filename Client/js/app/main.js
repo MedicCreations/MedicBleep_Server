@@ -14,7 +14,8 @@ else{
           exports: 'Backbone'
         },
         'json2': {},
-        'Notification': {}
+        'Notification': {},
+        'sjcl': {}
       },
      
       paths: {
@@ -23,6 +24,8 @@ else{
         'backbone': 'thirdparty/backbone',
         'SpikaClient': 'app/libs/apiclient',
         'templates': 'app/templates',
+        'sjcl': 'thirdparty/sjcl/sjcl',
+        'sha256': 'thirdparty/sjcl/sha256',
         'Notification': 'thirdparty/HTML5-Desktop-Notifications/desktop-notify',
       },
      
@@ -31,8 +34,8 @@ else{
     });
     
     // load core library
-    define(['jQuery','underscore','backbone','Notification'], function($, _, Backbone) {
-    
+    define(['jQuery','underscore','backbone','Notification','sjcl'], function($, _, Backbone) {
+	    
         // load all required thirdparty library here
         require(['app/libs/apiclient',
                     'app/libs/UserManager',
@@ -47,6 +50,7 @@ else{
                     'thirdparty/FileSaver',
                     'thirdparty/DataStream',
                     'app/libs/NotificationManager',
+                    'app/libs/DataCacheManager',
                     'thirdparty/jquery.cookie',
                     'app/models/modelUser',
                     'app/models/modelGroup',
@@ -57,9 +61,9 @@ else{
                     'app/libs/SoundManager',
                     'app/libs/FileUploadHandler',
                     'app/libs/EncryptionManager',
+                    'app/libs/AvatarManager',
                     'app/views/alertView',
                     'app/views/progressView',
-                    'thirdparty/sjcl/sjcl',
                     'thirdparty/sjcl/aes',
                     'thirdparty/sjcl/bitArray',
                     'thirdparty/sjcl/bn',
@@ -79,26 +83,29 @@ else{
                     'thirdparty/sjcl/sha1',
                     'thirdparty/sjcl/sha256',
                     'thirdparty/sjcl/sha512',
-                    'thirdparty/sjcl/random',
                     'thirdparty/sjcl/srp',
                     'thirdparty/base64'], function() {
-            
-            
-            // global variables
-            window.apiClient = new SpikaClient(API_URL);
-            window.mainView = null;
-            SPIKA_notificationManger.init();
-            SPIKA_soundManager.init();
-            
-            // start app
-            require(['app/router'], function () {
-                
-                
-                        
-            });
-            
-        });
-    
+
+	        // load dependency libary
+	        require(['thirdparty/sjcl/random'], function() { // thirdparty/sjcl/random depends on sjcl/sha256
+	            
+	            
+	            // global variables
+	            window.apiClient = new SpikaClient(API_URL);
+	            window.mainView = null;
+	            SPIKA_notificationManger.init();
+	            SPIKA_soundManager.init();
+	            
+	            // start app
+	            require(['app/router'], function () {
+	                
+	                
+	                        
+	            });
+	            
+	        });
+	        
+		});
     
     });
 

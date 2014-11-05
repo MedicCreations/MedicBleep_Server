@@ -27,9 +27,13 @@
         			<div class="cell cell_2">
         				<p class="name">
         					<%= user.get('firstname') %> <%= user.get('lastname') %>
+        					<% if(user.get('webOpened') == 1) { %> <i class="fa fa-circle" style="color:#00BD38;font-size: 8pt"></i> <% } %>
         				</p>
         				<p>
-        					<i><%= user.get('device_name') %></i>
+        					<% if(user.get('device_ios') == 1) { %> <i class="fa fa-apple" ></i> <% } %>
+        					<% if(user.get('device_android') == 1) { %> <i class="fa fa-android" ></i> <% } %>
+        					<% if(user.get('device_web') == 1) { %> <i class="fa fa-desktop" ></i> <% } %>
+        					
         				</p>
         			</div>
         			<p class="cell cell_3">

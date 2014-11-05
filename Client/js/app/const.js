@@ -36,7 +36,7 @@ var MESSAGE_TYPE_FILE = 6;
 var BIG_PIC_SIZE = 1024;
 var PROFLIE_PIC_SIZE = 512;
 var THUMB_PIC_SIZE = 250;
-var THUMB_PIC_SIZE_INVIEW = 150;
+var THUMB_PIC_SIZE_INVIEW = 100;
 
 // cookie
 var COOKIE_USERNAME = 'cookieusername';
@@ -61,3 +61,5 @@ var LOADING_IMAGE = '';
 var DEVICE_WEB = 1;
 var DEVICE_IOS = 2;
 var DEVICE_ANDROID = 3;
+
+var KEEPALIVE_INTERVAL = 20 * 1000; //msec
