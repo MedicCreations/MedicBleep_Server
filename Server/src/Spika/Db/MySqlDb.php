@@ -447,7 +447,7 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id, $category_id){
+	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id, $category_id, $is_private){
 		
 		$values = array('custom_chat_id' => $custom_chat_id,
 				'name' => $name, 
@@ -457,6 +457,7 @@ class MySqlDb implements DbInterface{
 				'image' => $group_image,
 				'image_thumb' => $group_image_thumb,
 				'category_id' => $category_id,
+				'is_private' => $is_private,
 				'organization_id' => $app['organization_id'],
 				'created' => time(), 
 				'modified' => time()
@@ -863,7 +864,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRooms(Application $app, $user_id, $search, $offset, $category_id){
 	
-		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3  and chat.organization_id = ? ";
+		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0)) and chat.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
@@ -873,7 +874,7 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND chat.category_id = " . $category_id;
 		}
 		
-		$sql = $sql . " ORDER BY chat.modified DESC LIMIT " . $offset . ", " . ROOMS_PAGE_SIZE;
+		$sql = $sql . " GROUP BY chat_member.chat_id ORDER BY chat.modified DESC LIMIT " . $offset . ", " . ROOMS_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -883,7 +884,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRoomsCount(Application $app, $user_id, $search, $category_id){
 	
-		$sql = "SELECT COUNT(DISTINCT chat_member.chat_id) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 and chat.organization_id = ? ";
+		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0))  and chat.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
@@ -893,11 +894,11 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND chat.category_id = " . $category_id;
 		}
 		
-		$sql = $sql . " ORDER BY chat.modified DESC";
+		$sql = $sql . " GROUP BY chat_member.chat_id ORDER BY chat.modified DESC";
 		
 		$result = $app['db']->executeQuery($sql, array($user_id,$app['organization_id']))->fetch();
 		
-		return $result["COUNT(DISTINCT chat_member.chat_id)"];
+		return $result["COUNT(*)"];
 	
 	}
 	

@@ -204,7 +204,7 @@ class UserController extends SpikaBaseController {
 				
 			} else {
 				//create chat and chat_members
-				$chat_id = $mySql->createChat($app, "", CHAT_USER_TYPE, $my_user_id, 0, "", "", $custom_chat_id, 0);
+				$chat_id = $mySql->createChat($app, "", CHAT_USER_TYPE, $my_user_id, 0, "", "", $custom_chat_id, 0, 0);
 				$mySql->addChatMembers($app, $chat_id, $members);
 				$messages = array();
 			}
@@ -405,52 +405,19 @@ class UserController extends SpikaBaseController {
 		
 		$controllers->get('test', function (Request $request) use ($app, $self, $mySql, $ldap){
 			
-			$paramsAry = $request->query->all();
-			
+			$user_id = 201289;
 			$search = "";
-			if (array_key_exists('search', $paramsAry)){
-				$search = $paramsAry['search'];
-			}
-			$page = 0;
-			if (array_key_exists('page', $paramsAry)){
-				$page = $paramsAry['page'];
-			}
+			$offset = 0;
+			$category_id = 0;
 			
-			$offset = $page * USERS_PAGE_SIZE;
+			$rooms = $mySql->getRooms($app, $user_id, $search, $offset, $category_id);
 			
-			// $mySql->getSearchResult($app, $search, $offset);
-			
-			$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user";
-				if ($search != ""){
-					$sql = $sql . " WHERE CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
-				}
-				
-				$users = $app['db']->fetchAll($sql);
-				
-				$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups";
-				if ($search != ""){
-					$sql = $sql . " WHERE groups.name LIKE '" . $search . "%'";
-				}
-				$groups = $app['db']->fetchAll($sql);
-				
-				$result = array_merge($groups,$users);
-				
-				usort(
-					$result,
-					function ($a, $b) {
-						return strcasecmp($a['name'], $b['name']);
-					}
-				);
-				
-				$search_slice = array_slice($result, $offset, ROOMS_PAGE_SIZE);
-				
-				var_dump($search_slice);
+			var_dump($rooms);
 			
 			$result = "OK";
 			return $app->json($result, 200);
 			
 		});
-		
 		
 		return $controllers;
 	}
