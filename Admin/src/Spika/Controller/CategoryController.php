@@ -95,7 +95,9 @@ class CategoryController extends BaseController {
 					'modified' => time());
 
 			$app['db']->update('categories', $values,array('id' => $categoryId));
-    			
+    		$app['db']->update('groups', array('category' => 0),array('category' => $categoryId));
+    		$app['db']->update('chat', array('category_id' => 0),array('category_id' => $categoryId));
+    		
             $self->setInfoMessage($self->lang['category15']);
             return $app->redirect(ADMIN_ROOT_URL . '/categories');
             			
