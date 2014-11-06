@@ -156,34 +156,75 @@ class SpikaBaseController implements ControllerProviderInterface
     			
     			//send push to all members
     			 
-    			if ($user['ios_push_token'] != ''){
-    				$user_push_token = $user['ios_push_token'];
-    			} else {
-    				$user_push_token = $user['android_push_token'];
-    			}
-    			 
     			$chat_members = $mySql->getChatMembers($app, $chat_id);
     			
     			$ios_push_members = array();
     			$android_push_members = array();
     			
+				$memberPushTokenListRaw = $mySql->getChatDevicesAll($app, $chat_id);
+				$memberPushTokenListFormatted = array();
+				
+				foreach($memberPushTokenListRaw as $row){
+					if(!isset($memberPushTokenListFormatted[$row['user_id']]))
+						$memberPushTokenListFormatted[$row['user_id']] = array();
+					
+					$memberPushTokenListFormatted[$row['user_id']][] = $row;
+					 
+				}
+				
+				
+				
     			foreach ($chat_members as $member){
     				 
-    				// 			// prepare arrays for push notifications
-    				if ($member['android_push_token'] != '' && $member['android_push_token'] != $user_push_token ){
-    					array_push($android_push_members, $member['android_push_token']);
-    				}
-    				 
-    				if ($member['ios_push_token'] != '' && $member['ios_push_token'] != $user_push_token){
-    					 
-    					$ios_member = array('ios_push_token' => $member['ios_push_token'],
-    							'badge' => 0);
-    					 
-    					array_push($ios_push_members, $ios_member);
-    				}
-    			}
+					if(!isset($memberPushTokenListFormatted[$member['user_id']]))
+						continue;
+					
+					if($user['id'] == $member['user_id'])
+						continue; 
+					 
+					$devices = $memberPushTokenListFormatted[$member['user_id']];
+					
+					foreach($devices as $device){
+                    
+						if($member['web_opened'] == 1){
+						
+							if($device['type'] == DEVICE_WEB){
+								
+								$app['monolog']->addDebug(" send web push" . print_r($member,true));  
+								
+								// send websocket notification
+								$payload = json_encode(array(
+									'command' => 'sendMessage',
+									'identifier' => SYSTEM_IDENTIFIER,
+									'chat_id' => $chat_id,
+									'from_user_id' => $user['id'],
+									'user_id' => $device['user_id'],
+									'message' => $text,
+								));
+								
+								sendWebSocketSignal($payload,$app);
+								
+								// if send web push dont send mobile push
+								break;
+								
+							}
+							
+						} else {
+							
+							if($device['type'] == DEVICE_ANDROID)
+								array_push($android_push_members, $device['device_token']);
+		
+							if($device['type'] == DEVICE_IOS)
+								array_push($ios_push_members, array('ios_push_token'=>$device['device_token'],'badge'=>0));
+							
+						}
+
+						
+					}
+
+				}
     			
-    			// 		//create android fields
+    			//create android fields
     			$payload = array(
     					'registration_ids' => $android_push_members,
     					'data' => array('type' => PUSH_TYPE_SEEN,
@@ -195,7 +236,7 @@ class SpikaBaseController implements ControllerProviderInterface
     					'type' => SERVICE_PROVIDOR_GCM,
     					'payload' => $payload);
     			 
-    			// 		//send android push request
+    			//send android push request
     			if (count($android_push_members) > 0){
     				$this->sendPushRequest($android_fields);
     			}

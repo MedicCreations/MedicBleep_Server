@@ -24,7 +24,7 @@ class UserController extends SpikaBaseController {
 		
 		$controllers = $app ['controllers_factory'];
 		
-		// register user
+		// login user
 		$controllers->post ( '/login', function (Request $request) use($app, $self, $mySql, $ldap) {
 						
 			$paramsAry = $request->request->all();
@@ -32,26 +32,8 @@ class UserController extends SpikaBaseController {
 			$username = $paramsAry['username'];
 			$password = $paramsAry['password'];
 			
-// 			$password = pack("H*", md5($password));
-// 			$password = base64_encode($password);
-			
-// 			$password = md5($password);
-// 			$password = base64_encode($password);
-			
-			$android_push_token ="";
-			$ios_push_token = "";
-			if (array_key_exists('android_push_token', $paramsAry)){
-				$android_push_token = $paramsAry['android_push_token'];
-			}
-			if (array_key_exists('ios_push_token', $paramsAry)){
-				$ios_push_token = $paramsAry['ios_push_token'];
-			}
-			
-			//login on ldap
-			//$ldap_result = $ldap->checkUser($app, $password, $username);
-			
 			//login
-			$login_result = $mySql->loginUser($app, $password, $username, $android_push_token, $ios_push_token,$self->getDeviceType($request->headers->get('user-agent')) );
+			$login_result = $mySql->loginUser($app, $password, $username, $self->getDeviceType($request->headers->get('user-agent')) );
 			
 			
 			$app['monolog']->addDebug(" login user " . print_r($login_result,true));  
@@ -78,7 +60,6 @@ class UserController extends SpikaBaseController {
 				
 			}
 			
-			//$result = $mySql->registerUser($app, $ldap_result['uid_number'], $ldap_result['firstname'], $ldap_result['lastname'], $password, $username, $android_push_token, $ios_push_token);
 			
 			return $app->json($result, 200);
 			
@@ -204,7 +185,7 @@ class UserController extends SpikaBaseController {
 				
 			} else {
 				//create chat and chat_members
-				$chat_id = $mySql->createChat($app, "", CHAT_USER_TYPE, $my_user_id, 0, "", "", $custom_chat_id, 0, 0);
+				$chat_id = $mySql->createChat($app, "", CHAT_USER_TYPE, $my_user_id, 0, "", "", $custom_chat_id, 0, 0, "");
 				$mySql->addChatMembers($app, $chat_id, $members);
 				$messages = array();
 			}
@@ -234,10 +215,6 @@ class UserController extends SpikaBaseController {
 			
 			$push_token = $paramsAry['push_token'];
 			
-			$user_id = $app['user']['id'];
-			
-			$mySql->updateUserIOSPushToken($app, $user_id, $push_token);
-			
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK');
 			
@@ -254,10 +231,6 @@ class UserController extends SpikaBaseController {
 			$paramsAry = $request->request->all();
 				
 			$push_token = $paramsAry['push_token'];
-				
-			$user_id = $app['user']['id'];
-				
-			$mySql->updateUserAndroidPushToken($app, $user_id, $push_token);
 				
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK');
@@ -371,9 +344,7 @@ class UserController extends SpikaBaseController {
 			$values = array(
 			        'web_opened' => 0,
 			        'token' => 0,
-			        'last_device_id' => 0,
-			        'ios_push_token' => '', 
-					'android_push_token' => '');
+			        'last_device_id' => 0);
 			
 			$mySql->updateUser($app, $user_id, $values);
 		
@@ -403,7 +374,66 @@ class UserController extends SpikaBaseController {
 		});
 		
 		
-		$controllers->get('test', function (Request $request) use ($app, $self, $mySql, $ldap){
+		$controllers->get('password/forgot', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->query->all();
+			
+			$user_details = $app['user']['details'];
+			
+			$details_ary = json_decode($user_details, true);
+			
+			var_dump($details_ary);
+			
+			$has_email = false;
+			$email = "";
+			foreach ($details_ary as $detail){
+			
+				if (isset($detail['email'])){
+					$has_email = true;
+					$email = $detail['email'];
+					break;
+				}
+			
+			}
+			
+			if (!$has_email){
+				$result = array('code' => ER_EMAIL_MISSING,
+					'message' => 'Your email is missing');
+				return $app->json($result, 200);	
+			}
+			
+			//create temp pass and send email
+			
+			
+			$result = array('code' => CODE_SUCCESS,
+					'message' => 'OK');
+		
+			return $app->json($result, 200);
+		
+		})->before($app['beforeSpikaTokenChecker']);
+		
+		
+		$controllers->post('password/change', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->request->all();
+			
+			$new_password = $paramsAry['new_password'];
+			
+			$my_user_id = $app['user']['id'];
+			
+			$values = array('password' => $new_password);
+			
+			$mySql->updateUser($app, $my_user_id, $values);
+			
+			$result = array('code' => CODE_SUCCESS,
+					'message' => 'OK');
+		
+			return $app->json($result, 200);
+		
+		})->before($app['beforeSpikaTokenChecker']);
+		
+		
+		$controllers->get('test', function (Request $request) use ($app, $self, $mySql){
 			
 			$user_id = 201289;
 			$search = "";

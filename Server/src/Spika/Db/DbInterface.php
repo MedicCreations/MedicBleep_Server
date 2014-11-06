@@ -6,10 +6,8 @@ use Silex\Application;
 interface DbInterface
 {
 	public function registerUser(Application $app, $outside_id, $firstname, $lastname, $password, $username, $android_push_token, $ios_push_token);
-	public function loginUser(Application $app, $password, $username, $android_push_token, $ios_push_token, $deviceType);
+	public function loginUser(Application $app, $password, $username, $deviceType);
 	public function getUserByToken(Application $app, $token_received);
-	public function updateUserIOSPushToken(Application $app, $user_id, $push_token);
-	public function updateUserAndroidPushToken(Application $app, $user_id, $push_token);
 	public function getOrCreateUserWithOutsideID(Application $app, $outside_id, $firstname, $lastname);
 	public function getAllUsersWithOutsideId(Application $app, $outside_users_ary);
 	public function updateUserImage(Application $app, $user_id, $image, $image_thumb);
@@ -28,7 +26,7 @@ interface DbInterface
 	
 	public function isPrivateChatAlreadyExist(Application $app, $custom_chat_id);
 	public function isGroupChatAlreadyExist(Application $app, $group_id);
-	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id, $category_id, $is_private);
+	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id, $category_id, $is_private, $password);
 	public function addChatMembers(Application $app, $chat_id, $members);
 	public function getChatWithID(Application $app, $chat_id);
 	public function getPrivateChatData(Application $app, $chat_id, $user_id);

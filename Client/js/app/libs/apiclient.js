@@ -785,7 +785,7 @@ SpikaClient.prototype.createNewRoom = function(roomName,userList,fileId,thumbId,
     var self = this;
     
     var requestLogin = $.ajax({
-        url: this.apiEndPointUrl + '/chat/create',
+        url: this.apiEndPointUrl + '/room/create',
         type: 'POST',
         data: {name:roomName,users_to_add:userList,image:fileId,image_thumb:thumbId},
         headers: {"token":this.token,"api-agent":this.UA}

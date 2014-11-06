@@ -30,6 +30,7 @@ class RoomController extends SpikaBaseController {
 			$image_thumb = DEFAULT_GROUP_IMAGE;
 			$category_id = 0;
 			$is_private = 0;
+			$password = "";
 			
 			$my_user_id = $app['user']['id'];
 			
@@ -46,7 +47,6 @@ class RoomController extends SpikaBaseController {
 					$image_thumb = $paramsAry['image_thumb'];
 				}
 			}
-			
 			if (array_key_exists('category_id', $paramsAry)){
 				$category_id = $paramsAry['category_id'];
 			}
@@ -54,12 +54,16 @@ class RoomController extends SpikaBaseController {
 				$is_private = $paramsAry['is_private'];
 			}
 			
+			if (array_key_exists('password', $paramsAry)){
+				$password = $paramsAry['password'];
+			}
+			
 			$users_to_add = $paramsAry['users_to_add'];
 			$users_to_add_ary = explode(',', $users_to_add);
 			
 			$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 			
-			$chat_id = $mySql->createChat($app, $name, CHAT_ROOM_TYPE, $my_user_id, 0, $image, $image_thumb, $custom_chat_id, $category_id, $is_private);
+			$chat_id = $mySql->createChat($app, $name, CHAT_ROOM_TYPE, $my_user_id, 0, $image, $image_thumb, $custom_chat_id, $category_id, $is_private, $password);
 				
 			$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
 			

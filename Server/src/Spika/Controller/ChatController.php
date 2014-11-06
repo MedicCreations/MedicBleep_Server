@@ -20,61 +20,61 @@ class ChatController extends SpikaBaseController {
 		
 		$controllers = $app ['controllers_factory'];
 		
-		//create room chat
-		$controllers->post('/create', function (Request $request) use ($app, $self, $mySql){
+		// //create room chat
+		// $controllers->post('/create', function (Request $request) use ($app, $self, $mySql){
 			
-			$paramsAry = $request->request->all();
+			// $paramsAry = $request->request->all();
 			
-			$name = "";
-			$image = DEFAULT_GROUP_IMAGE;
-			$image_thumb = DEFAULT_GROUP_IMAGE;
-			$category_id = 0;
-			$is_private = 0;
+			// $name = "";
+			// $image = DEFAULT_GROUP_IMAGE;
+			// $image_thumb = DEFAULT_GROUP_IMAGE;
+			// $category_id = 0;
+			// $is_private = 0;
 			
-			$my_user_id = $app['user']['id'];
+			// $my_user_id = $app['user']['id'];
 			
-			if (array_key_exists('name', $paramsAry)){
-				$name = $paramsAry['name'];
-			}
-			if (array_key_exists('image', $paramsAry)){
-				if ($paramsAry['image'] != ""){
-					$image = $paramsAry['image'];
-				}
-			}
-			if (array_key_exists('image_thumb', $paramsAry)){
-				if ($paramsAry['image_thumb'] != ""){
-					$image_thumb = $paramsAry['image_thumb'];
-				}
-			}
+			// if (array_key_exists('name', $paramsAry)){
+				// $name = $paramsAry['name'];
+			// }
+			// if (array_key_exists('image', $paramsAry)){
+				// if ($paramsAry['image'] != ""){
+					// $image = $paramsAry['image'];
+				// }
+			// }
+			// if (array_key_exists('image_thumb', $paramsAry)){
+				// if ($paramsAry['image_thumb'] != ""){
+					// $image_thumb = $paramsAry['image_thumb'];
+				// }
+			// }
 			
-			if (array_key_exists('category_id', $paramsAry)){
-				$category_id = $paramsAry['category_id'];
-			}
+			// if (array_key_exists('category_id', $paramsAry)){
+				// $category_id = $paramsAry['category_id'];
+			// }
 			
-			if (array_key_exists('is_private', $paramsAry)){
-				$is_private = $paramsAry['is_private'];
-			}
+			// if (array_key_exists('is_private', $paramsAry)){
+				// $is_private = $paramsAry['is_private'];
+			// }
 			
-			$users_to_add = $paramsAry['users_to_add'];
-			$users_to_add_ary = explode(',', $users_to_add);
+			// $users_to_add = $paramsAry['users_to_add'];
+			// $users_to_add_ary = explode(',', $users_to_add);
 			
-			$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
+			// $custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 			
-			$chat_id = $mySql->createChat($app, $name, CHAT_ROOM_TYPE, $my_user_id, 0, $image, $image_thumb, $custom_chat_id, $category_id, $is_private);
+			// $chat_id = $mySql->createChat($app, $name, CHAT_ROOM_TYPE, $my_user_id, 0, $image, $image_thumb, $custom_chat_id, $category_id, $is_private, "");
 				
-			$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
+			// $mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
 			
-			$chat = $mySql->getChatWithID($app, $chat_id);
-			$chat['chat_name'] = $name;
-			$chat['chat_id'] = $chat_id;
+			// $chat = $mySql->getChatWithID($app, $chat_id);
+			// $chat['chat_name'] = $name;
+			// $chat['chat_id'] = $chat_id;
 			
-			$result = array('code' => CODE_SUCCESS, 
-					'message' => 'OK',
-					'chat' => $chat);
+			// $result = array('code' => CODE_SUCCESS, 
+					// 'message' => 'OK',
+					// 'chat' => $chat);
 			
-			return $app->json($result, 200);
+			// return $app->json($result, 200);
 			
-		})->before($app['beforeSpikaTokenChecker']);
+		// })->before($app['beforeSpikaTokenChecker']);
 		
 		
 		//add members to chat
@@ -109,7 +109,7 @@ class ChatController extends SpikaBaseController {
 				
 					$custom_chat_id = $self->createChatCustomID($all_members);
 				
-					$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, $my_user_id, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id, 0, 0);
+					$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, $my_user_id, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id, 0, 0, "");
 					$mySql->addChatMembers($app, $chat_id, $all_members);
 					$messages = array();
 				
@@ -134,7 +134,7 @@ class ChatController extends SpikaBaseController {
 				
 				$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 				
-				$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, $my_user_id, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id, 0, 0);
+				$chat_id = $mySql->createChat($app, "", CHAT_ROOM_TYPE, $my_user_id, 0, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, $custom_chat_id, 0, 0, "");
 				
 				$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
 				$messages = array();

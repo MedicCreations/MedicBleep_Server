@@ -75,11 +75,18 @@ class MessageController extends SpikaBaseController {
 			
 			$is_chat_member = $mySql->isChatMember($app, $user_id, $chat_id);
 			
-			if (!$is_chat_member){
+			if (!$is_chat_member && !$chat_data['is_private']){
+			
+				//add member to chat
+				$mySql->addChatMembers($app, $chat_id, array($user_id));
+				
+			} else if (!$is_chat_member && $chat_data['is_private']){
+			
 				$result = array('code' => ER_NOT_CHAT_MEMBER, 
 						'message' => 'Not chat member');
 				
 				return $app->json($result, 200);
+			
 			}
 			
 			// get root id from parent
@@ -161,14 +168,7 @@ class MessageController extends SpikaBaseController {
 			}
 			
 			$chat_type = $chat['type'];
-			
-			
-			if ($user['ios_push_token'] != ''){
-				$user_push_token = $user['ios_push_token'];
-			} else {
-				$user_push_token = $user['android_push_token'];
-			}
-			
+						
 // 			//send push to all members
 			$chat_members = $mySql->getChatMembers($app, $chat_id);
 			
@@ -346,7 +346,7 @@ class MessageController extends SpikaBaseController {
 			
 			$is_chat_member = $mySql->isChatMember($app, $my_user_id, $chat_id);
 			
-			if (!$is_chat_member){
+			if (!$is_chat_member && $chat_data['is_private']){
 				$result = array('code' => ER_NOT_CHAT_MEMBER, 
 						'message' => 'Not chat member');
 				
