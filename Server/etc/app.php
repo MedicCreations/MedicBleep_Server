@@ -43,6 +43,17 @@ $app->register ( new Silex\Provider\DoctrineServiceProvider (), array (
 		) 
 ) );
 
+$app->register(new Silex\Provider\SwiftmailerServiceProvider(), array(
+	'swiftmailer.options' => array(
+	'host' => 'smtp.gmail.com',
+	'port' => 465,
+	'username' => 'sinisa.brcina@clover-studio.com',
+	'password' => 'sinek0212',
+	'encryption' => 'ssl',
+	'auth_mode' => 'login'), 
+		'swiftmailer.class_path' => __DIR__.'/../vendor/swiftmailer/lib/classes'
+));
+
 $app->register ( new Spika\Provider\TokenServiceProvider () );
 
 $app->register(new Spika\Provider\WebSocketNotificationProvider(), array(

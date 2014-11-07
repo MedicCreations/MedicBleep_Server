@@ -560,9 +560,9 @@ footer #mess_type ul li textarea.disabled{
 	height: 100%;
 	z-index: 10;
 	text-align: right;
-	background: rgb(255,255,255);
-	background: rgba(255,255,255,0.5);
+	color: #fff;
 }
+
 #chat article section .replay {
 	display: none;
 }
@@ -570,16 +570,26 @@ footer #mess_type ul li textarea.disabled{
 #chat article section .replay p {
 	display: inline-block;
 	text-align: center;
-	padding: 20px;
+	padding: 2px 5px 5px 10px;
 	position: relative;
-	top: 10px;
-	right: 20px;
+	top: 5px;
+	right: 5px;
 }
 
 #chat article section .replay a {
-	color: #000000;
+	color: #fff;
 	text-decoration: none;
 }
+
+#chat article section.selected{
+	background: #4BA4DF;
+	color: #fff;
+}
+#chat article section.selected .time_stamp {
+	color: #4BA4DF;
+}
+
+
 /*------------------------------*/
 /*   	 	  Profile 			*/
 /*------------------------------*/

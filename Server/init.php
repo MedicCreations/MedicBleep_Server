@@ -11,19 +11,19 @@
  
 define('TOKEN_VALID_TIME', 60*60*24);
 define('PW_RESET_CODE_VALID_TIME', 60*5);
-define('ROOT_URL', "http://localhost:8080/server/wwwroot");
+define('ROOT_URL', "https://www.spikaent.com/dev/server/");
 define('PUSH_ROOT_URL', "https://www.spikaent.com/push/receiver.php");
 define('SYSTEM_IDENTIFIER', "clover");
-define('WEBSOCKET_SERVER_HOST', "www.spikaent.com");
-define('WEBSOCKET_SERVER_PORT', "8443");
+define('WEBSOCKET_SERVER_HOST', "localhost");
+define('WEBSOCKET_SERVER_PORT', "8080");
 define('USEWEBSOCKET',true);
 
 define('INFORMATION_URL', "http://enterprise.spikaapp.com/index.html");
 
 //define sql database
-define('DB_NAME', "spikadb");
+define('DB_NAME', "clover");
 define('DB_USERNAME', "root");
-define('DB_PASSWORD', "");
+define('DB_PASSWORD', "cloverpass013");
 
 
 define('LDAP_SERVER', '192.168.1.180');
@@ -34,7 +34,7 @@ define('HTTP_PORT', 80);
 
 define ('TOKEN_DEFAULT', 'tokendefault');
 
-define ('MSG_PAGE_SIZE', 10);
+define ('MSG_PAGE_SIZE', 20);
 define ('USERS_PAGE_SIZE', 50);
 define ('GROUPS_PAGE_SIZE', 50);
 define ('RECENT_PAGE_SIZE', 50);
@@ -86,7 +86,9 @@ define('ER_CHAT_INACTIVE', 1006);
 define('ER_CHAT_DELETED', 1007);
 define('ER_PAGE_NOT_FOUND', 1008);
 define('ER_NOT_GROUP_ADMIN', 1009);
-
+define('ER_EMAIL_MISSING', 1010);
+define('ER_TEMP_PASSWORD_NOT_VALID', 1011);
+define('ER_LOGIN_WITH_TEMP_PASS', 1012);
 
 // device types
 define('DEVICE_IOS', 2);
@@ -95,4 +97,7 @@ define('DEVICE_WEB', 1);
 
 // auto disconnect threashhold
 define('DISCONNECT_LIMIT_SEC',30);
+
+// temp password valid time
+define('TEMP_PASSWORD_VALID_TIME', 60*60);
 ?>

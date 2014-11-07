@@ -16,7 +16,7 @@
     	
             <% _.each(messages, function(message) { %>
 
-            	<section style="padding-left: 20px;" userid="<%= message.get('user_id') %>">
+            	<section style="padding-left: 20px;" userid="<%= message.get('user_id') %>" messageid="<%= message.get('id') %>">
             		<p class="icon usericon"  userid="<%= message.get('user_id') %>">
             			<img class="encrypted_image_profile icon1" src="{rooturl}/img/default_user.png" fileid="<%= message.get('image_thumb') %>" state="loading" width="40"/>
             		</p>
@@ -33,16 +33,16 @@
             			</div>
             		</div>
             		<div class="replay">
-            			<p>
-            				<a href="">
-            				<i class="fa fa-reply fa-4x"></i><br />
-            				Replay
+            			<p class="message-menu-btn-reply" userid="<%= message.get('user_id') %>">
+            				<a href="javascript:void(0)" class="btn-reply"  messageid="<%= message.get('id') %>">
+            				<i class="fa fa-reply fa-2x"></i><br />
+            				{reply}
             				</a>
             			</p>
-            			<p>
-            				<a href="">
-            				<i class="fa fa-trash fa-4x"></i><br />
-            				Delete
+            			<p class="message-menu-btn-delete" userid="<%= message.get('user_id') %>">
+            				<a href="javascript:void(0)" class="btn-delete"  messageid="<%= message.get('id') %>">
+            				<i class="fa fa-trash fa-2x"></i><br />
+            				{delete}
             				</a>
             			</p>
             		</div>

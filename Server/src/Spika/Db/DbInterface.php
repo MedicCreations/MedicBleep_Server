@@ -7,6 +7,7 @@ interface DbInterface
 {
 	public function registerUser(Application $app, $outside_id, $firstname, $lastname, $password, $username, $android_push_token, $ios_push_token);
 	public function loginUser(Application $app, $password, $username, $deviceType);
+	public function loginWithTempPass(Application $app, $username, $password);
 	public function getUserByToken(Application $app, $token_received);
 	public function getOrCreateUserWithOutsideID(Application $app, $outside_id, $firstname, $lastname);
 	public function getAllUsersWithOutsideId(Application $app, $outside_users_ary);
@@ -15,6 +16,7 @@ interface DbInterface
 	public function getUsersCountNotMe(Application $app, $my_user_id, $search);
 	public function getUserByID(Application $app, $user_id);
 	public function updateUser(Application $app, $user_id, $values);
+	public function createTempPassword(Application $app, $my_user_id);
 	
 	public function getGroups(Application $app, $user_id, $search, $offset, $category);
 	public function getGroupsCount(Application $app, $user_id, $search, $category);

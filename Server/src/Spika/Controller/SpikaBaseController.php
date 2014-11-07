@@ -190,22 +190,22 @@ class SpikaBaseController implements ControllerProviderInterface
 						
 							if($device['type'] == DEVICE_WEB){
 								
-								$app['monolog']->addDebug(" send web push" . print_r($member,true));  
+								// $app['monolog']->addDebug(" send web push" . print_r($member,true));  
 								
-								// send websocket notification
-								$payload = json_encode(array(
-									'command' => 'sendMessage',
-									'identifier' => SYSTEM_IDENTIFIER,
-									'chat_id' => $chat_id,
-									'from_user_id' => $user['id'],
-									'user_id' => $device['user_id'],
-									'message' => $text,
-								));
+								// // send websocket notification
+								// $payload = json_encode(array(
+									// 'command' => 'sendMessage',
+									// 'identifier' => SYSTEM_IDENTIFIER,
+									// 'chat_id' => $chat_id,
+									// 'from_user_id' => $user['id'],
+									// 'user_id' => $device['user_id'],
+									// 'message' => $text,
+								// ));
 								
-								sendWebSocketSignal($payload,$app);
+								// sendWebSocketSignal($payload,$app);
 								
-								// if send web push dont send mobile push
-								break;
+								// // if send web push dont send mobile push
+								// break;
 								
 							}
 							

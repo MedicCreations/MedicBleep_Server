@@ -125,6 +125,17 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function loginWithTempPass(Application $app, $username, $password){
+	
+		$sql = "SELECT * FROM user WHERE username = ? AND temp_password = ?";
+		
+		$user = $app['db']->fetchAssoc($sql, array($username, $password));
+	
+		return $user;
+	
+	}
+	
+	
 	public function getUserByToken(Application $app, $token_received){
 		$sql = "SELECT * FROM user WHERE token = ?";
 	
@@ -149,7 +160,7 @@ class MySqlDb implements DbInterface{
 		
 		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened FROM user";
 		
-		$sql = $sql . " WHERE user.id <> ? ";
+		$sql = $sql . " WHERE user.id <> ? AND user.is_deleted = 0 ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
@@ -194,7 +205,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getUsersCountNotMe(Application $app, $my_user_id, $search){
 		
-		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ?  and user.organization_id = ? ";
+		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ? AND user.is_deleted = 0 and user.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
@@ -223,6 +234,20 @@ class MySqlDb implements DbInterface{
 		
 		$app['db']->update('user', $values, $where);
 		
+	}
+	
+	
+	public function createTempPassword(Application $app, $my_user_id){
+	
+		$temp_password = $this->randomString(6,6);
+		
+		$values = array('temp_password' => $temp_password, 
+				'temp_password' => time());
+		$where = array('id' => $my_user_id);
+		
+		$app['db']->update('user', $values, $where);
+		return $temp_password;
+	
 	}
 	
 	
@@ -737,7 +762,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentAllChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -759,7 +784,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentGroupChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND (chat.type = 2 OR chat.type = 3) and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND (chat.type = 2 OR chat.type = 3) and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -781,7 +806,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentPrivateChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1  and chat.organization_id = ?  ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1  and chat.organization_id = ?  ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -831,7 +856,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRooms(Application $app, $user_id, $search, $offset, $category_id){
 	
-		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0)) and chat.organization_id = ? ";
+		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0)) and chat.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";

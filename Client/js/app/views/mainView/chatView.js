@@ -22,32 +22,14 @@ var SPIKA_ChatView = Backbone.View.extend({
         });
         
         Backbone.on(EVENT_START_CHAT, function(chatId) {
-
-            // get chat data first
-            apiClient.getChatById(chatId,function(data){
-                
-                self.chatData = roomFactory.createModelByAPIResponse(data.chat_data);
-                
-                mainView.setRoomTitle(self.chatData.get("chat_name"),self.chatData.get("chat_id"));
-                 
-                if(!_.isNull(self.chatData.get("chat_id"))){
-                    self.startChat();
-                    Backbone.trigger(EVENT_ENTER_CHAT,chatId);
-                }
-                
-            
-            },function(data){
-                
-                
-                
-            });
-
+			
+			self.resetChat(chatId);
             
         });
 
 
         Backbone.on(EVENT_MESSAGE_SENT, function(chatId) {
-
+			
             if(_.isNull(self.chatData))
                 return;
             
@@ -97,7 +79,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         });
 
     },
-
+	
     render: function() {
         
         var self = this;
@@ -167,6 +149,31 @@ var SPIKA_ChatView = Backbone.View.extend({
         self.updateWindowSize();
     },
     
+    resetChat: function(chatId){
+	  	
+	  	var self = this;
+	  	
+        // get chat data first
+        apiClient.getChatById(chatId,function(data){
+            
+            self.chatData = roomFactory.createModelByAPIResponse(data.chat_data);
+            
+            mainView.setRoomTitle(self.chatData.get("chat_name"),self.chatData.get("chat_id"));
+            
+            U.l(self.chatData);
+            
+            if(!_.isNull(self.chatData.get("chat_id"))){
+                self.startChat();
+                Backbone.trigger(EVENT_ENTER_CHAT,chatId);
+            }
+            
+        },function(data){
+            
+            
+            
+        });
+	  	  
+    },
     updateWindowSize: function(){
         U.setViewHeight($$("#main_container .scrollable"),[
             $$('header'),$$('footer')
@@ -377,6 +384,12 @@ var SPIKA_ChatView = Backbone.View.extend({
             content = message.get('text');
         }
         
+        if(message.get('is_deleted') == 1){
+	        
+	        content = "<i>This message is deleted</i>";
+	        
+        }
+        
         if(this.viewmode == CHATVIEW_LISTMODE){
             if(message.get('root_id') != 0){
                 content = '<a href="#" class="parent_icon" data-threadid="' + message.get('root_id') + '"><i class="fa fa-arrow-left"></i></a> ' + content;
@@ -474,12 +487,54 @@ var SPIKA_ChatView = Backbone.View.extend({
             Backbone.trigger(EVENT_OPEN_PROFLIE,userId);
         });
         
-        /*
-        $$("#chat article section").unbind().dblclick(function(){
-            U.l("dblclick");
+        $$("#main_container article section").unbind().dblclick(function(){
+
+            $$("#main_container article .replay").hide();
+            $$("#main_container article section").removeClass('selected');
+
+			var userId = $(this).attr("userid");
+			var messageId = $(this).attr("messageid");
+			
+			var message = self.getMessageFromCacheById(messageId);
+			
+			// do nothing for deleted message
+			if(!_.isNull(message) && message.get('is_deleted') == 1){
+				return;
+			}
+
+            $(this).find(".replay").fadeIn();
+            
+            $(this).addClass('selected');
+			
+			if(userId != SPIKA_UserManager.getUser().get('id')){
+				$(this).find(".message-menu-btn-delete").css('display','none');
+			}
+
         });
-        */
         
+        $$("#main_container article section .btn-delete").unbind().click(function(){
+            
+            var messageId = $(this).attr("messageid");
+			
+			if(_.isUndefined(messageId))
+				return;
+			
+            SPIKA_AlertManager.show(LANG.general_confirmation,LANG.confirmation_delete,function(){
+
+	            apiClient.deleteMessage(messageId,function(data){
+
+	                self.resetChat(self.chatData.get("chat_id"));
+	            	
+	            },function(data){
+	                
+	            });
+                
+            },function(){
+                
+            })
+            
+        });
+                                
         /*
         $(U.sel("#chat_view ul li")).unbind().click(function(){
             
@@ -550,4 +605,20 @@ var SPIKA_ChatView = Backbone.View.extend({
         
     },
     
+    getMessageFromCacheById:function(messageId){
+	    
+
+        for(index in this.messages.models){
+
+            var mes = this.messages.models[index];
+
+            if(messageId == mes.get('id'))
+            	return mes;
+            
+        }
+            
+        return null;
+
+    }
+
 });
