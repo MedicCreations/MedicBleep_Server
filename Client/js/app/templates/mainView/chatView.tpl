@@ -1,12 +1,16 @@
 
 <article class="scrollable nochat">
-
+	
     <div id="nochatbox">
         <i class="fa fa-exclamation-triangle"></i>
         {chat_nochat}
     </div>
 
 </article>
+
+<div id="thread_view_header">
+	Thread View Mode <a href="javascript:void(0)">Finish</a>
+</div>
 
 <footer>
 

@@ -177,7 +177,9 @@ var SPIKA_ChatView = Backbone.View.extend({
     updateWindowSize: function(){
         U.setViewHeight($$("#main_container .scrollable"),[
             $$('header'),$$('footer')
-        ])
+        ]);
+        
+        $$('#thread_view_header').css('width',U.getWidth() - parseInt($$('#thread_view_header').css('left')));
     },
     
     startChat: function(){
@@ -271,16 +273,21 @@ var SPIKA_ChatView = Backbone.View.extend({
 
             for(index in newMessages){
 
+				var messagedAllowedToShow = true;
+				
                 var mes = newMessages[index];
                 
-                /*
-                if(_.isEmpty(mes.get('text'))){
-                    
-                    continue;
-                }
-                */
+                for(index2 in self.messages.models){
+	                
+	                var mes2 = self.messages.models[index2];
+	                
+	                if(mes2.get('id') == mes.get('id'))
+	                	messagedAllowedToShow = false;
+	                
+	            }
 
-                newMessagesFiltered.push(mes);
+				if(messagedAllowedToShow)
+                	newMessagesFiltered.push(mes);
                 
             }
             
@@ -534,7 +541,30 @@ var SPIKA_ChatView = Backbone.View.extend({
             })
             
         });
-                                
+                
+        
+        $$("#main_container article section .btn-reply").unbind().click(function(){
+            
+            var messageId = $(this).attr("messageid");
+			
+			if(_.isUndefined(messageId))
+				return;
+			
+			var message = self.getMessageFromCacheById(messageId);
+			
+			
+			
+            apiClient.getThreadMessages(message.get('root_id'),function(data){
+
+                U.l(data);
+            	
+            },function(data){
+                
+            });
+            
+        });
+
+                
         /*
         $(U.sel("#chat_view ul li")).unbind().click(function(){
             

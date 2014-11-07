@@ -735,6 +735,27 @@ footer #mess_type ul li textarea.disabled{
 	text-align: center;
 	text-decoration: none;
 }
+
+#thread_view_header{
+	
+	position: absolute;
+	top: 42px;
+	height: 20px;
+	line-height: 20px;
+	vertical-align: middle;
+	background: #E03535;
+	color: #fff;
+	z-index: 100;
+	left: 324px;
+	width: 100%;
+	display: none;
+}
+
+
+#thread_view_header a{
+	color: #fff;
+}
+
 /*------------------------------*/
 /*   END	   Alert view 		*/
 /*------------------------------*/
