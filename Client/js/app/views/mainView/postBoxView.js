@@ -8,6 +8,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
     chatBoxMaxHeight: 100,
     chatBoxDefaultHeight: 28,
     chatBoxGrowHeight: 20,
+    viewMode:CHATVIEW_LISTMODE,
     initialize: function(options) {
         
         var self = this;
@@ -182,7 +183,6 @@ var SPIKA_PostBoxView = Backbone.View.extend({
             },function(data){
                 
                 self.isSending = false;
-                self.replyMeessageId = 0;
                 
         });
             
@@ -241,9 +241,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
                     var encryptedHex = EncryptManager.encryptText(text);
                     data.text = encryptedHex;
                 }
-                
-                self.replyMeessageId = 0;
-                
+                                
                 apiClient.sendMessage(data,function(data){
                     $$('#chat_textbox').val('');
                     self.finishUpload();

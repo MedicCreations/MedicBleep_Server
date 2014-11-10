@@ -26,7 +26,8 @@
                     parent_id: data.parent_id,
                     root_id: data.root_id,
                     is_deleted: is_delete,
-                    child_list: data.child_list
+                    child_list: data.child_list,
+                    indent:0
                 });   
         },
         createCollectionByAPIResponse : function(data){

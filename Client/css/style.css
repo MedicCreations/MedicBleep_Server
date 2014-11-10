@@ -512,9 +512,24 @@ footer #mess_type ul li textarea.disabled{
 	position: relative;
 }
 
+#chat article section div.message_icon_holder{
+    float: left;
+    padding-top: 16px;
+}
+
+#chat article section div.message_icon_holder{
+    float: left;
+    padding-top: 14px;
+}
+
+#chat article section .icon_replytarget{
+    color: #E03535
+}
+
 #chat article section .icon {
 	float: left;
 	width: 42px;
+	
 }
 
 #chat article section h2,
@@ -1054,4 +1069,42 @@ ul#user_menu li a{
 /*------------------------------*/
 /*   END Proflie Edit View    	*/
 /*------------------------------*/
+
+/*------------------------------*/
+/*   ANIMATIONS                	*/
+/*------------------------------*/
+
+.blink {
+  animation: blink 1s steps(5, start) infinite;
+  -webkit-animation: blink 1s steps(5, start) infinite;
+}
+@keyframes blink {
+  to { visibility: hidden; }
+}
+@-webkit-keyframes blink {
+  to { visibility: hidden; }
+}
+
+/*------------------------------*/
+/*   END ANIMATIONS            	*/
+/*------------------------------*/
+
+
+/*------------------------------*/
+/*   CURSOR                 	*/
+/*------------------------------*/
+
+
+.icon_rootmessage,
+.icon_repliedmessage,
+#maintitle i
+{
+  cursor: pointer;
+}
+
+/*------------------------------*/
+/*   END CURSOR             	*/
+/*------------------------------*/
+
+
 

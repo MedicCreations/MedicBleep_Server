@@ -18,7 +18,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm > /dev/null
 
     echo "Installing Apache/MySQL/PHP..."
-    yum -y --enablerepo=remi,remi-php55 install httpd mysql mysql-server php php-common php-pdo php-pear php-cli php-devel php-mysql php-mbstring php-gd unzip > /dev/null
+    yum -y --enablerepo=remi,remi-php55 install httpd mysql mysql-server php php-common php-pdo php-pear php-cli php-devel php-mysql php-mbstring php-gd unzip git > /dev/null
 
     echo "Installing PHPExtensions..."
     pecl install xdebug > /dev/null

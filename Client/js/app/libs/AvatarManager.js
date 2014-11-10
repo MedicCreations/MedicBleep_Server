@@ -131,7 +131,11 @@ AvatarManager = {
 					
 					$(self.processingOrder.elm).attr('src','data:image/jpeg;base64,' + resizedBase64Data);
 					
-					localStorage.setItem(self.processingOrder.fileId, resizedBase64Data);
+					try{
+    					localStorage.setItem(self.processingOrder.fileId, resizedBase64Data);					
+					}catch(ex){
+					    // do something here
+					}
 					self.localchacheSaveImage(self.processingOrder.fileId,self.processingOrder.elm);
 					
 					self.processQueue();
