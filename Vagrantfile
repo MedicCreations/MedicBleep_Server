@@ -63,6 +63,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     php composer.phar update > /dev/null
 
     echo "Initializing MySQL..."
+    chkconfig mysqld on
     service mysqld start
     mysql -u root -e "CREATE DATABASE IF NOT EXISTS spikadb;"
     mysql -u root spikadb -f < /vagrant_data/Server/spika_enterprise_db.sql > /dev/null
