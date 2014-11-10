@@ -1,7 +1,7 @@
 // config
-var API_URL = 'http://localhost:8080/server/wwwroot/v1';
-var WEB_ROOT = 'http://localhost:8080/client'
-var NOTIFICATION_SERVER_URL = 'ws://localhost';
+var API_URL = 'https://www.spikaent.com/msg/server/v1';
+var WEB_ROOT = 'https://www.spikaent.com/msg/web'
+var NOTIFICATION_SERVER_URL = 'wss://www.spikaent.com:8443/chat';
 var AES_PASSWORD = 'jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB';
 var SYSTEM_IDENTIFIER = 'clover';
 var USE_DESKTOPNOTIFICATION = true;

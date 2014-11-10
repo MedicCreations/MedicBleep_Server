@@ -1,8 +1,9 @@
 <?php
 
-define('ROOT_DIR', "/var/www/html/Admin/wwwroot");
-define('ROOT_URL', "http://localhost:8080/admin/wwwroot");
-define('ADMIN_ROOT_URL', "http://localhost:8080/admin/wwwroot");
+define('ROOT_DIR', "/var/www/www.spikaent.com/msg/spikaenterprise_web/Admin/wwwroot");
+define('ROOT_URL', "https://www.spikaent.com/msg/admin");
+define('CLIENT_URL', "https://www.spikaent.com/msg/web");
+define('ADMIN_ROOT_URL', "https://www.spikaent.com/msg/admin");
 define('API_URL', "http://local.clover-studio.com/SpikaAPI/wwwroot/v1");
 define('FILE_DOWNLOAD_URL', API_URL . "/file/download?file_id=");
 
@@ -16,9 +17,9 @@ define ('THUMB_SIZE', 200);
 
 define ('PAGINATOR_PAGESIZE',10);
 
-define ('DB_NAME','spikadb');
+define ('DB_NAME','clover');
 define ('DB_USER','root');
-define ('DB_PASS','');
+define ('DB_PASS','cloverpass013');
 
 define ('USE_LOGICAL_DELETE_GROUP', true);
 
