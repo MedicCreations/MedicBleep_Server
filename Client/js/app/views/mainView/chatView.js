@@ -1,9 +1,16 @@
+var APPENDBOT = 1;
+var APPENDTOP = 2;
+var REFRESH = 3;
+
 var SPIKA_ChatView = Backbone.View.extend({
 
     postBoxView: null,
     chatData: null,
     messages : new MessageResult([]),
     totalMessageCount:0,
+    displayMode: CHATVIEW_LISTMODE,
+    threadViewRootMessageId:null,
+    replyTargetMessageId:0,
     initialize: function(options) {
         var self = this;
         
@@ -22,51 +29,44 @@ var SPIKA_ChatView = Backbone.View.extend({
         });
         
         Backbone.on(EVENT_START_CHAT, function(chatId) {
-
-            // get chat data first
-            apiClient.getChatById(chatId,function(data){
-                
-                self.chatData = roomFactory.createModelByAPIResponse(data.chat_data);
-                
-                mainView.setRoomTitle(self.chatData.get("chat_name"),self.chatData.get("chat_id"));
-                 
-                if(!_.isNull(self.chatData.get("chat_id"))){
-                    self.startChat();
-                    Backbone.trigger(EVENT_ENTER_CHAT,chatId);
-                }
-                
-            
-            },function(data){
-                
-                
-                
-            });
-
+			
+            Backbone.trigger(EVENT_REFRESH_ROOMLIST);
+            self.goListMode();
+			self.resetChat(chatId);
             
         });
 
 
         Backbone.on(EVENT_MESSAGE_SENT, function(chatId) {
-
-            if(_.isNull(self.chatData))
-                return;
-            
-            if(chatId == self.chatData.get('chat_id')){
-                
-                // refresh lobby data if first post in the chat
-                if(self.totalMessageCount == 0)
-                    Backbone.trigger(EVENT_REFRESH_ROOMLIST);
-                
-                self.loadNewMessages();
-                
-/*
-                if(self.viewmode == CHATVIEW_LISTMODE)
-                    self.loadNewMessages();
-                else
-                    self.openThreadMode(self.threadId);
-*/
-
-            }
+			
+			if(self.displayMode == CHATVIEW_LISTMODE){
+				
+		        if(_.isNull(self.chatData))
+		            return;
+		        
+		        if(chatId == self.chatData.get('chat_id')){
+		            
+		            self.loadNewMessages();                
+					Backbone.trigger(EVENT_REFRESH_ROOMLIST);
+		
+		        }
+				
+			}
+			
+			if(self.displayMode == CHATVIEW_THREADMODE){
+				
+		        if(_.isNull(self.chatData))
+		            return;
+		        
+		        if(chatId == self.chatData.get('chat_id')){
+		            
+					self.resetThreadView();
+		
+		        }
+				
+			}
+			
+			
         });
 
         Backbone.on(EVENT_NEW_MESSAGE, function(chatId) {
@@ -97,7 +97,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         });
 
     },
-
+	
     render: function() {
         
         var self = this;
@@ -131,12 +131,16 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         $$('#main_container .scrollable').scroll(function(){
             
-            var scrollPos = $$('#main_container .scrollable').scrollTop();
-            
-            if(scrollPos == 0){
-                
-                self.fetchNextMessages(false);
-                
+            if(self.displayMode == CHATVIEW_LISTMODE){
+	            
+	            var scrollPos = $$('#main_container .scrollable').scrollTop();
+	            
+	            if(scrollPos == 0){
+	                
+	                self.fetchNextMessages(false);
+	                
+	            }
+	            
             }
             
         });
@@ -167,10 +171,44 @@ var SPIKA_ChatView = Backbone.View.extend({
         self.updateWindowSize();
     },
     
+    resetChat: function(chatId){
+	  	
+	  	var self = this;
+	  	
+        // get chat data first
+        apiClient.getChatById(chatId,function(data){
+            
+            self.chatData = roomFactory.createModelByAPIResponse(data.chat_data);
+            
+            mainView.setRoomTitle(self.chatData.get("chat_name"),self.chatData.get("chat_id"));
+
+            if(!_.isNull(self.chatData.get("chat_id"))){
+                self.startChat();
+                Backbone.trigger(EVENT_ENTER_CHAT,chatId);
+            }
+            
+        },function(data){
+            
+            
+            
+        });
+	  	  
+    },
     updateWindowSize: function(){
-        U.setViewHeight($$("#main_container .scrollable"),[
-            $$('header'),$$('footer')
-        ])
+
+	    if(this.displayMode == CHATVIEW_LISTMODE){
+	        U.setViewHeight($$("#main_container .scrollable"),[
+	            $$('header'),$$('footer')
+	        ]);
+	    }
+        
+	    if(this.displayMode == CHATVIEW_THREADMODE){
+	        U.setViewHeight($$("#main_container .scrollable"),[
+	            $$('header'),$$('footer'),$$('#thread_view_header')
+	        ]);
+	    }
+        
+        $$('#thread_view_header').css('width',U.getWidth() - parseInt($$('#thread_view_header').css('left')));
     },
     
     startChat: function(){
@@ -209,35 +247,14 @@ var SPIKA_ChatView = Backbone.View.extend({
             var newMessages = messageFactory.createCollectionByAPIResponse(data).models;
             
             self.messages.add(newMessages);
+			self.messages.sort();
 
-            self.formatMessages(true);
-            
-            var beforeHeight = $$('#main_container article')[0].scrollHeight
+			if(refresh)
+            	self.renderMessages(REFRESH,newMessages);
+            else
+            	self.renderMessages(APPENDTOP,newMessages);
+            	
                         
-            if(refresh){
-                var template = _.template($$('#template_message_row').html(), {messages: self.messages.models}); 
-                $$('#main_container article').html(template);
-            }else{
-                var template = _.template($$('#template_message_row').html(), {messages: newMessages}); 
-                $$('#main_container article').prepend(template);
-            }
-            
-            $$('#main_container article').removeClass('nochat');
-            
-            var afterHeight = $$('#main_container article')[0].scrollHeight
-            
-            if(refresh){
-                self.scrollToBottom();
-                Backbone.trigger(EVENT_REFRESH_ROOMLIST);
-            }else{
-                $$("#main_container .scrollable").scrollTop(afterHeight - beforeHeight);
-            }
-
-            _.debounce(function() {
-                self.attachMessageEvent();
-                self.processFiles();
-            }, 500)();
-            
         },function(data){
 
             SPIKA_AlertManager.show(LANG.general_errortitle,LANG.chat_loadfailed);
@@ -264,35 +281,28 @@ var SPIKA_ChatView = Backbone.View.extend({
 
             for(index in newMessages){
 
+				var messagedAllowedToShow = true;
+				
                 var mes = newMessages[index];
                 
-                /*
-                if(_.isEmpty(mes.get('text'))){
-                    
-                    continue;
-                }
-                */
+                for(index2 in self.messages.models){
+	                
+	                var mes2 = self.messages.models[index2];
+	                
+	                if(mes2.get('id') == mes.get('id'))
+	                	messagedAllowedToShow = false;
+	                
+	            }
 
-                newMessagesFiltered.push(mes);
+				if(messagedAllowedToShow)
+                	newMessagesFiltered.push(mes);
                 
             }
             
-            //U.l(newMessagesFiltered);
-            
             self.messages.add(newMessagesFiltered);
-            self.formatMessages(true);
+            self.messages.sort();
 
-            var template = _.template($$('#template_message_row').html(), {messages: newMessagesFiltered});
-            $$('#main_container article').append(template);
-            $$('#main_container article').removeClass('nochat');
-
-            self.scrollToBottom();
-            
-            _.debounce(function() {
-                self.attachMessageEvent();
-                self.processFiles();
-            }, 500)();
-
+			self.renderMessages(APPENDBOT,newMessagesFiltered);
             
         },function(data){
             
@@ -302,16 +312,35 @@ var SPIKA_ChatView = Backbone.View.extend({
         
     },
     
-    formatMessages : function(doSort){
-    
-        if(doSort)
-            this.messages.sort();
+    formatMessages : function(messages,doSort){
+        
+
+        if(doSort){
+            messages.sort();
+        }
         
         var self = this;
         
-        _.each(this.messages.models,function(row){            
+        _.each(messages,function(row){ 
             row.set("content",self.generateContnt(row));
+	        row.set("indentpixel",20);
         });
+        
+        // generate tree structure
+        if(this.displayMode == CHATVIEW_THREADMODE){
+	        var treeData = self.unflatten(0,messages);
+	        
+	        var flattenMessages = [];
+            self.treeViewGenerator_TreeToList(flattenMessages,treeData);
+            
+	        _.each(flattenMessages,function(row){          
+	            row.set("indentpixel",row.get("indent") * INDENT_UNITPIXEL + 20);
+	        });
+	        
+	        return flattenMessages;
+        }
+        
+        return messages;
         
     },
     generateContnt : function(message){
@@ -375,6 +404,12 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         else {
             content = message.get('text');
+        }
+        
+        if(message.get('is_deleted') == 1){
+	        
+	        content = "<i>This message is deleted</i>";
+	        
         }
         
         if(this.viewmode == CHATVIEW_LISTMODE){
@@ -474,80 +509,280 @@ var SPIKA_ChatView = Backbone.View.extend({
             Backbone.trigger(EVENT_OPEN_PROFLIE,userId);
         });
         
-        /*
-        $$("#chat article section").unbind().dblclick(function(){
-            U.l("dblclick");
-        });
-        */
-        
-        /*
-        $(U.sel("#chat_view ul li")).unbind().click(function(){
-            
-            Backbone.trigger(EVENT_SELECT_REPLY,0);
-            
-            var messageId = $(this).attr('data-messageid');
-            var openedMessageId = 0;
-            
-            $(U.sel("#chat_view ul li")).each(function(){
-            
-                $(this).removeClass('selected');
-                
-                if($(this).attr('state') == 'opened'){
-                    self.closeOptions(this);
-                    $(this).attr('state','closed');
-                    
-                    openedMessageId = $(this).attr('data-messageid');
-                }
-            });
-            
-            if(messageId == openedMessageId && openedMessageId != 0)
-                return;
-                
-            $(this).find(".mess_option").css('display','block');
-            
-            if($(this).attr('state') != 'opened'){
+        $$("#main_container article section").unbind().dblclick(function(){
 
-                self.openOptions(this);
-                $(this).attr('state','opened');
-                
-            }else{
-                
-                self.closeOptions(this);
-                $(this).attr('state','closed');
-                
-            }
+            $$("#main_container article .replay").hide();
+            $$("#main_container article section").removeClass('selected');
+
+			var userId = $(this).attr("userid");
+			var messageId = $(this).attr("messageid");
+			
+			var message = self.getMessageFromCacheById(messageId);
+			
+			// do nothing for deleted message
+			if(!_.isNull(message) && message.get('is_deleted') == 1){
+				return;
+			}
+
+            $(this).find(".replay").fadeIn();
+            
+            $(this).addClass('selected');
+			
+			if(userId != SPIKA_UserManager.getUser().get('id')){
+				$(this).find(".message-menu-btn-delete").css('display','none');
+			}
 
         });
         
-        $(U.sel("#chat_view ul li .reply")).unbind().click(function(){
+        $$("#main_container article section .btn-delete").unbind().click(function(){
             
-            var messageId = $(this).attr('data-messageid');
-            
-            Backbone.trigger(EVENT_SELECT_REPLY,messageId);
+            var messageId = $(this).attr("messageid");
+			
+			if(_.isUndefined(messageId))
+				return;
+			
+            SPIKA_AlertManager.show(LANG.general_confirmation,LANG.confirmation_delete,function(){
 
-            $(U.sel("#chat_view ul li")).each(function(){
-                $(this).removeClass('selected');
-            });
-            
-            $(U.sel('#chat_view ul li[data-messageid="' + messageId + '"]')).addClass('selected');
-            
-            return false;
+	            apiClient.deleteMessage(messageId,function(data){
+
+	                self.resetChat(self.chatData.get("chat_id"));
+	            	
+	            },function(data){
+	                
+	            });
+                
+            },function(){
+                
+            })
             
         });
+                
         
-        $(U.sel("#chat_view ul li .parent_icon")).unbind().click(function(){
+        $$("#main_container article section .btn-reply").unbind().click(function(){
             
-            Backbone.trigger(EVENT_SELECT_REPLY,0);
-            
-            var threadId = $(this).attr('data-threadid');
-            
-            self.openThreadMode(threadId);
-            
-            return false;
+            var messageId = $(this).attr("messageid");
+			
+			if(_.isUndefined(messageId))
+				return;
+			
+			var message = self.getMessageFromCacheById(messageId);
+			self.goThreadMode(message);
 
+            self.replyTargetMessageId = messageId;
+            
         });
-        */
-        
+
+        $$("#thread_view_header a").unbind().click(function(){
+	    	
+	    	self.goListMode();
+	    	    
+        });
+  
+        $$("#main_container article section .icon_rootmessage").unbind().click(function(){
+            
+            var messageId = $(this).parent().parent().attr("messageid");
+			
+			if(_.isUndefined(messageId))
+				return;
+			
+			var message = self.getMessageFromCacheById(messageId);
+			self.goThreadMode(message);
+
+            
+        });
+
+        $$("#main_container article section .icon_repliedmessage").unbind().click(function(){
+            
+            var messageId = $(this).parent().parent().attr("messageid");
+			
+			if(_.isUndefined(messageId))
+				return;
+			
+			var message = self.getMessageFromCacheById(messageId);
+			self.goThreadMode(message);
+            
+        });
+                
     },
     
+    getMessageFromCacheById:function(messageId){
+	    
+
+        for(index in this.messages.models){
+
+            var mes = this.messages.models[index];
+
+            if(messageId == mes.get('id'))
+            	return mes;
+            
+        }
+            
+        return null;
+
+    },
+    
+    goThreadMode:function(message){
+	    
+		if(this.displayMode==CHATVIEW_LISTMODE){
+		    $$('#thread_view_header').css('display','block');
+		    
+		    $$('article').css('padding-top',
+		    	parseInt($$('article').css('padding-top')) + $$('#thread_view_header').height()
+		    );
+		    this.displayMode=CHATVIEW_THREADMODE;
+		}
+	    
+	    if(message.get('root_id') == 0){
+		    this.threadViewRootMessageId = message.get('id');
+	    }else{
+		    this.threadViewRootMessageId =  message.get('root_id');		    
+	    }
+		
+		this.resetThreadView();
+		
+		this.postBoxView.replyMeessageId = message.get('id');
+		this.postBoxView.viewMode = CHATVIEW_THREADMODE;
+		
+		this.updateWindowSize();
+
+    },
+    goListMode:function(){
+		
+		if(this.displayMode==CHATVIEW_LISTMODE)
+			return;
+        
+        this.postBoxView.replyMeessageId = 0;
+        this.replyTargetMessageId = 0;
+        
+	    $$('article').css('padding-top',
+	    	parseInt($$('article').css('padding-top')) - $$('#thread_view_header').height()
+	    );
+	    
+	    $$('#thread_view_header').css('display','none');
+		this.displayMode=CHATVIEW_LISTMODE;
+		this.fetchNextMessages(true);
+
+		this.updateWindowSize();
+	
+    },
+    resetThreadView:function(){
+	  	
+	  	var self = this;
+	  	
+	  	this.messages = new MessageResult([]);
+	  	
+        apiClient.getThreadMessages(this.threadViewRootMessageId,function(data){
+
+            var newMessages = messageFactory.createCollectionByAPIResponse(data).models;
+            
+            self.messages.add(newMessages);
+			self.messages.sort();
+
+			self.renderMessages(REFRESH,newMessages);
+			        	
+        },function(data){
+            
+        });
+	  	  
+    },
+    renderMessages:function(appendPos,messages){
+		
+		var self = this;
+		
+		messages = this.formatMessages(messages,true);
+
+        var beforeHeight = $$('#main_container article')[0].scrollHeight
+                    
+        if(appendPos == REFRESH){
+	        
+            var template = _.template($$('#template_message_row').html(), {messages: messages}); 
+            $$('#main_container article').html(template);
+            
+        }else if(appendPos == APPENDTOP){
+	        
+            var template = _.template($$('#template_message_row').html(), {messages: messages}); 
+            $$('#main_container article').prepend(template);
+            
+        }else if(appendPos == APPENDBOT){
+	        
+            var template = _.template($$('#template_message_row').html(), {messages: messages}); 
+            $$('#main_container article').append(template);
+            
+        }
+        
+        $$('#main_container article').removeClass('nochat');
+        
+        var afterHeight = $$('#main_container article')[0].scrollHeight
+        
+        if(appendPos == APPENDBOT || appendPos == REFRESH){
+            this.scrollToBottom();
+        }else{
+            $$("#main_container .scrollable").scrollTop(afterHeight - beforeHeight);
+        }
+        
+        // reply target
+        $$('.icon_replytarget').css('display','none');
+        if(this.replyTargetMessageId != 0){
+            $$('#main_container article section[messageid=' + this.replyTargetMessageId + '] .icon_replytarget').css("display","inline");
+        } 
+        
+		if(this.displayMode==CHATVIEW_THREADMODE){
+            $$('#main_container article section .icon_rootmessage').css("display","none");		
+            $$('#main_container article section .icon_repliedmessage').css("display","none");		
+		}
+
+        _.debounce(function() {
+            self.attachMessageEvent();
+            self.processFiles();
+        }, 500)();
+
+    },
+
+
+    unflatten : function(indent,array, parent, tree ){
+        
+        var self = this;
+        
+        tree = typeof tree !== 'undefined' ? tree : [];
+        parent = typeof parent !== 'undefined' ? parent : new ModelMessage({id:0});
+    
+        var children = _.filter( array, function(child){ 
+            return child.get('parent_id') == parent.get('id'); 
+        });
+    
+        if( !_.isEmpty( children )  ){
+            
+            if( parent.id == 0 ){
+               tree = children;   
+            }else{
+               //if(indent < 2)
+                 parent['children'] = children
+            }
+            _.each( children, function( child ){ 
+                child.set('indent',indent);
+                self.unflatten(indent + 1,array, child ) 
+            });                    
+        }
+    
+        return tree;
+    },
+
+
+    treeViewGenerator_TreeToList : function(listData,treeData){
+        
+        for(var i = 0; i < treeData.length ; i++){
+
+            var message = treeData[i];
+
+            listData.push(message);
+            
+            if(!_.isUndefined(message.children)){
+                this.treeViewGenerator_TreeToList(listData,message.children);
+            }
+
+        }
+        
+    },
+
+
 });

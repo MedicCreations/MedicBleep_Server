@@ -50,5 +50,10 @@ LANG = {
       device_type_suffix: "client ",
       new_message1: "You have new message.",
       new_message2: "New Message.",
+      reply: "Replay",
+      delete: "Delete",
+      general_confirmation : 'Confirmation',
+      confirmation_delete : 'Are you sure to delete this message ?',
+
       dummy : 'dummy'
 };

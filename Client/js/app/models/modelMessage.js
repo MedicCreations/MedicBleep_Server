@@ -2,6 +2,10 @@
     
         createModelByAPIResponse : function(data){
 
+			var is_delete = 0;
+			if(data.type == 7)
+				is_delete = 1;
+				
             return new ModelMessage(
                 { 
                     id: data.id,
@@ -21,7 +25,9 @@
                     user_id: data.user_id,
                     parent_id: data.parent_id,
                     root_id: data.root_id,
-                    child_list: data.child_list
+                    is_deleted: is_delete,
+                    child_list: data.child_list,
+                    indent:0
                 });   
         },
         createCollectionByAPIResponse : function(data){
@@ -64,6 +70,7 @@
             parent_id: 0,
             root_id: 0,
             child_list:'',
+            is_deleted:0,
             indent:0
         },
         initialize: function(){

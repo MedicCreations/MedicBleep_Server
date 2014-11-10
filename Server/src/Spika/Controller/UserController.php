@@ -32,6 +32,36 @@ class UserController extends SpikaBaseController {
 			$username = $paramsAry['username'];
 			$password = $paramsAry['password'];
 			
+			//try login with temp password
+			$user = $mySql->loginWithTempPass($app, $username, $password);
+			
+			if (is_array($user)){
+			
+				$temp_pass_timestamp = $user ['temp_password_timestamp'];
+				$currentTimestamp = time ();
+				$temp_pass_time = $temp_pass_timestamp + TEMP_PASSWORD_VALID_TIME;
+					
+				if ($temp_pass_time < $currentTimestamp) {
+					//temp password is not valid
+					$result = array(
+						'code' => ER_TEMP_PASSWORD_NOT_VALID,
+						'message' => 'Temp password not valid'
+					);
+
+					return $app->json($result, 200);
+				} else {
+					//temp password is valid
+					$result = array(
+						'code' => ER_LOGIN_WITH_TEMP_PASS,
+						'message' => 'Login with temo password', 
+						'token' => $user['token']
+					);
+					
+					return $app->json($result, 200);
+				}
+			
+			}
+			
 			//login
 			$login_result = $mySql->loginUser($app, $password, $username, $self->getDeviceType($request->headers->get('user-agent')) );
 			
@@ -378,6 +408,7 @@ class UserController extends SpikaBaseController {
 			
 			$paramsAry = $request->query->all();
 			
+			$my_user_id = $app['user']['id'];
 			$user_details = $app['user']['details'];
 			
 			$details_ary = json_decode($user_details, true);
@@ -402,8 +433,17 @@ class UserController extends SpikaBaseController {
 				return $app->json($result, 200);	
 			}
 			
-			//create temp pass and send email
+			//create temp pass
+			$temp_pass = $mySql->createTempPassword($app, $my_user_id);
 			
+			//send email
+			$message = \Swift_Message::newInstance()
+				->setSubject('Spika forgot password')
+				->setFrom(array('sinisa.brcina@clover-studio.com'))
+				->setTo(array($email))
+				->setBody('Your temp password is: ' . $temp_pass . 'and will be valid for one hour');
+	
+			$app['mailer']->send($message);
 			
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK');

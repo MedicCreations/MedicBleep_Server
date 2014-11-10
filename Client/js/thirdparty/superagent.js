@@ -1276,6 +1276,7 @@ Request.prototype.end = function(fn){
     self.emit('end');
   };
 
+/*
   // progress
   if (xhr.upload) {
     xhr.upload.onprogress = function(e){
@@ -1283,7 +1284,7 @@ Request.prototype.end = function(fn){
       self.emit('progress', e);
     };
   }
-
+*/
   // timeout
   if (timeout && !this._timer) {
     this._timer = setTimeout(function(){

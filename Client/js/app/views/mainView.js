@@ -133,6 +133,7 @@ var SPIKA_MainView = Backbone.View.extend({
             self.hideContextMenu(); 
         });
         
+        
         $$('').click(function(){
             Backbone.trigger(EVENT_CLICK_ANYWHARE); 
         });

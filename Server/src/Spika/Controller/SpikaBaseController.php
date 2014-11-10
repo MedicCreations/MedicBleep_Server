@@ -199,8 +199,7 @@ class SpikaBaseController implements ControllerProviderInterface
 									// 'chat_id' => $chat_id,
 									// 'from_user_id' => $user['id'],
 									// 'user_id' => $device['user_id'],
-									// 'message' => "",
-								// ));
+
 								
 								// sendWebSocketSignal($payload,$app);
 								

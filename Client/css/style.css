@@ -512,9 +512,24 @@ footer #mess_type ul li textarea.disabled{
 	position: relative;
 }
 
+#chat article section div.message_icon_holder{
+    float: left;
+    padding-top: 16px;
+}
+
+#chat article section div.message_icon_holder{
+    float: left;
+    padding-top: 14px;
+}
+
+#chat article section .icon_replytarget{
+    color: #E03535
+}
+
 #chat article section .icon {
 	float: left;
 	width: 42px;
+	
 }
 
 #chat article section h2,
@@ -560,9 +575,9 @@ footer #mess_type ul li textarea.disabled{
 	height: 100%;
 	z-index: 10;
 	text-align: right;
-	background: rgb(255,255,255);
-	background: rgba(255,255,255,0.5);
+	color: #fff;
 }
+
 #chat article section .replay {
 	display: none;
 }
@@ -570,16 +585,26 @@ footer #mess_type ul li textarea.disabled{
 #chat article section .replay p {
 	display: inline-block;
 	text-align: center;
-	padding: 20px;
+	padding: 2px 5px 5px 10px;
 	position: relative;
-	top: 10px;
-	right: 20px;
+	top: 5px;
+	right: 5px;
 }
 
 #chat article section .replay a {
-	color: #000000;
+	color: #fff;
 	text-decoration: none;
 }
+
+#chat article section.selected{
+	background: #4BA4DF;
+	color: #fff;
+}
+#chat article section.selected .time_stamp {
+	color: #4BA4DF;
+}
+
+
 /*------------------------------*/
 /*   	 	  Profile 			*/
 /*------------------------------*/
@@ -725,6 +750,27 @@ footer #mess_type ul li textarea.disabled{
 	text-align: center;
 	text-decoration: none;
 }
+
+#thread_view_header{
+	
+	position: absolute;
+	top: 42px;
+	height: 20px;
+	line-height: 20px;
+	vertical-align: middle;
+	background: #E03535;
+	color: #fff;
+	z-index: 100;
+	left: 324px;
+	width: 100%;
+	display: none;
+}
+
+
+#thread_view_header a{
+	color: #fff;
+}
+
 /*------------------------------*/
 /*   END	   Alert view 		*/
 /*------------------------------*/
@@ -1023,4 +1069,42 @@ ul#user_menu li a{
 /*------------------------------*/
 /*   END Proflie Edit View    	*/
 /*------------------------------*/
+
+/*------------------------------*/
+/*   ANIMATIONS                	*/
+/*------------------------------*/
+
+.blink {
+  animation: blink 1s steps(5, start) infinite;
+  -webkit-animation: blink 1s steps(5, start) infinite;
+}
+@keyframes blink {
+  to { visibility: hidden; }
+}
+@-webkit-keyframes blink {
+  to { visibility: hidden; }
+}
+
+/*------------------------------*/
+/*   END ANIMATIONS            	*/
+/*------------------------------*/
+
+
+/*------------------------------*/
+/*   CURSOR                 	*/
+/*------------------------------*/
+
+
+.icon_rootmessage,
+.icon_repliedmessage,
+#maintitle i
+{
+  cursor: pointer;
+}
+
+/*------------------------------*/
+/*   END CURSOR             	*/
+/*------------------------------*/
+
+
 
