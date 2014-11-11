@@ -379,6 +379,9 @@ var U = {
 
 		return false;
 		
+    },
+    getTS: function(){
+        return Math.round(+new Date()/1000);
     }
 }
 

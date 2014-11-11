@@ -2,6 +2,9 @@ var SPIKA_LobbyListView = Backbone.View.extend({
     
     isLoaded : false,
     ignoreAutoSelect:false,
+    refreshFromMemory:false,
+    chatList:[],
+    currentChatId:0,
     initialize: function(options) {
         
         var self = this;
@@ -35,11 +38,18 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         });
                 
         Backbone.on(EVENT_START_CHAT, function(chatId) {
-
-            if(_.isNull(chatId) && self.ignoreAutoSelect == false)
+            
+            self.currentChatId = chatId;
+            
+            if(_.isNull(chatId) && self.ignoreAutoSelect == false){
                 self.listView.refresh();
+            }else{
+                self.refreshFromMemory = true;
+                self.listView.refresh();
+            }
             
             self.ignoreAutoSelect = false;
+
         });
           
         this.listView = new SpikaPagingListView({
@@ -93,26 +103,57 @@ var SPIKA_LobbyListView = Backbone.View.extend({
     ////////////////////////////////////////////////////////////////////////////////
     
     listviewRequest: function(page,succeessListener,failedListener){
+        
+        if(this.refreshFromMemory){
 
-        apiClient.lobby(function(data){
-
-            succeessListener(data);
+            _.debounce(function() {
+                succeessListener(null);
+            }, 100)();
             
-        },function(data){
-            
-            failedListener(data);
+        }else{
 
-        });
+            apiClient.lobby(function(data){
+    
+                succeessListener(data);
+                
+            },function(data){
+                
+                failedListener(data);
+    
+            });
+        
+        }
         
     },
     listviewGetListFromResponse: function(response){
-        var collection = chatFactory.createCollectionByAPIResponse(response)
         
-        var allUnreadCount = 0;
+        var self = this;
         
-        DataCacheManager.updateChatModelCacheByCollection(collection);
+        if(this.refreshFromMemory){
+            
+            var allUnreadCount = 0;
+            
+            _.each(this.chatList.models,function(model){
+                if(self.currentChatId == model.get('chat_id'))
+                    model.set('unread',0);
+            });
+            
+            mainView.updateUnreadCount(allUnreadCount);
+            
+        }else{
+    
+            this.chatList = chatFactory.createCollectionByAPIResponse(response)
+            
+            var allUnreadCount = 0;
+            
+            DataCacheManager.updateChatModelCacheByCollection(this.chatList);
 
-        _.each(collection.models,function(model){
+            mainView.updateUnreadCount(allUnreadCount);
+            
+        }
+
+   
+        _.each(this.chatList.models,function(model){
            	           	
             var unreadText = "";
             
@@ -137,9 +178,7 @@ var SPIKA_LobbyListView = Backbone.View.extend({
             
         }
         
-        mainView.updateUnreadCount(allUnreadCount);
-        
-        return collection;
+        return this.chatList;
 
     },
     listviewRender: function(data){
@@ -166,15 +205,26 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         $$('#menu_container_lobby .menu_list li').each(function(){
             
             var chatIdElm = $(this).attr('chatid');
-                        
-            if(!_.isNull(mainView.chatView.chatData)){
-                if(chatIdElm == mainView.chatView.chatData.get('chat_id'))
-                    $(this).addClass('selected');        
+            
+            if(self.refreshFromMemory == false){
+            
+                if(!_.isNull(mainView.chatView.chatData)){
+                    if(chatIdElm == mainView.chatView.chatData.get('chat_id'))
+                        $(this).addClass('selected');        
+                }
+                
+            }else{
+                
+                if(chatIdElm == self.currentChatId){
+                    $(this).addClass('selected');                   
+                }
+                
             }
                 
         });
             
-
+        this.refreshFromMemory = false;
+        
     },
     listviewOnClick: function(elm){
         this.ignoreAutoSelect = true;
