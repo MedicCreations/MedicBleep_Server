@@ -35,6 +35,10 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         Backbone.on(EVENT_MESSAGE_SENDING, function(data) {
             
+            if(self.displayMode == CHATVIEW_THREADMODE){
+                return;
+            }
+            
             data.user_id = SPIKA_UserManager.getUser().get('id');
             data.firstname = SPIKA_UserManager.getUser().get('firstname');
             data.lastname = SPIKA_UserManager.getUser().get('lastname');
@@ -46,8 +50,6 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             self.messages.add(newMessages);
             self.messages.sort();
-
-            U.l(newMessages);
             
 			self.renderMessages(APPENDBOT,newMessages.models);
 			            
@@ -320,7 +322,6 @@ var SPIKA_ChatView = Backbone.View.extend({
 
 			self.renderMessages(APPENDBOT,newMessagesFiltered);
 
-
             // delete temporary messages
             $$("#main_container article section").each(function(){
     
@@ -529,7 +530,6 @@ var SPIKA_ChatView = Backbone.View.extend({
                 
             var elm = this;
 
-    
         });
         
         $$('.usericon').click(function(){
