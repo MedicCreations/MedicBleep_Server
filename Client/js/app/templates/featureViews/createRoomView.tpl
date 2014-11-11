@@ -1,4 +1,4 @@
-<header>{title_new_room}</header>
+<header></header>
 
 <nav id="left_sidebar">
 
@@ -62,7 +62,7 @@
     
     <div class="button_container">
         <a href="javascript:void(0)" class="button red">{cancel}</a>
-        <a href="javascript:void(0)" class="button" id="btn_create_room">{createroom}</a>
+        <a href="javascript:void(0)" class="button" id="btn_create_room">{general_save}</a>
     </div>
     
 

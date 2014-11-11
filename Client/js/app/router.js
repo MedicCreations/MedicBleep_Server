@@ -147,19 +147,16 @@
                 ], function (CreateRoomView,Template) {
             
             var createRoomView = new SPIKA_CreateRoomView({
-                template: Template
+                template: Template,
+                chatData: mainView.chatView.chatData
             });
-            
-            createRoomView.setChatData(mainView.chatView.chatData);
-            
+                        
             $(HOLDER).fadeOut('fast',function(){
                 $(HOLDER).attr('id', 'chat');
                 $(HOLDER).html(createRoomView.render().el);
-                
-                
                 $(HOLDER).fadeIn('fast');
             });
-            
+
         });
         
     });
