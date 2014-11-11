@@ -356,7 +356,7 @@ var U = {
     
         }       
         
-        if(html.search(/^http.*gif$/)){
+        if(html.search(/^http.*gif$/) == 0){
 
             return '<img src="' + html + '" />';
     
