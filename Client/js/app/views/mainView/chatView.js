@@ -29,16 +29,13 @@ var SPIKA_ChatView = Backbone.View.extend({
         });
         
         Backbone.on(EVENT_START_CHAT, function(chatId) {
-			
-            Backbone.trigger(EVENT_REFRESH_ROOMLIST);
             self.goListMode();
 			self.resetChat(chatId);
-            
         });
 
 
         Backbone.on(EVENT_MESSAGE_SENT, function(chatId) {
-			
+
 			if(self.displayMode == CHATVIEW_LISTMODE){
 				
 		        if(_.isNull(self.chatData))

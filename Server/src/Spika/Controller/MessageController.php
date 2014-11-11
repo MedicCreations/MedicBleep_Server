@@ -168,6 +168,7 @@ class MessageController extends SpikaBaseController {
 			}
 			
 			$chat_type = $chat['type'];
+			$chat_password = $chat['password'];
 						
 // 			//send push to all members
 			$chat_members = $mySql->getChatMembers($app, $chat_id);
@@ -263,7 +264,8 @@ class MessageController extends SpikaBaseController {
 							'chat_image' => $chat_image,
 							'chat_type' => $chat_type,
 							'is_active' => $chat['is_active'],
-							'admin_id' => $chat['admin_id']
+							'admin_id' => $chat['admin_id'],
+							'chat_password' => $chat_password
 							)
 			);
 				
@@ -286,7 +288,8 @@ class MessageController extends SpikaBaseController {
 					'ci' => $chat_id,
 					'cn' => $chat_name,
 					'ct' => $chat_thumb,
-					'cty' => $chat_type
+					'cty' => $chat_type,
+					'cp' => $chat_password
 					);
 				
 			$payload['aps'] = $apsAry;
