@@ -153,15 +153,17 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         //$$('#chat_textbox').addClass('disabled');
         $$('#chat_textbox').val('');
         
-        apiClient.sendMessage(
-            {
+        var data = {
                 chat_id:self.chatId,
                 type:MESSAGE_TYPE_TEXT,
                 text:encryptedHex,
                 file_id:'',
                 parent_id:this.replyMeessageId
-            },
-                
+        };
+        
+        Backbone.trigger(EVENT_MESSAGE_SENDING,data);
+        
+        apiClient.sendMessage(data,
             function(data){
                 
                 self.isSending = false;
@@ -241,7 +243,9 @@ var SPIKA_PostBoxView = Backbone.View.extend({
                     var encryptedHex = EncryptManager.encryptText(text);
                     data.text = encryptedHex;
                 }
-                                
+                
+                Backbone.trigger(EVENT_MESSAGE_SENDING,data);
+                
                 apiClient.sendMessage(data,function(data){
                     $$('#chat_textbox').val('');
                     self.finishUpload();

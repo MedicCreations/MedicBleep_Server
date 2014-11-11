@@ -30,6 +30,45 @@
                     indent:0
                 });   
         },
+        createModelByTempData : function(data){
+            
+            if(_.isUndefined(data.text)){
+                data.text = '';
+            }
+            
+            if(_.isUndefined(data.thumb_id)){
+                data.thumb_id = '';
+            }
+            
+            if(_.isUndefined(data.file_id)){
+                data.file_id = '';
+            }
+
+            return new ModelMessage(
+                { 
+                    id: 0,
+                    chat_id: data.chat_id,
+                    text: data.text,
+                    type: data.type,
+                    file_id: data.file_id,
+                    user_id: data.user_id,
+                    lastname: data.lastname,
+                    firstname: data.firstname,
+                    image_thumb: data.image_thumb,
+                    thumb_id: data.thumb_id,
+                    modified: U.getTS(),
+                    created: U.getTS(),
+                    image: '',
+                    latitude: '',
+                    longitude: '',
+                    parent_id: 0,
+                    root_id: 0,
+                    is_deleted: 0,
+                    child_list: 0,
+                    indent:0
+                });  
+
+        },
         createCollectionByAPIResponse : function(data){
             
             var messageAry = [];
@@ -96,6 +135,6 @@
             
         },
         comparator : function(model) {
-            return parseInt(model.get('id'));
+            return parseInt(model.get('created'));
         }
     });

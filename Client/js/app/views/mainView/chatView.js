@@ -32,7 +32,26 @@ var SPIKA_ChatView = Backbone.View.extend({
             self.goListMode();
 			self.resetChat(chatId);
         });
+        
+        Backbone.on(EVENT_MESSAGE_SENDING, function(data) {
+            
+            data.user_id = SPIKA_UserManager.getUser().get('id');
+            data.firstname = SPIKA_UserManager.getUser().get('firstname');
+            data.lastname = SPIKA_UserManager.getUser().get('lastname');
+            data.image_thumb = SPIKA_UserManager.getUser().get('image');
 
+            // add temporary message
+            var newMessages = new MessageResult([]);
+            newMessages.add(messageFactory.createModelByTempData(data));
+            
+            self.messages.add(newMessages);
+            self.messages.sort();
+
+            U.l(newMessages);
+            
+			self.renderMessages(APPENDBOT,newMessages.models);
+			            
+        });
 
         Backbone.on(EVENT_MESSAGE_SENT, function(chatId) {
 
@@ -300,7 +319,19 @@ var SPIKA_ChatView = Backbone.View.extend({
             self.messages.sort();
 
 			self.renderMessages(APPENDBOT,newMessagesFiltered);
-            
+
+
+            // delete temporary messages
+            $$("#main_container article section").each(function(){
+    
+                var messageId = $(this).attr("messageid");
+                
+                if(messageId == 0){
+                    $(this).css("display","none");
+                }
+    
+            });
+        
         },function(data){
             
             SPIKA_AlertManager.show(LANG.general_errortitle,LANG.chat_loadfailed);
