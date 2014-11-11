@@ -350,6 +350,18 @@ var U = {
     
         }
         
+        if(html.search(/^http.*jpg$/) == 0 || html.search(/^http.*jpeg$/) == 0 || html.search(/^http.*png$/) == 0){
+
+            return '<img src="' + html + '" width="300" />';
+    
+        }       
+        
+        if(html.search(/^http.*jpg$/) == 0 || html.search(/^http.*jpeg$/) == 0 || html.search(/^http.*png$/) == 0){
+
+            return '<img src="' + html + '"/>';
+    
+        }       
+        
         return html;
     },
     isIE: function(){

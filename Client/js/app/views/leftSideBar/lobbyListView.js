@@ -1,6 +1,7 @@
 var SPIKA_LobbyListView = Backbone.View.extend({
     
     isLoaded : false,
+    ignoreAutoSelect:false,
     initialize: function(options) {
         
         var self = this;
@@ -34,8 +35,11 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         });
                 
         Backbone.on(EVENT_START_CHAT, function(chatId) {
-            if(_.isNull(chatId))
+
+            if(_.isNull(chatId) && self.ignoreAutoSelect == false)
                 self.listView.refresh();
+            
+            self.ignoreAutoSelect = false;
         });
           
         this.listView = new SpikaPagingListView({
@@ -142,7 +146,9 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         return _.template($$('#template_chatlist_row').html(), {chats: data.models});
     },
     listViewAfterRender: function(){
-
+        
+        var self = this;
+        
         $$('#menu_container_lobby .encrypted_image').each(function(){
         
             var state = $(this).attr('state');
@@ -156,12 +162,11 @@ var SPIKA_LobbyListView = Backbone.View.extend({
             }
             
         });
-
                 
         $$('#menu_container_lobby .menu_list li').each(function(){
             
             var chatIdElm = $(this).attr('chatid');
-            
+                        
             if(!_.isNull(mainView.chatView.chatData)){
                 if(chatIdElm == mainView.chatView.chatData.get('chat_id'))
                     $(this).addClass('selected');        
@@ -172,8 +177,15 @@ var SPIKA_LobbyListView = Backbone.View.extend({
 
     },
     listviewOnClick: function(elm){
+        this.ignoreAutoSelect = true;
+
         var chatId = $(elm).attr('chatid');
         Backbone.trigger(EVENT_START_CHAT,chatId);
+
+        $$('#menu_container_lobby li.selected').removeClass('selected');        
+        $(elm).addClass('selected');
+        
+
     }
     
 });
