@@ -7,9 +7,11 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     profileThumbFileId:null,
     editingChatData:null,
     userIdsBeforeEdit:[],  
+    chatData:null,
     initialize: function(options) {
         var self = this;
         this.template = options.template;
+        this.chatData = options.chatData;
         
         Backbone.on(EVENT_WINDOW_SIZE_CHANGED, function() {
             self.updateWindowSize();
@@ -149,7 +151,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             },function(){
                 self.hideAvatarLoading();
             });
-
+            
             self.updateRowState();
             
         },function(data){
@@ -173,6 +175,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     },
     
     updateRowState: function(updateSelectedUsers){
+    
         
         if(_.isUndefined(updateSelectedUsers))
             updateSelectedUsers = true;
@@ -184,6 +187,9 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             var userId = $(this).attr('data-userid');
             
             var index = _.indexOf(self.selectedUserIdList,userId);
+            
+            U.l(self.selectedUserIdList);
+            U.l(userId);
             
             if(index == -1){
                 $(this).removeClass('selected');
@@ -405,6 +411,17 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             
         }
     },
+    prepareChatData:function(){
+        
+        if(_.isNull(this.chatData)){
+            this.prepareChatData(false);
+            $$('header').text(LANG.title_new_room);
+        }else{
+            this.setChatData(this.chatData);
+            $$('header').text(LANG.title_edit_room);
+        }
+        
+    },
     ////////////////////////////////////////////////////////////////////////////////
     // listview functions
     ////////////////////////////////////////////////////////////////////////////////
@@ -426,7 +443,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     },
     listViewAfterRender: function(){
         
-        this.updateRowState(false);
+        this.prepareChatData();
         
     },
     listviewOnClick: function(elm){

@@ -42,7 +42,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             data.user_id = SPIKA_UserManager.getUser().get('id');
             data.firstname = SPIKA_UserManager.getUser().get('firstname');
             data.lastname = SPIKA_UserManager.getUser().get('lastname');
-            data.image_thumb = SPIKA_UserManager.getUser().get('image');
+            //data.image_thumb = SPIKA_UserManager.getUser().get('image'); // to prevent blinking avatar
 
             // add temporary message
             var newMessages = new MessageResult([]);

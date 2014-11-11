@@ -54,6 +54,7 @@ LANG = {
       delete: "Delete",
       general_confirmation : 'Confirmation',
       confirmation_delete : 'Are you sure to delete this message ?',
-
+      title_edit_room: 'Edit Room',
+      general_save: 'Save',
       dummy : 'dummy'
 };
