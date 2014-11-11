@@ -21,7 +21,6 @@
             <% _.each(messages, function(message) { %>
                                                 
             	<section userid="<%= message.get('user_id') %>" messageid="<%= message.get('id') %>">
-            	    
             	    <div class="message_icon_holder">
             	        <i class="icon_replytarget fa fa-caret-right blink large" style="display:none"></i>
             	        
@@ -29,7 +28,6 @@
             	        <% if(message.get('parent_id') != 0)  {%><i class="icon_repliedmessage fa fa-arrow-left large"></i><% } %>
             	        
             	    </div>
-            	    
             	    <div style="padding-left: <%= message.get('indentpixel') %>px;" >
                 		<p class="icon usericon" userid="<%= message.get('user_id') %>">
                 			<img class="encrypted_image_profile icon1" src="{rooturl}/img/default_user.png" fileid="<%= message.get('image_thumb') %>" state="loading" width="40"/>
@@ -62,8 +60,6 @@
                 		</div>
             	    </div>
             	</section>
-            	
-            	<br style="clear:both" />
 
             <% }); %>
             
