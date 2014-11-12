@@ -47,6 +47,7 @@ else{
                     'thirdparty/CryptoJS/rollups/aes',
                     'thirdparty/rncryptor/rncryptor',
                     'thirdparty/sprintf',
+                    'thirdparty/blob',
                     'thirdparty/FileSaver',
                     'thirdparty/DataStream',
                     'app/libs/NotificationManager',
@@ -84,6 +85,7 @@ else{
                     'thirdparty/sjcl/sha256',
                     'thirdparty/sjcl/sha512',
                     'thirdparty/sjcl/srp',
+                    'thirdparty/mimetype',
                     'thirdparty/base64'], function() {
 
 	        // load dependency libary

@@ -400,7 +400,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         else if(messageType == MESSAGE_TYPE_IMAGE){
             content = '<img width="' + THUMB_PIC_SIZE_INVIEW + '" height="' + THUMB_PIC_SIZE_INVIEW + '" class="encrypted_image" src="' + WEB_ROOT + '/img/loading.png" fileid="' + message.get('thumb_id') + '" state="loading" />';
-            content += '<input class="download" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'picture\')" value="Download" />';
+            content += '<input class="download" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
         }
 
         else if(messageType == MESSAGE_TYPE_VIDEO){

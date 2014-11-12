@@ -8,12 +8,14 @@ var fileUploadHandler = {
         var typeFilterImage = /jpeg|png/;
         var typeFilterVideo = /mp4/;
         var typeFilterAudio = /wav|mp3/;
-
+        
         if(fileType.match(typeFilterImage)){
         
             // resize bit image
-            U.resize(file,BIG_PIC_SIZE,BIG_PIC_SIZE,100,"image/jpeg",function(blobBigImage){
-            
+            //U.resize(file,BIG_PIC_SIZE,BIG_PIC_SIZE,100,"image/jpeg",function(blobBigImage){
+                
+                var blobBigImage = file;
+                
                 // resize thumbnail
                 U.resize(file,THUMB_PIC_SIZE,THUMB_PIC_SIZE,100,"image/jpeg",function(blobSmallImage){
                     
@@ -43,7 +45,7 @@ var fileUploadHandler = {
                                             var smallFileId = data.file_id;
                                             
                                             // upload done
-                                            succeessListener({fileId:bigFileId,thumbId:smallFileId,type:MESSAGE_TYPE_IMAGE})
+                                            succeessListener({text:fileName,fileId:bigFileId,thumbId:smallFileId,type:MESSAGE_TYPE_IMAGE})
         
                                         }
                                         
@@ -77,7 +79,7 @@ var fileUploadHandler = {
                     
                 }); // U.resize(file,THUMB_PIC_SIZE,THUMB_PIC_SIZE,100,"image/jpeg",function(blobSmallImage){
                   
-            }); // U.resize(file,BIG_PIC_SIZE,BIG_PIC_SIZE,100,"image/jpeg",function(blobBigImage){
+            //}); // U.resize(file,BIG_PIC_SIZE,BIG_PIC_SIZE,100,"image/jpeg",function(blobBigImage){
             
         } // if(fileType.match(typeFilterImage)){
         
@@ -96,7 +98,7 @@ var fileUploadHandler = {
                         if(!_.isNull(data.file_id)){
     
                             // upload done
-                            succeessListener({fileId:fileId,type:MESSAGE_TYPE_VIDEO})
+                            succeessListener({text:fileName,fileId:fileId,type:MESSAGE_TYPE_VIDEO})
             
                         }
             
@@ -133,7 +135,7 @@ var fileUploadHandler = {
                         if(!_.isNull(data.file_id)){
                             
                             // upload done
-                            succeessListener({fileId:fileId,type:MESSAGE_TYPE_VOICE})
+                            succeessListener({text:fileName,fileId:fileId,type:MESSAGE_TYPE_VOICE})
             
                         }
             

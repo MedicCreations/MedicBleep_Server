@@ -13,6 +13,7 @@ var EVENT_ENTER_CHAT = 'eventEnterChat';
 var EVENT_LEAVE_CHAT = 'leaveChat';
 var EVENT_FORCE_LOGOUT = 'eventForceLogout';
 var EVENT_MESSAGE_SENDING = 'eventMessageSending';
+var EVENT_OPEN_EXTRAMESSAGE = 'eventOpenExtraMessage';
 
 
 var EVENT_START_PRIVATE_CHAT = 'startPrivateChat';
