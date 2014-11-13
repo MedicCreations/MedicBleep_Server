@@ -89,7 +89,8 @@ var SPIKA_MainView = Backbone.View.extend({
         ], function (
             InfoView,InfoViewTemplate,
             LeftSideBar,LeftSideBarTemplate,
-            ChatView,ChatViewTemplate
+            ChatView,ChatViewTemplate,
+            ExtraBoxView,ExtraMessageBoxesTemplate
             ) {
             
             self.infoView = new SPIKA_InfoView({
@@ -103,6 +104,7 @@ var SPIKA_MainView = Backbone.View.extend({
             self.chatView = new SPIKA_ChatView({
                 template: ChatViewTemplate
             });
+
             
             self.onload();
             

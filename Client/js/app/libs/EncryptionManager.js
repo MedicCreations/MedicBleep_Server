@@ -365,7 +365,8 @@ EncryptManager = {
                         byteNumbers[i] = byteCharacters.charCodeAt(i);
                     }
                     var byteArray = new Uint8Array(byteNumbers);
-                    var blob = new Blob([byteArray], {type: "application/octet-stream"});
+                    var mimeType =  MimeType.lookup(fileName,undefined,"application/octet-stream");
+                    var blob = new Blob([byteArray], {type: mimeType});
                     saveAs(blob, fileName);
 
                     SPIKA_ProgressManager.hide();

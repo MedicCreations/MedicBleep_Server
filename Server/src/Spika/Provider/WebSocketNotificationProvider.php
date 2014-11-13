@@ -64,16 +64,23 @@ class WebSocketNotificationProvider implements ServiceProviderInterface
 		$header.= "\r\n";
 		$header.= $key3;
  
- 
-		$this->_Socket = fsockopen($host, $port, $errno, $errstr, 2); 
-		fwrite($this->_Socket, $header) or die('Error: ' . $errno . ':' . $errstr); 
-		$response = fread($this->_Socket, 2000);
+        try{
         
-        stream_set_timeout($this->_Socket, 0, 100);
-		/**
-		 * @todo: check response here. Currently not implemented cause "2 key handshake" is already deprecated.
-		 * See: http://en.wikipedia.org/wiki/WebSocket#WebSocket_Protocol_Handshake
-		 */		
+    		$this->_Socket = fsockopen($host, $port, $errno, $errstr, 2); 
+    		fwrite($this->_Socket, $header) or die('Error: ' . $errno . ':' . $errstr); 
+    		$response = fread($this->_Socket, 2000);
+            
+            stream_set_timeout($this->_Socket, 0, 100);
+    		/**
+    		 * @todo: check response here. Currently not implemented cause "2 key handshake" is already deprecated.
+    		 * See: http://en.wikipedia.org/wiki/WebSocket#WebSocket_Protocol_Handshake
+    		 */		
+            
+        } catch(Exception $ex){
+            
+            
+            
+        }
  
 		return true;
 	}

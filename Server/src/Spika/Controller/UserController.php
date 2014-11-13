@@ -53,7 +53,7 @@ class UserController extends SpikaBaseController {
 					//temp password is valid
 					$result = array(
 						'code' => ER_LOGIN_WITH_TEMP_PASS,
-						'message' => 'Login with temo password', 
+						'message' => 'Login with temp password', 
 						'token' => $user['token']
 					);
 					
@@ -404,16 +404,18 @@ class UserController extends SpikaBaseController {
 		});
 		
 		
-		$controllers->get('password/forgot', function (Request $request) use ($app, $self, $mySql){
+		$controllers->post('password/forgot', function (Request $request) use ($app, $self, $mySql){
 			
 			$paramsAry = $request->query->all();
 			
-			$my_user_id = $app['user']['id'];
-			$user_details = $app['user']['details'];
+			$username = $paramsAry['username'];
+			
+			$user = $mySql->getUserByUsername($app, $username);
+			
+			$my_user_id = $user['id'];
+			$user_details = $user['details'];
 			
 			$details_ary = json_decode($user_details, true);
-			
-			var_dump($details_ary);
 			
 			$has_email = false;
 			$email = "";

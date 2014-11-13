@@ -47,6 +47,7 @@ else{
                     'thirdparty/CryptoJS/rollups/aes',
                     'thirdparty/rncryptor/rncryptor',
                     'thirdparty/sprintf',
+                    'thirdparty/blob',
                     'thirdparty/FileSaver',
                     'thirdparty/DataStream',
                     'app/libs/NotificationManager',
@@ -84,6 +85,9 @@ else{
                     'thirdparty/sjcl/sha256',
                     'thirdparty/sjcl/sha512',
                     'thirdparty/sjcl/srp',
+                    'thirdparty/mimetype',
+                    'thirdparty/webcamjs/webcam',
+                    'thirdparty/highlight/highlight.pack',
                     'thirdparty/base64'], function() {
 
 	        // load dependency libary
@@ -96,6 +100,16 @@ else{
 	            SPIKA_notificationManger.init();
 	            SPIKA_soundManager.init();
 	            
+                Webcam.set({
+                    width: 320,
+                    height: 240,
+                    dest_width: WEBCAMPIC_WIDTH,
+                    dest_height: WEBCAMPIC_HEIGHT,
+                    image_format: 'jpeg',
+                    jpeg_quality: 90,
+                    force_flash: false
+                });
+
 	            // start app
 	            require(['app/router'], function () {
 	                

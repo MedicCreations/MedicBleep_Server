@@ -9,6 +9,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
     chatBoxDefaultHeight: 28,
     chatBoxGrowHeight: 20,
     viewMode:CHATVIEW_LISTMODE,
+    extraBoxView: null,
     initialize: function(options) {
         
         var self = this;
@@ -17,11 +18,13 @@ var SPIKA_PostBoxView = Backbone.View.extend({
 
         Backbone.on(EVENT_LEAVE_CHAT, function() {
              self.chatId = 0;
+             self.extraBoxView.chatId = 0;
         });
         
         Backbone.on(EVENT_ENTER_CHAT, function(chatId) {
             
             self.chatId = chatId;
+            self.extraBoxView.chatId = chatId;
             
             if(mainView.chatView.chatData.get('is_active') == 0){
                 $$("#chat_textbox").attr('disabled','disabled');
@@ -58,10 +61,25 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         $(this.el).html(U.simpleLocalizationFilter(this.template,LANG));
         
         var self = this;
-        
-        _.debounce(function() {
+
+       
+        // load sidebar
+        require([
+            'app/views/mainView/extraMessageBoxes',
+            'thirdparty/text!templates/mainView/extraMessageBoxes.tpl'
+        ], function (
+            ExtraBoxView,ExtraMessageBoxesTemplate
+            ) {
+            
+            self.extraBoxView = new SPIKA_ExtraMessageBoxesView({
+                template: ExtraMessageBoxesTemplate
+            });
+            
+            self.extraBoxView.postBoxView = self;
+            
             self.onload();
-        }, 100)();
+            
+        });
               
         return this;
     },
@@ -69,6 +87,9 @@ var SPIKA_PostBoxView = Backbone.View.extend({
     onload : function(){
 
         var self = this;
+
+        $$('').append(self.extraBoxView.render().el);
+
 
         $$("#chat_textbox").keypress(function(event) {
             
@@ -88,17 +109,10 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         $$('#btn_send').click(function(){
             self.sendMessage();
         });
-
-        // dummy file upload click
-        $$('#btn_upload_file').click(function(){
         
-            if(self.chatId == 0){
-                return;
-            }
-        
-            $$("#btn_dummy_file_upload").click();
-            
-            
+        $$('#btn_open_extra_menu').click(function(){
+            Backbone.trigger(EVENT_OPEN_EXTRAMESSAGE);
+            self.extraBoxView.show();
         });
         
         $$("#btn_dummy_file_upload").change(function (evt){
@@ -149,8 +163,6 @@ var SPIKA_PostBoxView = Backbone.View.extend({
             this.replyMeessageId = this.rootMessageId;
         }        
         
-        //$$('#chat_textbox').attr('disabled','disabled');
-        //$$('#chat_textbox').addClass('disabled');
         $$('#chat_textbox').val('');
         
         var data = {
@@ -163,24 +175,19 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         
         Backbone.trigger(EVENT_MESSAGE_SENDING,data);
         
+        this.sendTextMessage(data);
+
+    },
+    
+    sendTextMessage:function(data){
+
+        var self = this;
+        
         apiClient.sendMessage(data,
             function(data){
                 
-                self.isSending = false;
-                
-                //$$('#chat_textbox').removeAttr('disabled');
-                //$$('#chat_textbox').removeClass('disabled');
-                
+                self.isSending = false;                
                 Backbone.trigger(EVENT_MESSAGE_SENT,self.chatId);
-                
-                /*
-                $(U.sel('#chat_textbox')).val('');
-                $(U.sel("#chat_textbox")).height(self.chatBoxDefaultHeight);
-                Backbone.trigger(EVENT_MESSAGE_SENT,self.chatId);
-                Backbone.trigger(EVENT_TB_HEIGHT_UPDATED);
-                
-                self.replyMeessageId = 0;
-                */
 
             },function(data){
                 
@@ -188,8 +195,8 @@ var SPIKA_PostBoxView = Backbone.View.extend({
                 
         });
             
+            
     },
-    
     startProcessQueue:function(){
 
         var self = this;
@@ -240,10 +247,11 @@ var SPIKA_PostBoxView = Backbone.View.extend({
                 
                 if(type == MESSAGE_TYPE_FILE){
                     data.file_id = fileId;
-                    var encryptedHex = EncryptManager.encryptText(text);
-                    data.text = encryptedHex;
                 }
                 
+                var encryptedHex = EncryptManager.encryptText(text);
+                data.text = encryptedHex;
+                    
                 Backbone.trigger(EVENT_MESSAGE_SENDING,data);
                 
                 apiClient.sendMessage(data,function(data){

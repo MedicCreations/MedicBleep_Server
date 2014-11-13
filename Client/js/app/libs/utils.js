@@ -382,6 +382,28 @@ var U = {
     },
     getTS: function(){
         return Math.round(+new Date()/1000);
+    },
+    canUseVideo: function(){
+
+        navigator.getUserMedia  = navigator.getUserMedia ||
+                                  navigator.webkitGetUserMedia ||
+                                  navigator.mozGetUserMedia ||
+                                  navigator.msGetUserMedia;
+
+
+        return navigator.getUserMedia;
+        
+    },
+    getUserMedia: function(options,successListener,failedListener){
+    
+        navigator.getUserMedia  = navigator.getUserMedia ||
+                                  navigator.webkitGetUserMedia ||
+                                  navigator.mozGetUserMedia ||
+                                  navigator.msGetUserMedia;
+
+
+        return navigator.getUserMedia(options,successListener,failedListener);
+  
     }
 }
 
