@@ -5,7 +5,17 @@
 			var is_delete = 0;
 			if(data.type == 7)
 				is_delete = 1;
-				
+
+            var attributes = null;
+            
+            if(!_.isEmpty(data.attributes)){
+                try{
+                    attributes = JSON.parse(data.attributes);
+                }catch(ex){
+
+                } 
+            }
+
             return new ModelMessage(
                 { 
                     id: data.id,
@@ -27,7 +37,8 @@
                     root_id: data.root_id,
                     is_deleted: is_delete,
                     child_list: data.child_list,
-                    indent:0
+                    indent:0,
+                    attributes:attributes
                 });   
         },
         createModelByTempData : function(data){
@@ -110,7 +121,9 @@
             root_id: 0,
             child_list:'',
             is_deleted:0,
-            indent:0
+            indent:0,
+            attributes:null
+
         },
         initialize: function(){
             

@@ -75,6 +75,8 @@ var SPIKA_PostBoxView = Backbone.View.extend({
                 template: ExtraMessageBoxesTemplate
             });
             
+            self.extraBoxView.postBoxView = self;
+            
             self.onload();
             
         });
@@ -107,20 +109,6 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         $$('#btn_send').click(function(){
             self.sendMessage();
         });
-
-/*
-        // dummy file upload click
-        $$('#btn_upload_file').click(function(){
-        
-            if(self.chatId == 0){
-                return;
-            }
-        
-            $$("#btn_dummy_file_upload").click();
-            
-            
-        });
-*/
         
         $$('#btn_open_extra_menu').click(function(){
             Backbone.trigger(EVENT_OPEN_EXTRAMESSAGE);
@@ -175,8 +163,6 @@ var SPIKA_PostBoxView = Backbone.View.extend({
             this.replyMeessageId = this.rootMessageId;
         }        
         
-        //$$('#chat_textbox').attr('disabled','disabled');
-        //$$('#chat_textbox').addClass('disabled');
         $$('#chat_textbox').val('');
         
         var data = {
@@ -189,24 +175,19 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         
         Backbone.trigger(EVENT_MESSAGE_SENDING,data);
         
+        this.sendTextMessage(data);
+
+    },
+    
+    sendTextMessage:function(data){
+
+        var self = this;
+        
         apiClient.sendMessage(data,
             function(data){
                 
-                self.isSending = false;
-                
-                //$$('#chat_textbox').removeAttr('disabled');
-                //$$('#chat_textbox').removeClass('disabled');
-                
+                self.isSending = false;                
                 Backbone.trigger(EVENT_MESSAGE_SENT,self.chatId);
-                
-                /*
-                $(U.sel('#chat_textbox')).val('');
-                $(U.sel("#chat_textbox")).height(self.chatBoxDefaultHeight);
-                Backbone.trigger(EVENT_MESSAGE_SENT,self.chatId);
-                Backbone.trigger(EVENT_TB_HEIGHT_UPDATED);
-                
-                self.replyMeessageId = 0;
-                */
 
             },function(data){
                 
@@ -214,8 +195,8 @@ var SPIKA_PostBoxView = Backbone.View.extend({
                 
         });
             
+            
     },
-    
     startProcessQueue:function(){
 
         var self = this;

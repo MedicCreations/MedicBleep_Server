@@ -3,6 +3,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
     isOpened : false,
     chatId: 0,
     localMediaStream: null,
+    postBoxView: null,
     initialize: function(options) {
         
         var self = this;
@@ -31,7 +32,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
     },
     
     onload : function(){
-
+        
         var self = this;
         
         $$('header .userprofile').click(function(){
@@ -45,7 +46,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         $$('#extra_message_box li').mouseleave(function(){
             $(this).removeClass('selected');
         });
-
+        
         $$('#extra_message_box').mouseleave(function(){
             self.hide();
         });
@@ -60,6 +61,50 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
 
+        
+        // Source Code //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        $$('#extramessage_btn_code').click(function(){
+            
+            if(self.chatId == 0){
+                return;
+            }
+            
+            self.openSourceCodeDialog();
+            
+        });
+
+        // take picture
+        $$('#extramessage_dialog_view_code .alert_bottom_ok').click(function(){
+            
+            var text = $$('#extramessage_dialog_view_code textarea').val();
+            
+            var encryptedHex = EncryptManager.encryptText(text);
+            
+            var data = {
+                    chat_id:self.chatId,
+                    type:MESSAGE_TYPE_TEXT,
+                    text:encryptedHex,
+                    file_id:'',
+                    parent_id:self.postBoxView.replyMeessageId,
+                    attributes:{
+                        textType:'code'
+                    }
+            };
+
+            self.postBoxView.sendTextMessage(data);
+            $$('#extramessage_dialog_view_code').fadeOut();
+            
+        });
+        
+        $$('#extramessage_dialog_view_code .alert_bottom_cancel').click(function(){
+            
+            $$('#extramessage_dialog_view_code').fadeOut();
+            
+        });
+        
+        // Picture events //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         $$('#extramessage_btn_picture').click(function(){
             
             if(self.chatId == 0){
@@ -70,23 +115,24 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
         
-        // Picture events //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        
         // take picture
         $$('#extramessage_dialog_view_takepicture .alert_bottom_ok').click(function(){
             
-            var canvas = $$('#extramessage_dialog_view_takepicture canvas')[0];
-            var video = $$('#extramessage_dialog_view_takepicture video')[0];
-            var ctx = canvas.getContext('2d');
-            
-            setTimeout(function() {
-            
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
 
-                if (self.localMediaStream) {
-                    ctx.drawImage(video, 0, 0);
+            Webcam.snap( function(data_uri, canvas, context) {
+                
+                Webcam.reset();
+                
+                if(_.isNull(canvas))
+                    return;
+                    
+                var ctx = canvas.getContext('2d');
+                
+                setTimeout(function() {
+                
+                    //canvas.width = WEBCAMPIC_HEIGHT;
+                    //canvas.height = WEBCAMPIC_HEIGHT;
+    
                     var dataURL = canvas.toDataURL('image/jpeg');
                     var blob = dataURItoBlob(dataURL);
                     blob.name = 'picture.jpeg';
@@ -95,17 +141,18 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                     files.push(blob);
                     Backbone.trigger(EVENT_FILE_DROP,files);
                     
-                }
-                $$('#extramessage_dialog_view_takepicture').fadeOut();
-                
-            }, 100);
+                    $$('#extramessage_dialog_view_takepicture').fadeOut();
+                    
+                }, 100);
 
+
+            } );
             
         });
         
         $$('#extramessage_dialog_view_takepicture .alert_bottom_cancel').click(function(){
             
-            self.stopPlayingVideo('#extramessage_dialog_view_takepicture video');
+            Webcam.reset();
             $$('#extramessage_dialog_view_takepicture').fadeOut();
             
         });
@@ -147,36 +194,21 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
 
         $$('#extramessage_dialog_view_takepicture').fadeIn(function(){
             
-            var hdConstraints = {
-              video: {
-                mandatory: {
-                  minWidth: 1280,
-                  minHeight: 720
-                }
-              }
-            };
+            Webcam.attach( '#extramessage_dialog_view_takepicture .video_preview' );
 
-            
-            var video = $$('#extramessage_dialog_view_takepicture video')[0];
-            
-            if (U.canUseVideo()) {
-                
-                U.getUserMedia(hdConstraints, function(stream) {
-                    video.src = window.URL.createObjectURL(stream);
-                    self.localMediaStream = stream;
-                },function(){
-                
-                });
-              
-            } else {
-              
-              
-              
-            }
-            
         });
 
 
+    },
+    
+    openSourceCodeDialog:function(){
+        
+        $$('#extramessage_dialog_view_code').fadeIn(function(){
+            
+            
+
+        });
+        
     }
     
     

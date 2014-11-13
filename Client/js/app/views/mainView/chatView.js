@@ -332,7 +332,19 @@ var SPIKA_ChatView = Backbone.View.extend({
                 }
     
             });
-        
+            
+            var modelsToRemove = [];
+            
+            _.each(self.messages.models,function(model){
+                
+                if(model.get('id') == 0){
+                    modelsToRemove.push(model);
+                }
+                
+            });
+            
+            self.messages.remove(modelsToRemove);
+            
         },function(data){
             
             SPIKA_AlertManager.show(LANG.general_errortitle,LANG.chat_loadfailed);
@@ -392,10 +404,34 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         if(messageType == MESSAGE_TYPE_TEXT){
             content = decryptedText;
-            content = U.escapeHTML(content);
-            content = U.generalMessageFilter(content);
-            content = content.autoLink({ target: "_blank", rel: "nofollow", id: "1" });
-            content = content.split("\n").join("<br />");
+           
+            var isCode = false;
+             
+            if(!_.isNull(message.get('attributes'))){
+                if(message.get('attributes').textType){
+                    
+                    var textType = message.get('attributes').textType;
+                    
+                    U.l(textType);
+                    
+                    if(textType == 'code'){
+                        
+                        isCode = true;
+                        
+                    }
+                    
+                }
+            }
+            
+            if(isCode){
+                content = U.escapeHTML(content);
+                content = '<pre><code>' + content + '</code></pre>';
+            }else{
+                content = U.escapeHTML(content);
+                content = U.generalMessageFilter(content);
+                content = content.autoLink({ target: "_blank", rel: "nofollow", id: "1" });
+                content = content.split("\n").join("<br />");
+            }
         }
         
         else if(messageType == MESSAGE_TYPE_IMAGE){
@@ -630,7 +666,11 @@ var SPIKA_ChatView = Backbone.View.extend({
 			self.goThreadMode(message);
             
         });
-                
+
+        $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
+    
     },
     
     getMessageFromCacheById:function(messageId){

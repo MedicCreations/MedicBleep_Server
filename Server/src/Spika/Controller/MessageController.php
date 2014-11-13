@@ -33,6 +33,7 @@ class MessageController extends SpikaBaseController {
 			$latitude = "";
 			$root_id = 0;
 			$parent_id = 0;
+			$attributes = "";
 			
 			if (array_key_exists('text', $paramsAry)){
 				$text = $paramsAry['text'];
@@ -53,7 +54,11 @@ class MessageController extends SpikaBaseController {
 			if (array_key_exists('parent_id', $paramsAry)){
 				$parent_id = $paramsAry['parent_id'];
 			}
-			
+
+			if (array_key_exists('attributes', $paramsAry)){
+				$attributes = json_encode($paramsAry['attributes']);
+			}
+
 			$chat_data = $mySql->getChatWithID($app, $chat_id);
 			
 			if ($chat_data['is_deleted'] == 1){
@@ -108,7 +113,9 @@ class MessageController extends SpikaBaseController {
 				'longitude' => $longitude,
 				'latitude' => $latitude,
 				'root_id' => $root_id,
-				'parent_id' => $parent_id);
+				'attributes' => $root_id,
+				'parent_id' => $parent_id,
+				'attributes' => $attributes);
 			
 			$msg_id = $mySql->createMessage($app, $values);
 			
@@ -186,6 +193,7 @@ class MessageController extends SpikaBaseController {
                 $memberPushTokenListFormatted[$row['user_id']][] = $row;
     			 
 			}
+            
             
             $app['monolog']->addDebug(" chat members " . print_r($chat_members,true)); 
             $app['monolog']->addDebug(" device json " . json_encode($memberPushTokenListFormatted)); 

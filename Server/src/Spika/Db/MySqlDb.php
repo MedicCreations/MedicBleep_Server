@@ -145,6 +145,17 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function getUserByUsername(Application $app, $username){
+	
+		$sql = "SELECT * FROM user WHERE username = ?";
+	
+		$user = $app['db']->fetchAssoc($sql, array($username));
+	
+		return $user;
+	
+	}
+	
+	
 	public function updateUserImage(Application $app, $user_id, $image, $image_thumb){
 		
 		$where = array('id' => $user_id);

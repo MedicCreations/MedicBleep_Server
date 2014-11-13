@@ -66,3 +66,6 @@ var DEVICE_ANDROID = 3;
 
 var KEEPALIVE_INTERVAL = 20 * 1000; //msec
 var INDENT_UNITPIXEL= 20; // pixel per one 
+
+var WEBCAMPIC_WIDTH = 640;
+var WEBCAMPIC_HEIGHT = 480;
