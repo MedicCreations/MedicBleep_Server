@@ -70,6 +70,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 return;
             }
             
+            $$('#extramessage_dialog_view_code textarea').val('');
             self.openSourceCodeDialog();
             
         });
