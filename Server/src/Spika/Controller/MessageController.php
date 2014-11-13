@@ -273,7 +273,8 @@ class MessageController extends SpikaBaseController {
 							'chat_type' => $chat_type,
 							'is_active' => $chat['is_active'],
 							'admin_id' => $chat['admin_id'],
-							'chat_password' => $chat_password
+							'chat_password' => $chat_password,
+							'is_private' => $chat['is_private']
 							)
 			);
 				
