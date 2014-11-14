@@ -94,6 +94,9 @@ form {
 .red{
 	background: #E94B4D;
 }
+.gray{
+	background: #2E2F33;
+}
 
 /*------------------------------*/
 /*           header				*/
@@ -1213,6 +1216,16 @@ ul#user_menu li a{
 #extramessage_dialog_view_code textarea{
     width: 100%;
     height: 300px;
+}
+
+.record_buttons li{
+    width: 60px;
+    cursor: pointer;
+}
+
+.recording{
+    color: red;
+    display: none;
 }
 
 /*------------------------------*/

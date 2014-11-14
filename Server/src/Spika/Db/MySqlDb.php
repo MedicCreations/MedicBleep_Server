@@ -224,7 +224,11 @@ class MySqlDb implements DbInterface{
 		
 		$result = $app['db']->executeQuery($sql, array($my_user_id,$app['organization_id']))->fetch();
 		
-		return $result['COUNT(*)'];
+		if ($result == false){
+			return 0;
+		} else {
+			return $result["COUNT(*)"];
+		}
 	}
 	
 	
@@ -236,6 +240,17 @@ class MySqlDb implements DbInterface{
 		
 		return $user;
 		
+	}
+	
+	
+	public function getUserByTempPassword(Application $app, $temp_password){
+	
+		$sql = "SELECT * FROM user WHERE temp_password = ?  and user.organization_id = ? ";
+		
+		$user = $app['db']->fetchAssoc($sql, array($temp_password,$app['organization_id']));
+		
+		return $user;
+	
 	}
 	
 	
@@ -252,8 +267,8 @@ class MySqlDb implements DbInterface{
 	
 		$temp_password = $this->randomString(6,6);
 		
-		$values = array('temp_password' => $temp_password, 
-				'temp_password' => time());
+		$values = array('temp_password' => md5($temp_password), 
+				'temp_password_timestamp' => time());
 		$where = array('id' => $my_user_id);
 		
 		$app['db']->update('user', $values, $where);
@@ -298,7 +313,11 @@ class MySqlDb implements DbInterface{
 		
 		$result = $app['db']->executeQuery($sql, array($user_id,$app['organization_id']))->fetch();
 	
-		return $result['COUNT(*)'];
+		if ($result == false){
+			return 0;
+		} else {
+			return $result["COUNT(*)"];
+		}
 	}
 	
 	
@@ -867,7 +886,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRooms(Application $app, $user_id, $search, $offset, $category_id){
 	
-		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0)) and chat.organization_id = ? ";
+		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0)) and chat.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
@@ -887,7 +906,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRoomsCount(Application $app, $user_id, $search, $category_id){
 	
-		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0))  and chat.organization_id = ? ";
+		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0))  and chat.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
@@ -901,7 +920,11 @@ class MySqlDb implements DbInterface{
 		
 		$result = $app['db']->executeQuery($sql, array($user_id,$app['organization_id']))->fetch();
 		
-		return $result["COUNT(*)"];
+		if ($result == false){
+			return 0;
+		} else {
+			return $result["COUNT(*)"];
+		}
 	
 	}
 	

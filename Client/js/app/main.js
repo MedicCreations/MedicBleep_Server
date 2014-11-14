@@ -85,7 +85,9 @@ else{
                     'thirdparty/sjcl/sha256',
                     'thirdparty/sjcl/sha512',
                     'thirdparty/sjcl/srp',
+                    'thirdparty/browser',
                     'thirdparty/mimetype',
+                    'thirdparty/RecordRTC',
                     'thirdparty/webcamjs/webcam',
                     'thirdparty/highlight/highlight.pack',
                     'thirdparty/base64'], function() {

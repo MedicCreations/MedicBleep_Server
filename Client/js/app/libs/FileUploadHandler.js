@@ -6,7 +6,7 @@ var fileUploadHandler = {
         var fileType = file.type;
         
         var typeFilterImage = /jpeg|png/;
-        var typeFilterVideo = /mp4/;
+        var typeFilterVideo = /mp4|webm/;
         var typeFilterAudio = /wav|mp3/;
         
         if(fileType.match(typeFilterImage)){
