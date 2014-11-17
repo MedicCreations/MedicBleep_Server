@@ -10,7 +10,7 @@
             <i class="fa fa-file-video-o"></i><br />
                 Video
         </li>
-        <li  id="extramessage_btn_voice">
+        <li  id="extramessage_btn_audio">
             <i class="fa fa-microphone"></i><br />
                 Voice
         </li>
@@ -78,8 +78,7 @@
             <video style="width:100%;height:200px"></video>
             
             <ul class="record_buttons">
-                <li class="button gray stop">Stop</li>
-                <li class="button record">Recored</li>
+                <li class="button record">Record</li>
             </ul>
             
         </div>
@@ -91,6 +90,34 @@
         
     </div>
 </div>
+
+<!-- Audio -->
+<div class="extramessage_dialog_view" style="display:none" id="extramessage_dialog_view_takeaudio">
+    <div class="alert_box">
+        <div class="alert_title">Recode Audio</div>
+        
+        <div class="alert_content" style="text-align: center"> 
+            
+            <span class="recording">
+                <i class="fa fa-circle-o-notch fa-spin"></i> Recording
+            </span>
+            
+            <audio></audio>
+            
+            <ul class="record_buttons">
+                <li class="button record">Record</li>
+            </ul>
+            
+        </div>
+        
+        <div class="alert_bottom"> 
+            <a href="javascript:void(0)" class="alert_bottom_cancel"> Cancel </a> 
+            <a href="javascript:void(0)" class="alert_bottom_ok"> Send </a> 
+        </div>
+        
+    </div>
+</div>
+
 
 <!-- Code -->
 <div class="extramessage_dialog_view" style="display:none" id="extramessage_dialog_view_code">

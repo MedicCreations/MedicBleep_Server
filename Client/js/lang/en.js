@@ -56,5 +56,10 @@ LANG = {
       confirmation_delete : 'Are you sure to delete this message ?',
       title_edit_room: 'Edit Room',
       general_save: 'Save',
+      general_play: 'Play',
+      general_stop: 'Stop',
+      general_record: 'Record',
+      general_play: 'Play',
+      
       dummy : 'dummy'
 };

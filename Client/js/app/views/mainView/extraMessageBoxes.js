@@ -5,7 +5,9 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
     localMediaStream: null,
     postBoxView: null,
     videoRecordingStream: null,
+    audioRecordingStream: null,
     audioVideoRecorder:null,
+    isRecording: false,
     initialize: function(options) {
         
         var self = this;
@@ -185,51 +187,60 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             self.startRecordingVideo();
             
         });
-          
-        $$('#extramessage_dialog_view_takevideo .stop').click(function(){
-            
-            $$('.recording').css('display','none');
-            $$('#extramessage_dialog_view_takevideo .stop').addClass('gray');
-
-            var videoPreview = $$('#extramessage_dialog_view_takevideo video')[0];
-            
-            self.audioVideoRecorder.stopRecording(function(url) {
-                videoPreview.src = url;
-                videoPreview.muted = false;
-                videoPreview.play();
-                
-                videoPreview.onended = function() {
-                    videoPreview.pause();
-                    
-                    // dirty workaround for: "firefox seems unable to playback"
-                    videoPreview.src = URL.createObjectURL(self.audioVideoRecorder.getBlob());
-                };
-            });
-            
-        });
                 
         $$('#extramessage_dialog_view_takevideo .record').click(function(){
-                        
-            var videoPreview = $$('#extramessage_dialog_view_takevideo video')[0];
-
             
-            videoPreview.src = URL.createObjectURL(self.videoRecordingStream);
-            videoPreview.muted = true;
-            videoPreview.controls = true;
-            videoPreview.play();
+            if(self.isRecording == false){
+                
+                self.isRecording = true;
+                
+                var videoPreview = $$('#extramessage_dialog_view_takevideo video')[0];
+    
+                videoPreview.src = URL.createObjectURL(self.videoRecordingStream);
+                videoPreview.muted = true;
+                videoPreview.controls = true;
+                videoPreview.play();
+    
+    
+                var videoPreview = $$('#extramessage_dialog_view_takevideo video')[0];
+    
+                self.audioVideoRecorder = window.RecordRTC(self.videoRecordingStream, {
+                    type: 'video' // don't forget this; otherwise you'll get video/webm instead of audio/ogg
+                });
+                
+                self.audioVideoRecorder.startRecording();
+                            
+                $$('#extramessage_dialog_view_takevideo .record').addClass('red');
+                $$('#extramessage_dialog_view_takevideo .record').text(LANG.general_stop);
+                $$('.recording').css('display','block');
+
+            } else {
+                
+                self.isRecording = false;
+                
+                $$('.recording').css('display','none');
+                $$('#extramessage_dialog_view_takevideo .record').removeClass('red');
+                $$('#extramessage_dialog_view_takevideo .record').text(LANG.general_record);
 
 
-            var videoPreview = $$('#extramessage_dialog_view_takevideo video')[0];
-
-            self.audioVideoRecorder = window.RecordRTC(self.videoRecordingStream, {
-                type: 'video' // don't forget this; otherwise you'll get video/webm instead of audio/ogg
-            });
-            
-            self.audioVideoRecorder.startRecording();
+                var videoPreview = $$('#extramessage_dialog_view_takevideo video')[0];
+                
+                self.audioVideoRecorder.stopRecording(function(url) {
+                    videoPreview.src = url;
+                    videoPreview.muted = false;
+                    videoPreview.play();
+                    
+                    videoPreview.onended = function() {
+                        videoPreview.pause();
                         
-            $$('#extramessage_dialog_view_takevideo .stop').removeClass('gray');
-            $$('.recording').css('display','block');
-
+                        // dirty workaround for: "firefox seems unable to playback"
+                        videoPreview.src = URL.createObjectURL(self.audioVideoRecorder.getBlob());
+                        
+                    };
+                });
+                
+            }
+            
         });
                 
         // take picture
@@ -256,7 +267,119 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         });
         
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    
+        // Audio events //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
+        $$('#extramessage_btn_audio').click(function(){
+            
+            if(self.chatId == 0){
+                return;
+            }
+            
+            self.startRecordingAudio();
+            
+        });
+
+        $$('#extramessage_dialog_view_takeaudio .stop').click(function(){
+            
+            $$('.recording').css('display','none');
+            $$('#extramessage_dialog_view_takeaudio .stop').addClass('gray');
+
+            var audioPreview = $$('#extramessage_dialog_view_takeaudio audio')[0];
+            
+            self.audioVideoRecorder.stopRecording(function(url) {
+                audioPreview.src = url;
+                audioPreview.muted = false;
+                audioPreview.play();
+                
+                audioPreview.onended = function() {
+                    audioPreview.pause();
+                    
+                    // dirty workaround for: "firefox seems unable to playback"
+                    audioPreview.src = URL.createObjectURL(self.audioVideoRecorder.getBlob());
+                };
+            });
+            
+        });
+
+
+        $$('#extramessage_dialog_view_takeaudio .record').click(function(){
+                     
+            if(self.isRecording == false){
+                
+                self.isRecording = true;
+
+                var audioPreview = $$('#extramessage_dialog_view_takeaudio audio')[0];
+                
+                audioPreview.src = URL.createObjectURL(self.audioRecordingStream);
+                audioPreview.muted = true;
+                audioPreview.controls = true;
+                audioPreview.play();
+    
+                self.audioVideoRecorder = window.RecordRTC(self.audioRecordingStream, {
+                    type: 'audio' // don't forget this; otherwise you'll get video/webm instead of audio/ogg
+                });
+                
+                self.audioVideoRecorder.startRecording();
+                            
+                $$('#extramessage_dialog_view_takeaudio .record').addClass('red');
+                $$('#extramessage_dialog_view_takeaudio .record').text(LANG.general_stop);
+                $$('.recording').css('display','block');
+                
+            } else {
+                
+                self.isRecording = false;
+                
+                $$('#extramessage_dialog_view_takeaudio .record').removeClass('red');
+                $$('#extramessage_dialog_view_takeaudio .record').text(LANG.general_record);
+                $$('.recording').css('display','none');
+    
+                var audioPreview = $$('#extramessage_dialog_view_takeaudio audio')[0];
+                
+                self.audioVideoRecorder.stopRecording(function(url) {
+                    audioPreview.src = url;
+                    audioPreview.muted = false;
+                    audioPreview.play();
+                    
+                    audioPreview.onended = function() {
+                        audioPreview.pause();
+                        
+                        // dirty workaround for: "firefox seems unable to playback"
+                        audioPreview.src = URL.createObjectURL(self.audioVideoRecorder.getBlob());
+                    };
+                });
+
+                
+            }
+
+        });
+                
+        $$('#extramessage_dialog_view_takeaudio .alert_bottom_ok').click(function(){
+            
+            var blob = self.audioVideoRecorder.getBlob();
+            blob.name = 'audio.wav';
+            
+            var files = [];
+            files.push(blob);
+            Backbone.trigger(EVENT_FILE_DROP,files);
+            
+            try { self.audioRecordingStream.stop(); } catch (e) {;}
+            $$('#extramessage_dialog_view_takeaudio').fadeOut();
+            
+        });
+        
+        $$('#extramessage_dialog_view_takeaudio .alert_bottom_cancel').click(function(){
+            
+            try { self.audioRecordingStream.stop(); } catch (e) {;}
+            $$('#extramessage_dialog_view_takeaudio').fadeOut();
+            
+        });
+        
+        
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ 
     },
     
     show : function(){
@@ -332,11 +455,38 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             }, function(error) { c
                 onsole.error(error); 
             });
-            
-
 
         });
 
+    },
+
+    startRecordingAudio:function(){
+        
+        var self = this;
+
+        $$('#extramessage_dialog_view_takeaudio').fadeIn(function(){
+            
+            navigator.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
+            
+            navigator.getUserMedia({ audio: true, video: false }, function(stream) {
+                
+                var audioPreview = $$('#extramessage_dialog_view_takeaudio audio')[0];
+                
+                audioPreview.src = URL.createObjectURL(stream);
+                audioPreview.muted = true;
+                audioPreview.controls = true;
+                audioPreview.play();
+
+                self.audioRecordingStream = stream;
+                
+                // hack to show audio controll..
+                $$('#extramessage_dialog_view_takeaudio audio').css('width','100%');
+                
+            }, function(error) { c
+                onsole.error(error); 
+            });
+
+        });
 
     },
     
