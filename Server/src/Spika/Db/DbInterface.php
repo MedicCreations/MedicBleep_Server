@@ -16,6 +16,7 @@ interface DbInterface
 	public function getUsersNotMe(Application $app, $my_user_id, $search, $offset);
 	public function getUsersCountNotMe(Application $app, $my_user_id, $search);
 	public function getUserByID(Application $app, $user_id);
+	public function getUserByTempPassword(Application $app, $temp_password);
 	public function updateUser(Application $app, $user_id, $values);
 	public function createTempPassword(Application $app, $my_user_id);
 	

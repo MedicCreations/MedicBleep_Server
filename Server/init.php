@@ -76,6 +76,7 @@ define("MSG_DELETED", 7);
 define('CODE_SUCCESS', 2000);
 
 //error codes
+define('ER_DEFAULT', 1111);
 define('ER_INVALID_TOKEN', 1000);
 define('ER_TOKEN_EXPIRED', 1001);
 define('ER_DIR_NOT_WRITABLE', 1002);
@@ -88,6 +89,10 @@ define('ER_PAGE_NOT_FOUND', 1008);
 define('ER_NOT_GROUP_ADMIN', 1009);
 define('ER_EMAIL_MISSING', 1010);
 
+define('ER_TEMP_PASSWORD_NOT_VALID', 1011);
+define('ER_LOGIN_WITH_TEMP_PASS', 1012);
+define('ER_USERNAME_NOT_EXIST', 1013);
+define('ER_INVALID_TEMP_PASSWORD', 1014);
 
 // device types
 define('DEVICE_IOS', 2);

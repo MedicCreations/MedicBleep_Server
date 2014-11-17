@@ -53,8 +53,7 @@ class UserController extends SpikaBaseController {
 					//temp password is valid
 					$result = array(
 						'code' => ER_LOGIN_WITH_TEMP_PASS,
-						'message' => 'Login with temp password', 
-						'token' => $user['token']
+						'message' => 'Login with temp password'
 					);
 					
 					return $app->json($result, 200);
@@ -401,16 +400,24 @@ class UserController extends SpikaBaseController {
 						'url' => INFORMATION_URL);
 			return $app->json($result, 200);
 			
-		});
+		})->before($app['beforeSpikaTokenChecker']);
 		
 		
 		$controllers->post('password/forgot', function (Request $request) use ($app, $self, $mySql){
 			
-			$paramsAry = $request->query->all();
+			$paramsAry = $request->request->all();
 			
 			$username = $paramsAry['username'];
 			
 			$user = $mySql->getUserByUsername($app, $username);
+			
+			if (!is_array($user)){
+			
+				$result = array('code' => ER_USERNAME_NOT_EXIST,
+					'message' => 'Username doesn\'t exist');
+				return $app->json($result, 200);
+			
+			}
 			
 			$my_user_id = $user['id'];
 			$user_details = $user['details'];
@@ -443,7 +450,7 @@ class UserController extends SpikaBaseController {
 				->setSubject('Spika forgot password')
 				->setFrom(array('sinisa.brcina@clover-studio.com'))
 				->setTo(array($email))
-				->setBody('Your temp password is: ' . $temp_pass . 'and will be valid for one hour');
+				->setBody('Your temp password is: ' . $temp_pass . ' and will be valid for one hour');
 	
 			$app['mailer']->send($message);
 			
@@ -452,10 +459,50 @@ class UserController extends SpikaBaseController {
 		
 			return $app->json($result, 200);
 		
-		})->before($app['beforeSpikaTokenChecker']);
+		});
 		
 		
 		$controllers->post('password/change', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->request->all();
+			
+			$temp_password = $paramsAry['temp_password'];
+			$new_password = $paramsAry['new_password'];
+			
+			$user = $mySql->getUserByTempPassword($app, $temp_password);
+			
+			if (!is_array($user)){
+			
+				$result = array('code' => ER_INVALID_TEMP_PASSWORD,
+					'message' => 'User doesn\'t exist');
+				return $app->json($result, 200);
+			
+			}
+			
+			$my_user_id = $user['id'];
+			
+			$token = $self->randomString(40,40);
+			$values = array('password' => $new_password,
+						'token' => $token);
+			
+			$mySql->updateUser($app, $my_user_id, $values);
+			
+			$user = $mySql->getUserById($app, $my_user_id);
+			
+			$result = array('code' => CODE_SUCCESS,
+						'user_id' =>  $user['id'],
+						'token' => $user['token'],
+						'firstname' => $user['firstname'],
+						'lastname' => $user['lastname'],
+						'image' => $user['image'],
+						'image_thumb' => $user['image_thumb']);
+		
+			return $app->json($result, 200);
+		
+		});
+		
+		
+		$controllers->post('password/update', function (Request $request) use ($app, $self, $mySql){
 			
 			$paramsAry = $request->request->all();
 			
@@ -463,12 +510,21 @@ class UserController extends SpikaBaseController {
 			
 			$my_user_id = $app['user']['id'];
 			
-			$values = array('password' => $new_password);
+			$token = $self->randomString(40,40);
+			$values = array('password' => $new_password,
+						'token' => $token);
 			
 			$mySql->updateUser($app, $my_user_id, $values);
 			
+			$user = $mySql->getUserById($app, $my_user_id);
+			
 			$result = array('code' => CODE_SUCCESS,
-					'message' => 'OK');
+						'user_id' =>  $user['id'],
+						'token' => $user['token'],
+						'firstname' => $user['firstname'],
+						'lastname' => $user['lastname'],
+						'image' => $user['image'],
+						'image_thumb' => $user['image_thumb']);
 		
 			return $app->json($result, 200);
 		
@@ -478,11 +534,11 @@ class UserController extends SpikaBaseController {
 		$controllers->get('test', function (Request $request) use ($app, $self, $mySql){
 			
 			$user_id = 201289;
-			$search = "";
+			$search = "fffffffff";
 			$offset = 0;
 			$category_id = 0;
 			
-			$rooms = $mySql->getRooms($app, $user_id, $search, $offset, $category_id);
+			$rooms = $mySql->getRoomsCount($app, $user_id, $search, $offset, $category_id);
 			
 			var_dump($rooms);
 			

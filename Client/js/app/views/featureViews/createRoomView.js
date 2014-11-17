@@ -413,8 +413,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     },
     prepareChatData:function(){
         
-        if(_.isNull(this.chatData)){
-            this.prepareChatData(false);
+        if(_.isEmpty(this.chatData)){
             $$('header').text(LANG.title_new_room);
         }else{
             this.setChatData(this.chatData);
