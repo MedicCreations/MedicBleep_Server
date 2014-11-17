@@ -170,9 +170,21 @@ class ChatController extends SpikaBaseController {
 				$page = $paramsAry['page'];
 			}
 			
+			$admin = $mySql->getChatAdmin($app, $chat_id);
+			$admin['is_admin'] = true;
+			
 			$offset = $page*USERS_PAGE_SIZE;
 			
 			$members = $mySql->getChatMembers($app, $chat_id);
+			
+			foreach($members as $key => $member){
+				if ($member['user_id'] == $admin['user_id']){
+						unset($members[$key]);
+						break;
+					}
+			}
+			
+			array_unshift($members, $admin);
 			
 			$page_members = array_slice($members, $offset, USERS_PAGE_SIZE);
 			

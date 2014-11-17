@@ -643,6 +643,17 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function getChatAdmin(Application $app, $chat_id){
+	
+		$sql = "SELECT chat_member.user_id, chat_member.chat_id, chat_member.is_deleted, user.firstname, user.lastname, user.image, user.image_thumb, user.last_device_id, user.web_opened FROM chat, user, chat_member WHERE chat.admin_id = user.id AND chat_member.user_id = user.id AND chat_member.chat_id = chat.id AND chat.id = ?";
+		
+		$admin = $app['db']->fetchAssoc($sql, array($chat_id));
+		
+		return $admin;
+	
+	}
+	
+	
 	public function createMessage(Application $app, $values){
 		
 		$values['created'] = time(); 
@@ -946,7 +957,13 @@ class MySqlDb implements DbInterface{
 		}
 		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
-		$result = array_merge($groups,$users);
+		$sql = "SELECT chat.id, chat.name, chat.image, chat.image_thumb, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
+		if ($search != ""){
+			$sql = $sql . " and chat.name LIKE '" . $search . "%'";
+		}
+		$rooms = $app['db']->fetchAll($sql, array($app['organization_id']));
+		
+		$result = array_merge($groups,$rooms,$users);
 		
 		usort(
 			$result,

@@ -76,7 +76,8 @@
             </span>
             
             <video style="width:100%;height:200px"></video>
-            
+            <audio style="display:none"></audio>
+
             <ul class="record_buttons">
                 <li class="button record">Record</li>
             </ul>
