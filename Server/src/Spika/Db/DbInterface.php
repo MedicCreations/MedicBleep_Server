@@ -40,6 +40,7 @@ interface DbInterface
 	public function updateChat(Application $app, $chat_id, $values);
 	public function updateChatMember(Application $app, $chat_id, $user_id, $values);
 	public function isChatMember(Application $app, $user_id, $chat_id);
+	public function getChatAdmin(Application $app, $chat_id);
 	
 	public function createMessage(Application $app, $values);
 	public function getLastMessages(Application $app, $chat_id);

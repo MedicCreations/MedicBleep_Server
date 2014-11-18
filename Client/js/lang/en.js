@@ -60,6 +60,8 @@ LANG = {
       general_stop: 'Stop',
       general_record: 'Record',
       general_play: 'Play',
-      
+      general_uploading: "Upload Video",
+      encoding_video: "Converting Video Format",
+      videoupload_error: "Error happens while uploading video.Please try again after.",
       dummy : 'dummy'
 };

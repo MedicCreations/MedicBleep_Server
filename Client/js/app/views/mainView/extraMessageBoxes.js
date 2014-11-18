@@ -7,6 +7,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
     videoRecordingStream: null,
     audioRecordingStream: null,
     audioVideoRecorder:null,
+    audioVideoRecorderAudio:null,
     isRecording: false,
     initialize: function(options) {
         
@@ -74,7 +75,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
             $$('#extramessage_btn_picture').css('display','none');
             $$('#extramessage_btn_video').css('display','none');
-            $$('#extramessage_btn_voice').css('display','none');
+            $$('#extramessage_btn_audio').css('display','none');
             
         }
 
@@ -178,12 +179,17 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
     
         // Video events //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        $$('#extramessage_dialog_view_takevideo video').on('play',function(){
+            $$('#extramessage_dialog_view_takevideo audio')[0].play();
+        });
+
         $$('#extramessage_btn_video').click(function(){
             
             if(self.chatId == 0){
                 return;
             }
             
+            $$('#extramessage_dialog_view_takevideo .alert_bottom_ok').css('display','none');
             self.startRecordingVideo();
             
         });
@@ -195,12 +201,10 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 self.isRecording = true;
                 
                 var videoPreview = $$('#extramessage_dialog_view_takevideo video')[0];
-    
                 videoPreview.src = URL.createObjectURL(self.videoRecordingStream);
                 videoPreview.muted = true;
                 videoPreview.controls = true;
                 videoPreview.play();
-    
     
                 var videoPreview = $$('#extramessage_dialog_view_takevideo video')[0];
     
@@ -210,6 +214,12 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 
                 self.audioVideoRecorder.startRecording();
                             
+                self.audioVideoRecorderAudio = window.RecordRTC(self.audioRecordingStream, {
+                    type: 'audio' // don't forget this; otherwise you'll get video/webm instead of audio/ogg
+                });
+                
+                self.audioVideoRecorderAudio.startRecording();
+                            
                 $$('#extramessage_dialog_view_takevideo .record').addClass('red');
                 $$('#extramessage_dialog_view_takevideo .record').text(LANG.general_stop);
                 $$('.recording').css('display','block');
@@ -217,51 +227,96 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             } else {
                 
                 self.isRecording = false;
+                $$('#extramessage_dialog_view_takevideo .alert_bottom_ok').css('display','inline-block');
                 
                 $$('.recording').css('display','none');
                 $$('#extramessage_dialog_view_takevideo .record').removeClass('red');
                 $$('#extramessage_dialog_view_takevideo .record').text(LANG.general_record);
 
-
                 var videoPreview = $$('#extramessage_dialog_view_takevideo video')[0];
-                
-                self.audioVideoRecorder.stopRecording(function(url) {
-                    videoPreview.src = url;
-                    videoPreview.muted = false;
-                    videoPreview.play();
+                var audioPreview = $$('#extramessage_dialog_view_takevideo audio')[0];
+
+                self.audioVideoRecorder.stopRecording(function(url1) {
+
+                    self.audioVideoRecorderAudio.stopRecording(function(url2) {
+                        
+                        audioPreview.src = url2;
+                        audioPreview.muted = false;
+                        //audioPreview.play();
+                        
+                        videoPreview.src = url1;
+                        videoPreview.muted = true;
+                        videoPreview.play();
+                        
+                        videoPreview.onended = function() {
+                            videoPreview.pause();
+                            
+                            // dirty workaround for: "firefox seems unable to playback"
+                            videoPreview.src = URL.createObjectURL(self.audioVideoRecorder.getBlob());
+                            
+                        };
+                        
+                    });
                     
-                    videoPreview.onended = function() {
-                        videoPreview.pause();
-                        
-                        // dirty workaround for: "firefox seems unable to playback"
-                        videoPreview.src = URL.createObjectURL(self.audioVideoRecorder.getBlob());
-                        
-                    };
                 });
                 
             }
             
         });
                 
-        // take picture
         $$('#extramessage_dialog_view_takevideo .alert_bottom_ok').click(function(){
             
-            var blob = self.audioVideoRecorder.getBlob();
-            blob.name = 'video.mp4';
-            
-            var files = [];
-            files.push(blob);
-            Backbone.trigger(EVENT_FILE_DROP,files);
-            
             try { self.videoRecordingStream.stop(); } catch (e) {;}
-            
+            try { self.audioRecordingStream.stop(); } catch (e) {;}
             $$('#extramessage_dialog_view_takevideo').fadeOut();
             
+            var blobVideo = self.audioVideoRecorder.getBlob();
+            var blobAudio = self.audioVideoRecorderAudio.getBlob();
+
+            SPIKA_ProgressManager.show();
+            SPIKA_ProgressManager.setTitle(LANG.general_uploading);
+            SPIKA_ProgressManager.setText(LANG.encoding_video);
+            SPIKA_ProgressManager.setProgress(0);
+            
+            // upload big image
+            apiClient.mixAudioVideo(blobVideo,blobAudio,function(data){
+                
+                try{
+                
+                    var blob = U.base64ToBlob(data.data,'video/mp4');
+                    blob.name = 'video.mp4';
+    
+                    var files = [];
+                    files.push(blob);
+                    Backbone.trigger(EVENT_FILE_DROP,files);
+                
+                } catch(ex){
+                    
+                    U.l(ex);
+                    
+                    SPIKA_ProgressManager.hide();
+                    SPIKA_AlertManager.show(LANG.general_errortitle,LANG.videoupload_error);
+                
+                }
+
+            },function(data){
+                
+                SPIKA_ProgressManager.hide();
+                SPIKA_AlertManager.show(LANG.general_errortitle,data);
+                
+            },function(progress){
+                
+                SPIKA_ProgressManager.setProgress(progress);
+                
+            }); 
+
         });
         
         $$('#extramessage_dialog_view_takevideo .alert_bottom_cancel').click(function(){
             
             try { self.videoRecordingStream.stop(); } catch (e) {;}
+            try { self.audioRecordingStream.stop(); } catch (e) {;}
+
             $$('#extramessage_dialog_view_takevideo').fadeOut();
             
         });
@@ -277,32 +332,11 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 return;
             }
             
+            $$('#extramessage_dialog_view_takeaudio .alert_bottom_ok').css('display','none');
+            
             self.startRecordingAudio();
             
         });
-
-        $$('#extramessage_dialog_view_takeaudio .stop').click(function(){
-            
-            $$('.recording').css('display','none');
-            $$('#extramessage_dialog_view_takeaudio .stop').addClass('gray');
-
-            var audioPreview = $$('#extramessage_dialog_view_takeaudio audio')[0];
-            
-            self.audioVideoRecorder.stopRecording(function(url) {
-                audioPreview.src = url;
-                audioPreview.muted = false;
-                audioPreview.play();
-                
-                audioPreview.onended = function() {
-                    audioPreview.pause();
-                    
-                    // dirty workaround for: "firefox seems unable to playback"
-                    audioPreview.src = URL.createObjectURL(self.audioVideoRecorder.getBlob());
-                };
-            });
-            
-        });
-
 
         $$('#extramessage_dialog_view_takeaudio .record').click(function(){
                      
@@ -336,7 +370,8 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 $$('.recording').css('display','none');
     
                 var audioPreview = $$('#extramessage_dialog_view_takeaudio audio')[0];
-                
+                $$('#extramessage_dialog_view_takeaudio .alert_bottom_ok').css('display','inline-block');
+
                 self.audioVideoRecorder.stopRecording(function(url) {
                     audioPreview.src = url;
                     audioPreview.muted = false;
@@ -436,12 +471,14 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
     startRecordingVideo:function(){
         
         var self = this;
-
+        $$('#extramessage_dialog_view_takevideo audio')[0].src = null;
+        $$('#extramessage_dialog_view_takevideo video')[0].src = null;
+        
         $$('#extramessage_dialog_view_takevideo').fadeIn(function(){
             
             navigator.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
             
-            navigator.getUserMedia({ audio: true, video: true }, function(stream) {
+            navigator.getUserMedia({ audio: false, video: true }, function(stream) {
                 
                 var videoPreview = $$('#extramessage_dialog_view_takevideo video')[0];
                 
@@ -451,11 +488,20 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 videoPreview.play();
 
                 self.videoRecordingStream = stream;
-                
+
+                navigator.getUserMedia({ audio: true, video: false }, function(stream) {
+                    
+                    self.audioRecordingStream = stream;
+                    
+                }, function(error) { c
+                    onsole.error(error); 
+                });
+
             }, function(error) { c
                 onsole.error(error); 
             });
 
+            
         });
 
     },

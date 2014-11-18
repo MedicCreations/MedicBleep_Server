@@ -97,7 +97,7 @@ else{
 	            
 	            
 	            // global variables
-	            window.apiClient = new SpikaClient(API_URL);
+	            window.apiClient = new SpikaClient(API_URL,ENCODER_URL);
 	            window.mainView = null;
 	            SPIKA_notificationManger.init();
 	            SPIKA_soundManager.init();
