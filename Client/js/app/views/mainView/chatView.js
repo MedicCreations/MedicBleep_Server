@@ -262,13 +262,14 @@ var SPIKA_ChatView = Backbone.View.extend({
             if(!_.isUndefined(data.total_count))
                 self.totalMessageCount = data.total_count;
             
+            
             var newMessages = messageFactory.createCollectionByAPIResponse(data).models;
             
             self.messages.add(newMessages);
 			self.messages.sort();
 
 			if(refresh)
-            	self.renderMessages(REFRESH,newMessages);
+            	self.renderMessages(REFRESH,self.messages.models);
             else
             	self.renderMessages(APPENDTOP,newMessages);
             	
@@ -369,6 +370,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         // generate tree structure
         if(this.displayMode == CHATVIEW_THREADMODE){
+            
 	        var treeData = self.unflatten(0,messages);
 	        
 	        var flattenMessages = [];
@@ -757,10 +759,10 @@ var SPIKA_ChatView = Backbone.View.extend({
 		
 		var self = this;
 		
-		messages = this.formatMessages(messages,true);
+		messages = this.formatMessages(messages,false);
 
         var beforeHeight = $$('#main_container article')[0].scrollHeight
-                    
+        
         if(appendPos == REFRESH){
 	        
             var template = _.template($$('#template_message_row').html(), {messages: messages}); 
