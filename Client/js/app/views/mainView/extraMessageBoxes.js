@@ -189,6 +189,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 return;
             }
             
+            $$('#extramessage_dialog_view_takevideo .alert_bottom_ok').css('display','none');
             self.startRecordingVideo();
             
         });
@@ -226,6 +227,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             } else {
                 
                 self.isRecording = false;
+                $$('#extramessage_dialog_view_takevideo .alert_bottom_ok').css('display','inline-block');
                 
                 $$('.recording').css('display','none');
                 $$('#extramessage_dialog_view_takevideo .record').removeClass('red');
@@ -264,56 +266,50 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 
         $$('#extramessage_dialog_view_takevideo .alert_bottom_ok').click(function(){
             
+            try { self.videoRecordingStream.stop(); } catch (e) {;}
+            try { self.audioRecordingStream.stop(); } catch (e) {;}
+            $$('#extramessage_dialog_view_takevideo').fadeOut();
+            
             var blobVideo = self.audioVideoRecorder.getBlob();
-            
-            // browser compatibility
-            if (bowser.chrome || bowser.android) {
-                blobVideo.name = 'video.webm';
-            }else if(bowser.firefox) {
-                blobVideo.name = 'video.mp4';
-            }else {
-                blobVideo.name = 'video.webm';
-            }
-            
             var blobAudio = self.audioVideoRecorderAudio.getBlob();
-            blobAudio.name = 'audio.wav';
+
+            SPIKA_ProgressManager.show();
+            SPIKA_ProgressManager.setTitle(LANG.general_uploading);
+            SPIKA_ProgressManager.setText(LANG.encoding_video);
+            SPIKA_ProgressManager.setProgress(0);
             
             // upload big image
-            apiClient.fileUpload(blobVideo,function(data){
+            apiClient.mixAudioVideo(blobVideo,blobAudio,function(data){
                 
-                U.l(data);
-
-                apiClient.fileUpload(blobAudio,function(data){
+                try{
+                
+                    var blob = U.base64ToBlob(data.data,'video/mp4');
+                    blob.name = 'video.mp4';
+    
+                    var files = [];
+                    files.push(blob);
+                    Backbone.trigger(EVENT_FILE_DROP,files);
+                
+                } catch(ex){
                     
-                    U.l(data);
+                    U.l(ex);
                     
-                },function(data){
-                    
-                    
-                },function(progress){
-                    
-                    
-                }); 
-
+                    SPIKA_ProgressManager.hide();
+                    SPIKA_AlertManager.show(LANG.general_errortitle,LANG.videoupload_error);
+                
+                }
 
             },function(data){
                 
+                SPIKA_ProgressManager.hide();
+                SPIKA_AlertManager.show(LANG.general_errortitle,data);
                 
             },function(progress){
                 
+                SPIKA_ProgressManager.setProgress(progress);
                 
             }); 
 
-            /*
-            var files = [];
-            files.push(blob);
-            Backbone.trigger(EVENT_FILE_DROP,files);
-            
-            try { self.videoRecordingStream.stop(); } catch (e) {;}
-            try { self.audioRecordingStream.stop(); } catch (e) {;}
-            
-            $$('#extramessage_dialog_view_takevideo').fadeOut();
-            */
         });
         
         $$('#extramessage_dialog_view_takevideo .alert_bottom_cancel').click(function(){
@@ -336,32 +332,11 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 return;
             }
             
+            $$('#extramessage_dialog_view_takeaudio .alert_bottom_ok').css('display','none');
+            
             self.startRecordingAudio();
             
         });
-
-        $$('#extramessage_dialog_view_takeaudio .stop').click(function(){
-            
-            $$('.recording').css('display','none');
-            $$('#extramessage_dialog_view_takeaudio .stop').addClass('gray');
-
-            var audioPreview = $$('#extramessage_dialog_view_takeaudio audio')[0];
-            
-            self.audioVideoRecorder.stopRecording(function(url) {
-                audioPreview.src = url;
-                audioPreview.muted = false;
-                audioPreview.play();
-                
-                audioPreview.onended = function() {
-                    audioPreview.pause();
-                    
-                    // dirty workaround for: "firefox seems unable to playback"
-                    audioPreview.src = URL.createObjectURL(self.audioVideoRecorder.getBlob());
-                };
-            });
-            
-        });
-
 
         $$('#extramessage_dialog_view_takeaudio .record').click(function(){
                      
@@ -395,7 +370,8 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 $$('.recording').css('display','none');
     
                 var audioPreview = $$('#extramessage_dialog_view_takeaudio audio')[0];
-                
+                $$('#extramessage_dialog_view_takeaudio .alert_bottom_ok').css('display','inline-block');
+
                 self.audioVideoRecorder.stopRecording(function(url) {
                     audioPreview.src = url;
                     audioPreview.muted = false;

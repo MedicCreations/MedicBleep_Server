@@ -404,6 +404,21 @@ var U = {
 
         return navigator.getUserMedia(options,successListener,failedListener);
   
+    },
+    base64ToBlob: function(blob,mimeType){
+
+        var byteCharacters = atob(blob);
+
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        
+        var byteArray = new Uint8Array(byteNumbers);
+        var blob = new Blob([byteArray],{type: mimeType});
+        
+        return blob;
+                
     }
 }
 

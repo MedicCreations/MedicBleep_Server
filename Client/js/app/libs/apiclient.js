@@ -1,6 +1,7 @@
-function SpikaClient(apiEndPointUrl)
+function SpikaClient(apiEndPointUrl,videoEncoderUrl)
 {
     this.apiEndPointUrl = apiEndPointUrl;
+    this.videoEncoderUrl = videoEncoderUrl;
     this.currentUser = null;
     this.authorized = false;
     this.error = false;
@@ -978,6 +979,70 @@ SpikaClient.prototype.deleteMessage = function(messageId,succeessListener,failed
     });
 
 };
+
+
+
+SpikaClient.prototype.mixAudioVideo = function(fileVideo,fileAudio,succeessListener,failedListener,progressListener)
+{
+    
+    var self = this;
+    
+    // browser compatibility
+    if (bowser.chrome || bowser.android) {
+        fileVideo.name = 'video.webm';
+    }else if(bowser.firefox) {
+        fileVideo.name = 'video.mp4';
+    }else {
+        fileVideo.name = 'video.webm';
+    }
+    
+    fileAudio.name = 'audio.wav';
+            
+    var formData = new FormData();
+    formData.append('audioFile', fileAudio,fileAudio.name);
+    formData.append('videoFile', fileVideo,fileVideo.name);
+    
+    var request = $.ajax({
+        url: this.videoEncoderUrl + '/audio_video_mixser.php',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {"token":this.token,"api-agent":this.UA},
+        xhr: function() {
+            var myXhr = $.ajaxSettings.xhr();
+            if (myXhr.upload) {
+                myXhr.upload.addEventListener('progress',function(ev) {
+                    if (ev.lengthComputable) {
+                        var percentUploaded = Math.floor(ev.loaded * 100 / ev.total);
+                        progressListener(percentUploaded);
+                    } else {
+
+                    }
+               }, false);
+            }
+            return myXhr;
+        }
+    });
+    
+    request.done(function( data ) {
+        
+        data = JSON.parse(data);
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    request.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+}
+
 
 
 SpikaClient.prototype.test = function()
