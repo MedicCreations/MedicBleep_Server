@@ -513,6 +513,7 @@ footer #mess_type ul li textarea.disabled{
 	padding: 5px 5px 5px 5px;
 	text-align: left;
 	position: relative;
+	min-height: 65px;
 }
 
 #chat article section div.message_icon_holder{

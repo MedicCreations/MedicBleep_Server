@@ -37,6 +37,7 @@
                 				<%= message.get('firstname') %> <%= message.get('lastname') %>
                 			</h2>
                 			<p class="text">
+                			    <%= message.get('id') %>
                 				<%= message.get('content') %>
                 				<!-- <input class="download" type="button" value="Download" /> -->
                 			</p>

@@ -18,7 +18,7 @@
 
             return new ModelMessage(
                 { 
-                    id: data.id,
+                    id: parseInt(data.id),
                     chat_id: data.chat_id,
                     created: data.created,
                     file_id: data.file_id,
@@ -148,6 +148,6 @@
             
         },
         comparator : function(model) {
-            return parseInt(model.get('created'));
+            return model.get('id');
         }
     });
