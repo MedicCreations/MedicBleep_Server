@@ -940,7 +940,7 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function getSearchUsersGroups(Application $app, $search, $my_user_id){
+	public function getSearchUsersGroupsRooms(Application $app, $search, $my_user_id){
 		
 		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user WHERE user.id <> ?  and user.organization_id = ? ";
 		if ($search != ""){
@@ -957,7 +957,7 @@ class MySqlDb implements DbInterface{
 		}
 		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
-		$sql = "SELECT chat.id, chat.name, chat.image, chat.image_thumb, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
+		$sql = "SELECT chat.id, chat.name as name, chat.name as roomname, chat.image, chat.image_thumb, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
 		if ($search != ""){
 			$sql = $sql . " and chat.name LIKE '" . $search . "%'";
 		}
@@ -990,6 +990,16 @@ class MySqlDb implements DbInterface{
 	public function getGroupMembersForRoom(Application $app, $group_ids){
 	
 		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb FROM group_member, user WHERE group_member.user_id = user.id AND group_member.group_id IN (" . $group_ids . ") and user.organization_id = ?";
+	
+		$groups = $app['db']->fetchAll($sql,array($app['organization_id']));
+	
+		return $groups;
+	}
+	
+	
+	public function getRoomMembersForRoom(Application $app, $room_ids){
+	
+		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb FROM chat_member, user WHERE chat_member.user_id = user.id AND chat_member.chat_id IN (" . $room_ids . ") and user.organization_id = ? AND chat_member.is_deleted = 0";
 	
 		$groups = $app['db']->fetchAll($sql,array($app['organization_id']));
 	
