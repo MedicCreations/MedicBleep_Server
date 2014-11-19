@@ -444,7 +444,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         else if(messageType == MESSAGE_TYPE_VIDEO){
             content = '<div class="media_loading_holder video"><video controls class="encrypted_video" fileid="' + message.get('file_id') + '" state="loading"><source type="video/mp4" src="" ></video>';
             content += '<div>';
-            content += '<div class="loadbutton"><div style="padding-top:50px">Play Video</div></div>';
+            content += '<div class="loadbutton"><div style="padding-top:50px"><i class="fa fa-play-circle fa-3x"></i></div></div>';
             content += '<div class="loading_cover" style="display:none"><div class="meter"><span style="width: 100%"></span></div></div></div>';
             content += '</div>';
             content += '<input class="download marginfix" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
@@ -462,7 +462,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         else if(messageType == MESSAGE_TYPE_VOICE){
             content = '<div class="media_loading_holder voice"><audio controls class="encrypted_audio" fileid="' + message.get('file_id') + '" state="loading"><source type="audio/wav" src="" ></audio>';    
             content += '<div>';
-            content += '<div class="loadbutton">Play Audio</div>';
+            content += '<div class="loadbutton"><i class="fa fa-play-circle fa-3x"></i></div>';
             content += '<div class="loading_cover" style="display:none"><div class="meter"><span style="width: 100%"></span></div></div></div>';
             content += '</div>';
             content += '<input class="download marginfix" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
