@@ -803,7 +803,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentAllChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.category_id, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -825,7 +825,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentGroupChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND (chat.type = 2 OR chat.type = 3) and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.category_id, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND (chat.type = 2 OR chat.type = 3) and chat.organization_id = ? ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -847,7 +847,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentPrivateChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1  and chat.organization_id = ?  ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.category_id, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1  and chat.organization_id = ?  ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -895,9 +895,23 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function getCategoryById(Application $app, $category_id){
+	
+		$category = (object) array();
+		
+		if ($category_id != 0){
+			$sql = "SELECT categories.id, categories.name FROM categories WHERE id = ? AND organization_id = ? AND is_deleted = 0";
+			$category = $app['db']->fetchAssoc($sql, array ($category_id, $app['organization_id']));
+		}
+		
+		return $category;
+	
+	}
+	
+	
 	public function getRooms(Application $app, $user_id, $search, $offset, $category_id){
 	
-		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0)) and chat.organization_id = ? ";
+		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.category_id, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0)) and chat.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
