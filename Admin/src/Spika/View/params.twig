@@ -1,0 +1,139 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+        
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{ADMIN_ROOT_URL}}/dashboard">
+										{{lang.params1}}
+									</a>
+								</li>
+								<li class="active">
+									{{lang.params2}}
+								</li>
+								
+								{% include 'searchbox.twig' %}
+								
+							</ol>
+							<div class="row page-header">
+							    <div class="col-md-6">
+								    <h1>{{lang.params2}} <small> {{lang.params3}}</small></h1>
+								</div>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+					
+
+                    {% if infomessage is defined %}
+                         <div class="row">
+    					    <div class="col-md-12">
+                                <div class="alert alert-success">
+                                	<button data-dismiss="alert" class="close">
+                                		×
+                                	</button>
+                                	<i class="fa fa-check-circle"></i>
+                                	{{infomessage}}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                        
+                    {% if errormessage is defined %}
+                         <div class="row">
+    					    <div class="col-md-12">
+                                <div class="alert alert-danger">
+                                	<button data-dismiss="alert" class="close">
+                                		×
+                                	</button>
+                                	<i class="fa fa-check-circle"></i>
+                                	{{errormessage}}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                        
+					<div class="row">
+					    <div class="col-md-12">
+
+                            <table class="table table-hover" id="sample-table-1">
+								<thead>
+									<tr>
+										<th>{{lang.params4}}</th>
+										<th>{{lang.params5}}</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+								
+                                    {% for row in list %}
+
+                    				    <tr>
+    										<td>{{row.key}}</td>
+    										<td>{{row.label}}</td>
+    										<td class="right">
+        										<div class="visible-md visible-lg hidden-sm hidden-xs">
+        										    {% if row.is_default == 0 %}
+            											<a href="{{ADMIN_ROOT_URL}}/userparams/delete/{{row.id}}" class="btn btn-xs btn-bricky tooltips" data-placement="top" data-original-title="Remove" onclick="return confirm('{{lang.params11}}')"><i class="fa fa-times fa fa-white"></i></a>
+                                                    {% endif %}
+        										</div>
+        										<div class="visible-xs visible-sm hidden-md hidden-lg">
+        											<div class="btn-group">
+        												<a class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" href="#">
+        													<i class="fa fa-cog"></i> <span class="caret"></span>
+        												</a>
+        												<ul role="menu" class="dropdown-menu pull-right">
+        													<li role="presentation">
+        													    {% if row.is_default == 0 %}
+            														<a role="menuitem" tabindex="-1" href="{{ADMIN_ROOT_URL}}/userparams/delete/{{row.id}}" onclick="return confirm('{{lang.params11}}')">
+            															<i class="fa fa-times"></i> {{lang.general8}}
+            														</a>
+                                                                {% endif %}
+        													</li>
+        												</ul>
+        											</div>
+        										</div>
+    										</td>
+    									</tr>
+									
+                                    {% endfor %}
+                                    
+                                    <form role="form" class="form-horizontal form-user" method="post" action="{{ADMIN_ROOT_URL}}/userparams/add">
+
+                                        <tr>
+                                            <td>
+                                                <input type="text" name="key" id="tb_key" class="form-control"/>
+                                                <i>{{lang.params9}}</i>
+                                            </td>
+                                            
+                                            <td>
+                                                <input type="text" name="label" id="tb_label" class="form-control" />
+                                                <i>&nbsp;</i>
+                                            </td>
+                                                
+                                            <td class="right">
+                                                <input type="submit" class="btn btn-primary" value="{{lang.params6}}" / >
+                                            </td>
+                                        </tr>
+                                    
+                                    </form>
+                                    
+								</tbody>
+							</table>
+                        </div>
+					</div>
+
+{% endblock %}
+
+{% block pageScript %}
+
+{% endblock %}
+
