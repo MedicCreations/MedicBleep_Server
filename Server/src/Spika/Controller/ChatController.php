@@ -290,6 +290,9 @@ class ChatController extends SpikaBaseController {
 			$chat['chat_name'] = $chat_name;
 			$chat['chat_id'] = $chat_id;
 			
+			$category = $mySql->getCategoryById($app, $chat['category_id']);
+			$chat['category'] = $category;
+			
 			//reset unread messages
 			$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 			

@@ -366,6 +366,7 @@ class MessageController extends SpikaBaseController {
 			}
 			
 			$user = array();
+			$chat = (object) array();
 			
 			if (isset($last_msg_id) && ($last_msg_id != "")){
 				//return messages before last_msg
@@ -383,6 +384,10 @@ class MessageController extends SpikaBaseController {
 				
 				//get buddy profile if private chat
 				$chat = $mySql->getChatByID($app, $chat_id);
+				if ($chat['name'] != ""){
+					$chat_name = $chat['name'];
+				}
+				
 				if ($chat['type'] == CHAT_USER_TYPE){
 					$data = $mySql->getPrivateChatData($app, $chat_id, $my_user_id);
 					$user = array('id' => $data['user_id'], 
@@ -390,7 +395,22 @@ class MessageController extends SpikaBaseController {
 							'lastname' => $data['user_lastname'],
 							'image' => $data['image'],
 							'image_thumb' => $data['image_thumb']);
+					
+					 
+					$chat_name = $data['name'];
+					$chat['image'] = $data['image'];
+					$chat['image_thumb'] = $data['image_thumb'];
+					
+				} else {
+					$chat_members = $mySql->getChatMembers($app, $chat_id);
+					$chat_name = $self->createChatName($app, $mySql, $chat_members, array());
 				}
+				
+				$chat['chat_name'] = $chat_name;
+				$chat['chat_id'] = $chat_id;
+				
+				$category = $mySql->getCategoryById($app, $chat['category_id']);
+				$chat['category'] = $category;
 			}
 			
 			$total_messages = $mySql->getCountMessagesForChat($app, $chat_id);
@@ -399,7 +419,8 @@ class MessageController extends SpikaBaseController {
 					'message' => 'OK', 
 					'messages' => $messages, 
 					'total_count' => $total_messages, 
-					'seen_by' => $chat_seen_by);
+					'seen_by' => $chat_seen_by, 
+					'chat' => $chat);
 					
 			if (count($user)>0){
 				$result['user'] = $user;

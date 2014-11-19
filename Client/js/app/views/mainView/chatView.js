@@ -443,7 +443,10 @@ var SPIKA_ChatView = Backbone.View.extend({
 
         else if(messageType == MESSAGE_TYPE_VIDEO){
             content = '<div class="media_loading_holder video"><video controls class="encrypted_video" fileid="' + message.get('file_id') + '" state="loading"><source type="video/mp4" src="" ></video>';
-            content += '<div class="loading_cover"><div class="meter"><span style="width: 100%"></span></div></div></div>';
+            content += '<div>';
+            content += '<div class="loadbutton"><div style="padding-top:50px">Play Video</div></div>';
+            content += '<div class="loading_cover" style="display:none"><div class="meter"><span style="width: 100%"></span></div></div></div>';
+            content += '</div>';
             content += '<input class="download marginfix" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
             
         }
@@ -458,7 +461,10 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         else if(messageType == MESSAGE_TYPE_VOICE){
             content = '<div class="media_loading_holder voice"><audio controls class="encrypted_audio" fileid="' + message.get('file_id') + '" state="loading"><source type="audio/wav" src="" ></audio>';    
-            content += '<div class="loading_cover"><div class="meter"><span style="width: 100%"></span></div></div></div>';
+            content += '<div>';
+            content += '<div class="loadbutton">Play Audio</div>';
+            content += '<div class="loading_cover" style="display:none"><div class="meter"><span style="width: 100%"></span></div></div></div>';
+            content += '</div>';
             content += '<input class="download marginfix" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
                 
         }
@@ -498,6 +504,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             var state = $(this).attr('state');
             var fileId = $(this).attr('fileid');
             
+            
             if(state == 'loading'){
                 
                 //EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient,null,null,true,true);
@@ -514,15 +521,23 @@ var SPIKA_ChatView = Backbone.View.extend({
             var fileId = $(this).attr('fileid');
             var videoElm = this;
             
-            if(state == 'loading'){
+            $(this).parent().find('.loadbutton').click(function(){
                 
-                EncryptManager.decryptMedia(this,fileId,'video/mp4',apiClient,function(base64Data){
-                    $(videoElm).parent().find('.loading_cover').remove();
-                    $(videoElm).children().attr('src','data:video/mp4;base64,' + base64Data);  
-                    $(videoElm).load(); 
-                },function(){},true,true);
+                $(this).parent().find('.loadbutton').css('display','none');
+                $(this).parent().find('.loading_cover').css('display','block');
+                
+                if(state == 'loading'){
                     
-            }
+                    EncryptManager.decryptMedia(videoElm,fileId,'video/mp4',apiClient,function(base64Data){
+                        $(videoElm).parent().find('.loading_cover').remove();
+                        $(videoElm).children().attr('src','data:video/mp4;base64,' + base64Data);  
+                        $(videoElm).load(); 
+                    },function(){},true,true);
+                        
+                }
+
+                
+            });
 
         });
 
@@ -531,16 +546,23 @@ var SPIKA_ChatView = Backbone.View.extend({
             var state = $(this).attr('state');
             var fileId = $(this).attr('fileid');
             var audioElm = this;
+            
+            $(this).parent().find('.loadbutton').click(function(){
 
-            if(state == 'loading'){
+                $(this).parent().find('.loadbutton').css('display','none');
+                $(this).parent().find('.loading_cover').css('display','block');
                 
-                EncryptManager.decryptMedia(this,fileId,'audio/wav',apiClient,function(base64Data){
-                    $(audioElm).parent().find('.loading_cover').remove();
-                    $(audioElm).children().attr('src','data:audio/wav;base64,' + base64Data);  
-                    $(audioElm).load();
-                });
+                if(state == 'loading'){
                     
-            }
+                    EncryptManager.decryptMedia(audioElm,fileId,'audio/wav',apiClient,function(base64Data){
+                        $(audioElm).parent().find('.loading_cover').remove();
+                        $(audioElm).children().attr('src','data:audio/wav;base64,' + base64Data);  
+                        $(audioElm).load();
+                    });
+                        
+                }
+                
+            });
 
         });
         

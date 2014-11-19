@@ -124,6 +124,9 @@ class SpikaBaseController implements ControllerProviderInterface
     			$chat['chat_name'] = $this->createChatName($app, $mySql, $chat_members, array());
     		}
     	}
+		
+		$category = $mySql->getCategoryById($app, $chat['category_id']);
+		$chat['category'] = $category;
     	
     	return $chat;
     	

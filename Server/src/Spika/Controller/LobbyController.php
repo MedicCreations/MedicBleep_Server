@@ -47,7 +47,10 @@ class LobbyController extends SpikaBaseController {
 					$recent_users_count = $mySql->getCountRecentPrivateChats($app, $user_id);
 						
 					foreach ($recent_users_chats as &$chat){
-					
+						
+						$category = $mySql->getCategoryById($app, $chat['category_id']);
+						$chat['category'] = $category;
+						
 						//find name of private chat
 						$chat_data = $mySql->getPrivateChatData($app, $chat['chat_id'], $user_id);
 						$chat['chat_name'] = $chat_data['name'];
@@ -60,6 +63,9 @@ class LobbyController extends SpikaBaseController {
 					$recent_groups_count = $mySql->getCountRecentGroupChats($app, $user_id);
 					
 					foreach ($recent_groups_chats as &$chat){
+					
+						$category = $mySql->getCategoryById($app, $chat['category_id']);
+						$chat['category'] = $category;
 						
 						if ($chat['chat_name'] == ""){
 							$chat_members = $mySql->getChatMembers($app, $chat['chat_id']);
@@ -90,6 +96,9 @@ class LobbyController extends SpikaBaseController {
 					$recent_users_count = $mySql->getCountRecentPrivateChats($app, $user_id);
 					
 					foreach ($recent_users_chats as &$chat){
+					
+						$category = $mySql->getCategoryById($app, $chat['category_id']);
+						$chat['category'] = $category;
 							
 						//find name of private chat
 						$chat_data = $mySql->getPrivateChatData($app, $chat['chat_id'], $user_id);
@@ -120,6 +129,9 @@ class LobbyController extends SpikaBaseController {
 					
 					foreach ($recent_groups_chats as &$chat){
 					
+						$category = $mySql->getCategoryById($app, $chat['category_id']);
+						$chat['category'] = $category;
+					
 						if ($chat['chat_name'] == ""){
 							$chat_members = $mySql->getChatMembers($app, $chat['chat_id']);
 							$chat['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
@@ -147,6 +159,9 @@ class LobbyController extends SpikaBaseController {
 					$recent_all_chats_count = $mySql->getCountRecentAllChats($app, $user_id);
 					
 					foreach ($recent_all_chats as &$chat){
+					
+						$category = $mySql->getCategoryById($app, $chat['category_id']);
+						$chat['category'] = $category;
 						
 						if ($chat['chat_name'] == ""){
 							if ($chat['type'] == CHAT_USER_TYPE){

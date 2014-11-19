@@ -71,6 +71,9 @@ class RoomController extends SpikaBaseController {
 			$chat['chat_name'] = $name;
 			$chat['chat_id'] = $chat_id;
 			
+			$category = $mySql->getCategoryById($app, $chat['category_id']);
+			$chat['category'] = $category;
+			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK',
 					'chat' => $chat);
@@ -104,13 +107,16 @@ class RoomController extends SpikaBaseController {
 			$rooms = $mySql->getRooms($app, $user_id, $search, $offset, $category_id);
 			
 			foreach ($rooms as &$room){
+			
+				$category = $mySql->getCategoryById($app, $room['category_id']);
+				$room['category'] = $category;		
 						
-						if ($room['chat_name'] == ""){
-							$chat_members = $mySql->getChatMembers($app, $room['chat_id']);
-							$room['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
-						}
-						
-					}
+				if ($room['chat_name'] == ""){
+					$chat_members = $mySql->getChatMembers($app, $room['chat_id']);
+					$room['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
+				}
+				
+			}
 			
 			if ($page > 0 && count($rooms) == 0){
 				$result = array('code' => ER_PAGE_NOT_FOUND, 

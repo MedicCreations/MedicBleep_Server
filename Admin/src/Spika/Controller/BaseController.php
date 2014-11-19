@@ -41,6 +41,13 @@ class BaseController implements ControllerProviderInterface {
             
         }
         
+        if($this->app['session']->has('errormessage')){
+            
+            $params['errormessage'] = $this->app['session']->get('errormessage');
+            $this->app['session']->remove('errormessage');
+            
+        }
+        
         return $this->app['twig']->render($templateName,$params);
             
     }
@@ -171,6 +178,10 @@ class BaseController implements ControllerProviderInterface {
 	
 	public function setInfoMessage($message){
     	$this->app['session']->set('infomessage',$message);
+	}
+	
+	public function setErrorMessage($message){
+    	$this->app['session']->set('errormessage',$message);
 	}
 	
 	public function encryptFileAndSave($filePath){

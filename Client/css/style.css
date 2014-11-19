@@ -833,6 +833,20 @@ footer #mess_type ul li textarea.disabled{
     
 }
 
+.media_loading_holder .loadbutton{
+    position: absolute;
+    width: 300px;
+    height: 100%;
+    background-color: #fff;
+    opacity: 0.8;
+    top: 0px;
+    left: 0px;
+    margin-left: 70px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .media_loading_holder .loading_cover{
     position: absolute;
     width: 300px;
