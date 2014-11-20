@@ -58,6 +58,7 @@ else{
                     'app/models/modelMessage',
                     'app/models/modelHistory',
                     'app/models/modelChat',
+                    'app/models/modelProfileParameter',
                     'app/models/modelRoom',
                     'app/libs/SoundManager',
                     'app/libs/FileUploadHandler',
