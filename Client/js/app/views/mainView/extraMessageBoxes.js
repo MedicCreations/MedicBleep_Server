@@ -61,7 +61,8 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             if(self.chatId == 0){
                 return;
             }
-        
+            
+            $$("#btn_dummy_file_upload").val('');
             $$("#btn_dummy_file_upload").click();
             
         });

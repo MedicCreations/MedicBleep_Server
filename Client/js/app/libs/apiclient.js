@@ -544,7 +544,8 @@ SpikaClient.prototype.getUserById = function(userId,succeessListener,failedListe
     var requestParams = {};
     
     requestParams.user_id = userId;
-        
+    requestParams.get_detail_values = 1;
+    
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/profile',
         type: 'GET',

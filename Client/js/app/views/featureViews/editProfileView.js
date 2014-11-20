@@ -29,9 +29,28 @@ var SPIKA_EditProflieView = Backbone.View.extend({
         
         this.user = SPIKA_UserManager.getUser();
         var self = this;
-        
+
+        apiClient.getUserById(self.user.get('id'),function(data){
+            
+            var listParameters = profileParameterFactory.createCollectionByAPIResponse(data);
+            var formHtml = _.template($$('#template_proflie_form').html(), {parapeters: listParameters.models});
+            
+            $$('#proflie_forms').html(formHtml);
+
+            self.user = userFactory.createModelByAPIResponse(data.user);
+
+            if(!_.isUndefined(data.user.details)){
+                self.updateInfo();
+                $$('.button_container #btn_save_profile').css('display','inline-block');
+            }
+            
+        },function(data){
+            
+            
+            
+        });
+            
         this.updateWindowSize();
-        this.updateInfo();
         
         $$('.button_container .red').click(function(){
             U.goPage('main'); 
@@ -128,9 +147,18 @@ var SPIKA_EditProflieView = Backbone.View.extend({
         $$('input[name="firstname"]').val(this.user.get('firstname'));
         $$('input[name="lastname"]').val(this.user.get('lastname'));
         
-        this.showInfoFromDetail('phone_number','tel_num');
-        this.showInfoFromDetail('email','email');
-        this.showInfoFromDetail('mobile_number','moblile_num');
+        var details = this.user.get('details');
+        
+        _.each(details,function(paramData){
+            
+            var keyName = _.keys(paramData)[0];
+            
+            if(!_.isEmpty(keyName)){
+                var value = paramData[keyName];
+                $$('input[name="' + keyName + '"]').val(value);
+            }
+
+        });
         
         EncryptManager.decryptImage($$('#profile_edit_view img'),this.user.get('image'),0,apiClient,function(){
             self.hideLoading();
@@ -157,23 +185,30 @@ var SPIKA_EditProflieView = Backbone.View.extend({
             SPIKA_AlertManager.show(LANG.general_errortitle,LANG.editprofile_validation_error_noname);
             return;
         }
+
+        var detailDataObj = [];
         
-        //detail data
-        var telnum = $$('input[name="tel_num"]').val();
-        var email = $$('input[name="email"]').val();
-        var mobileNum = $$('input[name="moblile_num"]').val();
+        $$('#proflie_forms input').each(function(){
+           
+           var key = $(this).attr('name'); 
+           var val = $(this).val();
+           
+           var tmp = {};
+           tmp[key] = val;
+           tmp.public = 1;
+           detailDataObj.push(tmp);
+           
+        });
         
-        var detailDataObj = [
-            {phone_number:telnum,'public':'1'},
-            {mobile_number:mobileNum,'public':'1'},
-            {email:email,'public':'1'}
-        ];
+        U.l(detailDataObj);
         
         var values = {
             firstname:firstname,
             lastname:lastname,
             details:JSON.stringify(detailDataObj)   
         };
+        
+        U.l(values);
         
         apiClient.saveProflie(this.user.get('id'),values,function(data){
             

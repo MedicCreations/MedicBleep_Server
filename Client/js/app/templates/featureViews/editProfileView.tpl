@@ -13,7 +13,7 @@
     </div>
         
     <div id="profile_edit_profliedata">
-        
+
         <div class="formrow">
             <label>{firstname}</label>
             <input type="text" name="firstname" value="" />
@@ -24,27 +24,29 @@
             <input type="text" name="lastname" value="" />
         </div>
         
-        <div class="formrow topline">
-            <label>{telnumber}</label>
-            <input type="text" name="tel_num" value="" />
-        </div>
-        
-        <div class="formrow topline">
-            <label>{email}</label>
-            <input type="text" name="email" value="" />
-        </div>
-        
-        <div class="formrow topline">
-            <label>{moblie}</label>
-            <input type="text" name="moblile_num" value="" />
+
+        <div id="proflie_forms">
         </div>
         
         <div class="button_container">
             <a href="javascript:void(0)" class="button red">{cancel}</a>
-            <a href="javascript:void(0)" class="button" id="btn_save_profile">{updateproflie}</a>
+            <a href="javascript:void(0)" class="button" id="btn_save_profile" style="display:none">{updateproflie}</a>
         </div>
         
     </div>
     
     <br style="clear: both" />
 </div>
+
+	<script type="text/template" id="template_proflie_form">
+	
+        <% _.each(parapeters, function(parameter) { %>
+
+            <div class="formrow topline">
+                <label><%= parameter.get('label') %></label>
+                <input type="text" name="<%= parameter.get('key') %>" value="" />
+            </div>
+        		
+        <% }); %>
+        
+    </script>
