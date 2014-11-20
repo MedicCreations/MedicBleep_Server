@@ -452,7 +452,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         $$('#extramessage_dialog_view_takepicture').fadeIn(function(){
             
             Webcam.attach( '#extramessage_dialog_view_takepicture .video_preview' );
-
+            
         });
 
 
@@ -473,6 +473,9 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         var self = this;
         $$('#extramessage_dialog_view_takevideo audio')[0].src = null;
         $$('#extramessage_dialog_view_takevideo video')[0].src = null;
+
+        $$('#extramessage_dialog_view_takevideo .device-ready').css('display','block');
+        $$('#extramessage_dialog_view_takevideo .record_buttons').css('display','none');
         
         $$('#extramessage_dialog_view_takevideo').fadeIn(function(){
             
@@ -493,12 +496,18 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                     
                     self.audioRecordingStream = stream;
                     
-                }, function(error) { c
-                    onsole.error(error); 
+                    $$('#extramessage_dialog_view_takevideo .device-ready').css('display','none');
+                    $$('#extramessage_dialog_view_takevideo .record_buttons').css('display','block');
+
+                }, function(error) { 
+                    console.error(error); 
+                    SPIKA_AlertManager.show(LANG.general_errortitle,LANG.videoupload_mic_error);
                 });
 
-            }, function(error) { c
-                onsole.error(error); 
+            }, function(error) { 
+                console.error(error);
+                SPIKA_AlertManager.show(LANG.general_errortitle,LANG.videoupload_webcam_error);
+                
             });
 
             
@@ -509,6 +518,10 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
     startRecordingAudio:function(){
         
         var self = this;
+
+        $$('#extramessage_dialog_view_takeaudio .device-ready').css('display','block');
+        $$('#extramessage_dialog_view_takeaudio .record_buttons').css('display','none');
+
 
         $$('#extramessage_dialog_view_takeaudio').fadeIn(function(){
             
@@ -527,9 +540,13 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 
                 // hack to show audio controll..
                 $$('#extramessage_dialog_view_takeaudio audio').css('width','100%');
-                
-            }, function(error) { c
-                onsole.error(error); 
+
+                $$('#extramessage_dialog_view_takeaudio .device-ready').css('display','none');
+                $$('#extramessage_dialog_view_takeaudio .record_buttons').css('display','block');
+
+            }, function(error) { 
+                console.error(error);
+                SPIKA_AlertManager.show(LANG.general_errortitle,LANG.videoupload_mic_error);
             });
 
         });
