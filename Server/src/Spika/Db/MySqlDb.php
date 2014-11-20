@@ -654,6 +654,17 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function getUnreadChats(Application $app, $user_id){
+	
+		$sql = "SELECT chat_id, unread FROM chat_member WHERE unread > 0 AND user_id = ?";
+		
+		$chats = $app['db']->fetchAll($sql, array($user_id));
+		
+		return $chats;
+	
+	}
+	
+	
 	public function createMessage(Application $app, $values){
 		
 		$values['created'] = time(); 

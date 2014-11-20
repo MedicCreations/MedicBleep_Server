@@ -266,15 +266,8 @@ class MessageController extends SpikaBaseController {
 					'registration_ids' => $android_push_members,
 					'data' => array('type' => PUSH_TYPE_MESSAGE,
 							'chat_id' => $chat_id,
-							'chat_name' => $chat_name, 
 							'firstname' => $user_firstname,
-							'chat_thumb' => $chat_thumb,
-							'chat_image' => $chat_image,
-							'chat_type' => $chat_type,
-							'is_active' => $chat['is_active'],
-							'admin_id' => $chat['admin_id'],
 							'chat_password' => $chat_password,
-							'is_private' => $chat['is_private']
 							)
 			);
 				
