@@ -78,7 +78,9 @@
             <video style="width:100%;height:200px"></video>
             <audio style="display:none"></audio>
 
-            <ul class="record_buttons">
+            <span class="device-ready">Waiting To Devices Ready</span>
+            
+            <ul class="record_buttons" style="display:none">
                 <li class="button record">Record</li>
             </ul>
             
@@ -105,7 +107,9 @@
             
             <audio></audio>
             
-            <ul class="record_buttons">
+            <span class="device-ready">Waiting To Devices Ready</span>
+
+            <ul class="record_buttons" style="display:none">
                 <li class="button record">Record</li>
             </ul>
             

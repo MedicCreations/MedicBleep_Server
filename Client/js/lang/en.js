@@ -63,5 +63,7 @@ LANG = {
       general_uploading: "Upload Video",
       encoding_video: "Converting Video Format",
       videoupload_error: "Error happens while uploading video.Please try again after.",
+      videoupload_webcam_error: "Failed to initialize web camera.",
+      videoupload_mic_error: "Failed to initialize microphone.",
       dummy : 'dummy'
 };
