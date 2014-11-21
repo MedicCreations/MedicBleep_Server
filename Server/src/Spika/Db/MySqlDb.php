@@ -654,6 +654,17 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function getUnreadChats(Application $app, $user_id){
+	
+		$sql = "SELECT chat_id, unread FROM chat_member WHERE unread > 0 AND user_id = ?";
+		
+		$chats = $app['db']->fetchAll($sql, array($user_id));
+		
+		return $chats;
+	
+	}
+	
+	
 	public function createMessage(Application $app, $values){
 		
 		$values['created'] = time(); 
@@ -669,7 +680,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getLastMessages(Application $app, $chat_id){
 		
-		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 and message.organization_id = ? ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
+		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 and message.organization_id = ? and message.root_id = 0 ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
 		
 		$messages = $app['db']->fetchAll($sql, array($chat_id,$app['organization_id']));
 		
@@ -680,7 +691,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getMessagesPaging(Application $app, $chat_id, $last_msg_id){
 
-		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 AND message.id < ? and message.organization_id = ? ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
+		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 AND message.id < ? and message.organization_id = ? and message.root_id = 0 ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
 		
 		$messages = $app['db']->fetchAll($sql, array($chat_id, $last_msg_id,$app['organization_id']));
 		
@@ -691,7 +702,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getMessagesOnPush(Application $app, $chat_id, $first_msg_id){
 		
-		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 AND message.id > ? and message.organization_id = ?  ORDER BY message.id DESC";
+		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 AND message.id > ? and message.organization_id = ? and message.root_id = 0 ORDER BY message.id DESC";
 		
 		$messages = $app['db']->fetchAll($sql, array($chat_id, $first_msg_id,$app['organization_id']));
 		
@@ -702,7 +713,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getCountMessagesForChat(Application $app, $chat_id){
 		
-		$sql = "SELECT COUNT(*) FROM message WHERE chat_id = ? AND is_deleted = 0 and message.organization_id = ? ";
+		$sql = "SELECT COUNT(*) FROM message WHERE chat_id = ? AND is_deleted = 0 and message.root_id = 0 and message.organization_id = ? ";
 		
 		$result = $app['db']->executeQuery($sql, array($chat_id,$app['organization_id']))->fetch();
 		$messages_number =  $result["COUNT(*)"];

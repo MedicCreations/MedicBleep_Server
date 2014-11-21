@@ -42,6 +42,8 @@ interface DbInterface
 	public function isChatMember(Application $app, $user_id, $chat_id);
 	public function getChatAdmin(Application $app, $chat_id);
 	
+	public function getUnreadChats(Application $app, $user_id);
+	
 	public function createMessage(Application $app, $values);
 	public function getLastMessages(Application $app, $chat_id);
 	public function getMessagesPaging(Application $app, $chat_id, $last_msg_id);

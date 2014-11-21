@@ -531,6 +531,20 @@ class UserController extends SpikaBaseController {
 		})->before($app['beforeSpikaTokenChecker']);
 		
 		
+		$controllers->get('push', function (Request $request) use ($app, $self, $mySql){
+			
+			$my_user_id = $app['user']['id'];
+			
+			$chats = $mySql->getUnreadChats($app, $my_user_id);
+			
+			$result = array('code' => CODE_SUCCESS,
+						'chats' => $chats);
+		
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
+		
+		
 		$controllers->get('test', function (Request $request) use ($app, $self, $mySql){
 			
 			$user_id = 201289;
