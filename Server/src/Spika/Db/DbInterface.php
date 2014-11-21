@@ -43,6 +43,7 @@ interface DbInterface
 	public function getChatAdmin(Application $app, $chat_id);
 	
 	public function getUnreadChats(Application $app, $user_id);
+	public function updateSentLocalPush(Application $app, $chat_id, $user_id);
 	
 	public function createMessage(Application $app, $values);
 	public function getLastMessages(Application $app, $chat_id);
@@ -57,6 +58,7 @@ interface DbInterface
 	public function getMessageByID(Application $app, $message_id);
 	public function getChildMessages(Application $app, $child_id_list);
 	public function getModifiedMessages(Application $app, $chat_id, $modified, $last_msg_id);
+	public function getLastMsgSender(Application $app, $chat_id);
 	
 	public function getRecentAllChats(Application $app, $user_id, $offset);
 	public function getCountRecentAllChats(Application $app, $user_id);

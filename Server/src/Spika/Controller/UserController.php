@@ -537,6 +537,14 @@ class UserController extends SpikaBaseController {
 			
 			$chats = $mySql->getUnreadChats($app, $my_user_id);
 			
+			foreach($chats as &$chat){
+				$sender = $mySql->getLastMsgSender($app, $chat['chat_id']);
+				$chat['firstname'] = $sender['firstname'];
+				$chat['type'] = PUSH_TYPE_MESSAGE;
+				
+				$mySql->updateSentLocalPush($app, $chat['chat_id'], $my_user_id);
+			}
+			
 			$result = array('code' => CODE_SUCCESS,
 						'chats' => $chats);
 		
