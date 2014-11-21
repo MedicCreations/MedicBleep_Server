@@ -199,16 +199,12 @@ var SPIKA_EditProflieView = Backbone.View.extend({
            detailDataObj.push(tmp);
            
         });
-        
-        U.l(detailDataObj);
-        
+                
         var values = {
             firstname:firstname,
             lastname:lastname,
             details:JSON.stringify(detailDataObj)   
         };
-        
-        U.l(values);
         
         apiClient.saveProflie(this.user.get('id'),values,function(data){
             
