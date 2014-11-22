@@ -12,7 +12,7 @@
                 user_id = data.id;
             }
             
-            var modelUser = new ModelUser({ id:user_id,firstname: data.firstname, lastname: data.lastname, image: data.image, image_thumb: data.image_thumb,details: data.details,device: data.last_device_id, webOpened: data.web_opened}); 
+            var modelUser = new ModelUser({ id:user_id,firstname: data.firstname, lastname: data.lastname, image: data.image, image_thumb: data.image_thumb,details: data.details,device: data.last_device_id, webOpened: data.web_opened,originalData:data}); 
             
             modelUser.set('device_ios',0);
             modelUser.set('device_android',0);
@@ -72,7 +72,8 @@
             id: 0,
             firstname: "Not specified",
             lastname: "Not specified",
-            image: "Not specified"
+            image: "Not specified",
+            originalData: ""
         },
         initialize: function(){
     

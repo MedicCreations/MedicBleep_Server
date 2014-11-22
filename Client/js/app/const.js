@@ -14,6 +14,8 @@ var EVENT_LEAVE_CHAT = 'leaveChat';
 var EVENT_FORCE_LOGOUT = 'eventForceLogout';
 var EVENT_MESSAGE_SENDING = 'eventMessageSending';
 var EVENT_OPEN_EXTRAMESSAGE = 'eventOpenExtraMessage';
+var EVENT_CALL_ERROR = 'eventCallError';
+var EVENT_CALL_FINISH = 'eventCallFinish';
 
 
 var EVENT_START_PRIVATE_CHAT = 'startPrivateChat';

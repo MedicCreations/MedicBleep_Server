@@ -60,6 +60,7 @@ else{
                     'app/models/modelChat',
                     'app/models/modelProfileParameter',
                     'app/models/modelRoom',
+                    'app/models/modelCategory',
                     'app/libs/SoundManager',
                     'app/libs/FileUploadHandler',
                     'app/libs/EncryptionManager',
@@ -91,6 +92,7 @@ else{
                     'thirdparty/RecordRTC',
                     'thirdparty/webcamjs/webcam',
                     'thirdparty/highlight/highlight.pack',
+                    'thirdparty/chosen/chosen.jquery.min',
                     'thirdparty/base64'], function() {
 
 	        // load dependency libary

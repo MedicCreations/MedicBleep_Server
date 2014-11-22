@@ -1,6 +1,7 @@
 var SPIKA_RoomListView = Backbone.View.extend({
     
     currentKeyword : '',
+    currentCategoryId: '',
     isLoaded : false,
     initialize: function(options) {
         var self = this;
@@ -45,6 +46,37 @@ var SPIKA_RoomListView = Backbone.View.extend({
             self.currentKeyword = $$('#menu_container_room input').val();
             self.roomListView.refresh();
         });
+
+        
+        apiClient.getCategories(function(data){
+            
+            var categoryResult = categoryFactory.createCollectionByAPIResponse(data);
+            var categorySelectHtml = _.template($$('#template_categorylist_row').html(), {
+                categories: categoryResult.models,
+                LANG: LANG
+            });
+            
+            $$("#menu_container_room .menu_search select").html(categorySelectHtml);
+            $$("#menu_container_room .menu_search select").chosen({disable_search_threshold: 10});
+            $$("#menu_container_room .menu_search select").chosen().change(function(){
+                
+                var selectedCategoryId = $(this).val();
+                
+                if(selectedCategoryId != 0)
+                    self.currentCategoryId = selectedCategoryId;
+                else
+                    self.currentCategoryId = '';
+                
+                 self.roomListView.refresh();
+                 
+            });
+            
+        
+        },function(data){
+        
+        
+        
+        });
         
     },
     
@@ -70,7 +102,7 @@ var SPIKA_RoomListView = Backbone.View.extend({
     
     listviewRequest: function(page,succeessListener,failedListener){
         
-        apiClient.searchRooms(page,this.currentKeyword,function(data){
+        apiClient.searchRooms(page,this.currentKeyword,this.currentCategoryId,function(data){
 
             succeessListener(data);
             

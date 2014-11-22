@@ -343,15 +343,22 @@ body#chat {
 	background: #FFFFFF;
 }
 
+#chat nav .menu_search .chosen-container {
+	width: 300px !important;;
+	height: 20px;
+	margin-top: 10px;
+	margin-bottom: 3px;
+}
+
 #chat nav .menu_search input[type="text"] {
 	width: 273px;
 	font-size: 1.6em;
 	border: none;
 }
 
-#chat nav .menu_search a {
+/*#chat nav .menu_search a {
 	color: #DFDFDF;
-}
+}*/
 
 #chat nav ul.menu_list {
 	display: table;
@@ -436,6 +443,34 @@ body#chat {
 	padding: 10px 10px;
 	text-align: left;
 	background: #FFFFFF;
+}
+
+#chat .categorylist li{
+    display: table-row;
+    background: #DFDFDF;
+    color: #2C2D32;
+    line-height: 15px;
+    vertical-align: center;
+    border-bottom: 1px solid #2C2D32;
+}
+
+#chat .categorylist li .cell {
+	display: table-cell;
+	vertical-align: middle;
+	text-align: left;
+	padding: 5px 0;
+	line-height: 20px;
+}
+
+#chat .categorylist li .cell.cell_1 {
+    padding-left: 14px;
+	width: 270px;
+	text-align: left;
+}
+#chat .categorylist li .cell.cell_2 {
+	width: 40px;
+	text-align: center;
+	color: #4BA4DF;
 }
 
 /*------------------------------*/
@@ -976,17 +1011,30 @@ ul#user_menu li a{
 	position: absolute;
 }
 
-#createroom_container input{
+#createroom_container .room_parameters_form{
     margin-left: 25px;
-    margin-top: 90px;
+    margin-top: 70px;
+    float: left;
+    display: block;
+}
+
+#createroom_container .room_parameters_form input{
+    width: 250px;
     border: none;
     border-bottom: 1px solid #ccc;
     padding-bottom: 5px;
     font-size: 1.2em;
-    width: 250px;
-    float: left;
     display: block;
+    margin-bottom: 20px;
 }
+
+
+#createroom_container .room_parameters_form select{
+    width: 250px;
+    display: block;
+    margin-bottom: 20px;
+}
+
 
 #createroom_container .members img{
     width: 40px;

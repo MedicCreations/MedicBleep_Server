@@ -65,5 +65,11 @@ LANG = {
       videoupload_error: "Error happens while uploading video.Please try again after.",
       videoupload_webcam_error: "Failed to initialize web camera.",
       videoupload_mic_error: "Failed to initialize microphone.",
+      call_error_notprivate: "Call feature works only in private chate.",
+      call_error_general: "Failed to initiate a call.",
+      call_declined: "The user is declined your call.",
+      general_category_title: "Filter By Category",
+      category_not_selected: "No Category Selected",
+      category_not_specified: "Category Not Specified",
       dummy : 'dummy'
 };

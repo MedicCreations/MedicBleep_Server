@@ -43,10 +43,19 @@
             <i class="fa fa-spinner fa-spin fa-4x"></i>
         </div>
         
-        <input type="text" placeholder="{roomname_placeholder}" />
+        
+        <div class="room_parameters_form">
+            
+            <input type="text" placeholder="{roomname_placeholder}" />
 
-    	<div class="choose_file" style="display:none">
-    	    <input id="btn_dummy_file_upload_profile" name="Select File" type="file" />
+            <select class="category_select_box">
+            </select>
+            
+
+        	<div class="choose_file" style="display:none">
+        	    <input id="btn_dummy_file_upload_profile" name="Select File" type="file" />
+            </div>
+
         </div>
     
     </div>
@@ -112,5 +121,15 @@
         
     </script>
     
+    <script type="text/template" id="template_categorylist_createroom_row">
+        
+        <option value=""><%= LANG.category_not_specified %></option>
+        
+        <% _.each(categories, function(category) { %>
+    	        <option value="<%= category.get('id') %>"><%= category.get('name') %></option>
+        <% }); %>
+        
+    </script>
+
     
 </div>

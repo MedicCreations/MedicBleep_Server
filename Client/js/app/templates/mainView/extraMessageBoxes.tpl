@@ -36,7 +36,14 @@
             <i class="fa fa-code"></i><br />
                 Code
         </li>
-
+        
+        <!--
+        <li id="extramessage_btn_call">
+            <i class="fa fa-phone"></i><br />
+                Call
+        </li>
+        -->
+        
     </ul>
 
 	<div class="choose_file" style="display:none">
@@ -142,4 +149,22 @@
         
     </div>
 </div>
+
+<!-- Video Chat-->
+<div class="extramessage_dialog_view" style="display:none" id="extramessage_dialog_view_conference">
+    <div class="alert_box">
+        <div class="alert_title">Video Chat</div>
+        
+        <div class="alert_content" style="text-align: center"> 
+                        
+        </div>
+        
+        <div class="alert_bottom"> 
+            <a href="javascript:void(0)" class="alert_bottom_cancel"> Finish </a> 
+        </div>
+        
+    </div>
+</div>
+
+
 
