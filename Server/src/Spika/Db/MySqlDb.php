@@ -468,7 +468,7 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id, $category_id, $is_private, $password){
+	public function createChat(Application $app, $name, $type, $my_user_id, $group_id, $group_image, $group_image_thumb, $custom_chat_id, $category_id, $is_private, $password, $group_ids='', $room_ids=''){
 		
 		$values = array('custom_chat_id' => $custom_chat_id,
 				'name' => $name, 
@@ -480,6 +480,8 @@ class MySqlDb implements DbInterface{
 				'category_id' => $category_id,
 				'is_private' => $is_private,
 				'password' => $password,
+				'group_ids' => $group_ids,
+				'room_ids' => $room_ids,
 				'organization_id' => $app['organization_id'],
 				'created' => time(), 
 				'modified' => time()
@@ -1004,7 +1006,7 @@ class MySqlDb implements DbInterface{
 		}
 		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
-		$sql = "SELECT chat.id, chat.name as name, chat.name as roomname, chat.image, chat.image_thumb, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
+		$sql = "SELECT chat.id, chat.name as name, chat.image, chat.image_thumb, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
 		if ($search != ""){
 			$sql = $sql . " and chat.name LIKE '" . $search . "%'";
 		}
