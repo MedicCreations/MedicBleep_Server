@@ -1291,6 +1291,10 @@ ul#user_menu li a{
     display: none;
 }
 
+#videoRemotes video{
+    height: 200px;
+    width: 100%;
+}
 /*------------------------------*/
 /*   END EXTRA MESSAGE          */
 /*------------------------------*/

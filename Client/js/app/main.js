@@ -65,6 +65,7 @@ else{
                     'app/libs/FileUploadHandler',
                     'app/libs/EncryptionManager',
                     'app/libs/AvatarManager',
+                    'app/libs/VideoCallManager',
                     'app/views/alertView',
                     'app/views/progressView',
                     'thirdparty/sjcl/aes',

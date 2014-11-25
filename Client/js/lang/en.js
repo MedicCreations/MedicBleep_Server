@@ -65,11 +65,16 @@ LANG = {
       videoupload_error: "Error happens while uploading video.Please try again after.",
       videoupload_webcam_error: "Failed to initialize web camera.",
       videoupload_mic_error: "Failed to initialize microphone.",
+      call_error_nowebrtc: "Your environment is not support call feature.",
       call_error_notprivate: "Call feature works only in private chate.",
       call_error_general: "Failed to initiate a call.",
+      call_declined_title: "User is busy",
       call_declined: "The user is declined your call.",
+      call_finished_title: "Call finished",
+      call_finished: "Call finished",
       general_category_title: "Filter By Category",
       category_not_selected: "No Category Selected",
       category_not_specified: "Category Not Specified",
+      call_error_noconnection: "You are not connected to signaling server.Please reload the browser and try again.",
       dummy : 'dummy'
 };

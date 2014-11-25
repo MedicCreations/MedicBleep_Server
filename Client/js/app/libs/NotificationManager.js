@@ -13,7 +13,7 @@ var SPIKA_notificationManger = {
         if(POLING_ENABLED == false){
             self.usePoing();
         } else {
-    
+     
             try{
                             
                 self.resetWebSocket();

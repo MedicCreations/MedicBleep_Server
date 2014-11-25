@@ -37,13 +37,13 @@
                 Code
         </li>
         
-        <!--
+		<!--
         <li id="extramessage_btn_call">
             <i class="fa fa-phone"></i><br />
                 Call
         </li>
         -->
-        
+		
     </ul>
 
 	<div class="choose_file" style="display:none">
@@ -160,7 +160,13 @@
         </div>
         
         <div class="alert_bottom"> 
-            <a href="javascript:void(0)" class="alert_bottom_cancel"> Finish </a> 
+            <div class="call_buttons">
+                <a href="javascript:void(0)" class="alert_bottom_cancel"> Finish </a> 
+            </div>
+            <div class="call_received_buttons">
+                <a href="javascript:void(0)" class="alert_bottom_decline"> Decline </a> 
+                <a href="javascript:void(0)" class="alert_bottom_accept"> Accept </a> 
+            </div>
         </div>
         
     </div>
