@@ -161,6 +161,7 @@ var U = {
         canvas.id     = "hiddenCanvas";
         canvas.width  = max_width;
         canvas.height = max_height;
+        canvas.style.display   = "none";   
         canvas.style.visibility   = "hidden";   
         document.body.appendChild(canvas);  
     

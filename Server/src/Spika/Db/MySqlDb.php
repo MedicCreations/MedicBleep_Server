@@ -660,7 +660,7 @@ class MySqlDb implements DbInterface{
 		
 		$time = time();
 		
-		$sql = "UPDATE chat_member SET modified = ". $time ." is_deleted = 1 WHERE chat_id = ? AND user_id IN (".$user_ids_for_delete.") and organization_id = ? ";
+		$sql = "UPDATE chat_member SET modified = ". $time .", is_deleted = 1 WHERE chat_id = ? AND user_id IN (".$user_ids_for_delete.") and organization_id = ? ";
 		
 		$app['db']->executeUpdate($sql, array($chat_id, $app['organization_id']));
 	

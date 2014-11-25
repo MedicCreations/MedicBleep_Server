@@ -152,6 +152,11 @@ class RoomController extends SpikaBaseController {
 			
 			$paramsAry = $request->query->all();
 			
+			$chat_id = "";
+			if (array_key_exists('chat_id', $paramsAry)){
+				$chat_id = $paramsAry['chat_id'];
+			}
+			
 			$search = "";
 			
 			if (array_key_exists('search', $paramsAry)){
@@ -178,6 +183,33 @@ class RoomController extends SpikaBaseController {
 				$result = array('code' => ER_PAGE_NOT_FOUND, 
 					'message' => 'Page not found');
 				return $app->json($result, 200);
+			}
+			
+			if ($chat_id != ""){
+				$chat_members = $mySql->getChatMembers($app, $chat_id);
+				$chat = $mySql->getChatWithId($app, $chat_id);
+				
+				foreach($search_result as &$temp_user){
+					$temp_user['is_member'] = false;
+					
+					if ($temp_user['is_user']){
+						foreach ($chat_members as $member){
+							if ($temp_user['id'] == $member['user_id']){
+								$temp_user['is_member'] = true;
+								break;
+							}
+						}
+					} else if ($temp_user['is_group']){
+						if (strpos($chat['group_ids'], $temp_user['id']) !== FALSE){
+							$temp_user['is_member'] = true;
+						}
+					
+					} else if ($temp_user['is_room']){
+						if (strpos($chat['room_ids'], $temp_user['id']) !== FALSE){
+							$temp_user['is_member'] = true;
+						}
+					}
+				}
 			}
 			
 			$search_count = count($all);
