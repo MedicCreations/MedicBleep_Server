@@ -67,34 +67,8 @@ var SPIKA_VideoCallView = Backbone.View.extend({
         this.error(message);
         
     },
-    callEstablished:function(video,peerId){
-        
-        var remotes = document.getElementById('videoRemotes');
-        this.isCalling = true;
-        
-        if (remotes) {
-            var container = document.createElement('div');
-            container.className = 'videoContainer';
-            container.id = 'container_' + peerId;
-            container.appendChild(video);
-
-            // suppress contextmenu
-            video.oncontextmenu = function () { return false; };
-
-            // show the remote volume
-            var vol = document.createElement('div');
-            vol.id = 'volume_' + peerId;
-            vol.className = 'volumeBar';
-            video.onclick = function () {
-                video.style.width = video.videoWidth + 'px';
-                video.style.height = video.videoHeight + 'px';
-            };
-            container.appendChild(vol);
-            
-            remotes.appendChild(container);
-            
-        }
-        
+    callEstablished:function(peer){
+		this.isCalling = 1;
     },
     callDeclined:function(){
     

@@ -37,13 +37,11 @@
                 Code
         </li>
         
-		<!--
         <li id="extramessage_btn_call">
             <i class="fa fa-phone"></i><br />
                 Call
         </li>
-        -->
-		
+        -
     </ul>
 
 	<div class="choose_file" style="display:none">

@@ -12,3 +12,10 @@ var HOLDER = "body";
 var WINDOW_MODE = true;
 var THREE_COLMODE_WIDTH = 640;
 var POLING_ENABLED = true;
+
+var WEBRTC_STUN = "stun:spikaent.com:3478";
+var WEBRTC_TURN = "turn:spikaent.com:3478";
+var WEBRTC_TURN_USER = "turn";
+var WEBRTC_TURN_PASSWORD = "turn";
+var WEBRTC_SIGNALING = "https://www.spikaent.com:32443";
+ 

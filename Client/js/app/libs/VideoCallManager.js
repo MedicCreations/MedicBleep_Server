@@ -19,13 +19,13 @@ SPIKA_VideoCallManager = {
         this.userId = userId;
         
         var stun = {
-            'url': 'stun:54.176.174.246:3478'
+            'url':WEBRTC_STUN
         };
         
         var turn = {
-            'url': 'turn:54.176.174.246:3478',
-            'username': 'turn',
-            'credential': 'turn'
+            'url': WEBRTC_TURN,
+            'username': WEBRTC_TURN_USER,
+            'credential': WEBRTC_TURN_PASSWORD
         };
         
         try{
@@ -33,14 +33,14 @@ SPIKA_VideoCallManager = {
             // create our webrtc connection
             this.webRTC = new SimpleWebRTC({
                 peerConnectionConfig: { 'iceServers': [stun, turn] },
-                url:'http://54.176.174.246:32400',
+                url:WEBRTC_SIGNALING,
                 // the id/element dom element that will hold "our" video
                 localVideoEl: 'webrtcVideoMine',
                 // the id/element dom element that will hold remote videos
-                remoteVideosEl: 'webrtcVideoPartner',
+                remoteVideosEl: 'videoRemotes',
                 // immediately ask for camera access
                 autoRequestMedia: false,
-                debug: true,
+                debug: false,
                 detectSpeakingEvents: true,
                 autoAdjustMic: false
             });
@@ -132,7 +132,8 @@ SPIKA_VideoCallManager = {
             this.webRTC.on('videoAdded', function (video, peer) {
                 
                 U.l('videoAdded');
-                
+                U.l(video);
+				
                 // show the ice connection state
                 if (peer && peer.pc) {
                     
@@ -153,7 +154,7 @@ SPIKA_VideoCallManager = {
                                 return;
                                 
                             if(!_.isUndefined(self.callbackListener.callEstablished))
-                                self.callbackListener.callEstablished(video,peer.id)
+                                self.callbackListener.callEstablished(peer)
                             
                             break;
                         }
@@ -299,7 +300,8 @@ SPIKA_VideoCallManager = {
             return;
         
         this.callState = 0;
-        
+        this.stopLocalVideo();
+		
         var self = this;
         
         // leave room every time
