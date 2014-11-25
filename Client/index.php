@@ -33,10 +33,11 @@
         
     </article>
 
-    <script type="text/javascript" src="js/app/init.js"></script>
-    <script type="text/javascript" src="js/app/const.js"></script>
-    <script type="text/javascript" src="js/thirdparty/simplewebrtcbundle.js" ></script>
-    <script type="text/javascript" src="js/thirdparty/require.js" data-main="js/app/main"></script>
+    <script type="text/javascript" src="js/app/init.js?rnd=<?php echo time() ?>"></script>
+    <script type="text/javascript" src="js/app/const.js?rnd=<?php echo time() ?>"></script>
+    <script type="text/javascript" src="js/thirdparty/simplewebrtcbundle.js?rnd=<?php echo time() ?>s" ></script>
+    <script type="text/javascript" src="js/thirdparty/require.js?rnd=<?php echo time() ?>" data-main="js/app/main"></script>
+
 
 </body>
 </html>
