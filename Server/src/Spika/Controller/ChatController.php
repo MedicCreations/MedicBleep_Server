@@ -357,7 +357,7 @@ class ChatController extends SpikaBaseController {
 			
 			$chat = $mySql->getChatWithID($app, $chat_id);
 			
-			if (array_key_exists('group_ids', $paramsAry)){
+			if (array_key_exists('group_ids', $paramsAry) && $paramsAry['group_ids'] != ''){
 				
 				$group_ids = $paramsAry['group_ids'];
 				//move groups from chat
@@ -367,12 +367,15 @@ class ChatController extends SpikaBaseController {
 				
 				//move group members from chat
 				$all_group_members = $mySql->getGroupMembersForRoom($app, $group_ids);
-				foreach($all_group_members as $group_member){
-					
+				$user_ids_for_delete = "";
+				foreach($all_group_members as $member){
+					$user_ids_for_delete .= $member['id'] . ',';
 				}
+				rtrim($user_ids_for_delete, ",");
 				
+				$mySql->deleteChatMembers($app, $chat_id, $user_ids_for_delete);
 				
-			} else if (array_key_exists('room_ids', $paramsAry)){
+			} else if (array_key_exists('room_ids', $paramsAry) && $paramsAry['room_ids'] != ''){
 			
 				$room_ids = $paramsAry['room_ids'];
 				//move rooms from chat
@@ -380,15 +383,20 @@ class ChatController extends SpikaBaseController {
 				$values = array('room_ids' => $new_room_ids);
 				$mySql->updateChat($app, $chat_id, $values);
 				
+				//move room members from chat
+				$all_room_members = $mySql->getRoomMembersForRoom($app, $room_ids);
+				$user_ids_for_delete = "";
+				foreach($all_room_members as $member){
+					$user_ids_for_delete .= $member['id'] . ',';
+				}
+				rtrim($user_ids_for_delete, ",");
+				
+				$mySql->deleteChatMembers($app, $chat_id, $user_ids_for_delete);
+				
 			} else if(array_key_exists('user_ids', $paramsAry)){
 				
-				$user_ids = $paramsAry['user_ids'];
-				$user_ids_ary = explode(',', $user_ids);
-				
-				foreach ($user_ids_ary as $user_id){
-					$values = array('is_deleted' => 1);
-					$mySql->updateChatMember($app, $chat_id, $user_id, $values);
-				}
+				$user_ids_for_delete = $paramsAry['user_ids'];
+				$mySql->deleteChatMembers($app, $chat_id, $user_ids_for_delete);
 				
 			} else {
 				$values = array('is_deleted' => 1);

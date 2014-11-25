@@ -41,6 +41,7 @@ interface DbInterface
 	public function updateChatMember(Application $app, $chat_id, $user_id, $values);
 	public function isChatMember(Application $app, $user_id, $chat_id);
 	public function getChatAdmin(Application $app, $chat_id);
+	public function deleteChatMembers(Application $app, $chat_id, $user_ids_for_delete);
 	
 	public function getUnreadChats(Application $app, $user_id);
 	public function updateSentLocalPush(Application $app, $chat_id, $user_id);
