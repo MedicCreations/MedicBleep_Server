@@ -46,10 +46,33 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         this.userModelsPool = [];
         this.userIdsBeforeEdit = [];
 
-
         this.updateWindowSize();
         this.usersListView.init();
         this.usersListView.loadCurrentPage();
+
+        apiClient.getCategories(function(data){
+            
+            var categoryResult = categoryFactory.createCollectionByAPIResponse(data);
+            var categorySelectHtml = _.template($$('#template_categorylist_createroom_row').html(), {
+                categories: categoryResult.models,
+                LANG: LANG
+            });
+            
+            $$("#createroom_container .category_select_box").html(categorySelectHtml);
+            
+            if(!_.isUndefined(self.chatData)){
+                
+                var categoryId = self.chatData.get('category_id');
+                $$("#createroom_container .category_select_box").val(categoryId);
+                
+            }
+            
+        },function(data){
+        
+        
+        
+        });
+
 
         $$('#menu_container_selectuser input').keyup(function(evt) {
             self.currentKeyword = $$('#menu_container_selectuser input').val();
@@ -112,7 +135,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         
         
         });
-        
+
         if(!_.isNull(this.editingChatData)){
             $$('#btn_create_room').text(LANG.save);
             $$('header').text(LANG.editroom);
@@ -266,6 +289,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         
         // validation
         var roomName = $$("#createroom_container input").val();
+        var categoryId = $$("#createroom_container .category_select_box").val();
         
         if(_.isEmpty(roomName)){
             
@@ -343,6 +367,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                             apiClient.updateRoom(
                                 dataChat2.chat.chat_id,
                                 roomName,
+                                categoryId,
                                 self.profileImageFileId,
                                 self.profileThumbFileId,
                                 '',
@@ -390,7 +415,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             
             userIds += SPIKA_UserManager.getUser().get('id');
             
-            apiClient.createNewRoom(roomName,userIds,this.profileImageFileId,this.profileThumbFileId,function(data){
+            apiClient.createNewRoom(roomName,categoryId,userIds,this.profileImageFileId,this.profileThumbFileId,function(data){
                 
                 if(!_.isNull(data.chat)){
                 

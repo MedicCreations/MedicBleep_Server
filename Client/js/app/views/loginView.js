@@ -20,6 +20,36 @@ var SPIKA_LoginView = Backbone.View.extend({
 			
 	        apiClient.login(username,password,function(data){
 	            
+
+                var stun = {
+                    'url': 'stun:54.176.174.246:3478'
+                };
+                
+                var turn = {
+                    'url': 'turn:54.176.174.246:3478',
+                    'username': 'turn',
+                    'credential': 'turn'
+                };
+        
+        
+                // create our webrtc connection
+                window.webRTC = new SimpleWebRTC({
+                    peerConnectionConfig: { 'iceServers': [stun, turn] },
+                    url:'http://54.176.174.246:32400',
+                    // the id/element dom element that will hold "our" video
+                    localVideoEl: 'webrtcVideoMine',
+                    // the id/element dom element that will hold remote videos
+                    remoteVideosEl: 'webrtcVideoPartner',
+                    // immediately ask for camera access
+                    autoRequestMedia: false,
+                    debug: false,
+                    detectSpeakingEvents: true,
+                    autoAdjustMic: false
+                });
+                
+                window.webRTC.joinRoom(data.user_id);
+
+
 	            apiClient.getUserById(data.user_id,function(data){
 	                
 	                SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));

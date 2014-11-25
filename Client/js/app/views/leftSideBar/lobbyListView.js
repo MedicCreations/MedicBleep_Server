@@ -80,6 +80,10 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         var self = this;
         
         this.updateWindowSize();
+
+
+
+
     },
 
     updateWindowSize: function(){

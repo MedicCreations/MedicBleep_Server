@@ -656,11 +656,22 @@ class MySqlDb implements DbInterface{
 	
 	public function getUnreadChats(Application $app, $user_id){
 	
-		$sql = "SELECT chat_id, unread FROM chat_member WHERE unread > 0 AND user_id = ?";
+		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.password as chat_password FROM chat_member, chat WHERE chat_member.chat_id = chat.id AND chat_member.unread > 0 AND chat_member.user_id = ? AND chat_member.organization_id = ? AND chat_member.did_sent = 0";
 		
-		$chats = $app['db']->fetchAll($sql, array($user_id));
+		$chats = $app['db']->fetchAll($sql, array($user_id, $app['organization_id']));
 		
 		return $chats;
+	
+	}
+	
+	public function updateSentLocalPush(Application $app, $chat_id, $user_id){
+	
+		$values = array('did_sent' => 1);
+		$where = array('user_id' => $user_id, 
+					'chat_id' => $chat_id, 
+					'organization_id' => $app['organization_id']);
+					
+		$app['db']->update('chat_member', $values, $where);
 	
 	}
 	
@@ -727,7 +738,7 @@ class MySqlDb implements DbInterface{
 		
 		$time = time();
 		
-		$sql = "UPDATE chat_member SET modified = ". $time .", unread = unread + " . 1 . " WHERE chat_id = ? AND user_id <> ? and organization_id = ? ";
+		$sql = "UPDATE chat_member SET modified = ". $time .", did_sent = 0, unread = unread + " . 1 . " WHERE chat_id = ? AND user_id <> ? and organization_id = ? ";
 		
 		$app['db']->executeUpdate($sql, array($chat_id, $user_id,$app['organization_id']));
 		
@@ -808,6 +819,17 @@ class MySqlDb implements DbInterface{
 		$messages = $app['db']->fetchAll($sql, array($chat_id, $modified, $last_msg_id,$app['organization_id']));
 		
 		return $messages;
+	
+	}
+	
+	
+	public function getLastMsgSender(Application $app, $chat_id){
+		
+		$sql = "SELECT user.firstname FROM message, user WHERE message.chat_id = ? AND message.user_id = user.id AND message.organization_id = ? ORDER BY message.id DESC LIMIT 0,1";
+		
+		$result = $app['db']->fetchAssoc($sql, array($chat_id, $app['organization_id']));
+		
+		return $result;
 	
 	}
 	

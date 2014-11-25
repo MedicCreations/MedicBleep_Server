@@ -158,7 +158,7 @@ SpikaClient.prototype.searchUsers = function(page,search,succeessListener,failed
 };
 
 // get groups
-SpikaClient.prototype.searchGroups = function(page,search,succeessListener,failedListener)
+SpikaClient.prototype.searchGroups = function(page,search,categoryId,succeessListener,failedListener)
 {
     
 	var self = this;
@@ -166,6 +166,7 @@ SpikaClient.prototype.searchGroups = function(page,search,succeessListener,faile
 	var requestParams = {};
     
     requestParams.search = search;
+    requestParams.category_id = categoryId;
 	
 	if (page > 0){
 		requestParams.page = page;
@@ -195,7 +196,7 @@ SpikaClient.prototype.searchGroups = function(page,search,succeessListener,faile
 };
 
 // get rooms
-SpikaClient.prototype.searchRooms = function(page,search,succeessListener,failedListener)
+SpikaClient.prototype.searchRooms = function(page,search,categoryId,succeessListener,failedListener)
 {
     
     var self = this;
@@ -203,6 +204,7 @@ SpikaClient.prototype.searchRooms = function(page,search,succeessListener,failed
 	var requestParams = {};
     
     requestParams.search = search;
+    requestParams.category_id = categoryId;
 	
 	if (page > 0){
 		requestParams.page = page;
@@ -781,7 +783,7 @@ SpikaClient.prototype.saveProfliePicture = function(userId,fileId,thumbId,succee
 
 };
 
-SpikaClient.prototype.createNewRoom = function(roomName,userList,fileId,thumbId,succeessListener,failedListener)
+SpikaClient.prototype.createNewRoom = function(roomName,categoryId,userList,fileId,thumbId,succeessListener,failedListener)
 {
     
     var self = this;
@@ -789,7 +791,7 @@ SpikaClient.prototype.createNewRoom = function(roomName,userList,fileId,thumbId,
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/room/create',
         type: 'POST',
-        data: {name:roomName,users_to_add:userList,image:fileId,image_thumb:thumbId},
+        data: {name:roomName,category_id:categoryId,users_to_add:userList,image:fileId,image_thumb:thumbId},
         headers: {"token":this.token,"api-agent":this.UA}
     });
     
@@ -809,7 +811,7 @@ SpikaClient.prototype.createNewRoom = function(roomName,userList,fileId,thumbId,
 
 };
 
-SpikaClient.prototype.updateRoom = function(chatId,roomName,fileId,thumbId,isDelete,isActive,succeessListener,failedListener)
+SpikaClient.prototype.updateRoom = function(chatId,roomName,categoryId,fileId,thumbId,isDelete,isActive,succeessListener,failedListener)
 {
     
     var self = this;
@@ -835,6 +837,9 @@ SpikaClient.prototype.updateRoom = function(chatId,roomName,fileId,thumbId,isDel
     if(!_.isEmpty(roomName))
         data.name = roomName;
         
+    if(!_.isEmpty(categoryId))
+        data.category_id = categoryId;
+
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/chat/update',
         type: 'POST',
@@ -1044,7 +1049,32 @@ SpikaClient.prototype.mixAudioVideo = function(fileVideo,fileAudio,succeessListe
 
 }
 
+// get groups
+SpikaClient.prototype.getCategories = function(succeessListener,failedListener)
+{
+    
+	var self = this;
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/category/list',
+        type: 'GET',
+        headers: {"token":this.token,"api-agent":this.UA}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+           self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
 
+};
 
 SpikaClient.prototype.test = function()
 {

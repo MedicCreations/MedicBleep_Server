@@ -24,6 +24,7 @@
             return new ModelRoom({
                 admin_id: data.admin_id,
                 chat_id: chat_id,
+                category_id: data.category_id,
                 chat_name: chat_name,
                 group_id: data.group_id,
                 image: data.image,
@@ -60,6 +61,7 @@
         defaults: {
             admin_id: 0,
             chat_id: 0,
+            category_id: 0,
             chat_name: '',
             group_id: 0,
             image: '',

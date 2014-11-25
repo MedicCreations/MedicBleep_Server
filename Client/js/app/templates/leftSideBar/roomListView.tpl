@@ -1,9 +1,19 @@
 
     	<div class="menu_search">
+    	
+    	    <div>
     			<input type="text" placeholder="Search" />
     			<a>
     				<i class="fa fa-search fa-2x"></i>
     			</a>
+    	    </div>
+
+            <div>
+                <select data-placeholder="Your Favorite Type of Bear" style="width:350px;" class="chosen-select-no-single" tabindex="9">
+                    <option value="0">{category_not_selected}</option>
+                </select>
+            </div>
+            
     	</div>
     	
     	<div class="scrollable">
