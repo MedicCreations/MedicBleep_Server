@@ -1056,6 +1056,48 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function getChatMembersGroupsRooms(Application $app, $chat_id){
+	
+		$users = array();
+		$groups = array();
+		$rooms = array();
+		
+		//users
+		$sql = "SELECT chat_member.user_id, chat_member.chat_id, chat_member.is_deleted, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM chat_member, user WHERE user.id = chat_member.user_id AND chat_member.chat_id = ? AND chat_member.is_deleted = 0 AND chat_member.organization_id = ?";
+		
+		$users = $app['db']->fetchAll($sql, array($chat_id,$app['organization_id']));
+		
+		$chat = $this->getChatByID($app, $chat_id);
+		
+		if ($chat['group_ids'] != ""){
+			//find groups
+			$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups WHERE groups.is_deleted = 0 AND groups.id IN (".$chat['group_ids'].") AND groups.organization_id = ?";
+			
+			$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
+			
+		}
+		
+		if ($chat['room_ids'] != ""){
+			//find rooms
+			$sql = "SELECT chat.id, chat.name as name, chat.image, chat.image_thumb, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.id IN (".$chat['room_ids'].") AND chat.organization_id = ?";
+			
+			$rooms = $app['db']->fetchAll($sql, array($app['organization_id']));
+		}
+		
+		$result = array_merge($groups,$rooms,$users);
+		
+		usort(
+			$result,
+			function ($a, $b) {
+				return strcasecmp($a['name'], $b['name']);
+			}
+		);
+		
+		return $result;
+	
+	}
+	
+	
 	public function getDetailValues(Application $app){
 	
 		$sql = "SELECT * FROM user_details WHERE is_deleted = 0 and ( organization_id = ? or is_default = 1 )";

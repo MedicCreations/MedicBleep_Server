@@ -555,15 +555,12 @@ class UserController extends SpikaBaseController {
 		
 		$controllers->get('test', function (Request $request) use ($app, $self, $mySql){
 			
-			$user_id = 201289;
-			$search = "fffffffff";
-			$offset = 0;
-			$category_id = 0;
+			$chat_id = 762;
 			
-			$rooms = $mySql->getRoomsCount($app, $user_id, $search, $offset, $category_id);
+			$res = $mySql->getChatMembersGroupsRooms($app, $chat_id);
 			
-			var_dump($rooms);
-			
+			var_dump($res);
+						
 			$result = "OK";
 			return $app->json($result, 200);
 			

@@ -78,6 +78,7 @@ interface DbInterface
 	public function getUsersForRoom(Application $app, $user_ids);
 	public function getGroupMembersForRoom(Application $app, $group_ids);
 	public function getRoomMembersForRoom(Application $app, $room_ids);
+	public function getChatMembersGroupsRooms(Application $app, $chat_id);
 	
 	public function getDetailValues(Application $app);
 	public function getSeenBy(Application $app, $chat_id);

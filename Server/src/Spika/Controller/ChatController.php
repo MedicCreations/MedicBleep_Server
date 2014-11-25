@@ -165,26 +165,48 @@ class ChatController extends SpikaBaseController {
 			$chat_id = $paramsAry['chat_id'];
 			
 			$page = 0;
+			$user_group_rooms = 0;
 			
 			if (array_key_exists('page', $paramsAry)){
 				$page = $paramsAry['page'];
 			}
 			
-			$admin = $mySql->getChatAdmin($app, $chat_id);
-			$admin['is_admin'] = true;
+			if (array_key_exists('user_group_rooms', $paramsAry)){
+				$user_group_rooms = $paramsAry['user_group_rooms'];
+			}
 			
 			$offset = $page*USERS_PAGE_SIZE;
 			
-			$members = $mySql->getChatMembers($app, $chat_id);
+			$admin = $mySql->getChatAdmin($app, $chat_id);
+			$admin['is_admin'] = true;
 			
-			foreach($members as $key => $member){
-				if ($member['user_id'] == $admin['user_id']){
-						unset($members[$key]);
-						break;
+			if ($user_group_rooms){
+				$members = $mySql->getChatMembersGroupsRooms($app, $chat_id);
+				
+				foreach($members as $key => $member){
+					if (isset($member['user_id'])){
+						if ($member['user_id'] == $admin['user_id']){
+								unset($members[$key]);
+								break;
+						}
 					}
-			}
+				}
 			
-			array_unshift($members, $admin);
+				array_unshift($members, $admin);
+				
+			} else {
+				$members = $mySql->getChatMembers($app, $chat_id);
+			
+				foreach($members as $key => $member){
+					if ($member['user_id'] == $admin['user_id']){
+							unset($members[$key]);
+							break;
+						}
+				}
+				
+				array_unshift($members, $admin);
+				
+			}
 			
 			$page_members = array_slice($members, $offset, USERS_PAGE_SIZE);
 			
@@ -333,7 +355,32 @@ class ChatController extends SpikaBaseController {
 			
 			$user_id = $app['user']['id'];
 			
-			if (array_key_exists('user_ids', $paramsAry)){
+			$chat = $mySql->getChatWithID($app, $chat_id);
+			
+			if (array_key_exists('group_ids', $paramsAry)){
+				
+				$group_ids = $paramsAry['group_ids'];
+				//move groups from chat
+				$new_group_ids = str_replace($group_ids, "", $chat['group_ids']);
+				$values = array('group_ids' => $new_group_ids);
+				$mySql->updateChat($app, $chat_id, $values);
+				
+				//move group members from chat
+				$all_group_members = $mySql->getGroupMembersForRoom($app, $group_ids);
+				foreach($all_group_members as $group_member){
+					
+				}
+				
+				
+			} else if (array_key_exists('room_ids', $paramsAry)){
+			
+				$room_ids = $paramsAry['room_ids'];
+				//move rooms from chat
+				$new_room_ids = str_replace($room_ids, "", $chat['room_ids']);
+				$values = array('room_ids' => $new_room_ids);
+				$mySql->updateChat($app, $chat_id, $values);
+				
+			} else if(array_key_exists('user_ids', $paramsAry)){
 				
 				$user_ids = $paramsAry['user_ids'];
 				$user_ids_ary = explode(',', $user_ids);
@@ -348,8 +395,6 @@ class ChatController extends SpikaBaseController {
 				$mySql->updateChatMember($app, $chat_id, $user_id, $values);
 			}
 			
-			
-			$chat = $mySql->getChatWithID($app, $chat_id);
 			if ($chat['name'] != ""){
 				$chat_name = $chat['name'];
 			} else {
