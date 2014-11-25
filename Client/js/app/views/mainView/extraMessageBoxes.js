@@ -25,15 +25,33 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         
         Backbone.on(EVENT_CALL_FINISH, function() {
             
-            $$('#extramessage_dialog_view_conference').fadeOut();
+            $$('#extramessage_dialog_view_conference').fadeOut(function(){
+                $$('#extramessage_dialog_view_conference .alert_content').html('');
+            });
             
         });
+        
+        Backbone.on(EVENT_CALL_OFFER, function(offerData) {
 
-        
-        
-        Backbone.on(EVENT_CALL_ERROR, function() {
+            $$('#extramessage_dialog_view_conference .call_buttons').css('display','none');
+            $$('#extramessage_dialog_view_conference .call_received_buttons').css('display','block');
+
+            $('#extramessage_dialog_view_conference').fadeIn(function(){
+                
+                
+                
+                U.l(offerData);
+                
+            });
             
-            SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_general);
+        });
+        
+        Backbone.on(EVENT_CALL_ERROR, function(message) {
+            
+            if(_.isEmpty(message))
+                message = LANG.call_error_general;
+                
+            SPIKA_AlertManager.show(LANG.general_errortitle,message);
             $$('#extramessage_dialog_view_conference').fadeOut();
             
         });
@@ -142,6 +160,11 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         $$('#extramessage_btn_call').click(function(){
             
             if(self.chatId == 0){
+                return;
+            }
+            
+            if(!SPIKA_VideoCallManager.canUseWebRTC()){
+                SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_nowebrtc);    
                 return;
             }
             
@@ -445,7 +468,37 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // Calling //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        $$('#extramessage_dialog_view_conference .alert_bottom_decline').click(function(){
             
+            SPIKA_VideoCallManager.declineCall();
+            $$('#extramessage_dialog_view_conference').fadeOut();
+            
+        });
+
+        $$('#extramessage_dialog_view_conference .alert_bottom_accept').click(function(){
+            
+            $$('#extramessage_dialog_view_conference .call_buttons').css('display','block');
+            $$('#extramessage_dialog_view_conference .call_received_buttons').css('display','none');
+            
+            require([
+                'app/views/mainView/videoCallView',
+                'thirdparty/text!templates/mainView/videoCallView.tpl'
+            ], function (videoCallView,VideoCallViewTemplate) {
+                
+                self.videoCallView = new SPIKA_VideoCallView({
+                    template: VideoCallViewTemplate,
+                    partnerUserId: SPIKA_VideoCallManager.currentPartnerUserId
+                });
+                
+                $$('#extramessage_dialog_view_conference .alert_content').html(self.videoCallView.render().el);
+
+            });
+                    
+            
+        });
+
+ 
         $$('#extramessage_dialog_view_conference .alert_bottom_cancel').click(function(){
             
             if(!_.isNull(self.videoCallView)){
@@ -608,7 +661,10 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_notprivate);
             return;
         }
-            
+        
+        $$('#extramessage_dialog_view_conference .call_buttons').css('display','block');
+        $$('#extramessage_dialog_view_conference .call_received_buttons').css('display','none');
+        
         $$('#extramessage_dialog_view_conference').fadeIn(function(){
             
             var chatId = chatData.get('chat_id');

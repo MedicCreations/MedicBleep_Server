@@ -58,12 +58,21 @@ class RoomController extends SpikaBaseController {
 				$password = $paramsAry['password'];
 			}
 			
+			$group_ids = "";
+			if (array_key_exists('group_ids', $paramsAry)){
+				$group_ids = $paramsAry['group_ids'];
+			}
+			$room_ids = "";
+			if (array_key_exists('room_ids', $paramsAry)){
+				$room_ids = $paramsAry['room_ids'];
+			}
+			
 			$users_to_add = $paramsAry['users_to_add'];
 			$users_to_add_ary = explode(',', $users_to_add);
 			
 			$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 			
-			$chat_id = $mySql->createChat($app, $name, CHAT_ROOM_TYPE, $my_user_id, 0, $image, $image_thumb, $custom_chat_id, $category_id, $is_private, $password);
+			$chat_id = $mySql->createChat($app, $name, CHAT_ROOM_TYPE, $my_user_id, 0, $image, $image_thumb, $custom_chat_id, $category_id, $is_private, $password, $group_ids, $room_ids);
 				
 			$mySql->addChatMembers($app, $chat_id, $users_to_add_ary);
 			
@@ -159,7 +168,11 @@ class RoomController extends SpikaBaseController {
 			
 			$all = $mySql->getSearchUsersGroupsRooms($app, $search, $my_user_id);
 			
-			$search_slice = array_slice($all, $offset, ROOMS_PAGE_SIZE);
+			if ($page != -1){
+				$search_result = array_slice($all, $offset, ROOMS_PAGE_SIZE);
+			} else {
+				$search_result = $all;
+			}
 			
 			if ($page > 0 && count($all) == 0){
 				$result = array('code' => ER_PAGE_NOT_FOUND, 
@@ -174,7 +187,7 @@ class RoomController extends SpikaBaseController {
 					'page' => $page,
 					'items_per_page' => ROOMS_PAGE_SIZE,
 					'total_count' => $search_count,
-					'search_result' => $search_slice);
+					'search_result' => $search_result);
 			
 			return $app->json($result, 200);
 			
