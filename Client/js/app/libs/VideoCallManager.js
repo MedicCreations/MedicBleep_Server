@@ -14,7 +14,7 @@ SPIKA_VideoCallManager = {
     roomName:"",
     currentPeerId:0,
     init:function(userId){
-        
+         
         var self = this;
         this.userId = userId;
         
@@ -40,9 +40,9 @@ SPIKA_VideoCallManager = {
                 remoteVideosEl: 'videoRemotes',
                 // immediately ask for camera access
                 autoRequestMedia: false,
-                debug: false,
+                debug: true,
                 detectSpeakingEvents: true,
-                autoAdjustMic: false
+                autoAdjustMic: true
             });
             
             this.webRTC.on('readyToCall', function () {
@@ -188,6 +188,7 @@ SPIKA_VideoCallManager = {
             
         } catch(ex) {
             
+			U.l("failed to initialize webrtc");
             U.l(ex);
             this.callState = -1;
             

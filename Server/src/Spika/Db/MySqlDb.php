@@ -656,6 +656,17 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function deleteChatMembers(Application $app, $chat_id, $user_ids_for_delete){
+		
+		$time = time();
+		
+		$sql = "UPDATE chat_member SET modified = ". $time ." is_deleted = 1 WHERE chat_id = ? AND user_id IN (".$user_ids_for_delete.") and organization_id = ? ";
+		
+		$app['db']->executeUpdate($sql, array($chat_id, $app['organization_id']));
+	
+	}
+	
+	
 	public function getUnreadChats(Application $app, $user_id){
 	
 		$sql = "SELECT chat_member.chat_id, chat_member.unread, chat.password as chat_password FROM chat_member, chat WHERE chat_member.chat_id = chat.id AND chat_member.unread > 0 AND chat_member.user_id = ? AND chat_member.organization_id = ? AND chat_member.did_sent = 0";
