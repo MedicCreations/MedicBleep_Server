@@ -361,7 +361,8 @@ class ChatController extends SpikaBaseController {
 				
 				$group_ids = $paramsAry['group_ids'];
 				//move groups from chat
-				$new_group_ids = str_replace($group_ids, "", $chat['group_ids']);
+				$new_group_ids = str_replace(','.$group_ids, "", $chat['group_ids']);
+				$new_group_ids = str_replace($group_ids, "", $new_group_ids);
 				$values = array('group_ids' => $new_group_ids);
 				$mySql->updateChat($app, $chat_id, $values);
 				
@@ -371,7 +372,7 @@ class ChatController extends SpikaBaseController {
 				foreach($all_group_members as $member){
 					$user_ids_for_delete .= $member['id'] . ',';
 				}
-				rtrim($user_ids_for_delete, ",");
+				$user_ids_for_delete = rtrim($user_ids_for_delete, ",");
 				
 				$mySql->deleteChatMembers($app, $chat_id, $user_ids_for_delete);
 				
@@ -379,7 +380,8 @@ class ChatController extends SpikaBaseController {
 			
 				$room_ids = $paramsAry['room_ids'];
 				//move rooms from chat
-				$new_room_ids = str_replace($room_ids, "", $chat['room_ids']);
+				$new_room_ids = str_replace(','.$room_ids, "", $chat['room_ids']);
+				$new_room_ids = str_replace($room_ids, "", $new_room_ids);
 				$values = array('room_ids' => $new_room_ids);
 				$mySql->updateChat($app, $chat_id, $values);
 				
@@ -389,7 +391,7 @@ class ChatController extends SpikaBaseController {
 				foreach($all_room_members as $member){
 					$user_ids_for_delete .= $member['id'] . ',';
 				}
-				rtrim($user_ids_for_delete, ",");
+				$user_ids_for_delete = rtrim($user_ids_for_delete, ",");
 				
 				$mySql->deleteChatMembers($app, $chat_id, $user_ids_for_delete);
 				

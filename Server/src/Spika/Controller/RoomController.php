@@ -152,6 +152,11 @@ class RoomController extends SpikaBaseController {
 			
 			$paramsAry = $request->query->all();
 			
+			$chat_id = 0;
+			if (array_key_exists('chat_id', $paramsAry)){
+				$chat_id = $paramsAry['chat_id'];
+			}
+			
 			$search = "";
 			
 			if (array_key_exists('search', $paramsAry)){
