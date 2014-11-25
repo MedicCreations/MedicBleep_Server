@@ -198,6 +198,8 @@ var SPIKA_LoginView = Backbone.View.extend({
 
         apiClient.login(username,password,function(data){
             
+			SPIKA_VideoCallManager.init(data.user_id);
+			
             apiClient.getUserById(data.user_id,function(data){
                 
                 SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
