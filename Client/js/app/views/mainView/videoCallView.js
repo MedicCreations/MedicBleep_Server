@@ -82,10 +82,10 @@ var SPIKA_VideoCallView = Backbone.View.extend({
     },
     callFinished:function(peerId){
         
+        
         if(this.isCalling){
         
             SPIKA_AlertManager.show(LANG.call_finished_title,LANG.call_finished);
-            SPIKA_VideoCallManager.stopLocalVideo();
             Backbone.trigger(EVENT_CALL_FINISH);
 
         }

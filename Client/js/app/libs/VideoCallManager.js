@@ -42,7 +42,7 @@ SPIKA_VideoCallManager = {
                 autoRequestMedia: false,
                 debug: true,
                 detectSpeakingEvents: true,
-                autoAdjustMic: true
+                autoAdjustMic: false
             });
             
             this.webRTC.on('readyToCall', function () {
