@@ -131,42 +131,39 @@ SPIKA_VideoCallManager = {
             // a peer video has been added
             this.webRTC.on('videoAdded', function (video, peer) {
                 
-                U.l('videoAdded');
-                U.l(video);
-				
                 // show the ice connection state
                 if (peer && peer.pc) {
                     
                     peer.pc.on('iceConnectionStateChange', function (event) {
                     
                         switch (peer.pc.iceConnectionState) {
-                        case 'checking':
-                            U.l('webrtc con checking'); 
-                            break;
-                        case 'connected':
-                            U.l('webrtc con connected'); 
-                        case 'completed':{
-                            U.l('webrtc con completed'); 
-                            self.callState = 3;
-                            self.currentPeerId = peer.id;
-                            
-                            if(_.isEmpty(self.callbackListener))
-                                return;
-                                
-                            if(!_.isUndefined(self.callbackListener.callEstablished))
-                                self.callbackListener.callEstablished(peer)
-                            
-                            break;
-                        }
-                        case 'disconnected':
-                            self.finishCalling();
-                            break;
-                        case 'failed':
-                            self.error(LANG.call_error_noconnection);
-                            break;
-                        case 'closed':
-                            self.finishCalling();
-                            break;
+	                        case 'checking':
+	                            U.l('webrtc con checking'); 
+	                            break;
+	                        case 'connected':
+	                            U.l('webrtc con connected'); 
+	                        case 'completed':{
+	                            U.l('webrtc con completed'); 
+	                            self.callState = 3;
+	                            self.currentPeerId = peer.id;
+	                            
+	                            if(_.isEmpty(self.callbackListener))
+	                                return;
+	                                
+	                            if(!_.isUndefined(self.callbackListener.callEstablished))
+	                                self.callbackListener.callEstablished(peer)
+	                            
+	                            break;
+	                        }
+	                        case 'disconnected':
+	                            self.finishCalling();
+	                            break;
+	                        case 'failed':
+	                            self.error(LANG.call_error_rtc_failed);
+	                            break;
+	                        case 'closed':
+	                            self.finishCalling();
+	                            break;
                         }
                         
                     });

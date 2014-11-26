@@ -76,5 +76,6 @@ LANG = {
       category_not_selected: "No Category Selected",
       category_not_specified: "Category Not Specified",
       call_error_noconnection: "You are not connected to signaling server.Please reload the browser and try again.",
+      call_error_rtc_failed: "Failed to establish RTC connection",
       dummy : 'dummy'
 };
