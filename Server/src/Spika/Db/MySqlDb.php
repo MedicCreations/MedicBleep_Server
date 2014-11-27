@@ -977,7 +977,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRoomsCount(Application $app, $user_id, $search, $category_id){
 	
-		$sql = "SELECT COUNT(*) FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0))  and chat.organization_id = ? ";
+		$sql = "SELECT chat.*, chat_member.* FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0)) and chat.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
@@ -987,14 +987,16 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND chat.category_id = " . $category_id;
 		}
 		
-		$sql = $sql . " GROUP BY chat_member.chat_id ORDER BY chat.modified DESC";
+		$sql = $sql . " GROUP BY chat.id ORDER BY chat.modified DESC";
 		
-		$result = $app['db']->executeQuery($sql, array($user_id,$app['organization_id']))->fetch();
+		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
+		
+		$result = count($result);
 		
 		if ($result == false){
 			return 0;
 		} else {
-			return $result["COUNT(*)"];
+			return $result;
 		}
 	
 	}

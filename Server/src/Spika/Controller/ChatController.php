@@ -84,6 +84,10 @@ class ChatController extends SpikaBaseController {
 			
 			$my_user_id = $app['user']['id'];
 			
+			$users = array();
+			$groups = array();
+			$rooms = array();
+			
 			$chat_id = "";
 			if (array_key_exists('chat_id', $paramsAry)){
 				$chat_id = $paramsAry['chat_id'];
@@ -103,7 +107,33 @@ class ChatController extends SpikaBaseController {
 			}
 			
 			$users_to_add = $paramsAry['users_to_add'];
-			$users_to_add_ary = explode(',', $users_to_add);
+			
+			//create distinct users
+			if ($users_to_add != ""){
+				//get users for room
+				$users = $mySql->getUsersForRoom($app, $users_to_add);
+			}
+			
+			if ($group_ids != ""){
+				//get group members for room
+				$groups = $mySql->getGroupMembersForRoom($app, $group_ids);
+			}
+			
+			if ($room_ids != ""){
+				//get room members for room
+				$rooms = $mySql->getRoomMembersForRoom($app, $room_ids);
+			}
+			
+			$result = array_merge($users, $groups, $rooms);
+			$result = array_map("unserialize", array_unique(array_map("serialize", $result)));
+			
+			$users_to_add_ary = array();
+			
+			
+			
+			foreach ($result as $res){
+				array_push($users_to_add_ary, $res['id']);
+			}
 			
 			$chat = $mySql->getChatWithID($app, $chat_id);
 			

@@ -377,9 +377,6 @@ class MessageController extends SpikaBaseController {
 				
 				//get buddy profile if private chat
 				$chat = $mySql->getChatByID($app, $chat_id);
-				if ($chat['name'] != ""){
-					$chat_name = $chat['name'];
-				}
 				
 				if ($chat['type'] == CHAT_USER_TYPE){
 					$data = $mySql->getPrivateChatData($app, $chat_id, $my_user_id);
@@ -397,6 +394,10 @@ class MessageController extends SpikaBaseController {
 				} else {
 					$chat_members = $mySql->getChatMembers($app, $chat_id);
 					$chat_name = $self->createChatName($app, $mySql, $chat_members, array());
+				}
+				
+				if ($chat['name'] != ""){
+					$chat_name = $chat['name'];
 				}
 				
 				$chat['chat_name'] = $chat_name;

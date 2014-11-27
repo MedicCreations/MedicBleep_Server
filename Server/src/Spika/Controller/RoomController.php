@@ -192,19 +192,19 @@ class RoomController extends SpikaBaseController {
 				foreach($search_result as &$temp_user){
 					$temp_user['is_member'] = false;
 					
-					if ($temp_user['is_user']){
+					if (array_key_exists('is_user', $temp_user)){
 						foreach ($chat_members as $member){
 							if ($temp_user['id'] == $member['user_id']){
 								$temp_user['is_member'] = true;
 								break;
 							}
 						}
-					} else if ($temp_user['is_group']){
+					} else if (array_key_exists('is_group', $temp_user)){
 						if (strpos($chat['group_ids'], $temp_user['id']) !== FALSE){
 							$temp_user['is_member'] = true;
 						}
 					
-					} else if ($temp_user['is_room']){
+					} else if (array_key_exists('is_room', $temp_user)){
 						if (strpos($chat['room_ids'], $temp_user['id']) !== FALSE){
 							$temp_user['is_member'] = true;
 						}
