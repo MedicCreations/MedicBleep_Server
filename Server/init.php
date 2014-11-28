@@ -18,7 +18,7 @@ define('WEBSOCKET_SERVER_HOST', "localhost");
 define('WEBSOCKET_SERVER_PORT', "8080");
 define('USEWEBSOCKET',true);
 
-define('INFORMATION_URL', "http://enterprise.spikaapp.com/index.html");
+define('INFORMATION_URL', "http://www.spikaent.com");
 
 //define sql database
 define('DB_NAME', "clover");
