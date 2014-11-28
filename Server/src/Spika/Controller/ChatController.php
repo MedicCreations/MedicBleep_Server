@@ -84,6 +84,10 @@ class ChatController extends SpikaBaseController {
 			
 			$my_user_id = $app['user']['id'];
 			
+			$users = array();
+			$groups = array();
+			$rooms = array();
+			
 			$chat_id = "";
 			if (array_key_exists('chat_id', $paramsAry)){
 				$chat_id = $paramsAry['chat_id'];
@@ -91,19 +95,62 @@ class ChatController extends SpikaBaseController {
 			
 			$group_ids = "";
 			if (array_key_exists('group_ids', $paramsAry) && $paramsAry['group_ids'] != ""){
-				$group_ids = $paramsAry['group_ids'];
+				$group_ids = trim($paramsAry['group_ids'], ",");
+			}
+			$group_all_ids = "";
+			if (array_key_exists('group_all_ids', $paramsAry) && $paramsAry['group_all_ids'] != ""){
+				$group_all_ids = trim($paramsAry['group_all_ids'], ",");
+				$group_ids = ',' . $group_all_ids;
+				
 				$values = array('group_ids' => $group_ids);
 				$mySql->updateChat($app, $chat_id, $values);
 			}
+			
 			$room_ids = "";
 			if (array_key_exists('room_ids', $paramsAry) && $paramsAry['room_ids'] != ""){
-				$room_ids = $paramsAry['room_ids'];
+				$room_ids = trim($paramsAry['room_ids'], ",");
+				$values = array('room_ids' => $room_ids);
+				$mySql->updateChat($app, $chat_id, $values);
+			}
+			$room_all_ids = "";
+			if (array_key_exists('room_all_ids', $paramsAry) && $paramsAry['room_all_ids'] != ""){
+				$room_all_ids = trim($paramsAry['room_all_ids'], ",");
+				$room_ids = ',' . $room_all_ids;
+				
 				$values = array('room_ids' => $room_ids);
 				$mySql->updateChat($app, $chat_id, $values);
 			}
 			
-			$users_to_add = $paramsAry['users_to_add'];
-			$users_to_add_ary = explode(',', $users_to_add);
+			
+			
+			$users_to_add = trim($paramsAry['users_to_add'], ",");
+			
+			//create distinct users
+			if ($users_to_add != ""){
+				//get users for room
+				$users = $mySql->getUsersForRoom($app, $users_to_add);
+			}
+			
+			if ($group_ids != ""){
+				//get group members for room
+				$groups = $mySql->getGroupMembersForRoom($app, $group_all_ids);
+			}
+			
+			if ($room_ids != ""){
+				//get room members for room
+				$rooms = $mySql->getRoomMembersForRoom($app, $room_all_ids);
+			}
+			
+			$result = array_merge($users, $groups, $rooms);
+			$result = array_map("unserialize", array_unique(array_map("serialize", $result)));
+			
+			$users_to_add_ary = array();
+			
+			
+			
+			foreach ($result as $res){
+				array_push($users_to_add_ary, $res['id']);
+			}
 			
 			$chat = $mySql->getChatWithID($app, $chat_id);
 			

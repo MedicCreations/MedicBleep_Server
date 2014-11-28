@@ -130,8 +130,6 @@ EncryptManager = {
             try{
                 
                 if(useWorkerProcess){
-                    
-                    U.l(" worker process");
 
                     var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
                     
@@ -147,8 +145,6 @@ EncryptManager = {
                     worker.postMessage({rootUrl:WEB_ROOT,hexData:hexText,password:AES_PASSWORD});
                     
                 } else {
-                    
-                    U.l("without worker process");
                     
                     var decryptedBin = RNCryptor.Decrypt(AES_PASSWORD,
                         sjcl.codec.hex.toBits(hexText)
@@ -239,8 +235,6 @@ EncryptManager = {
                 
                 if(useWorkerProcess){
                     
-                    U.l(" worker process");
-                    
                     var worker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js');
                     
                     worker.addEventListener('message', function(e) {
@@ -265,8 +259,6 @@ EncryptManager = {
     
                 }else{
                     
-                    
-                    U.l("without worker process");
                     
                     var decryptedBin = RNCryptor.Decrypt(AES_PASSWORD,
                         sjcl.codec.hex.toBits(hexText)

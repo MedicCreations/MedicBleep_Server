@@ -1312,3 +1312,90 @@ ul#user_menu li a{
 /*   END CODE HIGHLIGHT         */
 /*------------------------------*/
 
+/*------------------------------*/
+/*   CALL WINDOW	            */
+/*------------------------------*/
+
+#call_window{
+	position: absolute;
+	z-index: 1000;
+	bottom: 60px;
+	right: 5px;
+	width: 400px;
+	height: 400px;
+	background-color: #000;
+	border: 1px solid #2C2D32;
+}
+
+#call_window .footer_buttons{
+	text-align: right;
+	background-color: #2C2D32;
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	width: 100%;
+	height: 40px;
+}
+#call_window .footer_buttons .button{
+	margin: 5px;
+	
+}
+
+#call_window .my_video_holder{
+
+	position: absolute;
+	z-index: 1010;
+	bottom: 45px;
+	right: 5px;
+	width: 150px;
+	height: 150px;
+	background-color: #333;
+	border: 1px solid #2C2D32;
+	overflow: hidden;
+}
+
+#call_window .partner_video_holder{
+	
+	position: absolute;
+	z-index: 1010;
+	bottom: 45px;
+	right: 5px;
+	width: 390px;
+	height: 350px;
+	background-color: #777;
+	overflow: hidden;
+}
+
+#call_window .avatar{
+	
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	
+}
+
+
+#call_window .video{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+#call_window .partner_video_holder video{
+	
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+
+}
+
+
+/*------------------------------*/
+/*   END CALL WINDO             */
+/*------------------------------*/
+
+

@@ -5,6 +5,7 @@ var SPIKA_MainView = Backbone.View.extend({
     leftSideBar: null,
     chatView: null,
     infoView: null,
+    callWindow: null,
     initialize: function(options) {
     
         var self = this;
@@ -85,12 +86,14 @@ var SPIKA_MainView = Backbone.View.extend({
             'app/views/leftSideBar/leftSideBarContainer',
             'thirdparty/text!templates/leftSideBar/leftSiderBarContainer.tpl',
             'app/views/mainView/chatView',
-            'thirdparty/text!templates/mainView/chatView.tpl'
+            'thirdparty/text!templates/mainView/chatView.tpl',
+            'app/views/featureViews/callWindow',
+            'thirdparty/text!templates/featureViews/callWindow.tpl'
         ], function (
             InfoView,InfoViewTemplate,
             LeftSideBar,LeftSideBarTemplate,
             ChatView,ChatViewTemplate,
-            ExtraBoxView,ExtraMessageBoxesTemplate
+            CallWindow,CallWindowTemplate
             ) {
             
             self.infoView = new SPIKA_InfoView({
@@ -103,6 +106,10 @@ var SPIKA_MainView = Backbone.View.extend({
             
             self.chatView = new SPIKA_ChatView({
                 template: ChatViewTemplate
+            });
+			
+            self.callWindow = new SPIKA_CallWindow({
+                template: CallWindowTemplate
             });
 
             
@@ -121,6 +128,8 @@ var SPIKA_MainView = Backbone.View.extend({
         var self = this;
         $$('#left_sidebar').html(self.leftSideBar.render().el);
         $$('#main_container').html(self.chatView.render().el);
+        $$('#main_container').append(self.callWindow.render().el);
+        
         $$('').append(self.infoView.render().el);
         
         $$('header .userprofile').click(function(){
@@ -135,12 +144,10 @@ var SPIKA_MainView = Backbone.View.extend({
             self.hideContextMenu(); 
         });
         
-        
         $$('').click(function(){
             Backbone.trigger(EVENT_CLICK_ANYWHARE); 
         });
 
-        
         this.updateUserInfo();
         
     },
@@ -164,10 +171,7 @@ var SPIKA_MainView = Backbone.View.extend({
         
     },
     
-    updateUnreadCount:function(count){
-	  	
-	  	U.l('ee');
-	  	
+    updateUnreadCount:function(count){	  	
 	  	if(count > 0)
 	  		document.title = '(' + count + ') ' + LANG.spika_title;
 	  	else

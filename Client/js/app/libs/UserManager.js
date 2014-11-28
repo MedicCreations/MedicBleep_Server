@@ -1,6 +1,7 @@
 SPIKA_UserManager = {
     
     loginedUser: null,
+    userDataCache: {},
     setUser: function(userModel){
         this.loginedUser = userModel;
     },
@@ -9,6 +10,12 @@ SPIKA_UserManager = {
     },
     isAuthorised: function(){
         return !_.isNull(this.loginedUser);
+    },
+    getUserDataFromCache:function(userId){
+	    return this.userDataCache[userId];
+    },
+    saveUserDataToCache:function(userId,data){
+	    this.userDataCache[userId] = data;
     }
     
 }

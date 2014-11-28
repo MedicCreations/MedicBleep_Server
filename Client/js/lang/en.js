@@ -40,6 +40,8 @@ LANG = {
       textboxplaceholer: "Type Message Here",
       leaveroom: "Leave",
       save: "Save",
+      accept: "Accept",
+      decline: "Decline",
       confirm: "Confirm required",
       confirm_general: "Press OK to proceed.",   
       deleteroom: "Delete Room",
@@ -77,5 +79,9 @@ LANG = {
       category_not_specified: "Category Not Specified",
       call_error_noconnection: "You are not connected to signaling server.Please reload the browser and try again.",
       call_error_rtc_failed: "Failed to establish RTC connection",
+      call_error_no_partner: "The user is not online.",
+      call_localmedia_error: "Failed to initialize microphone or webcam. Please confirm you connected these devices to your computer.",
+      call_error_usernotonline: "The user is not connect to Spika network.Please leave him text message",
+      call_error_userdeclined: "The user is busy now. Please call after.",
       dummy : 'dummy'
 };

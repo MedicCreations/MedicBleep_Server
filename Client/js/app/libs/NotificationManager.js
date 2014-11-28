@@ -52,11 +52,9 @@ var SPIKA_notificationManger = {
         
         self.wsConnection.onopen = function(e) {
         
-            U.l('WS MODE connection established');
             self.websocketMode = true;
             
             if(SPIKA_UserManager.isAuthorised()){
-                U.l('attached user' + SPIKA_UserManager.getUser().get('id'));
                 SPIKA_notificationManger.attachUser(SPIKA_UserManager.getUser().get('id'));
             }
             
@@ -65,9 +63,7 @@ var SPIKA_notificationManger = {
         };
         
         self.wsConnection.onmessage = function(e) {
-            
-            U.l('onmessage');
-            
+                        
             var data = JSON.parse(e.data);
 
             if(SPIKA_UserManager.getUser().get('id') != data.from_user_id)

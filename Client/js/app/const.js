@@ -17,6 +17,7 @@ var EVENT_OPEN_EXTRAMESSAGE = 'eventOpenExtraMessage';
 var EVENT_CALL_ERROR = 'eventCallError';
 var EVENT_CALL_FINISH = 'eventCallFinish';
 var EVENT_CALL_OFFER = 'eventCallOffer';
+var EVENT_CALL_INITIATE = 'eventCallInitiate';
 
 var EVENT_START_PRIVATE_CHAT = 'startPrivateChat';
 var EVENT_START_GROUP_CHAT = 'startGroupChat';
