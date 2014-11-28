@@ -91,36 +91,43 @@ class ChatController extends SpikaBaseController {
 			$chat_id = "";
 			if (array_key_exists('chat_id', $paramsAry)){
 				$chat_id = $paramsAry['chat_id'];
+				$chat = $mySql->getChatWithID($app, $chat_id);
+				
+				$old_room_ids = $chat['room_ids'];
+				$old_group_ids = $chat['group_ids'];
 			}
 			
+			
+			//handle group_ids
 			$group_ids = "";
 			if (array_key_exists('group_ids', $paramsAry) && $paramsAry['group_ids'] != ""){
-				$group_ids = trim($paramsAry['group_ids'], ",");
+				$group_ids = trim($paramsAry['group_ids'], ","); 
 			}
 			$group_all_ids = "";
 			if (array_key_exists('group_all_ids', $paramsAry) && $paramsAry['group_all_ids'] != ""){
 				$group_all_ids = trim($paramsAry['group_all_ids'], ",");
-				$group_ids = ',' . $group_all_ids;
-				
-				$values = array('group_ids' => $group_ids);
-				$mySql->updateChat($app, $chat_id, $values);
 			}
+			$group_ids .= ',' . $group_all_ids;
+			$group_ids = $old_group_ids . ',' . trim($group_ids, ","); 
+				
+			$values = array('group_ids' => trim($group_ids, ","));
+			$mySql->updateChat($app, $chat_id, $values);
 			
+			//handle room_ids
 			$room_ids = "";
 			if (array_key_exists('room_ids', $paramsAry) && $paramsAry['room_ids'] != ""){
 				$room_ids = trim($paramsAry['room_ids'], ",");
-				$values = array('room_ids' => $room_ids);
-				$mySql->updateChat($app, $chat_id, $values);
 			}
 			$room_all_ids = "";
 			if (array_key_exists('room_all_ids', $paramsAry) && $paramsAry['room_all_ids'] != ""){
 				$room_all_ids = trim($paramsAry['room_all_ids'], ",");
-				$room_ids = ',' . $room_all_ids;
-				
-				$values = array('room_ids' => $room_ids);
-				$mySql->updateChat($app, $chat_id, $values);
 			}
 			
+			$room_ids .= ',' . $room_all_ids;
+			$room_ids = $old_room_ids . ',' . trim($room_ids, ",");
+				
+			$values = array('room_ids' => trim($room_ids, ","));
+			$mySql->updateChat($app, $chat_id, $values);
 			
 			
 			$users_to_add = trim($paramsAry['users_to_add'], ",");
@@ -131,12 +138,12 @@ class ChatController extends SpikaBaseController {
 				$users = $mySql->getUsersForRoom($app, $users_to_add);
 			}
 			
-			if ($group_ids != ""){
+			if ($group_all_ids != ""){
 				//get group members for room
 				$groups = $mySql->getGroupMembersForRoom($app, $group_all_ids);
 			}
 			
-			if ($room_ids != ""){
+			if ($room_all_ids != ""){
 				//get room members for room
 				$rooms = $mySql->getRoomMembersForRoom($app, $room_all_ids);
 			}
@@ -152,7 +159,7 @@ class ChatController extends SpikaBaseController {
 				array_push($users_to_add_ary, $res['id']);
 			}
 			
-			$chat = $mySql->getChatWithID($app, $chat_id);
+			
 			
 			if ($chat != ""){
 					
@@ -418,13 +425,54 @@ class ChatController extends SpikaBaseController {
 			
 			$chat = $mySql->getChatWithID($app, $chat_id);
 			
+			$values = array('is_deleted' => 1);
+			$mySql->updateChatMember($app, $chat_id, $user_id, $values);
+			
+			if ($chat['name'] != ""){
+				$chat_name = $chat['name'];
+			} else {
+				$chat_members = $mySql->getChatMembers($app, $chat_id);
+				$chat_name = $self->createChatName($app, $mySql, $chat_members, array());
+			}
+			
+			$chat['chat_name'] = $chat_name;
+			$chat['chat_id'] = $chat_id;
+			
+
+			$result = array('code' => CODE_SUCCESS,
+					'message' => 'OK',
+					'chat' => $chat);
+				
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
+		
+		
+		//remove members
+		$controllers->post('/members/remove', function (Request $request) use ($app, $self, $mySql){
+				
+			$paramsAry = $request->request->all();
+				
+			$chat_id = $paramsAry['chat_id'];
+			
+			$user_id = $app['user']['id'];
+			
+			$chat = $mySql->getChatWithID($app, $chat_id);
+			
 			if (array_key_exists('group_ids', $paramsAry) && $paramsAry['group_ids'] != ''){
 				
 				$group_ids = $paramsAry['group_ids'];
+				$group_ids_ary = explode(',', $group_ids);
 				//move groups from chat
-				$new_group_ids = str_replace(','.$group_ids, "", $chat['group_ids']);
-				$new_group_ids = str_replace($group_ids, "", $new_group_ids);
-				$values = array('group_ids' => $new_group_ids);
+				$new_group_ids = $chat['group_ids'];
+				foreach($group_ids_ary as $group_id){
+					
+					$new_group_ids = str_replace(','.$group_id, "", $new_group_ids);
+					$new_group_ids = str_replace($group_id, "", $new_group_ids);
+					
+				}
+				
+				$values = array('group_ids' => trim($new_group_ids, ","));
 				$mySql->updateChat($app, $chat_id, $values);
 				
 				//move group members from chat
@@ -437,13 +485,22 @@ class ChatController extends SpikaBaseController {
 				
 				$mySql->deleteChatMembers($app, $chat_id, $user_ids_for_delete);
 				
-			} else if (array_key_exists('room_ids', $paramsAry) && $paramsAry['room_ids'] != ''){
+			} 
+			
+			if (array_key_exists('room_ids', $paramsAry) && $paramsAry['room_ids'] != ''){
 			
 				$room_ids = $paramsAry['room_ids'];
-				//move rooms from chat
-				$new_room_ids = str_replace(','.$room_ids, "", $chat['room_ids']);
-				$new_room_ids = str_replace($room_ids, "", $new_room_ids);
-				$values = array('room_ids' => $new_room_ids);
+				$room_ids_ary = explode(',', $room_ids);
+				//move groups from chat
+				$new_room_ids = $chat['room_ids'];
+				foreach($room_ids_ary as $room_id){
+					
+					$new_room_ids = str_replace(','.$room_id, "", $new_room_ids);
+					$new_room_ids = str_replace($room_id, "", $new_room_ids);
+					
+				}
+				
+				$values = array('room_ids' => trim($new_room_ids, ","));
 				$mySql->updateChat($app, $chat_id, $values);
 				
 				//move room members from chat
@@ -456,15 +513,15 @@ class ChatController extends SpikaBaseController {
 				
 				$mySql->deleteChatMembers($app, $chat_id, $user_ids_for_delete);
 				
-			} else if(array_key_exists('user_ids', $paramsAry)){
+			}
+			
+			if(array_key_exists('user_ids', $paramsAry) && $paramsAry['user_ids'] != ''){
 				
 				$user_ids_for_delete = $paramsAry['user_ids'];
 				$mySql->deleteChatMembers($app, $chat_id, $user_ids_for_delete);
 				
-			} else {
-				$values = array('is_deleted' => 1);
-				$mySql->updateChatMember($app, $chat_id, $user_id, $values);
 			}
+			
 			
 			if ($chat['name'] != ""){
 				$chat_name = $chat['name'];
