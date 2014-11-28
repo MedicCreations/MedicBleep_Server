@@ -414,8 +414,6 @@ var SPIKA_ChatView = Backbone.View.extend({
                     
                     var textType = message.get('attributes').textType;
                     
-                    U.l(textType);
-                    
                     if(textType == 'code'){
                         
                         isCode = true;

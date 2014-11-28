@@ -144,11 +144,13 @@ var SPIKA_UserListView = Backbone.View.extend({
         
         $$('#menu_container_user li.selected').removeClass('selected');        
         $(elm).addClass('selected');
-        
+
         apiClient.getUserById(userId,function(data){
 
             var modelUser = userFactory.createModelByAPIResponse(data.user);
-        
+			
+			SPIKA_UserManager.saveUserDataToCache(userId,modelUser);
+			
             apiClient.startPrivateChat(modelUser,function(data){
                 
                 if(!_.isUndefined(data.chat_id)){

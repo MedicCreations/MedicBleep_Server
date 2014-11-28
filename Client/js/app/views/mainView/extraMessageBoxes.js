@@ -21,40 +21,6 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             if(self.isOpened)
                 self.hide();
         });
-        
-        
-        Backbone.on(EVENT_CALL_FINISH, function() {
-            
-            $$('#extramessage_dialog_view_conference').fadeOut(function(){
-                $$('#extramessage_dialog_view_conference .alert_content').html('');
-            });
-            
-        });
-        
-        Backbone.on(EVENT_CALL_OFFER, function(offerData) {
-
-            $$('#extramessage_dialog_view_conference .call_buttons').css('display','none');
-            $$('#extramessage_dialog_view_conference .call_received_buttons').css('display','block');
-
-            $('#extramessage_dialog_view_conference').fadeIn(function(){
-                
-                
-                
-                U.l(offerData);
-                
-            });
-            
-        });
-        
-        Backbone.on(EVENT_CALL_ERROR, function(message) {
-            
-            if(_.isEmpty(message))
-                message = LANG.call_error_general;
-                
-            SPIKA_AlertManager.show(LANG.general_errortitle,message);
-            $$('#extramessage_dialog_view_conference').fadeOut();
-            
-        });
 
     },
 
@@ -157,7 +123,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
         
-        $$('#extramessage_btn_call').click(function(){
+        $$('#extramessage_btn_video_call').click(function(){
             
             if(self.chatId == 0){
                 return;
@@ -168,7 +134,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 return;
             }
             
-            self.openCallDialog();
+            self.openCallDialog(true,true);
             
         });
 
@@ -651,7 +617,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
     
     // Calling //////////////////////////////////////////////////////////////////////////////////////////////////////////////
     
-    openCallDialog : function(){
+    openCallDialog : function(useVideo,useAudio){
         
         // check it is private chat and there is partner.
         var chatData = mainView.chatView.chatData;
@@ -661,61 +627,45 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_notprivate);
             return;
         }
-        
-        $$('#extramessage_dialog_view_conference .call_buttons').css('display','block');
-        $$('#extramessage_dialog_view_conference .call_received_buttons').css('display','none');
-        
-        $$('#extramessage_dialog_view_conference').fadeIn(function(){
-            
-            var chatId = chatData.get('chat_id');
-            var partnerUserId = 0;
-            var myUserId = SPIKA_UserManager.getUser().get('id');
-            
-            // get users
-            apiClient.getChatMembers(chatId,function(data){
-    
-                var chatMembers = userFactory.createCollectionByAPIResponse(data)
-                
-                _.each(chatMembers.models,function(userData){
-                    
-                    var userId = userData.get('id');
-                    
-                    if(userId != myUserId)
-                        partnerUserId = userId
-                    
-                });
-                
-                if(partnerUserId != 0){
-    
-                    require([
-                        'app/views/mainView/videoCallView',
-                        'thirdparty/text!templates/mainView/videoCallView.tpl'
-                    ], function (videoCallView,VideoCallViewTemplate) {
-                        
-                        self.videoCallView = new SPIKA_VideoCallView({
-                            template: VideoCallViewTemplate,
-                            partnerUserId: partnerUserId
-                        });
-                        
-                        $$('#extramessage_dialog_view_conference .alert_content').html(self.videoCallView.render().el);
-        
-                    });
-                    
-                }else{
-                    
-                    $$('#extramessage_dialog_view_conference').fadeOut();
-                    SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_general);
 
-                }
-                
-            },function(data){
+        var chatId = chatData.get('chat_id');
+        var partnerUserId = 0;
+        var myUserId = SPIKA_UserManager.getUser().get('id');
+        
+        // get users
+        apiClient.getChatMembers(chatId,function(data){
+
+            var chatMembers = userFactory.createCollectionByAPIResponse(data)
             
-                SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_general);
-                $$('#extramessage_dialog_view_conference').fadeOut();
+            _.each(chatMembers.models,function(userData){
+                
+                var userId = userData.get('id');
+                
+                if(userId != myUserId)
+                    partnerUserId = userId
                 
             });
             
+            if(partnerUserId != 0){
+			
+				Backbone.trigger(EVENT_CALL_INITIATE,{
+					userId:partnerUserId,
+					useVideo:useVideo,
+					useAudio:useAudio
+				});
+				                
+            }else{
+                
+                SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_no_partner);
+
+            }
+            
+        },function(data){
+        
+            SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_general);
+            
         });
+        
     }
 
 });

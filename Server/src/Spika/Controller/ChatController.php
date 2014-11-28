@@ -95,18 +95,35 @@ class ChatController extends SpikaBaseController {
 			
 			$group_ids = "";
 			if (array_key_exists('group_ids', $paramsAry) && $paramsAry['group_ids'] != ""){
-				$group_ids = $paramsAry['group_ids'];
+				$group_ids = trim($paramsAry['group_ids'], ",");
+			}
+			$group_all_ids = "";
+			if (array_key_exists('group_all_ids', $paramsAry) && $paramsAry['group_all_ids'] != ""){
+				$group_all_ids = trim($paramsAry['group_all_ids'], ",");
+				$group_ids = ',' . $group_all_ids;
+				
 				$values = array('group_ids' => $group_ids);
 				$mySql->updateChat($app, $chat_id, $values);
 			}
+			
 			$room_ids = "";
 			if (array_key_exists('room_ids', $paramsAry) && $paramsAry['room_ids'] != ""){
-				$room_ids = $paramsAry['room_ids'];
+				$room_ids = trim($paramsAry['room_ids'], ",");
+				$values = array('room_ids' => $room_ids);
+				$mySql->updateChat($app, $chat_id, $values);
+			}
+			$room_all_ids = "";
+			if (array_key_exists('room_all_ids', $paramsAry) && $paramsAry['room_all_ids'] != ""){
+				$room_all_ids = trim($paramsAry['room_all_ids'], ",");
+				$room_ids = ',' . $room_all_ids;
+				
 				$values = array('room_ids' => $room_ids);
 				$mySql->updateChat($app, $chat_id, $values);
 			}
 			
-			$users_to_add = $paramsAry['users_to_add'];
+			
+			
+			$users_to_add = trim($paramsAry['users_to_add'], ",");
 			
 			//create distinct users
 			if ($users_to_add != ""){
@@ -116,12 +133,12 @@ class ChatController extends SpikaBaseController {
 			
 			if ($group_ids != ""){
 				//get group members for room
-				$groups = $mySql->getGroupMembersForRoom($app, $group_ids);
+				$groups = $mySql->getGroupMembersForRoom($app, $group_all_ids);
 			}
 			
 			if ($room_ids != ""){
 				//get room members for room
-				$rooms = $mySql->getRoomMembersForRoom($app, $room_ids);
+				$rooms = $mySql->getRoomMembersForRoom($app, $room_all_ids);
 			}
 			
 			$result = array_merge($users, $groups, $rooms);

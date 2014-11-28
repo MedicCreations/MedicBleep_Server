@@ -237,15 +237,23 @@ class RoomController extends SpikaBaseController {
 			
 			$user_ids = "";
 			if (array_key_exists('user_ids', $paramsAry)){
-				$user_ids = $paramsAry['user_ids'];
+				$user_ids = trim($paramsAry['user_ids'], ",");
 			}
 			$group_ids = "";
 			if (array_key_exists('group_ids', $paramsAry)){
-				$group_ids = $paramsAry['group_ids'];
+				$group_ids = trim($paramsAry['group_ids'], ",");
+			}
+			$group_all_ids = "";
+			if (array_key_exists('group_all_ids', $paramsAry)){
+				$group_all_ids = trim($paramsAry['group_all_ids'], ",");
 			}
 			$room_ids = "";
 			if (array_key_exists('room_ids', $paramsAry)){
-				$room_ids = $paramsAry['room_ids'];
+				$room_ids = trim($paramsAry['room_ids'], ",");
+			}
+			$room_all_ids = "";
+			if (array_key_exists('room_all_ids', $paramsAry)){
+				$room_all_ids = trim($paramsAry['room_all_ids'], ",");
 			}
 			
 			if ($user_ids != ""){
@@ -255,12 +263,12 @@ class RoomController extends SpikaBaseController {
 			
 			if ($group_ids != ""){
 				//get group members for room
-				$groups = $mySql->getGroupMembersForRoom($app, $group_ids);
+				$groups = $mySql->getGroupMembersForRoom($app, $group_all_ids);
 			}
 			
 			if ($room_ids != ""){
 				//get room members for room
-				$rooms = $mySql->getRoomMembersForRoom($app, $room_ids);
+				$rooms = $mySql->getRoomMembersForRoom($app, $room_all_ids);
 			}
 			
 			$result = array_merge($users, $groups, $rooms);

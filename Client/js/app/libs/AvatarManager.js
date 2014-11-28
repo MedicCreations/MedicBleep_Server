@@ -5,8 +5,6 @@ AvatarManager = {
 	useCache:true,
 	init:function(){
 		
-		console.log('AvatarManager init' + apiClient.token);
-		
 		var self = this;
 		
 		this.decryptWorker = new Worker(WEB_ROOT + '/js/app/libs/FileDecryptWorker.js?bust='+(new Date()).getTime());
@@ -68,15 +66,12 @@ AvatarManager = {
 		this.processingQueue.push(order);
 		
 		if(this.queueProcessing == false){
-			U.l('start processing queue');
 			this.processQueue();
 		}
 		
 	},
 	processQueue:function(){
 		
-		U.l('queue size' + this.processingQueue.length);
-				
 		if(this.processingQueue.length == 0){
 			this.queueProcessing = false;
 			return;

@@ -211,9 +211,6 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             
             var index = _.indexOf(self.selectedUserIdList,userId);
             
-            U.l(self.selectedUserIdList);
-            U.l(userId);
-            
             if(index == -1){
                 $(this).removeClass('selected');
                                 
