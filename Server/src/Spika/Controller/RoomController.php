@@ -261,12 +261,12 @@ class RoomController extends SpikaBaseController {
 				$users = $mySql->getUsersForRoom($app, $user_ids);
 			}
 			
-			if ($group_ids != ""){
+			if ($group_all_ids != ""){
 				//get group members for room
 				$groups = $mySql->getGroupMembersForRoom($app, $group_all_ids);
 			}
 			
-			if ($room_ids != ""){
+			if ($room_all_ids != ""){
 				//get room members for room
 				$rooms = $mySql->getRoomMembersForRoom($app, $room_all_ids);
 			}

@@ -32,6 +32,7 @@ var SPIKA_CallWindow = Backbone.View.extend({
         
         SPIKA_VideoCallManager.onCallReceived(function(userData){
 			
+			U.l('call received');
 			SPIKA_soundManager.playRinging();
 			$$('#call_window .my_video_holder .avatar').hide();
 			$$('#call_window .partner_video_holder .avatar').show();
