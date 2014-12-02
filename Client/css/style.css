@@ -916,7 +916,7 @@ footer #mess_type ul li textarea.disabled{
 ul#user_menu{
     position: absolute;
     z-index: 1000;
-    width: 150px;
+    width: 200px;
     right: 10px;
     top: 50px;
     background: #f9f9f9;

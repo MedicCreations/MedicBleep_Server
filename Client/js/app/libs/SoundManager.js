@@ -47,8 +47,8 @@ var SPIKA_soundManager = {
         this.flgStopCalling = true;
     },
     playRinging : function(){
-	    //this.flgStopRinging = false;
-        //this.ringingSound.play();
+	    this.flgStopRinging = false;
+        this.ringingSound.play();
     },
     stopRinging : function(){
         this.flgStopRinging = true;

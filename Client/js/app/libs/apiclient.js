@@ -1076,6 +1076,36 @@ SpikaClient.prototype.getCategories = function(succeessListener,failedListener)
 
 };
 
+SpikaClient.prototype.updatePasword = function(newPasword,succeessListener,failedListener)
+{
+    
+	var hashedPassword = CryptoJS.MD5(newPasword).toString();
+    var self = this;
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/user/password/update',
+        type: 'POST',
+        data: {new_password:hashedPassword},
+        headers: {"token":this.token,"api-agent":this.UA}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+
 SpikaClient.prototype.test = function()
 {
     alert('test');

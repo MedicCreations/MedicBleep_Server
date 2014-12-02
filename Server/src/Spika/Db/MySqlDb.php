@@ -277,6 +277,21 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function checkPassword(Application $app, $password){
+	
+		$sql = "SELECT * FROM user WHERE password = ?";
+		
+		$result = $app['db']->fetchAssoc($sql, array($password));
+		
+		if (is_array($result)){
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+	
+	
 	public function getGroups(Application $app, $user_id, $search, $offset, $category){
         
 

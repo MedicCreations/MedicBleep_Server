@@ -62,6 +62,7 @@ LANG = {
       general_stop: 'Stop',
       general_record: 'Record',
       general_play: 'Play',
+	  general_change: 'Change',
       general_uploading: "Upload Video",
       encoding_video: "Converting Video Format",
       videoupload_error: "Error happens while uploading video.Please try again after.",
@@ -83,5 +84,12 @@ LANG = {
       call_localmedia_error: "Failed to initialize microphone or webcam. Please confirm you connected these devices to your computer.",
       call_error_usernotonline: "The user is not connect to Spika network.Please leave him text message",
       call_error_userdeclined: "The user is busy now. Please call after.",
+	  change_password: "Change Password",
+	  title_chane_password: "Change Password",
+	  change_password_new: "New Password",
+	  change_password_confirm: "Confirm",
+	  change_password_validation_failed_1: "Password should be alphanumeric and more than 6 characters.",
+	  change_password_validation_failed_2: "Password should be same as confirm password.",
+	  change_password_confirm_text: "Your password is going to be changed, after password is changed you will logout automatically. You have to login again with new password.",
       dummy : 'dummy'
 };

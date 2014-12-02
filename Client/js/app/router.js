@@ -1,6 +1,7 @@
     var AppRouter = Backbone.Router.extend({
         routes: {
             "editprofile": "editprofileRoute",
+            "changepassword": "changepasswordRoute",
             "createroom": "createRoomRoute",
             "editroom": "editRoomRoute",
             "main": "mainRoute",
@@ -191,6 +192,35 @@
         
     }); 
     
+    app_router.on('route:changepasswordRoute', function(actions) {
+        
+        if(apiClient == null || SPIKA_UserManager.isAuthorised() == false){
+            U.goPage('login');
+            return;
+        }
+        
+        // reset all event listener
+        Backbone.off();
+        
+        // load models
+        require([
+                    'app/views/featureViews/changePasswordView',
+                    'thirdparty/text!templates/featureViews/changePasswordView.tpl'
+                ], function (ChangePasswordView,Template) {
+            
+            var chantePasswordView = new SPIKA_ChangePasswordView({
+                template: Template
+            });
+            
+            $(HOLDER).fadeOut('fast',function(){
+                $(HOLDER).attr('id', 'chat');
+                $(HOLDER).html(chantePasswordView.render().el);
+                $(HOLDER).fadeIn('fast');
+            });
+            
+        });
+        
+    }); 
     // Start Backbone history a necessary step for bookmarkable URL's
     Backbone.history.start();
     

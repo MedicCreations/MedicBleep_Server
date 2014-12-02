@@ -479,6 +479,16 @@ class UserController extends SpikaBaseController {
 			
 			}
 			
+			$passwordExist = $mySql->checkPassword($app, $new_password);
+			
+			if ($passwordExist){
+				
+				$result = array('code' => ER_PASSWORD_EXIST,
+					'message' => 'Password already exist');
+				return $app->json($result, 200);
+			
+			}
+			
 			$my_user_id = $user['id'];
 			
 			$token = $self->randomString(40,40);
@@ -509,6 +519,16 @@ class UserController extends SpikaBaseController {
 			$new_password = $paramsAry['new_password'];
 			
 			$my_user_id = $app['user']['id'];
+			
+			$passwordExist = $mySql->checkPassword($app, $new_password);
+			
+			if ($passwordExist){
+				
+				$result = array('code' => ER_PASSWORD_EXIST,
+					'message' => 'Password already exist');
+				return $app->json($result, 200);
+			
+			}
 			
 			$token = $self->randomString(40,40);
 			$values = array('password' => $new_password,

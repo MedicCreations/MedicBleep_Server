@@ -11,7 +11,10 @@
     <li>
         <i class="fa fa-pencil-square-o"></i> <a href="#editprofile">{edit_profile}</a>
     </li>
-    
+     <li>
+        <i class="fa fa-key"></i> <a href="#changepassword">{change_password}</a>
+    </li>
+
     <li>
        <i class="fa fa-sign-out"></i> <a href="#logout">{logout}</a>
     </li>
