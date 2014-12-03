@@ -153,6 +153,8 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
 
         this.editingChatData = chatData;
         
+        $$(".passwordnotice").text(LANG.password_notice_edit);
+        
         apiClient.getChatMembers(this.editingChatData.get('chat_id'),function(data){
 
             var chatMembers = userFactory.createCollectionByAPIResponse(data)
@@ -260,14 +262,13 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                 self.tuggleUserId(userId);
             });
         }
-
+		
         $$('.encrypted_image').each(function(){
         
             var state = $(this).attr('state');
             var fileId = $(this).attr('fileid');
             
             if(state == 'loading'){
-                //EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient);
                 AvatarManager.process(this,fileId);
             }
             
@@ -285,14 +286,29 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         var self = this;
         
         // validation
-        var roomName = $$("#createroom_container input").val();
+        var roomName = $$('#createroom_container input[name="roomname"]').val();
+        var password = $$('#createroom_container input[name="password"]').val();
+        var passwordConfirm = $$('#createroom_container input[name="password_confirm"]').val();
         var categoryId = $$("#createroom_container .category_select_box").val();
+        
         
         if(_.isEmpty(roomName)){
             
             SPIKA_AlertManager.show(LANG.general_errortitle,LANG.createroom_validation_error_noname);
             return;
         }
+        
+        if(!_.isEmpty(password)){
+            
+            var passwordValidationErrorMessage = U.validatePassword(password,passwordConfirm);
+            
+            if(!_.isEmpty(passwordValidationErrorMessage)){
+	            SPIKA_AlertManager.show(LANG.general_errortitle,passwordValidationErrorMessage);
+				return;
+            }
+            
+        }
+        
         
         if(this.selectedUserIdList.length == 0){
             
@@ -305,6 +321,8 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             // Update
             var userIdsToAdd = '';
             var userIdsToDelete = '';
+            
+            var oldPassword = this.editingChatData.get('password');
             
             _.each(self.selectedUserIdList,function(userIdToAdd){
                 
@@ -337,7 +355,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                     userIdsToDelete += userIdToDelete + ",";
 
             });
-
+			
             // add users
             apiClient.addUsersToChat(
                 self.editingChatData.get('chat_id'),
@@ -364,13 +382,22 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                             apiClient.updateRoom(
                                 dataChat2.chat.chat_id,
                                 roomName,
+                                password,
                                 categoryId,
                                 self.profileImageFileId,
                                 self.profileThumbFileId,
                                 '',
                                 '',
                                 function(updateResult){
-                                    
+									
+									if(!_.isEmpty(password)){
+										
+					                	// save password here so creater should not enter password again
+										var cookieKey = COOKIE_ROOMPASSWORD_PREFIX + dataChat2.chat.chat_id;
+										$.cookie(cookieKey, CryptoJS.MD5(password).toString(), { expires: COOKIE_EXPIRES });
+
+									}
+
                                     U.goPage('main'); 
                                     
                                     _.debounce(function() {
@@ -412,10 +439,14 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             
             userIds += SPIKA_UserManager.getUser().get('id');
             
-            apiClient.createNewRoom(roomName,categoryId,userIds,this.profileImageFileId,this.profileThumbFileId,function(data){
+            apiClient.createNewRoom(roomName,password,categoryId,userIds,this.profileImageFileId,this.profileThumbFileId,function(data){
                 
                 if(!_.isNull(data.chat)){
-                
+                	
+                	// save password here so creater should not enter password again
+					var cookieKey = COOKIE_ROOMPASSWORD_PREFIX + data.chat.chat_id;
+					$.cookie(cookieKey, data.chat.password, { expires: COOKIE_EXPIRES });
+
                     U.goPage('main'); 
                     
                     _.debounce(function() {
@@ -463,9 +494,21 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         return _.template($$('#template_userlist_row').html(), {users: data.models});
     },
     listViewAfterRender: function(){
-        
+	    
         this.prepareChatData();
+
+        $$('.encrypted_image').each(function(){
         
+            var state = $(this).attr('state');
+            var fileId = $(this).attr('fileid');
+            
+            if(state == 'loading'){
+                AvatarManager.process(this,fileId);
+            }
+            
+        });    
+
+
     },
     listviewOnClick: function(elm){
         var userId = $(elm).attr('data-userid');        

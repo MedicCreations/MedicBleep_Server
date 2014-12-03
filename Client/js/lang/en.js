@@ -14,8 +14,12 @@ LANG = {
       general_errortitle: "Error",
       title_new_room: "New Room",
       roomname_placeholder: "Enter room name here.",
+      roompassword_placeholder: "Room Password",
+      roompassword_placeholder_again: "Retype password again.",
+      roompassword_notice: "Password can be empty.",
       createroom:"Create Room",
       createroom_validation_error_noname:"Please enter room name.",
+      createroom_validation_error_wrongpassword:"Password is not same.",
       createroom_validation_error_nomember:"Please select at least one user.",
       cancel:"Cancel",
       edit_profile: "Edit Profile",
@@ -91,5 +95,9 @@ LANG = {
 	  change_password_validation_failed_1: "Password should be alphanumeric and more than 6 characters.",
 	  change_password_validation_failed_2: "Password should be same as confirm password.",
 	  change_password_confirm_text: "Your password is going to be changed, after password is changed you will logout automatically. You have to login again with new password.",
+	  passworddialog_title: "Password Required",
+	  passworddialog_text: "This room is protected by password. Please enter password to start chat.",	
+	  chat_wringpassword: "You entered wrong password. Please try again." ,
+	  password_notice_edit: "Keep this field empty if you don't change password or keep the room opened to members.",
       dummy : 'dummy'
 };

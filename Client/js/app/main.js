@@ -67,6 +67,7 @@ else{
                     'app/libs/AvatarManager',
                     'app/libs/VideoCallManager',
                     'app/views/alertView',
+                    'app/views/inputPasswordDialog',
                     'app/views/progressView',
                     'thirdparty/sjcl/aes',
                     'thirdparty/sjcl/bitArray',

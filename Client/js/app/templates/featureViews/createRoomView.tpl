@@ -46,8 +46,15 @@
         
         <div class="room_parameters_form">
             
-            <input type="text" placeholder="{roomname_placeholder}" />
-
+            <input type="text" name="roomname" placeholder="{roomname_placeholder}" />
+			
+			<div class="room_password_holder">
+            	<input type="password" name="password" placeholder="{roompassword_placeholder}" />
+            	<input type="password" name="password_confirm" placeholder="{roompassword_placeholder_again}" />
+            	<br style="clear: both" />
+            	<span class="passwordnotice textred">{roompassword_notice}</span>
+			</div>
+			
             <select class="category_select_box">
             </select>
             

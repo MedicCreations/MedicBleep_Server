@@ -47,6 +47,7 @@ var THUMB_PIC_SIZE_INVIEW = 100;
 var COOKIE_USERNAME = 'cookieusername';
 var COOKIE_PASSWORD = 'cookiepassword';
 var COOKIE_EXPIRES = 30; // days
+var COOKIE_ROOMPASSWORD_PREFIX = 'cookieRoompassword_';
 var COOKIE_LAST_CHATID = 'lastchatid';
 var COOKIE_LAST_CHATNAME = 'lastchatname';
 

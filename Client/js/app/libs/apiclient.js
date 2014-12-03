@@ -783,15 +783,27 @@ SpikaClient.prototype.saveProfliePicture = function(userId,fileId,thumbId,succee
 
 };
 
-SpikaClient.prototype.createNewRoom = function(roomName,categoryId,userList,fileId,thumbId,succeessListener,failedListener)
+SpikaClient.prototype.createNewRoom = function(roomName,password,categoryId,userList,fileId,thumbId,succeessListener,failedListener)
 {
     
     var self = this;
+
+    var passwordHashed = "";
+    
+    if(!_.isEmpty(password)){
+	    passwordHashed = CryptoJS.MD5(password).toString();
+    }
+    
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/room/create',
         type: 'POST',
-        data: {name:roomName,category_id:categoryId,users_to_add:userList,image:fileId,image_thumb:thumbId},
+        data: {name:roomName,
+	        	category_id:categoryId,
+	        	users_to_add:userList,
+	        	image:fileId,
+	        	image_thumb:thumbId,
+	        	password: passwordHashed},
         headers: {"token":this.token,"api-agent":this.UA}
     });
     
@@ -811,7 +823,7 @@ SpikaClient.prototype.createNewRoom = function(roomName,categoryId,userList,file
 
 };
 
-SpikaClient.prototype.updateRoom = function(chatId,roomName,categoryId,fileId,thumbId,isDelete,isActive,succeessListener,failedListener)
+SpikaClient.prototype.updateRoom = function(chatId,roomName,password,categoryId,fileId,thumbId,isDelete,isActive,succeessListener,failedListener)
 {
     
     var self = this;
@@ -822,6 +834,9 @@ SpikaClient.prototype.updateRoom = function(chatId,roomName,categoryId,fileId,th
     if(!_.isEmpty(roomName))
         data.name = roomName;
         
+    if(!_.isEmpty(password))
+        data.password = CryptoJS.MD5(password).toString();
+
     if(!_.isEmpty(fileId))
         data.image = fileId;
         
