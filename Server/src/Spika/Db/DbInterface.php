@@ -85,4 +85,8 @@ interface DbInterface
 	public function getDetailValues(Application $app);
 	public function getSeenBy(Application $app, $chat_id);
 	
+	public function getUsersNotMeNotChatMembers(Application $app, $my_user_id, $search, $offset, $chat_id);
+	public function getUsersCountNotMeNotChatMembers(Application $app, $my_user_id, $search, $chat_id);
+	public function getSearchUsersGroupsRoomsNotChatMembers(Application $app, $search, $my_user_id, $chat_id);
+	
 }

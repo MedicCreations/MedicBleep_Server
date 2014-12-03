@@ -1018,8 +1018,7 @@ class MySqlDb implements DbInterface{
 	
 	
 	public function getSearchUsersGroupsRooms(Application $app, $search, $my_user_id){
-		
-		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, '1' as is_user FROM user WHERE user.id <> ?  and user.organization_id = ? ";
+		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened, '1' as is_user FROM user WHERE user.id <> ?  and user.organization_id = ? ";
 		if ($search != ""){
 			$sql = $sql . " AND (CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
 			$sql = $sql . " OR user.firstname LIKE '" . $search . "%'";
@@ -1034,7 +1033,7 @@ class MySqlDb implements DbInterface{
 		}
 		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
-		$sql = "SELECT chat.id, chat.name as name, chat.image, chat.image_thumb, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
+		$sql = "SELECT chat.id, chat.name as name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
 		if ($search != ""){
 			$sql = $sql . " and chat.name LIKE '" . $search . "%'";
 		}
@@ -1143,6 +1142,99 @@ class MySqlDb implements DbInterface{
 		$result = $app['db']->fetchAssoc($sql, array($chat_id));
 		
 		return $result['seen_by'];
+	
+	}
+	
+	
+	public function getUsersNotMeNotChatMembers(Application $app, $my_user_id, $search, $offset, $chat_id){
+		
+		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened FROM user";
+		
+		$sql = $sql . " WHERE user.id <> ? AND user.is_deleted = 0 ";
+		
+		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ?) ";
+		
+		if ($search != ""){
+			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
+		}
+		
+		$sql = $sql . " and user.organization_id = ? ORDER BY user.firstname,user.id LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
+		
+		$resultFormated = array();
+		$result = $app['db']->fetchAll($sql, array($my_user_id, $chat_id, $app['organization_id']));
+	
+	}
+	
+	
+	public function getUsersCountNotMeNotChatMembers(Application $app, $my_user_id, $search, $chat_id){
+		
+		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ? AND user.is_deleted = 0 and user.organization_id = ? ";
+		
+		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ?) ";
+		
+		if ($search != ""){
+			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
+		}
+		
+		$result = $app['db']->executeQuery($sql, array($my_user_id,$app['organization_id']))->fetch();
+		
+		if ($result == false){
+			return 0;
+		} else {
+			return $result["COUNT(*)"];
+		}
+	
+	}
+	
+	
+	public function getSearchUsersGroupsRoomsNotChatMembers(Application $app, $search, $my_user_id, $chat_id){
+		
+		$chat = $this->getChatById($app, $chat_id);
+		
+		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened, '1' as is_user FROM user WHERE user.id <> ?  and user.organization_id = ? ";
+		
+		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ?) ";
+		
+		if ($search != ""){
+			$sql = $sql . " AND (CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
+			$sql = $sql . " OR user.firstname LIKE '" . $search . "%'";
+			$sql = $sql . " OR user.lastname LIKE '" . $search . "%')";
+		}
+		
+		$users = $app['db']->fetchAll($sql, array($my_user_id, $chat_id, $app['organization_id']));
+		
+		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups WHERE groups.is_deleted = 0 AND groups.organization_id = ?";
+		
+		if ($chat['group_ids'] != ""){
+			$sql .= " AND groups.id NOT IN (" . $chat['group_ids'] . ") ";
+		}
+		
+		if ($search != ""){
+			$sql = $sql . " and groups.name LIKE '" . $search . "%'";
+		}
+		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
+		
+		$sql = "SELECT chat.id, chat.name as name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
+		
+		if ($chat['room_ids'] != ""){
+			$sql .= " AND chat.id NOT IN (" . $chat['room_ids'] . ") ";
+		}
+		
+		if ($search != ""){
+			$sql = $sql . " and chat.name LIKE '" . $search . "%'";
+		}
+		$rooms = $app['db']->fetchAll($sql, array($app['organization_id']));
+		
+		$result = array_merge($groups,$rooms,$users);
+		
+		usort(
+			$result,
+			function ($a, $b) {
+				return strcasecmp($a['name'], $b['name']);
+			}
+		);
+		
+		return $result;
 	
 	}
 	
