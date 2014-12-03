@@ -72,6 +72,12 @@ define("MSG_VOICE", 5);
 define("MSG_FILE", 6);
 define("MSG_DELETED", 7);
 
+//search types
+define("USERS", 1);
+define("GROUPS", 2);
+define("ROOMS", 3);
+define("ALL", 4);
+
 //success codes
 define('CODE_SUCCESS', 2000);
 

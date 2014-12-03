@@ -449,7 +449,7 @@ class ChatController extends SpikaBaseController {
 		
 		
 		//remove members
-		$controllers->post('/members/remove', function (Request $request) use ($app, $self, $mySql){
+		$controllers->post('/member/remove', function (Request $request) use ($app, $self, $mySql){
 				
 			$paramsAry = $request->request->all();
 				
