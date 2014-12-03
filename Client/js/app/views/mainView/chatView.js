@@ -196,13 +196,66 @@ var SPIKA_ChatView = Backbone.View.extend({
         // get chat data first
         apiClient.getChatById(chatId,function(data){
             
+            var cookieKey = COOKIE_ROOMPASSWORD_PREFIX + chatId;
+            var savedPassword = $.cookie(cookieKey);
+                        
             self.chatData = roomFactory.createModelByAPIResponse(data.chat_data);
             
-            mainView.setRoomTitle(self.chatData.get("chat_name"),self.chatData.get("chat_id"));
+            var roomPassword = self.chatData.get('password');
+            
+            if(!_.isEmpty(roomPassword)){
+	            
+	            var savedPasswordWorks = false;
+	                
+	            if(!_.isEmpty(savedPassword)){
+		            
+		            // saved password is already MD5
+		            savedPasswordWorks = roomPassword == savedPassword;
+		            
+	            }
+				
+				if(!savedPasswordWorks){
+	
+		            SPIKA_PasswordManager.show(LANG.passworddialog_title,LANG.passworddialog_text,function(password,flgSavePassword){
+			        	// succeed to enter
+						if(roomPassword == CryptoJS.MD5(password).toString()){
+					
+				            if(!_.isNull(self.chatData.get("chat_id"))){
+					            
+					            // save password to cookie
+					            if(flgSavePassword){
+						            $.cookie(cookieKey, roomPassword, { expires: COOKIE_EXPIRES });
+					            }
+					            
+				                self.enterRoom();
+				                
+				            }
+							
+						}else{
+							
+							SPIKA_AlertManager.show(LANG.general_errortitle,LANG.chat_wringpassword);
+							
+						}
+			        	
+			         
+		            },function(){
+			            // pressed cancel
+			            
+			            
+		            });
+	            
+				} else {
+					
+					// saved password works
+					self.enterRoom();
+					
+				}
 
-            if(!_.isNull(self.chatData.get("chat_id"))){
-                self.startChat();
-                Backbone.trigger(EVENT_ENTER_CHAT,chatId);
+	            
+            }else{
+
+				self.enterRoom();
+            
             }
             
         },function(data){
@@ -211,6 +264,14 @@ var SPIKA_ChatView = Backbone.View.extend({
             
         });
 	  	  
+    },
+    enterRoom:function(){
+        mainView.setRoomTitle(this.chatData.get("chat_name"),this.chatData.get("chat_id"));
+
+        if(!_.isNull(this.chatData.get("chat_id"))){
+            this.startChat();
+            Backbone.trigger(EVENT_ENTER_CHAT,this.chatData.get("chat_id"));
+        }
     },
     updateWindowSize: function(){
 

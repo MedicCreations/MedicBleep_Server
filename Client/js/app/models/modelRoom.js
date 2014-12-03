@@ -1,7 +1,7 @@
     var roomFactory = {
     
         createModelByAPIResponse : function(data){
-            
+                        
             var chat_id = 0;
             var chat_name = '';
                         
@@ -33,7 +33,8 @@
                 is_deleted: data.is_deleted,
                 modified: data.modified,
                 type: data.type,
-                unread: data.unread
+                unread: data.unread,
+                password: data.password
             });   
         },
         createCollectionByAPIResponse : function(data){
@@ -70,7 +71,8 @@
             is_deleted: 0,
             modified: '',
             type: '',
-            unread: ''
+            unread: '',
+            password: ''
         },
         initialize: function(){
     

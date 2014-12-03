@@ -19,6 +19,7 @@ interface DbInterface
 	public function getUserByTempPassword(Application $app, $temp_password);
 	public function updateUser(Application $app, $user_id, $values);
 	public function createTempPassword(Application $app, $my_user_id);
+	public function checkPassword(Application $app, $password);
 	
 	public function getGroups(Application $app, $user_id, $search, $offset, $category);
 	public function getGroupsCount(Application $app, $user_id, $search, $category);
@@ -83,5 +84,9 @@ interface DbInterface
 	
 	public function getDetailValues(Application $app);
 	public function getSeenBy(Application $app, $chat_id);
+	
+	public function getUsersNotMeNotChatMembers(Application $app, $my_user_id, $search, $offset, $chat_id);
+	public function getUsersCountNotMeNotChatMembers(Application $app, $my_user_id, $search, $chat_id);
+	public function getSearchUsersGroupsRoomsNotChatMembers(Application $app, $search, $my_user_id, $chat_id);
 	
 }

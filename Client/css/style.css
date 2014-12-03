@@ -188,6 +188,7 @@ body#chat {
 	color: #000;
 }
 
+
 /*==============================*/
 /*		END		Loading			*/
 /*==============================*/
@@ -789,6 +790,16 @@ footer #mess_type ul li textarea.disabled{
 	text-decoration: none;
 }
 
+#alert_box #alert_form{
+	text-align: left;
+	padding: 0px 10px 10px 10px;
+}
+#alert_box #alert_form input[type="password"]{
+	width: 90%;
+	padding: 5px;
+}
+
+
 #thread_view_header{
 	
 	position: absolute;
@@ -916,7 +927,7 @@ footer #mess_type ul li textarea.disabled{
 ul#user_menu{
     position: absolute;
     z-index: 1000;
-    width: 150px;
+    width: 200px;
     right: 10px;
     top: 50px;
     background: #f9f9f9;
@@ -1028,6 +1039,15 @@ ul#user_menu li a{
     margin-bottom: 20px;
 }
 
+#createroom_container .room_password_holder input{
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 0px;
+}
+
+#createroom_container .room_password_holder{
+	margin-bottom: 20px;
+}
 
 #createroom_container .room_parameters_form select{
     width: 250px;

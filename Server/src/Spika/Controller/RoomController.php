@@ -60,11 +60,11 @@ class RoomController extends SpikaBaseController {
 			
 			$group_ids = "";
 			if (array_key_exists('group_ids', $paramsAry)){
-				$group_ids = $paramsAry['group_ids'];
+				$group_ids = trim($paramsAry['group_ids'], ",");
 			}
 			$room_ids = "";
 			if (array_key_exists('room_ids', $paramsAry)){
-				$room_ids = $paramsAry['room_ids'];
+				$room_ids = trim($paramsAry['room_ids'], ",");
 			}
 			
 			$users_to_add = $paramsAry['users_to_add'];
@@ -186,30 +186,42 @@ class RoomController extends SpikaBaseController {
 			}
 			
 			if ($chat_id != ""){
-				$chat_members = $mySql->getChatMembers($app, $chat_id);
-				$chat = $mySql->getChatWithId($app, $chat_id);
 				
-				foreach($search_result as &$temp_user){
-					$temp_user['is_member'] = false;
-					
-					if (array_key_exists('is_user', $temp_user)){
-						foreach ($chat_members as $member){
-							if ($temp_user['id'] == $member['user_id']){
-								$temp_user['is_member'] = true;
-								break;
-							}
-						}
-					} else if (array_key_exists('is_group', $temp_user)){
-						if (strpos($chat['group_ids'], $temp_user['id']) !== FALSE){
-							$temp_user['is_member'] = true;
-						}
-					
-					} else if (array_key_exists('is_room', $temp_user)){
-						if (strpos($chat['room_ids'], $temp_user['id']) !== FALSE){
-							$temp_user['is_member'] = true;
-						}
-					}
+				$all = $mySql->getSearchUsersGroupsRoomsNotChatMembers($app, $search, $my_user_id, $chat_id);
+			
+				if ($page != -1){
+					$search_result = array_slice($all, $offset, ROOMS_PAGE_SIZE);
+				} else {
+					$search_result = $all;
 				}
+				
+				// $chat_members = $mySql->getChatMembers($app, $chat_id);
+				// $chat = $mySql->getChatWithId($app, $chat_id);
+				
+				// foreach($search_result as $key =>$temp_user){
+					// // $temp_user['is_member'] = false;
+					
+					// if (array_key_exists('is_user', $temp_user)){
+						// foreach ($chat_members as $member){
+							// if ($temp_user['id'] == $member['user_id']){
+								// unset($search_result[$key]);
+								// // $temp_user['is_member'] = true;
+								// break;
+							// }
+						// }
+					// } else if (array_key_exists('is_group', $temp_user)){
+						// if (strpos($chat['group_ids'], $temp_user['id']) !== FALSE){
+							// unset($search_result[$key]);
+							// // $temp_user['is_member'] = true;
+						// }
+					
+					// } else if (array_key_exists('is_room', $temp_user)){
+						// if (strpos($chat['room_ids'], $temp_user['id']) !== FALSE){
+							// unset($search_result[$key]);
+							// // $temp_user['is_member'] = true;
+						// }
+					// }
+				// }
 			}
 			
 			$search_count = count($all);

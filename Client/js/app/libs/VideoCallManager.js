@@ -371,7 +371,7 @@ SPIKA_VideoCallManager = {
         });
         
     },
-    onCallReceived:function(onCallReceived,onEstablished,onFinish,onError){
+    callReceived:function(onCallReceived,onEstablished,onFinish,onError){
 	    
 	   var self = this;
 	   self.onCallReceived = onCallReceived;

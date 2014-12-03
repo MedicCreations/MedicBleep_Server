@@ -93,3 +93,4 @@ $app->mount ( '/v1/lobby', new Spika\Controller\LobbyController() );
 $app->mount ( '/v1/chat', new Spika\Controller\ChatController() );
 $app->mount ( '/v1/category', new Spika\Controller\CategoryController() );
 $app->mount ( '/v1/room', new Spika\Controller\RoomController() );
+$app->mount ( '/v1/search', new Spika\Controller\SearchController() );

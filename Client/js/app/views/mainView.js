@@ -111,7 +111,6 @@ var SPIKA_MainView = Backbone.View.extend({
             self.callWindow = new SPIKA_CallWindow({
                 template: CallWindowTemplate
             });
-
             
             self.onload();
             

@@ -72,6 +72,12 @@ define("MSG_VOICE", 5);
 define("MSG_FILE", 6);
 define("MSG_DELETED", 7);
 
+//search types
+define("USERS", 1);
+define("GROUPS", 2);
+define("ROOMS", 3);
+define("ALL", 4);
+
 //success codes
 define('CODE_SUCCESS', 2000);
 
@@ -93,6 +99,7 @@ define('ER_TEMP_PASSWORD_NOT_VALID', 1011);
 define('ER_LOGIN_WITH_TEMP_PASS', 1012);
 define('ER_USERNAME_NOT_EXIST', 1013);
 define('ER_INVALID_TEMP_PASSWORD', 1014);
+define('ER_PASSWORD_EXIST', 1015);
 
 // device types
 define('DEVICE_IOS', 2);

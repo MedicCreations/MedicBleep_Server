@@ -420,7 +420,21 @@ var U = {
         
         return blob;
                 
-    }
+    },
+	validatePassword: function(newPassword,confirmPassword){
+		
+		var regex = /^[a-yA-Z0-9\-]{6,}$/;
+		var validPassword = regex.test(newPassword);
+		
+		if(!validPassword)
+			return LANG.change_password_validation_failed_1;
+			
+		if(newPassword != confirmPassword)
+			return LANG.change_password_validation_failed_2;
+		
+		return "";
+		
+	}
 }
 
 function $$(selector){
