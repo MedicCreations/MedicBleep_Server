@@ -129,13 +129,18 @@ class ChatController extends SpikaBaseController {
 			$values = array('room_ids' => trim($room_ids, ","));
 			$mySql->updateChat($app, $chat_id, $values);
 			
+			if (array_key_exists('users_to_add', $paramsAry)){
+				$user_ids = trim($paramsAry['users_to_add'], ",");
+			}
+			if (array_key_exists('user_ids', $paramsAry)){
+				$user_ids = trim($paramsAry['user_ids'], ",");
+			}
 			
-			$users_to_add = trim($paramsAry['users_to_add'], ",");
 			
 			//create distinct users
-			if ($users_to_add != ""){
+			if ($user_ids != ""){
 				//get users for room
-				$users = $mySql->getUsersForRoom($app, $users_to_add);
+				$users = $mySql->getUsersForRoom($app, $user_ids);
 			}
 			
 			if ($group_all_ids != ""){

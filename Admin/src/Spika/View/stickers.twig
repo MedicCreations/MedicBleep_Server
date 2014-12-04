@@ -1,0 +1,116 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+        
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{ADMIN_ROOT_URL}}/dashboard">
+										{{lang.stickers1}}
+									</a>
+								</li>
+								<li class="active">
+									{{lang.stickers2}}
+								</li>
+								
+								{% include 'searchbox.twig' %}
+								
+							</ol>
+							<div class="row page-header">
+							    <div class="col-md-6">
+								    <h1>{{lang.stickers2}}</h1>
+								</div>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+					
+                    {% if infomessage is defined %}
+                         <div class="row">
+    					    <div class="col-md-12">
+                                <div class="alert alert-success">
+                                	<button data-dismiss="alert" class="close">
+                                		×
+                                	</button>
+                                	<i class="fa fa-check-circle"></i>
+                                	{{infomessage}}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                        
+                    {% if errormessage is defined %}
+                         <div class="row">
+    					    <div class="col-md-12">
+                                <div class="alert alert-danger">
+                                	<button data-dismiss="alert" class="close">
+                                		×
+                                	</button>
+                                	<i class="fa fa-check-circle"></i>
+                                	{{errormessage}}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                        
+					<div class="row">
+
+                        {% for row in list %}
+                       
+                            <div class="col-md-2">
+                                <a href="{{stickerBaseURL}}/{{row.filename}}" class="thumbnail" target="_blank">
+                                    <img src="{{stickerBaseURL}}/{{row.filename}}" />
+                                </a>
+                                <a href="{{ADMIN_ROOT_URL}}/stickers/delete/{{row.id}}" onclick="return confirm('{{lang.stickers7}}')">
+                                    {{lang.general8}}
+                                </a>
+                            </div>
+                        
+                        {% endfor %}
+
+                        
+                        <div class="col-md-2 add_sticker_holder">
+                        
+                            <form role="form" method="post" action="{{ADMIN_ROOT_URL}}/stickers/add" enctype="multipart/form-data">
+                                <input type="file" name="stickerfile" style="display:none">
+                            </form>
+                            
+                            <a href="javascript:void(0)">
+                                <i class="clip-add" style="font-size: 60pt"></i><br />
+                                {{lang.stickers3}}
+                            </a>
+
+                        </div>
+                        
+					</div>
+
+{% endblock %}
+
+{% block pageScript %}
+
+<script>
+	jQuery(document).ready(function() {
+
+        $('.add_sticker_holder a').click(function(){
+
+            $('.add_sticker_holder form input').click();
+        
+        });
+        
+        $('.add_sticker_holder form input').change(function(){
+            
+            $('.add_sticker_holder form').submit();
+            
+        });
+	});
+</script>
+		
+{% endblock %}
+

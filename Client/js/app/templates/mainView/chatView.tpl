@@ -8,6 +8,16 @@
 
 </article>
 
+<div id="room_actions">
+
+    <a href="javascript:void(0)" class="button" id="btn_edit_room">{editroom}</a>
+    <a href="javascript:void(0)" class="button red" id="btn_deactivate_room">{deactivateroom}</a>
+    <a href="javascript:void(0)" class="button red" id="btn_activate_room">{activateroom}</a>
+    <a href="javascript:void(0)" class="button red" id="btn_leave_room">{leaveroom}</a>
+    <a href="javascript:void(0)" class="button red" id="btn_delete_room">{deleteroom}</a>
+        
+</div>
+
 <div id="thread_view_header">
 	Thread View Mode <a href="javascript:void(0)">Finish</a>
 </div>

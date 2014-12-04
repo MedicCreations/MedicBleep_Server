@@ -4910,3 +4910,11 @@ td.column-right {
 .form-editusername input[type="text"],.form-password input[type="text"]{
     width: 150px
 }
+
+.add_sticker_holder{
+    text-align: center;
+}
+
+.add_sticker_holder a{
+    text-decoration: none;
+}

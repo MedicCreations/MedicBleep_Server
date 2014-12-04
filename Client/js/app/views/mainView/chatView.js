@@ -279,12 +279,23 @@ var SPIKA_ChatView = Backbone.View.extend({
 	        U.setViewHeight($$("#main_container .scrollable"),[
 	            $$('header'),$$('footer')
 	        ]);
+	        
+	        U.setViewHeight($$("#main_container #room_actions"),[
+	            $$('header'),$$('footer')
+	        ]);
+
+
 	    }
         
 	    if(this.displayMode == CHATVIEW_THREADMODE){
 	        U.setViewHeight($$("#main_container .scrollable"),[
 	            $$('header'),$$('footer'),$$('#thread_view_header')
 	        ]);
+
+	        U.setViewHeight($$("#main_container #room_actions"),[
+	            $$('header'),$$('footer'),$$('#thread_view_header')
+	        ]);
+
 	    }
         
         $$('#thread_view_header').css('width',U.getWidth() - parseInt($$('#thread_view_header').css('left')));

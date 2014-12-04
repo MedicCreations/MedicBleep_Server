@@ -542,6 +542,7 @@ footer #mess_type ul li textarea.disabled{
 #chat article {
 	padding-top: 43px;
 	margin-left: 325px;
+	margin-right: 150px;
 	margin-bottom: 48px;
 }
 
@@ -641,6 +642,25 @@ footer #mess_type ul li textarea.disabled{
 }
 #chat article section.selected .time_stamp {
 	color: #4BA4DF;
+}
+
+#chat article section.selected .time_stamp {
+	color: #4BA4DF;
+}
+
+#chat #room_actions{
+	width: 150px;
+	position: absolute;
+	top: 43px;
+	right: 0px;
+	background: #2C2D32;
+}
+
+#chat #room_actions .button{
+	width: 130px;
+	margin-left: 5px;
+	margin-top: 5px;
+	padding: 0px;
 }
 
 

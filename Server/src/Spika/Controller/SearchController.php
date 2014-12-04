@@ -67,7 +67,7 @@ class SearchController extends SpikaBaseController {
 						foreach($users as $user){
 							$item = array('type' => USERS, 
 									'user' => $user);
-							array_push($result_list, $item);
+							array_unshift($result_list, $item);
 						}
 						
 						break;
@@ -100,7 +100,7 @@ class SearchController extends SpikaBaseController {
 									'user' => $all_item);
 							}
 							
-							array_push($result_list, $item);
+							array_unshift($result_list, $item);
 						}
 						
 						break;
@@ -117,7 +117,7 @@ class SearchController extends SpikaBaseController {
 						foreach($users as $user){
 							$item = array('type' => USERS, 
 									'user' => $user);
-							array_push($result_list, $item);
+							array_unshift($result_list, $item);
 						}
 						
 						break;
@@ -128,7 +128,7 @@ class SearchController extends SpikaBaseController {
 						foreach($groups as $group){
 							$item = array('type' => GROUPS, 
 									'group' => $group);
-							array_push($result_list, $item);
+							array_unshift($result_list, $item);
 						}
 						
 						break;
@@ -138,17 +138,17 @@ class SearchController extends SpikaBaseController {
 						
 						foreach($rooms as $room){
 							$item = array('type' => ROOMS, 
-									'room' => $room);
-							array_push($result_list, $item);
+									'chat' => $room);
+							array_unshift($result_list, $item);
 						}
 						
 						break;
 					case ALL:
-						$all_items = $mySql->getSearchUsersGroupsRooms($app, $search, $my_user_id);
+						$all = $mySql->getSearchUsersGroupsRooms($app, $search, $my_user_id);
 						if ($page != -1){
-							$search_result = array_slice($all, $offset, ROOMS_PAGE_SIZE);
+							$all_items = array_slice($all, $offset, ROOMS_PAGE_SIZE);
 						} else {
-							$search_result = $all;
+							$all_items = $all;
 						} 
 						
 						$search_count = count($all);
@@ -160,13 +160,13 @@ class SearchController extends SpikaBaseController {
 									'user' => $all_item);
 							} else if (array_key_exists('is_group', $all_item)){
 								$item = array('type' => GROUPS, 
-									'user' => $all_item);
-							} else if (array_key_exists('is_room', $temp_user)){
+									'group' => $all_item);
+							} else if (array_key_exists('is_room', $all_item)){
 								$item = array('type' => ROOMS, 
-									'user' => $all_item);
+									'chat' => $all_item);
 							}
 							
-							array_push($result_list, $item);
+							array_unshift($result_list, $item);
 						}
 						
 						break;

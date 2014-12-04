@@ -67,8 +67,13 @@ class RoomController extends SpikaBaseController {
 				$room_ids = trim($paramsAry['room_ids'], ",");
 			}
 			
-			$users_to_add = $paramsAry['users_to_add'];
-			$users_to_add_ary = explode(',', $users_to_add);
+			if (array_key_exists('user_ids', $paramsAry)){
+				$user_ids = $paramsAry['user_ids'];
+			}
+			if (array_key_exists('users_to_add', $paramsAry)){
+				$user_ids = $paramsAry['users_to_add'];
+			}
+			$users_to_add_ary = explode(',', $user_ids);
 			
 			$custom_chat_id = $self->createChatCustomID($users_to_add_ary);
 			
