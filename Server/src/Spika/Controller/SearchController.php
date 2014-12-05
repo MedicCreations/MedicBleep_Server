@@ -142,9 +142,9 @@ class SearchController extends SpikaBaseController {
 						foreach($rooms as $room){
 						
 							if ($room['chat_name'] == ""){
-							$chat_members = $mySql->getChatMembers($app, $room['chat_id']);
-							$room['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
-						}
+								$chat_members = $mySql->getChatMembers($app, $room['chat_id']);
+								$room['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
+							}
 						
 							$item = array('type' => ROOMS, 
 									'chat' => $room);

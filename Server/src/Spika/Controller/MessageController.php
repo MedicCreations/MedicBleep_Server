@@ -562,6 +562,25 @@ class MessageController extends SpikaBaseController {
 			
 		})->before($app['beforeSpikaTokenChecker']);
 		
+
+		//get message data
+		$controllers->get('/stickers', function (Request $request) use ($app, $self, $mySql){
+			
+			$stickerData = $mySql->getStickers($app);
+			
+			foreach($stickerData as $index => $row){
+    			
+    			$stickerData[$index]['url'] = ROOT_URL . "stickers/" .$stickerData[$index]['filename'];
+    			
+			}
+			
+			$result = array('code' => CODE_SUCCESS, 
+					'message' => 'OK', 
+					'stickers' => $stickerData);
+			
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
 		
 		return $controllers;
 	}

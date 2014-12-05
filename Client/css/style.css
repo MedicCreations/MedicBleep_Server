@@ -1457,9 +1457,7 @@ ul#user_menu li a{
 }
 
 #sticker_selecter .sticker_holder{
-	
-	width: 35000px;
-
+    max-height: 90px;
 }
 
 .sticker_btn{
@@ -1477,6 +1475,8 @@ ul#user_menu li a{
 
 .sticker_btn img{
     vertical-align: middle;
+    max-height: 75px;
+    max-width: 75px;
 }
 
 /*------------------------------*/

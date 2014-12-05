@@ -1033,7 +1033,7 @@ class MySqlDb implements DbInterface{
 		}
 		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
-		$sql = "SELECT chat.id, chat.name as name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
+		$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
 		if ($search != ""){
 			$sql = $sql . " and chat.name LIKE '" . $search . "%'";
 		}
@@ -1214,7 +1214,7 @@ class MySqlDb implements DbInterface{
 		}
 		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
-		$sql = "SELECT chat.id, chat.name as name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
+		$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
 		
 		if ($chat['room_ids'] != ""){
 			$sql .= " AND chat.id NOT IN (" . $chat['room_ids'] . ") ";
@@ -1328,6 +1328,15 @@ class MySqlDb implements DbInterface{
  
 		
 	}
+
+	public function getStickers(Application $app){
+		
+		$sql = "SELECT * FROM sticker where organization_id = ? and is_deleted = 0";
+		$result = $app['db']->fetchAll($sql, array($app['organization_id']));
+		return $result;
+		
+	}
+	
 	public function disconectWebUsers(Application $app){
 
         $limitTime = time() - DISCONNECT_LIMIT_SEC;        

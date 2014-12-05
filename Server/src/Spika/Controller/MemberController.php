@@ -61,7 +61,12 @@ class MemberController extends SpikaBaseController {
 					case USERS:
 						$all_members = $mySql->getChatMembers($app, $chat_id);
 						$member_count = count($all_members);
-						$members = array_slice($all_members, $offset, USERS_PAGE_SIZE);
+						
+						if ($page != -1){
+							$members = array_slice($all_members, $offset, USERS_PAGE_SIZE);
+						} else {
+							$members = $all_members;
+						}
 						
 						foreach($members as $member){
 							

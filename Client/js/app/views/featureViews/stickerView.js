@@ -36,6 +36,21 @@ var SPIKA_StickerView = Backbone.View.extend({
         var self = this;
         self.updateWindowSize();
         
+        apiClient.getStickers(function(data){
+            
+            var stickerResult = stickerFactory.createCollectionByAPIResponse(data);
+            
+            var template = _.template($$('#template_sticker_row').html(), {stickers: stickerResult.models}); 
+
+            $$('#sticker_selecter .sticker_holder').html(template);
+            
+            var count = data.stickers.length;
+            
+            $$('#sticker_selecter .sticker_holder').width(count * 90);
+            
+        },function(){
+        });
+        
     },
     
     show : function(){
@@ -48,9 +63,11 @@ var SPIKA_StickerView = Backbone.View.extend({
             self.isShowing = true;
         }, 500)();
         
-        $$('#sticker_selecter .sticker_holder').unbind().click(function(){
+        $$('#sticker_selecter .sticker_holder a').unbind().click(function(){
             
-            var imageUrl = $(this).attr();
+            var imageUrl = $(this).attr('sticker');
+            
+            mainView.chatView.postBoxView.sendMessage(imageUrl);
             
         });
           

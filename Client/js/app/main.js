@@ -60,6 +60,7 @@ else{
                     'app/models/modelChat',
                     'app/models/modelProfileParameter',
                     'app/models/modelRoom',
+                    'app/models/modelSticker',
                     'app/models/modelCategory',
                     'app/libs/SoundManager',
                     'app/libs/FileUploadHandler',
