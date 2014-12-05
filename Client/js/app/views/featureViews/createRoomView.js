@@ -169,6 +169,9 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             
             $$('#createroom_container input[type="text"]').val(chatData.get('chat_name'));
             
+            if(chatData.get('is_private') == 1)
+                $$('#createroom_container input[name="isprivate"]').attr("checked","checked");
+            
             var roomName = $$("#createroom_container input").val();
 
             EncryptManager.decryptImage($$('#createroom_container .room_profile_image'),chatData.get('image_thumb'),0,apiClient,function(){
@@ -290,7 +293,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         var password = $$('#createroom_container input[name="password"]').val();
         var passwordConfirm = $$('#createroom_container input[name="password_confirm"]').val();
         var categoryId = $$("#createroom_container .category_select_box").val();
-        
+        var isPrivate = $$('#createroom_container input[name="isprivate"]').prop("checked");
         
         if(_.isEmpty(roomName)){
             
@@ -383,6 +386,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                                 dataChat2.chat.chat_id,
                                 roomName,
                                 password,
+                                isPrivate,
                                 categoryId,
                                 self.profileImageFileId,
                                 self.profileThumbFileId,
@@ -439,7 +443,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             
             userIds += SPIKA_UserManager.getUser().get('id');
             
-            apiClient.createNewRoom(roomName,password,categoryId,userIds,this.profileImageFileId,this.profileThumbFileId,function(data){
+            apiClient.createNewRoom(roomName,password,isPrivate,categoryId,userIds,this.profileImageFileId,this.profileThumbFileId,function(data){
                 
                 if(!_.isNull(data.chat)){
                 	

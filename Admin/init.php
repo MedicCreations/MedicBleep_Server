@@ -25,3 +25,7 @@ define ('USE_LOGICAL_DELETE_GROUP', true);
 
 define('GMAIL_USER','admin@spikaent.com');
 define('GMAIL_PASSWORD','cloverpass013');
+
+define('STICKERS_DIR', "/var/www/www.spikaent.com/dev/spikaenterprise_web/Server/wwwroot/stickers");
+define('STICKERS_URL', "https://www.spikaent.com/dev/server/stickers");
+

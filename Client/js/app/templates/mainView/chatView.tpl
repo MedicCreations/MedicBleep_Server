@@ -8,9 +8,20 @@
 
 </article>
 
+<div id="room_actions">
+
+    <a href="javascript:void(0)" class="button" id="btn_edit_room" style="display:none">{editroom}</a>
+    <a href="javascript:void(0)" class="button red" id="btn_deactivate_room" style="display:none">{deactivateroom}</a>
+    <a href="javascript:void(0)" class="button red" id="btn_activate_room" style="display:none">{activateroom}</a>
+    <a href="javascript:void(0)" class="button red" id="btn_leave_room" style="display:none">{leaveroom}</a>
+    <a href="javascript:void(0)" class="button red" id="btn_delete_room" style="display:none">{deleteroom}</a>
+        
+</div>
+
 <div id="thread_view_header">
 	Thread View Mode <a href="javascript:void(0)">Finish</a>
 </div>
+
 
 <footer>
 

@@ -65,6 +65,7 @@ class SearchController extends SpikaBaseController {
 						$search_count = $mySql->getUsersCountNotMeNotChatMembers($app, $my_user_id, $search, $chat_id);
 						
 						foreach($users as $user){
+							unset($user['details']);
 							$item = array('type' => USERS, 
 									'user' => $user);
 							array_push($result_list, $item);
@@ -78,11 +79,11 @@ class SearchController extends SpikaBaseController {
 						
 						break;
 					case ALL:
-						$all_items = $mySql->getSearchUsersGroupsRoomsNotChatMembers($app, $search, $my_user_id, $chat_id);
+						$all = $mySql->getSearchUsersGroupsRoomsNotChatMembers($app, $search, $my_user_id, $chat_id);
 						if ($page != -1){
-							$search_result = array_slice($all, $offset, ROOMS_PAGE_SIZE);
+							$all_items = array_slice($all, $offset, ROOMS_PAGE_SIZE);
 						} else {
-							$search_result = $all;
+							$all_items = $all;
 						} 
 						
 						$search_count = count($all);
@@ -90,14 +91,15 @@ class SearchController extends SpikaBaseController {
 						foreach($all_items as $all_item){
 							
 							if (array_key_exists('is_user', $all_item)){
+								unset($all_item['details']);
 								$item = array('type' => USERS, 
 									'user' => $all_item);
 							} else if (array_key_exists('is_group', $all_item)){
 								$item = array('type' => GROUPS, 
-									'user' => $all_item);
-							} else if (array_key_exists('is_room', $temp_user)){
+									'group' => $all_item);
+							} else if (array_key_exists('is_room', $all_item)){
 								$item = array('type' => ROOMS, 
-									'user' => $all_item);
+									'chat' => $all_item);
 							}
 							
 							array_push($result_list, $item);
@@ -115,6 +117,7 @@ class SearchController extends SpikaBaseController {
 						$search_count = $mySql->getUsersCountNotMe($app, $my_user_id, $search);
 						
 						foreach($users as $user){
+							unset($user['details']);
 							$item = array('type' => USERS, 
 									'user' => $user);
 							array_push($result_list, $item);
@@ -137,18 +140,24 @@ class SearchController extends SpikaBaseController {
 						$search_count = $mySql->getRoomsCount($app, $my_user_id, $search, $category_id);
 						
 						foreach($rooms as $room){
+						
+							if ($room['chat_name'] == ""){
+								$chat_members = $mySql->getChatMembers($app, $room['chat_id']);
+								$room['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
+							}
+						
 							$item = array('type' => ROOMS, 
-									'room' => $room);
+									'chat' => $room);
 							array_push($result_list, $item);
 						}
 						
 						break;
 					case ALL:
-						$all_items = $mySql->getSearchUsersGroupsRooms($app, $search, $my_user_id);
+						$all = $mySql->getSearchUsersGroupsRooms($app, $search, $my_user_id);
 						if ($page != -1){
-							$search_result = array_slice($all, $offset, ROOMS_PAGE_SIZE);
+							$all_items = array_slice($all, $offset, ROOMS_PAGE_SIZE);
 						} else {
-							$search_result = $all;
+							$all_items = $all;
 						} 
 						
 						$search_count = count($all);
@@ -156,14 +165,15 @@ class SearchController extends SpikaBaseController {
 						foreach($all_items as $all_item){
 							
 							if (array_key_exists('is_user', $all_item)){
+								unset($all_item['details']);
 								$item = array('type' => USERS, 
 									'user' => $all_item);
 							} else if (array_key_exists('is_group', $all_item)){
 								$item = array('type' => GROUPS, 
-									'user' => $all_item);
-							} else if (array_key_exists('is_room', $temp_user)){
+									'group' => $all_item);
+							} else if (array_key_exists('is_room', $all_item)){
 								$item = array('type' => ROOMS, 
-									'user' => $all_item);
+									'chat' => $all_item);
 							}
 							
 							array_push($result_list, $item);

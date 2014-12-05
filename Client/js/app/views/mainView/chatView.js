@@ -5,6 +5,7 @@ var REFRESH = 3;
 var SPIKA_ChatView = Backbone.View.extend({
 
     postBoxView: null,
+    stickerView: null,
     chatData: null,
     messages : new MessageResult([]),
     totalMessageCount:0,
@@ -25,7 +26,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             self.chatData = null;
             $$('#main_container article').html('<div id="nochatbox"><i class="fa fa-exclamation-triangle"></i> ' + LANG.chat_nochat + '</div>');
             $$('#main_container article').addClass('nochat');
-            //mainView.setTitle(LANG.title_initial);
+            mainView.setTitle(LANG.title_initial);
         });
         
         Backbone.on(EVENT_START_CHAT, function(chatId) {
@@ -124,13 +125,20 @@ var SPIKA_ChatView = Backbone.View.extend({
 
         require([
             'app/views/mainView/postBoxView',
-            'thirdparty/text!templates/mainView/postBoxView.tpl'
-        ], function (postBoxView,PostBoxViewTemplate) {
+            'thirdparty/text!templates/mainView/postBoxView.tpl',
+            'app/views/featureViews/stickerView',
+            'thirdparty/text!templates/featureViews/stickerView.tpl'
+        ], function (postBoxView,PostBoxViewTemplate,
+                        stickerView,StickerViewTemplate) {
             
             self.postBoxView = new SPIKA_PostBoxView({
                 template: PostBoxViewTemplate
             });
-
+            
+            self.stickerView = new SPIKA_StickerView({
+                template: StickerViewTemplate
+            });
+            
             self.onload();
             
         });
@@ -146,6 +154,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         this.updateWindowSize();
         
         $$('#main_container footer').html(self.postBoxView.render().el);
+        $$('#main_container').append(self.stickerView.render().el);
         
         $$('#main_container .scrollable').scroll(function(){
             
@@ -185,7 +194,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             Backbone.trigger(EVENT_FILE_DROP,event.dataTransfer.files);
             
         });
-        
+
         self.updateWindowSize();
     },
     
@@ -253,7 +262,7 @@ var SPIKA_ChatView = Backbone.View.extend({
 
 	            
             }else{
-
+                
 				self.enterRoom();
             
             }
@@ -266,6 +275,9 @@ var SPIKA_ChatView = Backbone.View.extend({
 	  	  
     },
     enterRoom:function(){
+        
+        this.updateRoomButtons();
+        
         mainView.setRoomTitle(this.chatData.get("chat_name"),this.chatData.get("chat_id"));
 
         if(!_.isNull(this.chatData.get("chat_id"))){
@@ -279,12 +291,23 @@ var SPIKA_ChatView = Backbone.View.extend({
 	        U.setViewHeight($$("#main_container .scrollable"),[
 	            $$('header'),$$('footer')
 	        ]);
+	        
+	        U.setViewHeight($$("#main_container #room_actions"),[
+	            $$('header'),$$('footer')
+	        ]);
+
+
 	    }
         
 	    if(this.displayMode == CHATVIEW_THREADMODE){
 	        U.setViewHeight($$("#main_container .scrollable"),[
 	            $$('header'),$$('footer'),$$('#thread_view_header')
 	        ]);
+
+	        U.setViewHeight($$("#main_container #room_actions"),[
+	            $$('header'),$$('footer'),$$('#thread_view_header')
+	        ]);
+
 	    }
         
         $$('#thread_view_header').css('width',U.getWidth() - parseInt($$('#thread_view_header').css('left')));
@@ -934,6 +957,171 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
         
     },
+    
+    updateRoomButtons: function(){
+        
+        $$('#btn_edit_room').css('display','none');
+        $$('#btn_delete_room').css('display','none');
+        $$('#btn_deactivate_room').css('display','none');
+        $$('#btn_activate_room').css('display','none');
+        $$('#btn_leave_room').css('display','none');
+        
+        var self = this;
+        
+        // handle room buttons
+        var user = SPIKA_UserManager.getUser();
+        
+        if(this.chatData.get('admin_id') == user.get('id') && this.chatData.get('type') != 2){
 
+            $$('#btn_edit_room').css('display','inline-block');
+            $$('#btn_edit_room').unbind().click(function(){
+
+                U.goPage('editroom');
+                 
+            });
+
+            if(self.chatData.get('type') != 1){
+            
+                $$('#btn_delete_room').css('display','inline-block');
+                $$('#btn_delete_room').click(function(){
+                    
+                    SPIKA_AlertManager.show(LANG.confirm,LANG.confirm_general,function(){
+                        
+                        // update room info
+                        apiClient.updateRoom(
+                            self.chatData.get('chat_id') ,
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '1',
+                            '',
+                            function(updateResult){
+
+                                Backbone.trigger(EVENT_LEAVE_CHAT,self.chatData.get('chat_id'));
+                
+                            },function(data){
+                            
+                                SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
+                
+                        });
+                        
+                    },function(){
+                        
+                    });
+                     
+                });
+            }
+
+            if(self.chatData.get('is_active') == 1){
+            
+                $$('#btn_deactivate_room').css('display','inline-block');
+                $$('#btn_deactivate_room').click(function(){
+    
+                    SPIKA_AlertManager.show(LANG.confirm,LANG.confirm_general,function(){
+                        
+                        // update room info
+                        apiClient.updateRoom(
+                            self.chatData.get('chat_id') ,
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '0',
+                            function(updateResult){
+    
+                                _.debounce(function() {
+                                    Backbone.trigger(EVENT_START_CHAT,self.chatData.get('chat_id'));
+                                }, 1000)();
+                
+                            },function(data){
+                            
+                                SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
+                
+                        });
+                        
+                    },function(){
+                        
+                    });
+    
+                    
+                });
+            
+            }else{
+    
+                $$('#btn_activate_room').css('display','inline-block');
+                $$('#btn_activate_room').click(function(){
+                    
+                    SPIKA_AlertManager.show(LANG.confirm,LANG.confirm_general,function(){
+                        
+                        // update room info
+                        apiClient.updateRoom(
+                            self.chatData.get('chat_id') ,
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '1',
+                            function(updateResult){
+    
+                                _.debounce(function() {
+                                    Backbone.trigger(EVENT_START_CHAT,self.chatData.get('chat_id'));
+                                }, 1000)();
+                
+                            },function(data){
+                            
+                                SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
+                
+                        });
+    
+                    },function(){
+                        
+                    });
+    
+    
+                });    
+            
+            }
+            
+        } else {
+            
+            if(self.chatData.get('type') != 1 &&  self.chatData.get('type') != 2){
+            
+                $$('#btn_leave_room').css('display','inline-block');
+                $$('#btn_leave_room').click(function(){
+                    
+                    SPIKA_AlertManager.show(LANG.confirm,LANG.confirm_general,function(){
+                        
+                        // delete users
+                        apiClient.deleteUsersFromChat(
+                            self.chatData.get('chat_id'),
+                            user.get('id'),
+                            function(dataChat2){
+    
+                                Backbone.trigger(EVENT_LEAVE_CHAT,self.chatData.get('chat_id'));
+    
+                            },function(data){
+                            
+                                SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to update room");
+                
+                        });
+                        
+                    },function(){
+                        
+                    });
+                    
+                }); 
+            }
+        }
+        
+    }
 
 });

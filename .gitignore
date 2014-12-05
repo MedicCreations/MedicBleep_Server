@@ -6,6 +6,7 @@ Admin/logs/
 Admin/tmp/
 Server/logs/
 Server/uploads/
+Server/wwwroot/stickers/
 !logs/.gitkeep
 Client/apps/
 

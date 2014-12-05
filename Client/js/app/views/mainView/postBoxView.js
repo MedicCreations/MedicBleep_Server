@@ -98,7 +98,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
                 return true;
             }else if(event.which == 13){
                 
-                self.sendMessage();
+                self.sendMessage($$('#chat_textbox').val());
                 return false;
             }
             
@@ -107,7 +107,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         });
         
         $$('#btn_send').click(function(){
-            self.sendMessage();
+            self.sendMessage($$('#chat_textbox').val());
         });
         
         $$('#btn_open_extra_menu').click(function(){
@@ -138,7 +138,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
 
     },
 
-    sendMessage : function(){
+    sendMessage : function(message){
         
         if(this.isSending == true)
             return;
@@ -148,7 +148,6 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         }
         
         var self = this;
-        var message = $$('#chat_textbox').val();
         
         if(_.isEmpty(message))
             return;

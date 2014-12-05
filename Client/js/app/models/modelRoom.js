@@ -34,7 +34,8 @@
                 modified: data.modified,
                 type: data.type,
                 unread: data.unread,
-                password: data.password
+                password: data.password,
+                is_private: data.is_private
             });   
         },
         createCollectionByAPIResponse : function(data){
@@ -72,7 +73,8 @@
             modified: '',
             type: '',
             unread: '',
-            password: ''
+            password: '',
+            is_private: 0,
         },
         initialize: function(){
     

@@ -245,9 +245,9 @@ class MySqlDb implements DbInterface{
 	
 	public function getUserByTempPassword(Application $app, $temp_password){
 	
-		$sql = "SELECT * FROM user WHERE temp_password = ?  and user.organization_id = ? ";
+		$sql = "SELECT * FROM user WHERE temp_password = ?";
 		
-		$user = $app['db']->fetchAssoc($sql, array($temp_password,$app['organization_id']));
+		$user = $app['db']->fetchAssoc($sql, array($temp_password));
 		
 		return $user;
 	
@@ -277,11 +277,11 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function checkPassword(Application $app, $password){
+	public function checkPassword(Application $app, $username, $password){
 	
-		$sql = "SELECT * FROM user WHERE password = ?";
+		$sql = "SELECT * FROM user WHERE username = ? AND password = ?";
 		
-		$result = $app['db']->fetchAssoc($sql, array($password));
+		$result = $app['db']->fetchAssoc($sql, array($username, $password));
 		
 		if (is_array($result)){
 			return true;
@@ -305,7 +305,7 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND groups.category = " . $category;
 		}
 		
-		$sql = $sql . " and groups.organization_id = ?  and groups.is_deleted = 0 LIMIT " . $offset . ", " . GROUPS_PAGE_SIZE;
+		$sql = $sql . " and groups.organization_id = ?  and groups.is_deleted = 0 ORDER BY groups.name LIMIT " . $offset . ", " . GROUPS_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -982,7 +982,7 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND chat.category_id = " . $category_id;
 		}
 		
-		$sql = $sql . " GROUP BY chat_member.chat_id ORDER BY chat.modified DESC LIMIT " . $offset . ", " . ROOMS_PAGE_SIZE;
+		$sql = $sql . " GROUP BY chat_member.chat_id ORDER BY chat.name LIMIT " . $offset . ", " . ROOMS_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		
@@ -1033,7 +1033,7 @@ class MySqlDb implements DbInterface{
 		}
 		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
-		$sql = "SELECT chat.id, chat.name as name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
+		$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
 		if ($search != ""){
 			$sql = $sql . " and chat.name LIKE '" . $search . "%'";
 		}
@@ -1106,7 +1106,7 @@ class MySqlDb implements DbInterface{
 		
 		if ($chat['room_ids'] != ""){
 			//find rooms
-			$sql = "SELECT chat.id, chat.name as name, chat.image, chat.image_thumb, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.id IN (".$chat['room_ids'].") AND chat.organization_id = ?";
+			$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.id IN (".$chat['room_ids'].") AND chat.organization_id = ?";
 			
 			$rooms = $app['db']->fetchAll($sql, array($app['organization_id']));
 		}
@@ -1152,13 +1152,13 @@ class MySqlDb implements DbInterface{
 		
 		$sql = $sql . " WHERE user.id <> ? AND user.is_deleted = 0 ";
 		
-		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ?) ";
+		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ? AND is_deleted = 0) ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
 		}
 		
-		$sql = $sql . " and user.organization_id = ? ORDER BY user.firstname,user.id LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
+		$sql = $sql . " and user.organization_id = ? ORDER BY user.firstname,user.lastname LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
 		
 		$resultFormated = array();
 		$result = $app['db']->fetchAll($sql, array($my_user_id, $chat_id, $app['organization_id']));
@@ -1170,7 +1170,7 @@ class MySqlDb implements DbInterface{
 		
 		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ? AND user.is_deleted = 0 and user.organization_id = ? ";
 		
-		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ?) ";
+		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ? AND is_deleted = 0) ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
@@ -1193,7 +1193,7 @@ class MySqlDb implements DbInterface{
 		
 		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened, '1' as is_user FROM user WHERE user.id <> ?  and user.organization_id = ? ";
 		
-		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ?) ";
+		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ? AND is_deleted = 0) ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND (CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
@@ -1201,7 +1201,7 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " OR user.lastname LIKE '" . $search . "%')";
 		}
 		
-		$users = $app['db']->fetchAll($sql, array($my_user_id, $chat_id, $app['organization_id']));
+		$users = $app['db']->fetchAll($sql, array($my_user_id, $app['organization_id'], $chat_id));
 		
 		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups WHERE groups.is_deleted = 0 AND groups.organization_id = ?";
 		
@@ -1214,7 +1214,7 @@ class MySqlDb implements DbInterface{
 		}
 		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
-		$sql = "SELECT chat.id, chat.name as name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
+		$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
 		
 		if ($chat['room_ids'] != ""){
 			$sql .= " AND chat.id NOT IN (" . $chat['room_ids'] . ") ";
@@ -1328,6 +1328,15 @@ class MySqlDb implements DbInterface{
  
 		
 	}
+
+	public function getStickers(Application $app){
+		
+		$sql = "SELECT * FROM sticker where organization_id = ? and is_deleted = 0";
+		$result = $app['db']->fetchAll($sql, array($app['organization_id']));
+		return $result;
+		
+	}
+	
 	public function disconectWebUsers(Application $app){
 
         $limitTime = time() - DISCONNECT_LIMIT_SEC;        
