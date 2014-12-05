@@ -20,12 +20,14 @@
             <i class="fa fa-smile-o"></i><br />
                 Emoticon
         </li>
-        <li id="extramessage_btn_image">
+        -->
+        
+        <li id="extramessage_btn_sticker">
             <i class="fa fa-gift"></i><br />
                 Sticker
         </li>
 
-        -->
+        
         
         <li id="extramessage_btn_file">
             <i class="fa fa-file"></i><br />

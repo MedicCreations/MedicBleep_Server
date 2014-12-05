@@ -245,9 +245,9 @@ class MySqlDb implements DbInterface{
 	
 	public function getUserByTempPassword(Application $app, $temp_password){
 	
-		$sql = "SELECT * FROM user WHERE temp_password = ?  and user.organization_id = ? ";
+		$sql = "SELECT * FROM user WHERE temp_password = ?";
 		
-		$user = $app['db']->fetchAssoc($sql, array($temp_password,$app['organization_id']));
+		$user = $app['db']->fetchAssoc($sql, array($temp_password));
 		
 		return $user;
 	
@@ -277,11 +277,11 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function checkPassword(Application $app, $password){
+	public function checkPassword(Application $app, $username, $password){
 	
-		$sql = "SELECT * FROM user WHERE password = ?";
+		$sql = "SELECT * FROM user WHERE username = ? AND password = ?";
 		
-		$result = $app['db']->fetchAssoc($sql, array($password));
+		$result = $app['db']->fetchAssoc($sql, array($username, $password));
 		
 		if (is_array($result)){
 			return true;
@@ -982,7 +982,7 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND chat.category_id = " . $category_id;
 		}
 		
-		$sql = $sql . " GROUP BY chat_member.chat_id ORDER BY chat.name DESC LIMIT " . $offset . ", " . ROOMS_PAGE_SIZE;
+		$sql = $sql . " GROUP BY chat_member.chat_id ORDER BY chat.name LIMIT " . $offset . ", " . ROOMS_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id,$app['organization_id']));
 		

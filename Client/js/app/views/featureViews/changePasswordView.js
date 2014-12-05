@@ -9,6 +9,7 @@ var SPIKA_ChangePasswordView = Backbone.View.extend({
         Backbone.on(EVENT_WINDOW_SIZE_CHANGED, function() {
             self.updateWindowSize();
         });
+        
     },
 
     render: function() {
@@ -62,6 +63,8 @@ var SPIKA_ChangePasswordView = Backbone.View.extend({
 					U.goPage('logout'); 
 					
 				},function(data){
+					
+					SPIKA_AlertManager.show(LANG.general_errortitle,LANG.change_password_failed);
 					
 				});
 			});

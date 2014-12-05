@@ -39,7 +39,7 @@ var SPIKA_LoginView = Backbone.View.extend({
 	            
 	        },function(data){
 	            
-	            self.showAlert(LANG.login_failed);
+	            U.goPage("logout");
 	            
 	        });
         
@@ -51,10 +51,14 @@ var SPIKA_LoginView = Backbone.View.extend({
 	        
 	        var self = this;
 	        
-	        _.debounce(function() {
-	            self.onload();
-	        }, 100)();
-	              
+            require([
+                'app/views/dialogs/forgetPasswordDialog'
+            ], function (forgetPasswordDialog) {
+    
+                self.onload();
+                
+            });
+	         
 	        return this;
         }
 
@@ -105,6 +109,34 @@ var SPIKA_LoginView = Backbone.View.extend({
             {
                 self.doLogin();
             }
+        });
+        
+        $$("#login_btn_forgot").click(function(){
+           
+            SPIKA_ForgetPasswordManager.showDialogForUsername(
+                LANG.forget_password,
+                LANG.forget_password_firststep_text,
+            function(username){
+                
+                
+    	        apiClient.sendTempPassword(username,function(data){
+    	            
+    	            self.showAlert(LANG.forget_password_firststep_emailsent);
+    	            
+    	        },function(data){
+    	            
+    	            self.showAlert(LANG.forget_password_firststep_wrongusername);
+    	            
+    	        });
+
+                
+                
+            },function(){
+                
+                
+                
+            })
+            
         });
 
         
@@ -217,6 +249,48 @@ var SPIKA_LoginView = Backbone.View.extend({
             
         },function(data){
             
+            var code = data.code;
+
+            if(code == 1012){ // temporary password login
+                
+                SPIKA_ForgetPasswordManager.showDialogForNewPassword(
+                    LANG.forget_password_secondstep_title,
+                    LANG.forget_password_secondstep_text,
+                function(tempPass,newPass){
+                    
+        			var errorMessage = U.validatePassword(newPass,newPass);
+        			
+        			if(!_.isEmpty(errorMessage)){
+        				self.showAlert(errorMessage);
+        				return;
+        			}
+                    
+                    apiClient.resetPassword(tempPass,newPass,function(data){
+                    
+                        self.showAlert(LANG.forget_password_done);
+                    
+                    },function(data){
+                        
+                        var code = data.code;
+                        
+                        if(code == 1015){
+                            
+                            self.showAlert(LANG.forget_password_secondstep_failed_samepassword);
+                            return;
+                        }
+                        
+                        self.showAlert(LANG.forget_password_secondstep_failed);
+                    
+                    });
+                
+                },function(){
+                
+                
+                
+                })
+                return;
+            }
+                        
             self.showAlert(LANG.login_failed);
             
         });

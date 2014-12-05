@@ -79,7 +79,6 @@ form {
 	border: none;
 	background: #4BA4DF;
 	color: #FFFFFF;
-	font-size: 1.2em;
 	padding:  0px 30px;
 	text-decoration: none;
 	display: inline-block;
@@ -92,7 +91,7 @@ form {
 	color: #E94B4D;
 }
 .red{
-	background: #E94B4D;
+	background: #E94B4D !important;
 }
 .gray{
 	background: #2E2F33;
@@ -161,14 +160,6 @@ body#chat {
 	background: #FFFFFF;
 }
 
-#login dl dd input[type="text"],
-#login dl dd input[type="password"] {
-	border: 1px solid #000000;
-	width: 100%;
-	font-size: 1.4em;
-	margin-bottom: 10px;
-}
-
 #loading section {
 	width: 100%;
 	position: absolute;
@@ -208,33 +199,41 @@ body#chat {
 	padding: 15px 30px;
 	color: #000000;
 	text-align: left;
-	font-size: 1.4em;
 	background-color: #F8F8F8;
+	font-size: 1.2em;
 }
 
 #login nav {
 	color: #F76861;
 }
 
-#login dl dd input[type="text"] {
-	border: 1px solid #000000;
-	width: 100%;
-	font-size: 1.2em;
-	margin-bottom: 10px;
-	padding: 5px 0;
-}
-
 #login p {
 	text-align: right;
 }
 
-#login p input[type="button"] {
-	background-color: #474747;
-	border: none;
-	color: #FFFFFF;
-	padding: 5px 10px;
-	cursor: pointer;
+
+#login dl dd input[type="text"],
+#login dl dd input[type="password"] {
+	border: 1px solid #999;
+	width: 438px;
+	font-size: 1.4em;
+	height: 30px;
+	padding: 5px;
 }
+
+#login dl dd{
+	margin-bottom: 10px;
+}
+
+
+#login dl dd div{
+	text-align: right;
+}
+
+#login a{
+    cursor: pointer;
+}
+
 
 /*==============================*/
 /*		END		Login			*/
@@ -814,9 +813,12 @@ footer #mess_type ul li textarea.disabled{
 	text-align: left;
 	padding: 0px 10px 10px 10px;
 }
-#alert_box #alert_form input[type="password"]{
+#alert_box #alert_form input[type="text"],
+#alert_box #alert_form input[type="password"]
+{
 	width: 90%;
 	padding: 5px;
+	margin-bottom: 5px;
 }
 
 
@@ -1225,7 +1227,7 @@ ul#user_menu li a{
     left: 330px;
     bottom: 60px;
     width: 250px;
-    height: 130px;
+    height: 200px;
 }
 
 #extra_message_box li{
@@ -1438,4 +1440,46 @@ ul#user_menu li a{
 /*   END CALL WINDO             */
 /*------------------------------*/
 
+/*------------------------------*/
+/*   STICKER                    */
+/*------------------------------*/
+
+#sticker_selecter{
+	
+	position: absolute;
+	bottom: 52px;
+	left: 325px;
+	height: 90px;
+	background: #F8F8F8;
+	overflow-x: auto;
+	overflow-y: none;
+
+}
+
+#sticker_selecter .sticker_holder{
+	
+	width: 35000px;
+
+}
+
+.sticker_btn{
+    
+    float: left;
+    display: block;
+    width: 75px;
+    line-height: 75px;
+    vertical-align: middle;
+    text-align: center;
+    padding: 5px;
+    border: 1px solid #DFDFDF;
+
+}
+
+.sticker_btn img{
+    vertical-align: middle;
+}
+
+/*------------------------------*/
+/*   END STICKER                */
+/*------------------------------*/
 

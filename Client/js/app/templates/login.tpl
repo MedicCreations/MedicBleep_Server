@@ -17,6 +17,7 @@
     			</dt>
     			<dd>
     				<input type="password" id="login_tb_password"/>
+    				<div class="right"><a href="javascript:(0)" id="login_btn_forgot">{forget_password}</a></div>
     			</dd>
     			<dt>
     			</dt>
@@ -26,7 +27,7 @@
     			</dd> 
             </dl>
     		<p>
-    			<input type="button" id="login_btn_login" value="Login" />
+    			<a class="button" id="login_btn_login">{login}</a>
     		</p>
     	</section>
     </article>

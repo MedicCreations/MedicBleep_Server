@@ -145,7 +145,7 @@ class SpikaBaseController implements ControllerProviderInterface
     	
     	if ($last_message['user_id'] != $user['id']){
     		
-    		if (strpos($chat_seen, $user['firstname']) === false ){
+    		if (empty($chat_seen) || strpos($chat_seen, $user['firstname']) === false ){
     			
     			if ($chat_seen == ""){
     				$chat_seen = $user['firstname'];

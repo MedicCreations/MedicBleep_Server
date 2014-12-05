@@ -55,9 +55,9 @@
             	<span class="passwordnotice textred">{roompassword_notice}</span>
 			</div>
 			
-            <select class="category_select_box">
-            </select>
-            
+            <input type="checkbox" name="isprivate" style="width: 20px;display: inline"/> {room_private}
+
+            <select class="category_select_box"></select>
 
         	<div class="choose_file" style="display:none">
         	    <input id="btn_dummy_file_upload_profile" name="Select File" type="file" />

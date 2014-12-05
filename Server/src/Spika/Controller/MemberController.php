@@ -69,7 +69,7 @@ class MemberController extends SpikaBaseController {
 								if ($member['user_id'] != $admin['user_id']){
 							
 									$item = array('type' => USERS, 
-										'user' => $user);
+										'user' => $member);
 									array_push($result_list, $item);
 								}
 							}

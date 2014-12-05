@@ -479,7 +479,7 @@ class UserController extends SpikaBaseController {
 			
 			}
 			
-			$passwordExist = $mySql->checkPassword($app, $new_password);
+			$passwordExist = $mySql->checkPassword($app, $user['username'], $new_password);
 			
 			if ($passwordExist){
 				
@@ -520,7 +520,7 @@ class UserController extends SpikaBaseController {
 			
 			$my_user_id = $app['user']['id'];
 			
-			$passwordExist = $mySql->checkPassword($app, $new_password);
+			$passwordExist = $mySql->checkPassword($app, $app['user']['username'], $new_password);
 			
 			if ($passwordExist){
 				

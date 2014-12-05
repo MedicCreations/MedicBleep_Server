@@ -5,6 +5,7 @@ var REFRESH = 3;
 var SPIKA_ChatView = Backbone.View.extend({
 
     postBoxView: null,
+    stickerView: null,
     chatData: null,
     messages : new MessageResult([]),
     totalMessageCount:0,
@@ -124,13 +125,20 @@ var SPIKA_ChatView = Backbone.View.extend({
 
         require([
             'app/views/mainView/postBoxView',
-            'thirdparty/text!templates/mainView/postBoxView.tpl'
-        ], function (postBoxView,PostBoxViewTemplate) {
+            'thirdparty/text!templates/mainView/postBoxView.tpl',
+            'app/views/featureViews/stickerView',
+            'thirdparty/text!templates/featureViews/stickerView.tpl'
+        ], function (postBoxView,PostBoxViewTemplate,
+                        stickerView,StickerViewTemplate) {
             
             self.postBoxView = new SPIKA_PostBoxView({
                 template: PostBoxViewTemplate
             });
-
+            
+            self.stickerView = new SPIKA_StickerView({
+                template: StickerViewTemplate
+            });
+            
             self.onload();
             
         });
@@ -146,6 +154,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         this.updateWindowSize();
         
         $$('#main_container footer').html(self.postBoxView.render().el);
+        $$('#main_container').append(self.stickerView.render().el);
         
         $$('#main_container .scrollable').scroll(function(){
             
@@ -185,7 +194,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             Backbone.trigger(EVENT_FILE_DROP,event.dataTransfer.files);
             
         });
-        
+
         self.updateWindowSize();
     },
     
@@ -253,7 +262,7 @@ var SPIKA_ChatView = Backbone.View.extend({
 
 	            
             }else{
-
+                
 				self.enterRoom();
             
             }
@@ -266,6 +275,9 @@ var SPIKA_ChatView = Backbone.View.extend({
 	  	  
     },
     enterRoom:function(){
+        
+        this.updateRoomButtons();
+        
         mainView.setRoomTitle(this.chatData.get("chat_name"),this.chatData.get("chat_id"));
 
         if(!_.isNull(this.chatData.get("chat_id"))){
@@ -945,6 +957,27 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
         
     },
+    
+    updateRoomButtons: function(){
+        
+        var self = this;
+        
+        
+        // handle room buttons
+        var user = SPIKA_UserManager.getUser();
+        
+        if(this.chatData.get('admin_id') == user.get('id') && this.chatData.get('type') != 2){
 
+            $$('#btn_edit_room').css('display','inline-block');
+            $$('#btn_edit_room').unbind().click(function(){
+
+                U.goPage('editroom');
+                 
+            });
+            
+        }
+        
+        
+    }
 
 });

@@ -783,7 +783,7 @@ SpikaClient.prototype.saveProfliePicture = function(userId,fileId,thumbId,succee
 
 };
 
-SpikaClient.prototype.createNewRoom = function(roomName,password,categoryId,userList,fileId,thumbId,succeessListener,failedListener)
+SpikaClient.prototype.createNewRoom = function(roomName,password,isPrivate,categoryId,userList,fileId,thumbId,succeessListener,failedListener)
 {
     
     var self = this;
@@ -794,11 +794,16 @@ SpikaClient.prototype.createNewRoom = function(roomName,password,categoryId,user
 	    passwordHashed = CryptoJS.MD5(password).toString();
     }
     
+    if(isPrivate)
+        isPrivate = 1;
+    else
+        isPrivate = 0;
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/room/create',
         type: 'POST',
         data: {name:roomName,
+                is_private:isPrivate,
 	        	category_id:categoryId,
 	        	users_to_add:userList,
 	        	image:fileId,
@@ -823,7 +828,7 @@ SpikaClient.prototype.createNewRoom = function(roomName,password,categoryId,user
 
 };
 
-SpikaClient.prototype.updateRoom = function(chatId,roomName,password,categoryId,fileId,thumbId,isDelete,isActive,succeessListener,failedListener)
+SpikaClient.prototype.updateRoom = function(chatId,roomName,password,isPrivate,categoryId,fileId,thumbId,isDelete,isActive,succeessListener,failedListener)
 {
     
     var self = this;
@@ -831,6 +836,11 @@ SpikaClient.prototype.updateRoom = function(chatId,roomName,password,categoryId,
     
     data.chat_id = chatId;
 
+    if(isPrivate)
+        isPrivate = 1;
+    else
+        isPrivate = 0;
+        
     if(!_.isEmpty(roomName))
         data.name = roomName;
         
@@ -855,6 +865,8 @@ SpikaClient.prototype.updateRoom = function(chatId,roomName,password,categoryId,
     if(!_.isEmpty(categoryId))
         data.category_id = categoryId;
 
+    data.is_private = isPrivate;
+        
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/chat/update',
         type: 'POST',
@@ -920,7 +932,7 @@ SpikaClient.prototype.deleteUsersFromChat = function(chatId,usersToDelete,succee
     data.user_ids = usersToDelete;
 
     var requestLogin = $.ajax({
-        url: this.apiEndPointUrl + '/chat/leave',
+        url: this.apiEndPointUrl + '/chat/member/remove',
         type: 'POST',
         data: data,
         headers: {"token":this.token,"api-agent":this.UA}
@@ -1101,6 +1113,66 @@ SpikaClient.prototype.updatePasword = function(newPasword,succeessListener,faile
         url: this.apiEndPointUrl + '/user/password/update',
         type: 'POST',
         data: {new_password:hashedPassword},
+        headers: {"token":this.token,"api-agent":this.UA}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+SpikaClient.prototype.sendTempPassword = function(username,succeessListener,failedListener)
+{
+    
+    var self = this;
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/user/password/forgot',
+        type: 'POST',
+        data: {username:username},
+        headers: {"token":this.token,"api-agent":this.UA}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+
+SpikaClient.prototype.resetPassword = function(tempPass,newPass,succeessListener,failedListener)
+{
+    
+    var self = this;
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/user/password/change',
+        type: 'POST',
+        data: {
+            temp_password:CryptoJS.MD5(tempPass).toString(),
+            new_password:CryptoJS.MD5(newPass).toString()                
+        },
         headers: {"token":this.token,"api-agent":this.UA}
     });
     
