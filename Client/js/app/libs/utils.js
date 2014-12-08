@@ -285,7 +285,7 @@ var U = {
         
         _.each(lang,function(val,key){
             var keyword = '{' + key + '}';
-            html = html.replace(keyword, val);
+            html = html.replace(new RegExp(keyword, 'g'), val);
         });
         
         // predefined constants

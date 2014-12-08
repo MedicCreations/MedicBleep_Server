@@ -66,7 +66,7 @@ var SPIKA_UserListView = Backbone.View.extend({
     // listview functions
     ////////////////////////////////////////////////////////////////////////////////
     
-    listviewRequest: function(page,succeessListener,failedListener){
+    listviewRequest: function(instance,page,succeessListener,failedListener){
         
         apiClient.searchUsers(page,this.currentKeyword,function(data){
 
@@ -79,7 +79,7 @@ var SPIKA_UserListView = Backbone.View.extend({
         });
         
     },
-    listviewGetListFromResponse: function(response){
+    listviewGetListFromResponse: function(instance,response){
 
         var collection = userFactory.createCollectionByAPIResponse(response);
         
@@ -105,10 +105,10 @@ var SPIKA_UserListView = Backbone.View.extend({
         return collection;
         
     },
-    listviewRender: function(data){
+    listviewRender: function(instance,data){
         return _.template($$('#template_userlist_row').html(), {users: data.models});
     },
-    listViewAfterRender: function(){
+    listViewAfterRender: function(instance){
 
         var self = this;
             
@@ -137,7 +137,7 @@ var SPIKA_UserListView = Backbone.View.extend({
         });
         
     },
-    listviewOnClick: function(elm){
+    listviewOnClick: function(instance,elm){
         
         var userId = $(elm).attr('data-userid');
         this.selectedUserId = userId;

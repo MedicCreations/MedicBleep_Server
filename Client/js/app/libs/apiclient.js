@@ -783,9 +783,9 @@ SpikaClient.prototype.saveProfliePicture = function(userId,fileId,thumbId,succee
 
 };
 
-SpikaClient.prototype.createNewRoom = function(roomName,password,isPrivate,categoryId,userList,fileId,thumbId,succeessListener,failedListener)
+SpikaClient.prototype.createNewRoom = function(roomName,password,isPrivate,categoryId,userList,groupIds,roomIds,fileId,thumbId,succeessListener,failedListener)
 {
-    
+
     var self = this;
 
     var passwordHashed = "";
@@ -805,7 +805,11 @@ SpikaClient.prototype.createNewRoom = function(roomName,password,isPrivate,categ
         data: {name:roomName,
                 is_private:isPrivate,
 	        	category_id:categoryId,
-	        	users_to_add:userList,
+	        	user_ids:userList,
+	        	group_all_ids:groupIds,
+	        	group_ids:groupIds,
+	        	room_all_ids:roomIds,
+	        	room_ids:roomIds,
 	        	image:fileId,
 	        	image_thumb:thumbId,
 	        	password: passwordHashed},
@@ -890,14 +894,16 @@ SpikaClient.prototype.updateRoom = function(chatId,roomName,password,isPrivate,c
 
 };
 
-SpikaClient.prototype.addUsersToChat = function(chatId,usersToAdd,succeessListener,failedListener)
+SpikaClient.prototype.addUsersToChat = function(chatId,usersToAdd,groupsToAdd,roomsToAdd,succeessListener,failedListener)
 {
     
     var self = this;
     var data = {};
     
     data.chat_id = chatId;
-    data.users_to_add = usersToAdd;
+    data.user_ids = usersToAdd;
+    data.group_all_ids = groupsToAdd;
+    data.room_all_ids = roomsToAdd;
 
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/chat/member/add',
@@ -922,7 +928,7 @@ SpikaClient.prototype.addUsersToChat = function(chatId,usersToAdd,succeessListen
 
 };
 
-SpikaClient.prototype.deleteUsersFromChat = function(chatId,usersToDelete,succeessListener,failedListener)
+SpikaClient.prototype.deleteUsersFromChat = function(chatId,usersToDelete,groupsToDelete,roomsToDelete,succeessListener,failedListener)
 {
     
     var self = this;
@@ -930,6 +936,8 @@ SpikaClient.prototype.deleteUsersFromChat = function(chatId,usersToDelete,succee
     
     data.chat_id = chatId;
     data.user_ids = usersToDelete;
+    data.group_ids = groupsToDelete;
+    data.room_ids = roomsToDelete;
 
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/chat/member/remove',
@@ -1200,6 +1208,36 @@ SpikaClient.prototype.getStickers = function(succeessListener,failedListener)
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/message/stickers',
         type: 'GET',
+        headers: {"token":this.token,"api-agent":this.UA}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+
+// get chat users
+SpikaClient.prototype.getChatMembersAll = function(chat_id,succeessListener,failedListener)
+{
+    
+    var self = this;
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/member/list',
+        type: 'GET',
+        data: {chat_id:chat_id,type:4},
         headers: {"token":this.token,"api-agent":this.UA}
     });
     

@@ -1051,6 +1051,11 @@ ul#user_menu li a{
     display: block;
 }
 
+#createroom_container .mambers_panel{
+    width: 720px;
+    margin-top: 20px;
+}
+
 #createroom_container .room_parameters_form input{
     width: 250px;
     border: none;
@@ -1086,9 +1091,10 @@ ul#user_menu li a{
 }
 
 #createroom_container .members li{
-    width: 150px;
+    width: 90%;
     line-height: 50px;
-    margin: 5px;
+    height: 50px;
+    margin: 0px 0px 5px 0px;
     float: left;
     background-color: #f9f9f9;
     display: block;
@@ -1103,6 +1109,50 @@ ul#user_menu li a{
     right: 10px;
     top: 20px;
 }
+
+#createroom_container .members_container{
+    float: left;
+    width: 30%;
+    margin-left: 10px;
+}
+
+#createroom_container .members_container h3{
+    border-bottom: 1px solid #E3E3E3;
+    padding: 0px 0px 3px 0px;
+    color: #999;
+}
+
+#createroom_container .members_container h3 i{
+    color: #777;
+    cursor: pointer;
+}
+
+#createroom_container .members_container input{
+    width: 90%;
+    border: none;
+    padding: 3px;
+    margin-bottom: 5px;
+    color: #777;
+}
+
+#createroom_container .members_container .selectlist{
+    
+    height: 300px;
+    border: 1px solid #000;
+    overflow-y: auto;
+    overflow-x: none;
+}
+
+#createroom_container .members_container .selectlist ul{
+    
+    min-height: 300px;
+}
+
+#createroom_container  li.selected {
+    background: #4BA4DF;
+    color: #fff;
+}
+
 /*------------------------------*/
 /*   END Create room view 		*/
 /*------------------------------*/

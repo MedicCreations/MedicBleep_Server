@@ -96,7 +96,7 @@ var SPIKA_GroupListView = Backbone.View.extend({
     // listview functions
     ////////////////////////////////////////////////////////////////////////////////
     
-    listviewRequest: function(page,succeessListener,failedListener){
+    listviewRequest: function(instance,page,succeessListener,failedListener){
         
         apiClient.searchGroups(page,this.currentKeyword,this.currentCategoryId,function(data){
 
@@ -109,13 +109,13 @@ var SPIKA_GroupListView = Backbone.View.extend({
         });
         
     },
-    listviewGetListFromResponse: function(response){
+    listviewGetListFromResponse: function(instance,response){
         return groupFactory.createCollectionByAPIResponse(response)
     },
-    listviewRender: function(data){
+    listviewRender: function(instance,data){
         return _.template($$('#template_grouplist_row').html(), {groups: data.models});
     },
-    listViewAfterRender: function(){
+    listViewAfterRender: function(instance){
         
         var self = this;
         
@@ -146,7 +146,7 @@ var SPIKA_GroupListView = Backbone.View.extend({
         });
         
     },
-    listviewOnClick: function(elm){
+    listviewOnClick: function(instance,elm){
         
         var groupId = $(elm).attr('data-groupid');
         this.selectedGroupId = groupId;

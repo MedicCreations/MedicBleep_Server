@@ -63,24 +63,94 @@
         	    <input id="btn_dummy_file_upload_profile" name="Select File" type="file" />
             </div>
 
+            <br style="clear: both"/>
+            
+            <div class="button_container">
+                <a href="javascript:void(0)" class="button red">{cancel}</a>
+                <a href="javascript:void(0)" class="button" id="btn_create_room">{general_save}</a>
+            </div>
+    
         </div>
     
     </div>
     
-    <br style="clear: both" />
-    
-    <ul class="members">
-        
- 
-    </ul>
-    
     <br style="clear: both"/>
     
-    <div class="button_container">
-        <a href="javascript:void(0)" class="button red">{cancel}</a>
-        <a href="javascript:void(0)" class="button" id="btn_create_room">{general_save}</a>
-    </div>
+    <div class="mambers_panel">
     
+        <div class="members_container user">
+            
+            <h3>{createroom_users}</h3>
+            
+            <ul class="members">
+         
+            </ul>
+        
+        </div>
+    
+        <div class="members_container group">
+            
+            <div class="selectedlist">
+
+                <h3><i class="fa fa-plus-square fa-lg"></i> {createroom_groups} </h3>
+                
+                <ul class="members">
+                    
+                    
+                    
+                </ul>
+                
+            </div>
+             
+            <div class="selectlist scrollable"  style="display:none">
+                
+                <h3><i class="fa fa-minus-square fa-lg"></i> {createroom_groups_select} </h3>
+                
+                <input type="text" name="search_group_tb" placeholder="{createroom_search}" value=""/>
+
+                <ul class="members">
+                    
+                    
+                    
+                </ul>
+                
+            </div>
+                       
+        </div>
+    
+        <div class="members_container room">
+                
+            <div class="selectedlist">
+
+                <h3><i class="fa fa-plus-square fa-lg"></i> {createroom_rooms} </h3>
+                
+                <ul class="members">
+                    
+                    
+                    
+                </ul>
+                
+            </div>
+             
+            <div class="selectlist scrollable"  style="display:none">
+                
+                <h3><i class="fa fa-minus-square fa-lg"></i> {createroom_rooms_select} </h3>
+                
+                <input type="text" name="search_group_tb" placeholder="{createroom_search}" value=""/>
+
+                <ul class="members">
+                    
+                    
+                    
+                </ul>
+                
+            </div>
+            
+        </div>
+        
+    </div>
+
+
 
 	<script type="text/template" id="template_userlist_row">
 	
@@ -127,7 +197,40 @@
         <% }); %>
         
     </script>
-    
+
+	<script type="text/template" id="template_grouplist_row">
+	
+        <% _.each(groups, function(group) { %>
+
+           <li data-groupid="<%= group.get('id') %>">
+               <img class="encrypted_image icon1" src="{rooturl}/img/default_group.png" fileid="<%= group.get('image_thumb') %>" state="loading" width="40"/>
+               <span>
+                    <%= group.get('groupname') %>
+               </span>
+               <i class="fa fa-plus"  data-groupid="<%= group.get('id') %>"></i>
+           </li> 
+        		
+        <% }); %>
+        
+    </script>
+
+	<script type="text/template" id="template_roomlist_row">
+	
+        <% _.each(rooms, function(room) { %>
+
+           <li data-roomid="<%= room.get('chat_id') %>">
+               <img class="encrypted_image icon1" src="{rooturl}/img/default_group.png" fileid="<%= room.get('image_thumb') %>" state="loading" width="40"/>
+               <span>
+                    <%= room.get('chat_name') %>
+               </span>
+               <i class="fa fa-plus"  data-roomid="<%= room.get('chat_id') %>"></i>
+           </li> 
+        		
+        <% }); %>
+        
+    </script>
+
+   
     <script type="text/template" id="template_categorylist_createroom_row">
         
         <option value=""><%= LANG.category_not_specified %></option>
@@ -138,5 +241,5 @@
         
     </script>
 
-    
+
 </div>
