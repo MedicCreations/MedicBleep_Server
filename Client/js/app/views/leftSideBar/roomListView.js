@@ -100,10 +100,10 @@ var SPIKA_RoomListView = Backbone.View.extend({
     // listview functions
     ////////////////////////////////////////////////////////////////////////////////
     
-    listviewRequest: function(page,succeessListener,failedListener){
+    listviewRequest: function(instance,page,succeessListener,failedListener){
         
         apiClient.searchRooms(page,this.currentKeyword,this.currentCategoryId,function(data){
-
+            
             succeessListener(data);
             
         },function(data){
@@ -113,17 +113,17 @@ var SPIKA_RoomListView = Backbone.View.extend({
         });
         
     },
-    listviewGetListFromResponse: function(response){
+    listviewGetListFromResponse: function(instance,response){
         
         var collection = roomFactory.createCollectionByAPIResponse(response);
         
         
         return collection;
     },
-    listviewRender: function(data){
+    listviewRender: function(instance,data){
         return _.template($$('#template_roomlist_row').html(), {rooms: data.models});
     },
-    listViewAfterRender: function(){
+    listViewAfterRender: function(instance){
         
         $$('#menu_container_room .encrypted_image').each(function(){
         
@@ -150,7 +150,7 @@ var SPIKA_RoomListView = Backbone.View.extend({
         });
         
     },
-    listviewOnClick: function(elm){
+    listviewOnClick: function(instance,elm){
         var chatId = $(elm).attr('chatid');
         Backbone.trigger(EVENT_START_CHAT,chatId);
 

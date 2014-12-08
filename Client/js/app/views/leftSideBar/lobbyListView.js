@@ -44,7 +44,7 @@ var SPIKA_LobbyListView = Backbone.View.extend({
             if(_.isNull(chatId) && self.ignoreAutoSelect == false){
                 self.listView.refresh();
             }else{
-                self.refreshFromMemory = true;
+                //self.refreshFromMemory = true;
                 self.listView.refresh();
             }
             
@@ -106,7 +106,7 @@ var SPIKA_LobbyListView = Backbone.View.extend({
     // listview functions
     ////////////////////////////////////////////////////////////////////////////////
     
-    listviewRequest: function(page,succeessListener,failedListener){
+    listviewRequest: function(instance,page,succeessListener,failedListener){
         
         if(this.refreshFromMemory){
 
@@ -117,7 +117,7 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         }else{
 
             apiClient.lobby(function(data){
-    
+                
                 succeessListener(data);
                 
             },function(data){
@@ -129,7 +129,7 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         }
         
     },
-    listviewGetListFromResponse: function(response){
+    listviewGetListFromResponse: function(instance,response){
         
         var self = this;
         
@@ -185,10 +185,10 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         return this.chatList;
 
     },
-    listviewRender: function(data){
+    listviewRender: function(instance,data){
         return _.template($$('#template_chatlist_row').html(), {chats: data.models});
     },
-    listViewAfterRender: function(){
+    listViewAfterRender: function(instance){
         
         var self = this;
         
@@ -230,7 +230,7 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         this.refreshFromMemory = false;
         
     },
-    listviewOnClick: function(elm){
+    listviewOnClick: function(instance,elm){
         this.ignoreAutoSelect = true;
 
         var chatId = $(elm).attr('chatid');

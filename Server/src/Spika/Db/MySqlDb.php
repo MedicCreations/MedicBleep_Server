@@ -189,7 +189,10 @@ class MySqlDb implements DbInterface{
 		}
 		
 		$userIdsStr = implode(',',$userIds);
-		$deviceInfo = $app['db']->fetchAll("select * from device where user_id in ({$userIdsStr})");
+		
+		if ($userIdsStr != ""){
+			$deviceInfo = $app['db']->fetchAll("select * from device where user_id in ({$userIdsStr})");
+		}
 				
 		foreach($result as $row){
             if(empty($row['details']))

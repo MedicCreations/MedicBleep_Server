@@ -101,13 +101,9 @@ class ChatController extends SpikaBaseController {
 			
 			$users_to_add_ary = array();
 			
-			
-			
 			foreach ($result as $res){
 				array_push($users_to_add_ary, $res['id']);
 			}
-			
-			
 			
 			if ($chat != ""){
 					

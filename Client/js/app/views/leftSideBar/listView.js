@@ -40,12 +40,12 @@ SpikaPagingListView.prototype.loadCurrentPage = function(){
     
     var self = this;
     
-    this.source.listviewRequest(this.currentPage,function(data){
+    this.source.listviewRequest(self,this.currentPage,function(data){
         
-        var collectionFromResponse = self.source.listviewGetListFromResponse(data);
+        var collectionFromResponse = self.source.listviewGetListFromResponse(self,data);
         
         self.list.add(collectionFromResponse.models);
-        var html = self.source.listviewRender(self.list);
+        var html = self.source.listviewRender(self,self.list);
         $$(self.parentElmSelector).html(html);
         
         self.afterRender();
@@ -72,14 +72,14 @@ SpikaPagingListView.prototype.afterRender = function(){
 	}
     
     if(!_.isUndefined(this.source.listViewAfterRender))
-        this.source.listViewAfterRender();
+        this.source.listViewAfterRender(self);
         
     $$(this.parentElmSelector + " li").unbind();
     
     $$(this.parentElmSelector + " li").click(function(){
 
         if(!_.isUndefined(self.source.listviewOnClick)){
-            self.source.listviewOnClick(this);
+            self.source.listviewOnClick(self,this);
         }
             
     });

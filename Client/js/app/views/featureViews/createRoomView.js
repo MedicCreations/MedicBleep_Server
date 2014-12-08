@@ -2,13 +2,21 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     
     currentKeyword:'',
     selectedUserIdList:[],
+    selectedGroupIdList:[],
+    selectedRoomIdList:[],
     userModelsPool:[],
+    groupModelsPool:[],
+    roomModelsPool:[],
     profileImageFileId:null,
     profileThumbFileId:null,
     editingChatData:null,
     userIdsBeforeEdit:[],  
+    groupIdsBeforeEdit:[],  
+    roomIdsBeforeEdit:[],  
     chatData:null,
+    waitingRequest:false,
     initialize: function(options) {
+        
         var self = this;
         this.template = options.template;
         this.chatData = options.chatData;
@@ -20,6 +28,19 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         this.usersListView = new SpikaPagingListView({
             parentElmSelector : "#menu_container_selectuser .menu_list",
             scrollerSelector : "#menu_container_selectuser .scrollable",
+            source :  this
+        });
+
+        this.groupListView = new SpikaPagingListView({
+            parentElmSelector : "#createroom_container .mambers_panel .group .selectlist ul",
+            scrollerSelector : "#createroom_container .mambers_panel .group .selectlist",
+            source :  this
+        });
+        
+
+        this.roomListView = new SpikaPagingListView({
+            parentElmSelector : "#createroom_container .mambers_panel .room .selectlist ul",
+            scrollerSelector : "#createroom_container .mambers_panel .room .selectlist",
             source :  this
         });
         
@@ -43,12 +64,24 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         var self = this;
 
         this.selectedUserIdList = [];
+        this.selectedGroupIdList = [];
+        this.selectedRoomIdList = [];
         this.userModelsPool = [];
+        this.groupModelsPool = [];
+        this.roomModelsPool = [];
         this.userIdsBeforeEdit = [];
+        this.groupIdsBeforeEdit = [];
+        this.roomIdsBeforeEdit = [];
 
         this.updateWindowSize();
         this.usersListView.init();
         this.usersListView.loadCurrentPage();
+
+        this.groupListView.init();
+        this.groupListView.loadCurrentPage();
+        
+        this.roomListView.init();
+        this.roomListView.loadCurrentPage();
 
         apiClient.getCategories(function(data){
             
@@ -75,6 +108,10 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
 
 
         $$('#menu_container_selectuser input').keyup(function(evt) {
+            
+            if(this.waitingRequest)
+                return;
+                
             self.currentKeyword = $$('#menu_container_selectuser input').val();
             self.usersListView.refresh();
         });
@@ -136,35 +173,130 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         
         });
 
+        ///Groups ////////////////////////////////////////////////////////////////////////////
+        $$('#createroom_container .group input').keyup(function(evt) {
+            if(this.waitingRequest)
+                return;
+                
+            self.groupListView.refresh();
+        });
+
+        $$('#createroom_container .group i').click(function() {
+            
+            self.tuggleGroupSelector();
+        });
+
+        ///Groups ////////////////////////////////////////////////////////////////////////////
+
+        ///Rooms ////////////////////////////////////////////////////////////////////////////
+        $$('#createroom_container .room input').keyup(function(evt) {
+
+            if(this.waitingRequest)
+                return;
+                
+            self.roomListView.refresh();
+        });
+
+        $$('#createroom_container .room i').click(function() {
+            
+            self.tuggleRoomSelector();
+        });
+
+        ///Rooms ////////////////////////////////////////////////////////////////////////////
+
+
+
         if(!_.isNull(this.editingChatData)){
             $$('#btn_create_room').text(LANG.save);
             $$('header').text(LANG.editroom);
         }
     },
+    tuggleGroupSelector: function(){
     
+        if($$('#createroom_container .group .selectedlist').is(":visible")){
+            $$('#createroom_container .group .selectedlist').css('display','none');
+            $$('#createroom_container .group .selectlist').css('display','block');
+        } else {
+            $$('#createroom_container .group .selectedlist').css('display','block');
+            $$('#createroom_container .group .selectlist').css('display','none');
+            
+        }
+          
+    },
+    tuggleRoomSelector: function(){
+    
+        if($$('#createroom_container .room .selectedlist').is(":visible")){
+            $$('#createroom_container .room .selectedlist').css('display','none');
+            $$('#createroom_container .room .selectlist').css('display','block');
+        } else {
+            $$('#createroom_container .room .selectedlist').css('display','block');
+            $$('#createroom_container .room .selectlist').css('display','none');
+            
+        }
+        
+    },
     setChatData: function(chatData){
         
         var self = this;
         
         this.showAvatarLoading();
         this.selectedUserIdList = [];
+        this.selectedGroupIdList = [];
         this.userModelsPool = [];
+        this.groupModelsPool = [];
         this.userIdsBeforeEdit = [];
 
         this.editingChatData = chatData;
         
         $$(".passwordnotice").text(LANG.password_notice_edit);
         
-        apiClient.getChatMembers(this.editingChatData.get('chat_id'),function(data){
-
-            var chatMembers = userFactory.createCollectionByAPIResponse(data)
-
-            _.each(chatMembers.models,function(userData){
+        apiClient.getChatMembersAll(this.editingChatData.get('chat_id'),function(data){
+            
+            var usersData = {users:[]};
+            var groupsData = {groups:[]};
+            var roomsData = {rooms:[]};
+                    
+            //  separate to each arrays
+            _.each(data.members_result,function(row){
                 
+                var type = row.type;
+                
+                if(type == 1){
+                    usersData.users.push(row.user);
+                }
+                
+                if(type == 2){
+                    groupsData.groups.push(row.group);
+                }
+                
+                if(type == 3){
+                    roomsData.rooms.push(row.chat);
+                }
+                
+            });
+            
+            // process users
+            var chatMembers = userFactory.createCollectionByAPIResponse(usersData)
+            _.each(chatMembers.models,function(userData){
                 self.selectedUserIdList.push(userData.get('id'));
                 self.userIdsBeforeEdit.push(userData.get('id'));
                 self.userModelsPool[userData.get('id')] = userData;
-                
+            });
+            
+            // process groups
+            var chatMemberGroups = groupFactory.createCollectionByAPIResponse(groupsData)
+            _.each(chatMemberGroups.models,function(groupData){
+                self.selectedGroupIdList.push(groupData.get('id'));
+                self.groupIdsBeforeEdit.push(groupData.get('id'));
+                self.groupModelsPool[groupData.get('id')] = groupData;
+            });
+            
+            // process rooms
+            var chatMemberRooms = roomFactory.createCollectionByAPIResponse(roomsData)
+            _.each(chatMemberRooms.models,function(roomData){
+                self.selectedRoomIdList.push(roomData.get('chat_id'));
+                self.roomIdsBeforeEdit.push(roomData.get('chat_id'));
+                self.roomModelsPool[roomData.get('chat_id')] = roomData;
             });
             
             $$('#createroom_container input[type="text"]').val(chatData.get('chat_name'));
@@ -234,8 +366,67 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             }
             
         });
+
         
+        $$('#createroom_container .group .selectlist li').each(function(){
+            
+            var groupId = $(this).attr('data-groupid');
+            
+            var index = _.indexOf(self.selectedGroupIdList,groupId);
+            
+            var selector = "#createroom_container .group .selectlist li[data-groupid='" + groupId + "']";
+            
+            if(index == -1){
+                $(this).removeClass('selected');
+                                
+				// change plus icon to minus
+				$$(selector).find('i').removeClass('fa-minus');
+				$$(selector).find('i').addClass('fa-plus');
+				
+
+            }else{
+                $(this).addClass('selected');   
+                                
+				// change plus icon to minus
+				$$(selector).find('i').removeClass('fa-plus');
+				$$(selector).find('i').addClass('fa-minus');
+				
+            }
+            
+        });
+        
+
+        $$('#createroom_container .room .selectlist li').each(function(){
+            
+            var roomId = $(this).attr('data-roomid');
+            
+            var index = _.indexOf(self.selectedRoomIdList,roomId);
+            
+            var selector = "#createroom_container .room .selectlist li[data-roomid='" + roomId + "']";
+            
+            if(index == -1){
+                $(this).removeClass('selected');
+                                
+				// change plus icon to minus
+				$$(selector).find('i').removeClass('fa-minus');
+				$$(selector).find('i').addClass('fa-plus');
+				
+
+            }else{
+                $(this).addClass('selected');   
+                                
+				// change plus icon to minus
+				$$(selector).find('i').removeClass('fa-plus');
+				$$(selector).find('i').addClass('fa-minus');
+				
+            }
+            
+        });
+        
+
+        // update selected user list
         if(updateSelectedUsers == true){
+        
             // redraw selected members area
             var listAllUsersInSelection = this.usersListView.list.models;
             var listSelectedUsers = [];
@@ -258,14 +449,88 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             
             var memberListHTML = _.template($$('#template_memberlist_row').html(), {users: listSelectedUsers});
             
-            $$('#createroom_container .members').html(memberListHTML);
+            $$('#createroom_container .user .members').html(memberListHTML);
             
-            $$('#createroom_container .members li').click(function(){
+            $$('#createroom_container .user .members li').click(function(){
                 var userId = $(this).attr('data-userid');        
                 self.tuggleUserId(userId);
             });
         }
 		
+		// update selected group list
+        var listAllGroupsInSelection = this.groupListView.list.models;
+        var listSelectedGroups = [];
+
+        _.each(listAllGroupsInSelection,function(model){
+           self.groupModelsPool[model.get('id')] = model;
+        });
+        
+        _.each(this.groupModelsPool,function(model){
+            
+           _.each(self.selectedGroupIdList,function(groupId){
+              
+               if(groupId == model.get('id')){
+                   listSelectedGroups.push(model);
+               }
+               
+           });
+            
+        });
+        
+        var groupsListHtml = _.template($$('#template_grouplist_row').html(), {groups: listSelectedGroups});
+        
+        $$('#createroom_container .group .selectedlist ul').html(groupsListHtml);
+        
+        $$('#createroom_container .group .selectedlist li').each(function(){
+            
+            $(this).unbind().click(function(){
+                var groupId = $(this).attr('data-groupid'); 
+                self.tuggleGroupId(groupId);
+            })
+            
+			$(this).find('i').removeClass('fa-plus');
+			$(this).find('i').addClass('fa-times');
+			
+        });
+ 
+ 
+ 		// update selected room list
+        var listAllRoomsInSelection = this.roomListView.list.models;
+        var listSelectedRooms = [];
+
+        _.each(listAllRoomsInSelection,function(model){
+           self.roomModelsPool[model.get('chat_id')] = model;
+        });
+        
+        _.each(this.roomModelsPool,function(model){
+            
+           _.each(self.selectedRoomIdList,function(roomId){
+              
+               if(roomId == model.get('chat_id')){
+                   listSelectedRooms.push(model);
+               }
+               
+           });
+            
+        });
+        
+        var roomListHtml = _.template($$('#template_roomlist_row').html(), {rooms: listSelectedRooms});
+        
+        $$('#createroom_container .room .selectedlist ul').html(roomListHtml);
+        
+        $$('#createroom_container .room .selectedlist li').each(function(){
+            
+            $(this).unbind().click(function(){
+                var roomId = $(this).attr('data-roomid'); 
+                self.tuggleRoomId(roomId);
+            })
+            
+			$(this).find('i').removeClass('fa-plus');
+			$(this).find('i').addClass('fa-times');
+			
+        });
+           
+        
         $$('.encrypted_image').each(function(){
         
             var state = $(this).attr('state');
@@ -313,7 +578,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         }
         
         
-        if(this.selectedUserIdList.length == 0){
+        if((this.selectedUserIdList.length + this.selectedGroupIdList.length + this.selectedRoomIdList.length) == 0){
             
             SPIKA_AlertManager.show(LANG.general_errortitle,LANG.createroom_validation_error_nomember);
             return;
@@ -324,9 +589,14 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             // Update
             var userIdsToAdd = '';
             var userIdsToDelete = '';
+            var groupIdsToAdd = '';
+            var groupIdsToDelete = '';
+            var roomIdsToAdd = '';
+            var roomIdsToDelete = '';
             
             var oldPassword = this.editingChatData.get('password');
             
+            // get users to add
             _.each(self.selectedUserIdList,function(userIdToAdd){
                 
                 var isExist = false;
@@ -343,6 +613,7 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                 
             });
             
+            // get users to remove
             _.each(self.userIdsBeforeEdit,function(userIdToDelete){
                 
                 var isExist = false;
@@ -358,11 +629,89 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                     userIdsToDelete += userIdToDelete + ",";
 
             });
-			
+            
+            // get groups to add
+            _.each(self.selectedGroupIdList,function(groupIdToAdd){
+                
+                var isExist = false;
+                
+                _.each(self.groupIdsBeforeEdit,function(groupIdBefore){
+                    
+                    if(groupIdToAdd == groupIdBefore)
+                        isExist = true;
+                    
+                });
+                
+                if(isExist == false)
+                    groupIdsToAdd += groupIdToAdd + ",";
+                
+            });
+            
+            // get groups to remove
+            _.each(self.groupIdsBeforeEdit,function(groupIdToDelete){
+                
+                var isExist = false;
+                
+                _.each(self.selectedGroupIdList,function(groupIdBefore){
+                    
+                    if(groupIdToDelete == groupIdBefore)
+                        isExist = true;
+                    
+                });
+                
+                if(isExist == false)
+                    groupIdsToDelete += groupIdToDelete + ",";
+
+            });
+            
+            
+            // get rooms to add
+            _.each(self.selectedRoomIdList,function(roomIdToAdd){
+                
+                var isExist = false;
+                
+                _.each(self.roomIdsBeforeEdit,function(roomIdBefore){
+                    
+                    if(roomIdToAdd == roomIdBefore)
+                        isExist = true;
+                    
+                });
+                
+                if(isExist == false)
+                    roomIdsToAdd += roomIdToAdd + ",";
+                
+            });
+            
+            // get rooms to remove
+            _.each(self.roomIdsBeforeEdit,function(roomIdToDelete){
+                
+                var isExist = false;
+                
+                _.each(self.selectedRoomIdList,function(roomIdBefore){
+                    
+                    if(roomIdToDelete == roomIdBefore)
+                        isExist = true;
+                    
+                });
+                
+                if(isExist == false)
+                    roomIdsToDelete += roomIdToDelete + ",";
+
+            });
+            
+            groupIdsToDelete = groupIdsToDelete.replace(/,\s*$/, "");
+            groupIdsToAdd = groupIdsToAdd.replace(/,\s*$/, "");
+            userIdsToDelete = userIdsToDelete.replace(/,\s*$/, "");
+            userIdsToAdd = userIdsToAdd.replace(/,\s*$/, "");
+            roomIdsToAdd = roomIdsToAdd.replace(/,\s*$/, "");
+            roomIdsToDelete = roomIdsToDelete.replace(/,\s*$/, "");
+
             // add users
             apiClient.addUsersToChat(
                 self.editingChatData.get('chat_id'),
                 userIdsToAdd,
+                groupIdsToAdd,
+                roomIdsToAdd,
                 function(dataChat1){
 
                     if(_.isNull(dataChat1.chat)){
@@ -374,6 +723,8 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                     apiClient.deleteUsersFromChat(
                         dataChat1.chat.chat_id,
                         userIdsToDelete,
+                        groupIdsToDelete,
+                        roomIdsToDelete,
                         function(dataChat2){
 
                             if(_.isNull(dataChat2.chat)){
@@ -434,16 +785,30 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
             
             // Create
             var userIds = '';
+            var groupIds = '';
+            var roomIds = '';
             
             _.each(this.selectedUserIdList,function(userId){
                 
                 userIds += userId + ",";
                 
             });
-            
+
+            _.each(this.selectedGroupIdList,function(groupId){
+                
+                groupIds += groupId + ",";
+                
+            });
+                        
+            _.each(this.selectedRoomIdList,function(roomId){
+                
+                roomIds += roomId + ",";
+                
+            });
+                        
             userIds += SPIKA_UserManager.getUser().get('id');
             
-            apiClient.createNewRoom(roomName,password,isPrivate,categoryId,userIds,this.profileImageFileId,this.profileThumbFileId,function(data){
+            apiClient.createNewRoom(roomName,password,isPrivate,categoryId,userIds,groupIds,roomIds,this.profileImageFileId,this.profileThumbFileId,function(data){
                 
                 if(!_.isNull(data.chat)){
                 	
@@ -482,24 +847,80 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     // listview functions
     ////////////////////////////////////////////////////////////////////////////////
     
-    listviewRequest: function(page,succeessListener,failedListener){
+    listviewRequest: function(instance,page,succeessListener,failedListener){
         
-        apiClient.searchUsers(page,this.currentKeyword,function(data){
-            succeessListener(data);
-        },function(data){
-            failedListener(data);
-        });
+        this.waitingRequest = true;
+        
+        if(instance == this.usersListView){
+
+            apiClient.searchUsers(page,this.currentKeyword,function(data){
+                succeessListener(data);
+            },function(data){
+                failedListener(data);
+            });
+            
+        }
+
+        if(instance == this.groupListView){
+
+            apiClient.searchGroups(page,$$('#createroom_container .group input').val(),'',function(data){
+                succeessListener(data);
+            },function(data){
+                failedListener(data);
+            });
+            
+        }
+        
+        if(instance == this.roomListView){
+
+            apiClient.searchRooms(page,$$('#createroom_container .room input').val(),'',function(data){
+                succeessListener(data);
+            },function(data){
+                failedListener(data);
+            });
+            
+        }
+        
         
     },
-    listviewGetListFromResponse: function(response){
-        return userFactory.createCollectionByAPIResponse(response)
+    listviewGetListFromResponse: function(instance,response){
+        
+        if(instance == this.usersListView)
+            return userFactory.createCollectionByAPIResponse(response);
+            
+        if(instance == this.groupListView)
+            return groupFactory.createCollectionByAPIResponse(response);
+            
+        if(instance == this.roomListView)
+            return roomFactory.createCollectionByAPIResponse(response);
+            
     },
-    listviewRender: function(data){
-        return _.template($$('#template_userlist_row').html(), {users: data.models});
+    listviewRender: function(instance,data){
+        
+        if(instance == this.usersListView)
+            return _.template($$('#template_userlist_row').html(), {users: data.models});
+            
+        if(instance == this.groupListView){
+            return _.template($$('#template_grouplist_row').html(), {groups: data.models});
+        }
+            
+        if(instance == this.roomListView){
+            var html = _.template($$('#template_roomlist_row').html(), {rooms: data.models});
+            return html;
+        }
+            
     },
-    listViewAfterRender: function(){
+    listViewAfterRender: function(instance){
 	    
-        this.prepareChatData();
+	    this.waitingRequest = false;
+	    
+	    if(instance == this.usersListView){
+            this.prepareChatData();
+	    }
+  
+        if(instance == this.groupListView){
+             
+        }
 
         $$('.encrypted_image').each(function(){
         
@@ -510,13 +931,38 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                 AvatarManager.process(this,fileId);
             }
             
-        });    
+        });  
 
-
+        this.updateRowState();
+        
     },
-    listviewOnClick: function(elm){
-        var userId = $(elm).attr('data-userid');        
-        this.tuggleUserId(userId);
+    listviewOnClick: function(instance,elm){
+    
+        if(instance == this.usersListView){
+            var userId = $(elm).attr('data-userid');        
+            this.tuggleUserId(userId);
+        }
+
+        if(instance == this.groupListView){
+
+            var groupId = $(elm).attr('data-groupid');        
+            this.tuggleGroupId(groupId);
+            
+            this.tuggleGroupSelector();
+            
+        }
+        
+
+        if(instance == this.roomListView){
+
+            var roomId = $(elm).attr('data-roomid');        
+            this.tuggleRoomId(roomId);
+            
+            this.tuggleRoomSelector();
+            
+        }
+        
+       
     },
     tuggleUserId: function(userId){
         
@@ -530,7 +976,38 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
         }
         
         self.updateRowState();
+        
+    },
+    
+    tuggleGroupId: function(groupId){
+        
+        var self = this;
+        var index = _.indexOf(this.selectedGroupIdList,groupId);
+        
+        if(index == -1){
+            this.selectedGroupIdList.push(groupId);
+        }else{
+            this.selectedGroupIdList.splice(index, 1);   
+        }
+        
+        self.updateRowState();
+        
+    },
+    tuggleRoomId: function(roomId){
+        
+        var self = this;
+        var index = _.indexOf(this.selectedRoomIdList,roomId);
+        
+        if(index == -1){
+            this.selectedRoomIdList.push(roomId);
+        }else{
+            this.selectedRoomIdList.splice(index, 1);   
+        }
+        
+        self.updateRowState();
+        
     }
     
+
     
 });
