@@ -1441,8 +1441,7 @@ ul#user_menu li a{
 	right: 5px;
 	width: 150px;
 	height: 150px;
-	background-color: #333;
-	border: 1px solid #2C2D32;
+¥¥
 	overflow: hidden;
 }
 
@@ -1454,7 +1453,6 @@ ul#user_menu li a{
 	right: 5px;
 	width: 390px;
 	height: 350px;
-	background-color: #777;
 	overflow: hidden;
 }
 
@@ -1483,6 +1481,31 @@ ul#user_menu li a{
 	left: 0;
 	width: 100%;
 
+}
+
+#calling_window{
+	position: absolute;
+	z-index: 1001;
+	bottom: 60px;
+	right: 5px;
+	min-width: 300px;
+	line-height: 30px;
+	vertical-align: middle;
+	text-align: center;
+	background-color: #F8F8F8;
+	border: 1px solid #DFDFDF;
+	padding: 10px;
+}
+
+#calling_window .avatar_from img,
+#calling_window .avatar_to img{
+    width: 40px;
+}
+
+#calling_window .status div{
+    float: left;
+    margin: 0px 10px 0px 10px;
+    vertical-align: middle;
 }
 
 
