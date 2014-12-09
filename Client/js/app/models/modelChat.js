@@ -1,7 +1,7 @@
     var chatFactory = {
     
         createModelByAPIResponse : function(data){
-            
+                        
             var chat_id = 0;
             var chat_name = '';
                         

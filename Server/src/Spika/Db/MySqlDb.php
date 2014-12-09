@@ -1340,6 +1340,16 @@ class MySqlDb implements DbInterface{
 		
 	}
 	
+	public function updateNote(Application $app,$chatId,$notes){
+
+        $app['db']->update('chat', array(
+            'notes' => $notes
+        ), array(
+            'id' => $chatId
+        ));
+        
+	}
+	
 	public function disconectWebUsers(Application $app){
 
         $limitTime = time() - DISCONNECT_LIMIT_SEC;        

@@ -53,6 +53,7 @@ LANG = {
       textboxplaceholer: "Type Message Here",
       leaveroom: "Leave",
       save: "Save",
+      saving: "Saving...",
       accept: "Accept",
       decline: "Decline",
       confirm: "Confirm required",
@@ -121,5 +122,6 @@ LANG = {
 	  forget_password_done: "Now you can login with new password.",
 	  forget_password_secondstep_failed: "Reset password faild. Please confirm your temporary password is correct. You also can generate temporary password again.",
 	  forget_password_secondstep_failed_samepassword: "Your new password is actually same as old password. Please enter another password",
+	  note: "Note",
       dummy : 'dummy'
 };

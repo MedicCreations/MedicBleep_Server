@@ -486,7 +486,45 @@ class ChatController extends SpikaBaseController {
 			
 		})->before($app['beforeSpikaTokenChecker']);
 		
+		//get chat data
+		$controllers->get('/note', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->query->all();
+			
+			$chat_id = $paramsAry['chat_id'];
+			
+			$chat = $self->getChatData($app, $mySql, $chat_id);
+			
+			$result = array('code' => CODE_SUCCESS, 
+					'message' => 'OK', 
+					'note' => $chat['notes']);
+			
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
+
+		//get chat data
+		$controllers->post('/note', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->request->all();
+
+			$chat_id = $paramsAry['chat_id'];
+			$notes = $paramsAry['notes'];
+			
+			$mySql->updateNote($app, $chat_id, $notes);
+			$chat = $self->getChatData($app, $mySql, $chat_id);
+			
+			$result = array('code' => CODE_SUCCESS, 
+					'message' => 'OK', 
+					'note' => $chat['notes']);
+			
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
 		
+		
+
+
 		return $controllers;
 	}
 	
