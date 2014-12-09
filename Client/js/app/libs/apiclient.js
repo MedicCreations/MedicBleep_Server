@@ -1258,6 +1258,69 @@ SpikaClient.prototype.getChatMembersAll = function(chat_id,succeessListener,fail
 };
 
 
+// get chat note
+SpikaClient.prototype.getChatNote = function(chat_id,succeessListener,failedListener)
+{
+    
+    var self = this;
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/chat/note',
+        type: 'GET',
+        data: {chat_id:chat_id},
+        headers: {"token":this.token,"api-agent":this.UA}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+// save chat note
+SpikaClient.prototype.saveChatNote = function(chat_id,notes,succeessListener,failedListener)
+{
+    
+    var self = this;
+    
+    U.l(chat_id);
+    
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/chat/note',
+        type: 'POST',
+        data: {chat_id:chat_id,notes:notes},
+        headers: {"token":this.token,"api-agent":this.UA}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000){
+            succeessListener(data);
+        } else {
+            self.handleLogicalErrors(data,failedListener);
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+
+
+
 SpikaClient.prototype.test = function()
 {
     alert('test');

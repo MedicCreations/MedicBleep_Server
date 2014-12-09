@@ -10,6 +10,7 @@
 
 <div id="room_actions">
 
+    <a href="javascript:void(0)" class="button" id="btn_note"><i class="fa fa-pencil-square-o"></i> {note}</a>
     <a href="javascript:void(0)" class="button" id="btn_edit_room" style="display:none">{editroom}</a>
     <a href="javascript:void(0)" class="button red" id="btn_deactivate_room" style="display:none">{deactivateroom}</a>
     <a href="javascript:void(0)" class="button red" id="btn_activate_room" style="display:none">{activateroom}</a>

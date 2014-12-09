@@ -94,7 +94,7 @@ form {
 	background: #E94B4D !important;
 }
 .gray{
-	background: #2E2F33;
+	background: #2E2F33 !important;
 }
 
 /*------------------------------*/
@@ -1532,4 +1532,48 @@ ul#user_menu li a{
 /*------------------------------*/
 /*   END STICKER                */
 /*------------------------------*/
+
+/*------------------------------*/
+/*   NOTE                       */
+/*------------------------------*/
+
+#note_holder{
+	
+	position: absolute;
+	top: 43px;
+	right: 150px;
+	background: #F8F8F8;
+	overflow-x: none;
+	overflow-y: auto;
+    height: 100%;
+    width: 300px;
+    border-left: 1px solid #DFDFDF;
+}
+
+#note_holder textarea{
+    margin: 5px;
+    background-color: #fff;
+    padding: 5px;
+}
+
+#note_holder .note_footer{
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    height: 40px;
+    width: 100%;
+    text-align: right;
+
+}
+
+#note_holder .note_footer .note_footer_content{
+    margin: 5px;
+    text-align: right;
+}
+
+/*------------------------------*/
+/*   END NOTE                   */
+/*------------------------------*/
+
+
 
