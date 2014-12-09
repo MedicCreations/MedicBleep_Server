@@ -4,6 +4,7 @@ var SPIKA_CallWindow = Backbone.View.extend({
     partnerSessionId : null,
     isCalling: false,
     windowEmlSelector: "#call_window",
+    windowEmlSelectorCalling: "#calling_window",
     currentCallOptions: null,
     initialize: function(options) {
 	    
@@ -20,46 +21,56 @@ var SPIKA_CallWindow = Backbone.View.extend({
 				return;
 			
 			self.currentCallOptions = options;
+			self.currentCallOptions.callerIsMe = true;
 			self.partnerUserId = options.userId;
-			
-			$$(self.windowEmlSelector).fadeIn();
 			
 			self.inisiateCalling();
 			
         });
         
-        SPIKA_VideoCallManager.callReceived(function(userData){
-			
-			SPIKA_soundManager.playRinging();
+        SPIKA_VideoCallManager.callReceived(
+        
+        function(stateDescription){
+            
+            $$(self.windowEmlSelectorCalling + " .statustext").text(stateDescription);
+
 			$$('#call_window .my_video_holder .avatar').hide();
-			$$('#call_window .partner_video_holder .avatar').show();
-			$$('#call_window .partner_video_holder video').remove();
-			$$('#btn_call_close').hide();
-			$$('#btn_call_accept').show();
-			$$('#btn_call_decline').show();
-			
+			$$('#call_window .partner_video_holder .avatar').hide();
+
+
+        },function(userData){
+
+    		$$('#btn_call_close').hide();
+    		$$('#btn_call_accept').show();
+    		$$('#btn_call_decline').show();
+		
+			// receive call
 			self.partnerUserId = userData.id;
-			$$(self.windowEmlSelector).fadeIn();
-	        
+
 	        self.currentCallOptions = {
 		        userId: self.partnerUserId,
 		        useVideo: true,
 		        useAudio: true
 	        };
-	       
-	        self.loadAvatars();
 	        
         },function(){
-	       // call established
-	       SPIKA_soundManager.stopRinging();
-		   $$('#call_window .partner_video_holder .avatar').hide();
+            
+            // P2P established
+            
+			SPIKA_soundManager.playRinging();
+            self.loadAvatars();
 
+        
 	    },function(message){
 			
 			// on finish
-			SPIKA_AlertManager.show(LANG.call_finished_title,message);
+			
+			if(SPIKA_VideoCallManager.callState == CALLSTATE_CALLESTABLISHED)
+			    SPIKA_AlertManager.show(LANG.call_finished_title,message);
+			    
 			$$(self.windowEmlSelector).fadeOut();
-			$$('#call_window .my_video_holder .avatar').show();
+			$$(self.windowEmlSelectorCalling).fadeOut();
+			
 			SPIKA_soundManager.stopRinging();
 			
         },function(message){
@@ -67,7 +78,6 @@ var SPIKA_CallWindow = Backbone.View.extend({
 			// on error
 			SPIKA_AlertManager.show(LANG.call_finished_title,message);
 			$$(self.windowEmlSelector).fadeOut();
-			$$('#call_window .my_video_holder .avatar').show();
 			SPIKA_soundManager.stopRinging();
 			
         });
@@ -90,11 +100,34 @@ var SPIKA_CallWindow = Backbone.View.extend({
     onload : function(){
 		
 		var self = this;
-		
+
+        $$('#btn_tuggle_audio').click(function(){
+            
+            if(SPIKA_VideoCallManager.tuggleAudio()){
+                $(this).text(LANG.muteaudio);
+            }else{
+                $(this).text(LANG.unmuteaudio);
+            }
+            
+        });
+        
+
+        $$('#btn_tuggle_video').click(function(){
+            
+            if(SPIKA_VideoCallManager.tuggleVideo()){
+                $(this).text(LANG.mutevideo);
+            }else{
+                $(this).text(LANG.unmutevideo);
+            }
+            
+        });
+        
+        		
         $$('#btn_call_close').click(function(){
             
             SPIKA_VideoCallManager.finishCalling();
             $$(self.windowEmlSelector).fadeOut();
+            $$(self.windowEmlSelectorCalling).fadeOut();
             SPIKA_soundManager.stopRinging();
             SPIKA_soundManager.stopCalling();
             
@@ -109,18 +142,21 @@ var SPIKA_CallWindow = Backbone.View.extend({
 			$$('#btn_call_accept').hide();
 			$$('#btn_call_decline').hide();
 
+			$$(self.windowEmlSelector).fadeIn();
+			$$(self.windowEmlSelectorCalling).fadeOut();
 
         });
         
         $$('#btn_call_decline').click(function(){
             
             SPIKA_VideoCallManager.declineCall();
+            
+            SPIKA_VideoCallManager.finishCalling();
             $$(self.windowEmlSelector).fadeOut();
-			SPIKA_soundManager.stopRinging();
-			
-			$$('#btn_call_close').show();
-			$$('#btn_call_accept').hide();
-			$$('#btn_call_decline').hide();
+            $$(self.windowEmlSelectorCalling).fadeOut();
+            
+            SPIKA_soundManager.stopRinging();
+
 
         });
         
@@ -135,13 +171,11 @@ var SPIKA_CallWindow = Backbone.View.extend({
 			_.isUndefined(this.currentCallOptions.useVideo))
 			
 			return;
-			
-		$$('#call_window .my_video_holder .avatar').hide();			
-		$$('#call_window .partner_video_holder .avatar').show();
-		$$('#call_window .partner_video_holder video').remove();
+        
 		$$('#btn_call_close').show();
 		$$('#btn_call_accept').hide();
 		$$('#btn_call_decline').hide();
+
 
 		this.loadAvatars();
 		
@@ -152,56 +186,53 @@ var SPIKA_CallWindow = Backbone.View.extend({
 		
 		function(stateDescription){
 			
-			// on state change
-			U.l('on state change ' + stateDescription);
-
+            $$(self.windowEmlSelectorCalling + " .statustext").text(stateDescription);
 			
 		},function(){
-			// on established
+			
+			$$('#call_window .my_video_holder .avatar').hide();
 			$$('#call_window .partner_video_holder .avatar').hide();
+
+		},function(){
+			// on accepted
+
 			SPIKA_soundManager.stopCalling();
+			
+			$$(self.windowEmlSelector).fadeIn();
+			$$(self.windowEmlSelectorCalling).fadeOut();
+			
+			
+			SPIKA_VideoCallManager.unmuteAudio();
 			
 		},function(message){
 			// on finish or on declined
 
 			SPIKA_AlertManager.show(LANG.call_finished_title,message);
-			$$(self.windowEmlSelector).fadeOut();
-			$$('#call_window .my_video_holder .avatar').show();
-			SPIKA_soundManager.stopCalling();
 			
+			$$(self.windowEmlSelector).fadeOut();
+			$$(self.windowEmlSelectorCalling).fadeOut();
+			
+            SPIKA_soundManager.stopCalling();
+            
 		},function(message){
 			// on error
 			
 			SPIKA_AlertManager.show(LANG.general_errortitle,message);
-			$$(self.windowEmlSelector).fadeOut();
-			$$('#call_window .my_video_holder .avatar').show();
-			SPIKA_soundManager.stopCalling();
 			
+            _.debounce(function() {
+    			$$(self.windowEmlSelector).fadeOut();
+    			$$(self.windowEmlSelectorCalling).fadeOut();
+                SPIKA_soundManager.stopCalling();
+            }, 1000)();
+			
+            SPIKA_soundManager.stopCalling();
 		})
 		
-		/*
-	    // make call
-	    SPIKA_VideoCallManager.initiateWebRTC(this.currentCallOptions.userId,
-	    										this.currentCallOptions.useVideo,
-	    										this.currentCallOptions.useAudio,
-	    										function(){ 										
-		    
-		    U.l('connected to node');
-		    
-		    SPIKA_VideoCallManager.startLocalMedia(function(){
-			    
-			    U.l('video ready');
-			    
-			    $$('#call_window my_video_holder .avatar').hide();
-			    
-		    });
-		    
-	    });
-		*/
+		
 	    
     },
     loadAvatars:function(){
-
+                
 		// prepare avatar
         var userData = SPIKA_UserManager.getUserDataFromCache(this.currentCallOptions.userId);
 		var self = this;
@@ -210,11 +241,27 @@ var SPIKA_CallWindow = Backbone.View.extend({
 
 	        apiClient.getUserById(this.currentCallOptions.userId,function(data){
 				
-	            var modelUser = userFactory.createModelByAPIResponse(data.user);
+	            userData = userFactory.createModelByAPIResponse(data.user);
 
-			    self.setPartnerAvatar(modelUser);
+			    self.setPartnerAvatar(userData);
 				self.setMyAvatar(SPIKA_UserManager.getUser());
-				
+
+        		if(self.currentCallOptions.callerIsMe){
+            		AvatarManager.process($$('#calling_window .info_from img'),SPIKA_UserManager.getUser().get('image_thumb'));  		
+            		AvatarManager.process($$('#calling_window .info_to img'),userData.get('image_thumb'));  
+            		
+                    $$('#calling_window .info_from span').text(SPIKA_UserManager.getUser().get('firstname') + " " + SPIKA_UserManager.getUser().get('lastname'));
+                    $$('#calling_window .info_to span').text(userData.get('firstname') + " " + userData.get('lastname'));
+        		}else{
+            		AvatarManager.process($$('#calling_window .info_to img'),userData.get('image_thumb'));  		
+            		AvatarManager.process($$('#calling_window .info_from img'),SPIKA_UserManager.getUser().get('image_thumb'));  		
+
+                    $$('#calling_window .info_to span').text(SPIKA_UserManager.getUser().get('firstname') + " " + SPIKA_UserManager.getUser().get('lastname'));
+                    $$('#calling_window .info_from span').text(userData.get('firstname') + " " + userData.get('lastname'));
+        		}
+    		
+                $$(self.windowEmlSelectorCalling).show();
+                
 	        },function(data){
 	        
 	        	U.l(data);
@@ -225,20 +272,28 @@ var SPIKA_CallWindow = Backbone.View.extend({
 
 		    self.setPartnerAvatar(userData);
 		    self.setMyAvatar(SPIKA_UserManager.getUser());
+		    
+    		if(self.currentCallOptions.callerIsMe){
+        		AvatarManager.process($$('#calling_window .info_from img'),SPIKA_UserManager.getUser().get('image_thumb'));  		
+        		AvatarManager.process($$('#calling_window .info_to img'),userData.get('image_thumb'));  		
+    		}else{
+        		AvatarManager.process($$('#calling_window .info_to img'),userData.get('image_thumb'));  		
+        		AvatarManager.process($$('#calling_window .info_from img'),SPIKA_UserManager.getUser().get('image_thumb'));  		
+    		}
+
 
 		}
+		
 
     },
     setPartnerAvatar:function(userData){
 	    
-	    //AvatarManager.process($$('#call_window .partner_video_holder .avatar'),userData.get('image_thumb'));
-        EncryptManager.decryptImage($$('#call_window .partner_video_holder .avatar'),userData.get('image_thumb'),THUMB_PIC_SIZE,apiClient,null,null,false);
+        EncryptManager.decryptImage($$('#calling_window .partner_video_holder .avatar'),userData.get('image_thumb'),THUMB_PIC_SIZE,apiClient,null,null,false);
 	    
     },
     
     setMyAvatar:function(userData){
 
-	    //AvatarManager.process($$('#call_window .my_video_holder .avatar'),userData.get('image_thumb'));
         EncryptManager.decryptImage($$('#call_window .my_video_holder .avatar'),userData.get('image_thumb'),THUMB_PIC_SIZE,apiClient,null,null,false);
         
 	    

@@ -1,3 +1,13 @@
+var CALLSTATE_NOTWORKING = -1;
+var CALLSTATE_IDLE = 0;
+var CALLSTATE_CALLING = 1;
+var CALLSTATE_CALLESTABLISHED = 2;
+var CALLSTATE_P2PESTABLISHING = 3;
+var CALLSTATE_P2PESTABLISHED = 4;
+var CALLSTATE_CALLOFFERRECEIVED = 5;
+var CALLSTATE_CALLESTABLISHED = 6;
+
+
 SPIKA_VideoCallManager = {
     
     /* Listners
@@ -10,17 +20,22 @@ SPIKA_VideoCallManager = {
     currentPartnerSessionId:0,
     currentPartnerUserId:0,
     mySessionId:0,
-    callState:0, // -1: not working 0 : nothing, 1: calling, 2: call established, 3: video stream established, 4: calloffer received
+    callState:CALLSTATE_IDLE, // -1: not working 0 : nothing, 1: calling, 2: call established, 3: video stream established, 4: calloffer received
     roomName:"",
     currentPeerId:0,
     onLocalMediaReady: null,
     onLocalMediaError: null,
     onConnectionReady: null,
     onStateChanged: null,
-    onEstablished: null,
+    onEstablishedReceiver: null,
+    onEstablishedCaller: null,
+    onAccepted: null,
     onFinish: null,
     onError: null,
     onCallReceived: null,
+    isCalling:false,
+    audioActivated: true,
+    videoActivated: true,
     init:function(userId){
          
         var self = this;
@@ -73,8 +88,8 @@ SPIKA_VideoCallManager = {
             autoAdjustMic: false,
             peerVolumeWhenSpeaking: 0.25,
             media: {
-                video: useCamera,
-                audio: useMicrophone
+                video: true,
+                audio: true
             },
             localVideo: {
                 autoplay: true,
@@ -101,6 +116,7 @@ SPIKA_VideoCallManager = {
 
             this.webRTC.on('disconnected', function () {
 				
+				U.l('disconnected');
 
             });
             
@@ -126,13 +142,21 @@ SPIKA_VideoCallManager = {
             });
             
             this.webRTC.on('joinedRoom', function (roomName) {
-				
+
+                if(!_.isUndefined(self.onStateChanged) && _.isFunction(self.onStateChanged))
+                    self.onStateChanged("Joined to user room " + roomName);
+
+
             });
             
             this.webRTC.on('localStream', function (stream) {
 				
             });
-    
+
+            this.webRTC.on('localScreenStopped', function (stream) {
+                U.l('localScreenStopped');
+            });
+
             
             this.webRTC.connection.on('message', function (message) {
                 
@@ -142,34 +166,32 @@ SPIKA_VideoCallManager = {
                     return;
                 
                 if(commandType == 'callAnswer'){
-                    
-                     U.l(self.callState);
-                     
-                    if(self.callState != 1)
+                                         
+                    if(self.callState != CALLSTATE_P2PESTABLISHED)
                         return;
                         
-                     U.l(self.currentPartnerUserId);
+                    self.callState = CALLSTATE_CALLESTABLISHED;
                     
-                    self.webRTC.joinRoom(self.currentPartnerUserId);
+                    self.unmuteAudio();
+                    
+	                if(!_.isNull(self.onAccepted))
+	                	self.onAccepted();
     
                 }
                 
                 if(commandType == 'callDecline'){
-					
-                    if(self.callState != 1)
-                        return;
-    
-                    self.callState = 0;
-    
-                    self.finishCalling();
 
 	                if(!_.isNull(self.onFinish))
 	                	self.onFinish(LANG.call_error_userdeclined);
+
+                    self.finishCalling();
                     
                 }
                 
                 if(commandType == 'callEnd'){
-    
+                    
+                    U.l("callEnd");
+
                     self.finishCalling();
 
 	                if(!_.isNull(self.onFinish))
@@ -178,10 +200,15 @@ SPIKA_VideoCallManager = {
                 }
             
                 if(commandType == 'callOffer'){
-					
-                    if(self.callState != 0)
+                    
+                    if(!_.isUndefined(self.onStateChanged) && _.isFunction(self.onStateChanged))
+                        self.onStateChanged("Call request received.");
+                    
+                    if(self.callState != CALLSTATE_IDLE)
                         return;
                     
+                    self.isCalling = false;
+
                     self.currentPartnerSessionId = message.from;
 
                     if(!_.isEmpty(message.payload.user.user_id)){
@@ -194,11 +221,13 @@ SPIKA_VideoCallManager = {
                     
                     if(!_.isEmpty(self.currentPartnerSessionId) && !_.isEmpty(self.currentPartnerUserId)){
 						
-						self.callState = 4;
+						self.callState = CALLSTATE_P2PESTABLISHING;
 						
-		                if(!_.isNull(self.onCallReceived))
-		                	self.onCallReceived(message.payload.user);
-                	
+    	                if(!_.isNull(self.onCallReceived))
+    	                	self.onCallReceived(message.payload.user);
+
+                        self.startLocalMedia(function(){
+                        });
                         
                     }
                     
@@ -208,6 +237,7 @@ SPIKA_VideoCallManager = {
             
             // a peer video has been added
             this.webRTC.on('videoAdded', function (video, peer) {
+                
                 
                 // show the ice connection state
                 if (peer && peer.pc) {
@@ -223,26 +253,43 @@ SPIKA_VideoCallManager = {
 	                        case 'completed':{
 	                            U.l('webrtc con completed'); 
 	                            
-	                            if(self.callState != 3){
-		                            self.callState = 3;
+	                            U.l(self.callState);
+	                            
+	                            if(self.callState != CALLSTATE_P2PESTABLISHED){
+	                            
+		                            self.callState = CALLSTATE_P2PESTABLISHED;
 		                            self.currentPeerId = peer.id;
 		                            
-		                            
-					                if(!_.isNull(self.onEstablished))
-					                	self.onEstablished(peer.id);
+					                if(!_.isNull(self.onEstablishedCaller)){
+					                    
+					                    if(self.isCalling && !_.isNull(self.onEstablishedCaller))
+					                	    self.onEstablishedCaller(peer.id);
+
+                                        if(!_.isUndefined(self.onStateChanged) && _.isFunction(self.onStateChanged))
+                                            self.onStateChanged("P2P connection is established. Calling user.");
+                                            
+                                    }
+                                    
+					                if(!self.isCalling && !_.isNull(self.onEstablishedReceiver))
+					                	self.onEstablishedReceiver(peer.id);
+					               
+					                self.muteAudio();
+					                
 	                            }
 	                            
 	                            break;
 	                        }
 	                        case 'disconnected':
+	                            U.l('webrtc con disconnected'); 
 	                            break;
 	                        case 'failed':
-	                        	
+	                        	U.l('webrtc con failed'); 
 	                        	if(self.callState != 0)
 	                            	self.error(LANG.call_error_rtc_failed);
 	                            	
 	                            break;
 	                        case 'closed':
+	                            U.l('webrtc con closed'); 
 	                            break;
                         }
                         
@@ -286,34 +333,47 @@ SPIKA_VideoCallManager = {
         this.webRTC.stopLocalVideo();
         
     },
-    startCalling:function(userId,onStateChanged,onEstablished,onFinish,onError){
+    startCalling:function(userId,onStateChanged,onEstablished,onAccepted,onFinish,onError){
         
         if(this.callState != 0)
             return;
             
         var self = this;
+        
+        self.isCalling = true;
+        
         self.mySessionId = self.webRTC.connection.socket.sessionid;
 		self.onStateChanged = onStateChanged;
-		self.onEstablished = onEstablished;
+		self.onEstablishedCaller = onEstablished;
+		self.onAccepted = onAccepted;
 		self.onFinish = onFinish;
 		self.onError = onError;
 		self.currentPartnerUserId = userId;
-        
         
         if(_.isEmpty(self.mySessionId) || self.mySessionId == 0){
             self.error(LANG.call_error_noconnection);
             return;
         }
+        
+        if(!_.isUndefined(self.onStateChanged))
+            self.onStateChanged("Initializing devices...");
 
         this.startLocalMedia(function(){
 			
-			if(self.callState != 0)
+			if(self.callState != CALLSTATE_IDLE)
 				return;
 			
-			self.callState = 1;
+			self.callState = CALLSTATE_CALLING;
 			
+            if(!_.isUndefined(self.onStateChanged))
+                self.onStateChanged("Getting user information...");
+            
 	        self.webRTC.connection.emit('room', userId, function (err, room) {
 	            
+	            
+                if(!_.isUndefined(self.onStateChanged))
+                    self.onStateChanged("User information fetched...");
+                    
 	            if (err) {
 	
 	                self.error(LANG.call_error_general);
@@ -321,7 +381,7 @@ SPIKA_VideoCallManager = {
 	            } else {
 	
 	                var clients = room.clients;
-
+                    
 	                if(_.isNull(clients)){
 	                    self.error(LANG.call_error_general);
 	                    return;
@@ -333,9 +393,13 @@ SPIKA_VideoCallManager = {
 	                    self.error(LANG.call_error_usernotonline);
 	                    return;
 	                }
-	
+                    
 	                self.currentPartnerSessionId = keys[0];
 	                
+                    if(!_.isUndefined(self.onStateChanged))
+                        self.onStateChanged("User session id is " + self.currentPartnerSessionId);
+
+
 	                var payload = {
 	                    to: self.currentPartnerSessionId,
 	                    from: self.webRTC.connection.socket.sessionid,
@@ -345,19 +409,28 @@ SPIKA_VideoCallManager = {
 	                    }
 	                };
 	                
+	                
 	                // make call request
 	                self.webRTC.connection.emit('message', payload, function (err, result) {
+	                    
+	                    U.l("response got");
 	                    
 	                    if (err) {
 	                        
 	                        self.error(LANG.call_error_general);
 	                        
+	                        
 	                    } else {
 	                        
+	                        U.l("joining the room");
+	                        self.webRTC.joinRoom(self.currentPartnerUserId);
 	                        U.l(result);
 	                        
 	                    }
 	                });
+	                
+	                self.callState = CALLSTATE_P2PESTABLISHING;
+	                self.webRTC.joinRoom(self.currentPartnerUserId);
 	
 	            }
 	        });
@@ -371,11 +444,12 @@ SPIKA_VideoCallManager = {
         });
         
     },
-    callReceived:function(onCallReceived,onEstablished,onFinish,onError){
+    callReceived:function(onStateChanged,onCallReceived,onEstablished,onFinish,onError){
 	    
 	   var self = this;
+	   self.onStateChanged = onStateChanged;
 	   self.onCallReceived = onCallReceived;
-	   self.onEstablished = onEstablished;
+	   self.onEstablishedReceiver = onEstablished;
 	   self.onFinish = onFinish;
 	   self.onError = onError;
 	    
@@ -384,10 +458,13 @@ SPIKA_VideoCallManager = {
         
         U.l("on error " + message);
         
-        this.callState = 0;
+        this.callState = CALLSTATE_IDLE;
         
         var self = this;
+        
+        this.webRTC.leaveRoom();
         this.stopLocalMedia();
+
         
         if(!_.isUndefined(self.onError))
             self.onError(message)
@@ -396,10 +473,12 @@ SPIKA_VideoCallManager = {
 
     finishCalling:function(){
         
-        if(this.callState == 0)
+        if(this.callState == CALLSTATE_IDLE)
             return;
         
-        this.callState = 0;
+        this.callState = CALLSTATE_IDLE;
+        
+        this.webRTC.leaveRoom();
         this.stopLocalMedia();
 		
         var self = this;
@@ -427,8 +506,7 @@ SPIKA_VideoCallManager = {
             }
 
         });
-		
-		
+				
 		this.webRTC.joinRoom(this.userId);
 		
     },
@@ -436,10 +514,8 @@ SPIKA_VideoCallManager = {
         
         var self = this;
         
-        if(this.callState != 4)
+        if(this.callState != CALLSTATE_P2PESTABLISHED)
             return;
-            
-        this.callState = 0;
         
         var payload = {
             to: this.currentPartnerSessionId,
@@ -512,7 +588,52 @@ SPIKA_VideoCallManager = {
 	    });
 
 
+    },
+    
+    muteAudio: function(){
+        
+        this.audioActivated = false;
+        this.webRTC.mute();
+        
+    },
+    unmuteAudio: function(){
+        
+        this.audioActivated = true;
+        this.webRTC.unmute();
+        
+    },
+    tuggleAudio: function(){
+        
+        if(this.audioActivated)
+            this.muteAudio();
+        else
+            this.unmuteAudio();
+        
+        return this.audioActivated;
+    },
+    
+    muteVideo: function(){
+        
+        this.videoActivated = false;
+        this.webRTC.pauseVideo();
+        
+    },
+    unmuteVideo: function(){
+        
+        this.videoActivated = true;
+        this.webRTC.resumeVideo();
+        
+    },
+    tuggleVideo: function(){
+        
+        if(this.videoActivated)
+            this.muteVideo();
+        else
+            this.unmuteVideo();
+        
+        return this.videoActivated;
     }
+
 
     
 }

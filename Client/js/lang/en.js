@@ -30,6 +30,7 @@ LANG = {
       createroom_search:"Search...",
       cancel:"Cancel",
       ok:"OK",
+      stop:"Stop",
       login:"Login",
       edit_profile: "Edit Profile",
       logout: "Logout",
@@ -123,5 +124,9 @@ LANG = {
 	  forget_password_secondstep_failed: "Reset password faild. Please confirm your temporary password is correct. You also can generate temporary password again.",
 	  forget_password_secondstep_failed_samepassword: "Your new password is actually same as old password. Please enter another password",
 	  note: "Note",
+	  muteaudio: "Mute",
+	  unmuteaudio: "Unmute",
+	  mutevideo: "Stop",
+	  unmutevideo: "Play",
       dummy : 'dummy'
 };
