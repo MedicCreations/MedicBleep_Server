@@ -185,8 +185,17 @@ var SPIKA_CallWindow = Backbone.View.extend({
 
         this.loadAvatars();
         
-		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,function(stateDescription){
+		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,function(errorMessage){
 		    
+		    // on error
+			SPIKA_AlertManager.show(LANG.general_errortitle,errorMessage);
+			
+            $$(self.windowEmlSelector).fadeOut();
+            $$(self.windowEmlSelectorCalling).fadeOut();
+            
+		},function(stateDescription){
+		    
+		    // on statuschanged
 		    $$(self.windowEmlSelectorCalling + " .statustext").text(stateDescription);
 		    
 		},function(){

@@ -10,6 +10,9 @@ SPIKA_VideoCallManager = {
     onStateChangedCaller:null,
     callerUserId:0,
     
+    // general callbacks
+    onError:null,
+
     
     isConnected:false,
     callbackListener: null,
@@ -73,7 +76,12 @@ SPIKA_VideoCallManager = {
             this.webRTC.on('connectionReady', function () {
                 self.isConnected = true;
             });
-                    
+
+
+            this.webRTC.on('localMediaError', function () {
+                self.callback(self.onError,"Failed to initialize local devices.");
+            });
+            
             this.webRTC.on('readyToCall', function () {
                 self.callback(self.onStateChangedCaller,"Local devices ready...");
             });
@@ -89,13 +97,14 @@ SPIKA_VideoCallManager = {
         return this.isConnected;
     },
     
-    startCalling: function(userId,onStateChangedCaller,onP2PEstablishedCaller){
+    startCalling: function(userId,onError,onStateChangedCaller,onP2PEstablishedCaller){
         
         this.callerUserId = userId;
+        this.onError = onError;
         this.onStateChangedCaller = onStateChangedCaller;
         this.onP2PEstablishedCaller = onP2PEstablishedCaller;
         
-        this.callback(this.onStateChangedCaller,"Establishing connection...");
+        this.callback(this.onStateChangedCaller,"Initializing local devices...");
         
         this.webRTC.startLocalVideo();
         
