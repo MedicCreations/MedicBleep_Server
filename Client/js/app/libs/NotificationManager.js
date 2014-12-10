@@ -230,11 +230,15 @@ var SPIKA_notificationManger = {
         if(_.isNull(this.wsConnection))
             return;
 
-        this.wsConnection.send(JSON.stringify({
-            command:'setUser',
-            identifier:SYSTEM_IDENTIFIER,
-            userId:userId
-        }));
+        try{
+            this.wsConnection.send(JSON.stringify({
+                command:'setUser',
+                identifier:SYSTEM_IDENTIFIER,
+                userId:userId
+            }));
+        }catch(ex){
+        }
+
     },
     
     

@@ -280,7 +280,8 @@ var SPIKA_CallWindow = Backbone.View.extend({
         		AvatarManager.process($$('#calling_window .info_to img'),userData.get('image_thumb'));  		
         		AvatarManager.process($$('#calling_window .info_from img'),SPIKA_UserManager.getUser().get('image_thumb'));  		
     		}
-
+            
+            $$(self.windowEmlSelectorCalling).show();
 
 		}
 		
