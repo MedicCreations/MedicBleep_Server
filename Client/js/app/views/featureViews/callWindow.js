@@ -173,9 +173,21 @@ var SPIKA_CallWindow = Backbone.View.extend({
 	        return;
         }
         
-		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,function(stateMessage){
+		if(_.isUndefined(this.currentCallOptions.userId) || 
+			_.isUndefined(this.currentCallOptions.useAudio) || 
+			_.isUndefined(this.currentCallOptions.useVideo))
+			
+			return;
+            
+		$$('#btn_call_close').show();
+		$$('#btn_call_accept').hide();
+		$$('#btn_call_decline').hide();
+
+        this.loadAvatars();
+        
+		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,function(stateDescription){
 		    
-		    U.l(stateMessage);
+		    $$(self.windowEmlSelectorCalling + " .statustext").text(stateDescription);
 		    
 		},function(){
     		
