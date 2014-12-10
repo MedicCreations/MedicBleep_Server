@@ -28,6 +28,8 @@ var SPIKA_CallWindow = Backbone.View.extend({
 			
         });
         
+        
+        /*
         SPIKA_VideoCallManager.callReceived(
         
         function(stateDescription){
@@ -81,7 +83,7 @@ var SPIKA_CallWindow = Backbone.View.extend({
 			SPIKA_soundManager.stopRinging();
 			
         });
-
+        */
     },
 
     render: function() {
@@ -166,6 +168,25 @@ var SPIKA_CallWindow = Backbone.View.extend({
 	    
 	    var self = this;
 	    
+	    if(!SPIKA_VideoCallManager.canUseWebRTC()){
+	        SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_nowebrtc);
+	        return;
+        }
+        
+		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,function(stateMessage){
+		    
+		    U.l(stateMessage);
+		    
+		},function(){
+    		
+    		
+    		
+		});
+
+        
+	    /*
+	    var self = this;
+	    
 		if(_.isUndefined(this.currentCallOptions.userId) || 
 			_.isUndefined(this.currentCallOptions.useAudio) || 
 			_.isUndefined(this.currentCallOptions.useVideo))
@@ -228,6 +249,7 @@ var SPIKA_CallWindow = Backbone.View.extend({
             SPIKA_soundManager.stopCalling();
 		})
 		
+		*/
 		
 	    
     },
