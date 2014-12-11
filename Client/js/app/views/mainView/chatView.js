@@ -220,6 +220,8 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             var roomPassword = self.chatData.get('password');
             
+            U.l(roomPassword);
+            
             if(!_.isEmpty(roomPassword)){
 	            
 	            var savedPasswordWorks = false;

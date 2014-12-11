@@ -1,5 +1,5 @@
 
-<div id="call_window" style="display:none">
+<div id="call_window" style="display:none" >
 	
 	<div class="partner_video_holder" id="remotevideo_holder">
 		<img class="avatar" />
