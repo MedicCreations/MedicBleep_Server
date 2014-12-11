@@ -39,7 +39,7 @@ SPIKA_VideoCallManager = {
 		// by default initialte WebRTC with video and audio
 		this.initiateWebRTC(userId,true,true,function(){
 			
-            self.webRTC.joinRoom(self.userId);
+            self.joinRoom(self.userId);
             window.webRTC = self.webRTC;
 			
 		});
@@ -91,7 +91,7 @@ SPIKA_VideoCallManager = {
             this.webRTC.on('connectionReady', function () {
                 self.isConnected = true;
                 
-                self.webRTC.joinRoom(SPIKA_UserManager.getUser().get('id'));
+                self.joinRoom(SPIKA_UserManager.getUser().get('id'));
             });
 
 
@@ -104,7 +104,7 @@ SPIKA_VideoCallManager = {
             
                 self.callback(self.onStateChangedCaller,"Establishing Connection...");
                 
-                self.webRTC.joinRoom(self.callTargetUserId);
+                self.joinRoom(self.callTargetUserId);
                 
                 // caller
                 if(self.isCalling() && self.connecionState == CALLERSTATE_ESTABLISHINGCONNECTION){
@@ -170,7 +170,7 @@ SPIKA_VideoCallManager = {
                 if(!self.isCalling() && self.connecionState == RECEIVERSTATE_CALLRECEIVED){
                     
                     U.l('joining to the room');
-                    self.webRTC.joinRoom(SPIKA_UserManager.getUser().get('id'));
+                    self.joinRoom(SPIKA_UserManager.getUser().get('id'));
                     
                 }
                 
@@ -253,6 +253,16 @@ SPIKA_VideoCallManager = {
     finishCalling: function(){
         this.callTargetUserId == 0;
         this.connecionState = IDLE;
+        
+    },
+    
+    joinRoom: function(userId){
+        
+        var params = {};
+        params.room_id = userId;
+        params.user = SPIKA_UserManager.getUser().get('originalData');
+        
+        this.webRTC.joinRoom(params);
         
     }
 }
