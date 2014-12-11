@@ -28,62 +28,6 @@ var SPIKA_CallWindow = Backbone.View.extend({
 			
         });
         
-        
-        /*
-        SPIKA_VideoCallManager.callReceived(
-        
-        function(stateDescription){
-            
-            $$(self.windowEmlSelectorCalling + " .statustext").text(stateDescription);
-
-			$$('#call_window .my_video_holder .avatar').hide();
-			$$('#call_window .partner_video_holder .avatar').hide();
-
-
-        },function(userData){
-
-    		$$('#btn_call_close').hide();
-    		$$('#btn_call_accept').show();
-    		$$('#btn_call_decline').show();
-		
-			// receive call
-			self.partnerUserId = userData.id;
-
-	        self.currentCallOptions = {
-		        userId: self.partnerUserId,
-		        useVideo: true,
-		        useAudio: true
-	        };
-	        
-        },function(){
-            
-            // P2P established
-            
-			SPIKA_soundManager.playRinging();
-            self.loadAvatars();
-
-        
-	    },function(message){
-			
-			// on finish
-			
-			if(SPIKA_VideoCallManager.callState == CALLSTATE_CALLESTABLISHED)
-			    SPIKA_AlertManager.show(LANG.call_finished_title,message);
-			    
-			$$(self.windowEmlSelector).fadeOut();
-			$$(self.windowEmlSelectorCalling).fadeOut();
-			
-			SPIKA_soundManager.stopRinging();
-			
-        },function(message){
-			
-			// on error
-			SPIKA_AlertManager.show(LANG.call_finished_title,message);
-			$$(self.windowEmlSelector).fadeOut();
-			SPIKA_soundManager.stopRinging();
-			
-        });
-        */
     },
 
     render: function() {
@@ -158,8 +102,8 @@ var SPIKA_CallWindow = Backbone.View.extend({
 		    // on receive
             
 			$$('#btn_call_close').hide();
-			$$('#btn_call_accept').show();
-			$$('#btn_call_decline').show();
+			$$('#btn_call_accept').hide();
+			$$('#btn_call_decline').hide();
 
 
             $$(self.windowEmlSelector).hide();
@@ -168,8 +112,8 @@ var SPIKA_CallWindow = Backbone.View.extend({
 
             self.currentCallOptions = {
                 userId: callerUserId,
-                useAudio: true,
-                useVideo: true
+                useAudio: false,
+                useVideo: false
             };
             
             self.loadAvatars();
@@ -200,10 +144,22 @@ var SPIKA_CallWindow = Backbone.View.extend({
     		$$(self.windowEmlSelectorCalling).fadeIn();
     		
 		},function(){
+    		
+    		// on media ready
+            U.l('media ready');
+			$$('#btn_call_close').hide();
+			$$('#btn_call_accept').show();
+			$$('#btn_call_decline').show();
+			
+    		
+		},function(){
             
             // on accepted
             self.syncMediaStateWithButton();
     		
+		},function(){
+    		// media state changed
+    		self.syncMediaStateWithButton();
 		});
 
 
@@ -234,6 +190,9 @@ var SPIKA_CallWindow = Backbone.View.extend({
 
         this.loadAvatars();
         SPIKA_soundManager.playCalling();
+        
+        SPIKA_VideoCallManager.initialAudioState = this.currentCallOptions.useAudio;
+        SPIKA_VideoCallManager.initialVideoState = this.currentCallOptions.useVideo;
         
 		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,function(isError,message){
 		    
@@ -275,76 +234,10 @@ var SPIKA_CallWindow = Backbone.View.extend({
 			$$(self.windowEmlSelector).fadeIn();
 			$$(self.windowEmlSelectorCalling).fadeOut();
     		
+		},function(){
+    		// media state changed
+    		self.syncMediaStateWithButton();
 		});
-
-        
-	    /*
-	    var self = this;
-	    
-		if(_.isUndefined(this.currentCallOptions.userId) || 
-			_.isUndefined(this.currentCallOptions.useAudio) || 
-			_.isUndefined(this.currentCallOptions.useVideo))
-			
-			return;
-        
-		$$('#btn_call_close').show();
-		$$('#btn_call_accept').hide();
-		$$('#btn_call_decline').hide();
-
-
-		this.loadAvatars();
-		
-		SPIKA_soundManager.playCalling();
-		
-		// make call
-		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,
-		
-		function(stateDescription){
-			
-            $$(self.windowEmlSelectorCalling + " .statustext").text(stateDescription);
-			
-		},function(){
-			
-			$$('#call_window .my_video_holder .avatar').hide();
-			$$('#call_window .partner_video_holder .avatar').hide();
-
-		},function(){
-			// on accepted
-
-			SPIKA_soundManager.stopCalling();
-			
-			$$(self.windowEmlSelector).fadeIn();
-			$$(self.windowEmlSelectorCalling).fadeOut();
-			
-			
-			SPIKA_VideoCallManager.unmuteAudio();
-			
-		},function(message){
-			// on finish or on declined
-
-			SPIKA_AlertManager.show(LANG.call_finished_title,message);
-			
-			$$(self.windowEmlSelector).fadeOut();
-			$$(self.windowEmlSelectorCalling).fadeOut();
-			
-            SPIKA_soundManager.stopCalling();
-            
-		},function(message){
-			// on error
-			
-			SPIKA_AlertManager.show(LANG.general_errortitle,message);
-			
-            _.debounce(function() {
-    			$$(self.windowEmlSelector).fadeOut();
-    			$$(self.windowEmlSelectorCalling).fadeOut();
-                SPIKA_soundManager.stopCalling();
-            }, 1000)();
-			
-            SPIKA_soundManager.stopCalling();
-		})
-		
-		*/
-		
 	    
     },
     loadAvatars:function(){
