@@ -45,6 +45,8 @@ SPIKA_VideoCallManager = {
     videoActivated: false,
     initialAudioState: false,
     initialVideoState: false,
+    ignoreMuteA: false,
+    ignoreMuteV: false,
     init:function(userId){
          
         var self = this;
@@ -182,7 +184,7 @@ SPIKA_VideoCallManager = {
             this.webRTC.on('localStream', function (stream) {
                 
                 
-                U.l('local stream');
+                self.allMute();
                 
                 self.callback(self.onStateChangedCaller,"Establishing Connection...");
                 
@@ -263,24 +265,64 @@ SPIKA_VideoCallManager = {
             });
 
             this.webRTC.on('mute', function (data) {
-                
+
                 var fromSessionId = data.id;
                 var type = data.name;
-                
-                self.callback(self.onMediaStateChanged);
                 
                 if(fromSessionId != self.webRTC.connection.socket.sessionid){
                     
                     if(type == 'audio' && self.audioActivated == true){
+                    
+                
+                        if(self.ignoreMuteA){
+                            
+                            U.l('ignored');
+                            
+                            _.debounce(function() {
+                              
+                                 self.ignoreMuteA = false;
+                                
+                            }, 200)();
+                            
+                            return;
+                        }
+
+                 
+                        if(self.connecionState == CALLERSTATE_CALLESTABLISHED
+                            || self.connecionState == RECEIVERSTATE_CALLESTABLISHED){
+                                self.ignoreMuteA = true;
+                        }
+                
                         self.muteAudio();
                     }
                     
                     if(type == 'video' && self.videoActivated == true){
+
+                        if(self.ignoreMuteV){
+                            
+                            U.l('ignored');
+                            
+                            _.debounce(function() {
+                              
+                                 self.ignoreMuteV = false;
+                                
+                            }, 200)();
+                            
+                            return;
+                        }
+
+                 
+                        if(self.connecionState == CALLERSTATE_CALLESTABLISHED
+                            || self.connecionState == RECEIVERSTATE_CALLESTABLISHED){
+                                self.ignoreMuteV = true;
+                        }
+                        
                         self.muteVideo();
                     }
                     
                 }
 
+                self.callback(self.onMediaStateChanged);
                 
             });
 
@@ -289,21 +331,59 @@ SPIKA_VideoCallManager = {
                 var fromSessionId = data.id;
                 var type = data.name;
                 
-                self.callback(self.onMediaStateChanged);
-                
                 if(fromSessionId != self.webRTC.connection.socket.sessionid){
                     
                     if(type == 'audio' && self.audioActivated == false){
+
+                        if(self.ignoreMuteA){
+                            
+                            U.l('ignored');
+                            
+                            _.debounce(function() {
+                              
+                                 self.ignoreMuteA = false;
+                                
+                            }, 200)();
+                            
+                            return;
+                        }
+
+                 
+                        if(self.connecionState == CALLERSTATE_CALLESTABLISHED
+                            || self.connecionState == RECEIVERSTATE_CALLESTABLISHED){
+                                self.ignoreMuteA = true;
+                        }
+                        
                         self.unmuteAudio();
                     }
 
                     if(type == 'video' && self.videoActivated == false){
+                    
+                        if(self.ignoreMuteV){
+                            
+                            U.l('ignored');
+                            
+                            _.debounce(function() {
+                              
+                                 self.ignoreMuteV = false;
+                                
+                            }, 200)();
+                            
+                            return;
+                        }
+
+                 
+                        if(self.connecionState == CALLERSTATE_CALLESTABLISHED
+                            || self.connecionState == RECEIVERSTATE_CALLESTABLISHED){
+                                self.ignoreMuteV = true;
+                        }
+                        
                         self.unmuteVideo();
                     }
                     
                 }
 
-                
+                self.callback(self.onMediaStateChanged);
             });
             
                         
@@ -327,9 +407,12 @@ SPIKA_VideoCallManager = {
                 }
 
                 if(commandType == 'callAnswer'){
-                        
-                    self.connecionState = CALLERSTATE_CALLESTABLISHED;
+
+                    _.debounce(function() {
+                        self.setInitiateMediaState();
+                    }, 1000)();
                     
+                    self.connecionState = CALLERSTATE_CALLESTABLISHED;
                     self.callback(self.onStateChangedReceiver,"Call established");
                     self.callback(self.onAcceptedCaller);
                     
@@ -337,9 +420,7 @@ SPIKA_VideoCallManager = {
                     this.onStateChangedCaller = null;
                     this.onP2PEstablishedCaller = null;
                     this.onAcceptedCaller = null;
-
-
-                    self.setInitiateMediaState();
+                    
                 }
 
 
@@ -493,8 +574,11 @@ SPIKA_VideoCallManager = {
             }
             
         });
-        
-        this.connecionState = RECEIVERSTATE_CALLESTABLISHED;
+
+        _.debounce(function() {
+            self.connecionState = RECEIVERSTATE_CALLESTABLISHED;
+        }, 500)();
+
         this.callback(this.onAcceptedReceiver);
         
         // reset lieters

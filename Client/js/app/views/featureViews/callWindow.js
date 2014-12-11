@@ -130,7 +130,7 @@ var SPIKA_CallWindow = Backbone.View.extend({
             $$(self.windowEmlSelectorCalling).fadeOut();
             
             SPIKA_soundManager.stopRinging();
-             
+            
 		},function(stateDescription){
 		    
 		    // on statuschanged
@@ -144,7 +144,7 @@ var SPIKA_CallWindow = Backbone.View.extend({
     		$$(self.windowEmlSelectorCalling).fadeIn();
     		
 		},function(){
-    		    		
+    		
     		// on media ready
             U.l('media ready');
 			$$('#btn_call_close').hide();
@@ -158,7 +158,6 @@ var SPIKA_CallWindow = Backbone.View.extend({
             self.syncMediaStateWithButton();
     		
 		},function(){
-		    U.l('update buttons');
     		// media state changed
     		self.syncMediaStateWithButton();
 		});
@@ -220,12 +219,12 @@ var SPIKA_CallWindow = Backbone.View.extend({
     		
     		// on established
     		
-    		
 		},function(){
-
+    		
     		// on accept
             SPIKA_soundManager.stopCalling();
             
+            // on accepted
             self.syncMediaStateWithButton();
 
 			$$('#btn_call_close').show();
@@ -237,8 +236,6 @@ var SPIKA_CallWindow = Backbone.View.extend({
     		
 		},function(){
     		// media state changed
-    		
-    		U.l('update buttons');
     		self.syncMediaStateWithButton();
 		});
 	    
