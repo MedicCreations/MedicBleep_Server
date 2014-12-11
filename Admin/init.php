@@ -1,9 +1,9 @@
 <?php
 
-define('ROOT_DIR', "/var/www/www.spikaent.com/msg/spikaenterprise_web/Admin/wwwroot");
-define('ROOT_URL', "https://www.spikaent.com/msg/admin");
-define('CLIENT_URL', "https://www.spikaent.com/msg/web");
-define('ADMIN_ROOT_URL', "https://www.spikaent.com/msg/admin");
+define('ROOT_DIR', "/var/www/www.spikaent.com/dev/spikaenterprise_web/Admin/wwwroot");
+define('ROOT_URL', "https://www.spikaent.com/dev/admin");
+define('CLIENT_URL', "https://www.spikaent.com/dev/web");
+define('ADMIN_ROOT_URL', "https://www.spikaent.com/dev/admin");
 define('API_URL', "http://local.clover-studio.com/SpikaAPI/wwwroot/v1");
 define('FILE_DOWNLOAD_URL', API_URL . "/file/download?file_id=");
 
