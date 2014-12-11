@@ -11,7 +11,7 @@
  
 define('TOKEN_VALID_TIME', 60*60*24);
 define('PW_RESET_CODE_VALID_TIME', 60*5);
-define('ROOT_URL', "https://www.spikaent.com/dev/server/");
+define('ROOT_URL', "https://www.spikaent.com/msg/server/");
 define('PUSH_ROOT_URL', "https://www.spikaent.com/push/receiver.php");
 define('SYSTEM_IDENTIFIER', "clover");
 define('WEBSOCKET_SERVER_HOST', "localhost");
@@ -94,6 +94,7 @@ define('ER_CHAT_DELETED', 1007);
 define('ER_PAGE_NOT_FOUND', 1008);
 define('ER_NOT_GROUP_ADMIN', 1009);
 define('ER_EMAIL_MISSING', 1010);
+
 define('ER_TEMP_PASSWORD_NOT_VALID', 1011);
 define('ER_LOGIN_WITH_TEMP_PASS', 1012);
 define('ER_USERNAME_NOT_EXIST', 1013);
@@ -107,7 +108,4 @@ define('DEVICE_WEB', 1);
 
 // auto disconnect threashhold
 define('DISCONNECT_LIMIT_SEC',30);
-
-// temp password valid time
-define('TEMP_PASSWORD_VALID_TIME', 60*60);
 ?>
