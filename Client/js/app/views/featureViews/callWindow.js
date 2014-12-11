@@ -161,7 +161,32 @@ var SPIKA_CallWindow = Backbone.View.extend({
 
 
         });
-        
+
+		SPIKA_VideoCallManager.callReceived(function(callerUserId){
+		    // on receive
+            
+            U.l(callerUserId);
+            
+		},function(errorMessage){
+		    
+		    // on error
+			SPIKA_AlertManager.show(LANG.general_errortitle,errorMessage);
+			
+            $$(self.windowEmlSelector).fadeOut();
+            $$(self.windowEmlSelectorCalling).fadeOut();
+            
+		},function(stateDescription){
+		    
+		    // on statuschanged
+		    $$(self.windowEmlSelectorCalling + " .statustext").text(stateDescription);
+		    
+		},function(){
+    		
+    		// on established
+    		
+		});
+
+
     },
     
     inisiateCalling:function(){
@@ -190,8 +215,14 @@ var SPIKA_CallWindow = Backbone.View.extend({
 		    // on error
 			SPIKA_AlertManager.show(LANG.general_errortitle,errorMessage);
 			
-            $$(self.windowEmlSelector).fadeOut();
-            $$(self.windowEmlSelectorCalling).fadeOut();
+            _.debounce(function() {
+              
+                $$(self.windowEmlSelector).fadeOut();
+                $$(self.windowEmlSelectorCalling).fadeOut();
+                
+            }, 500)();
+              
+
             
 		},function(stateDescription){
 		    
