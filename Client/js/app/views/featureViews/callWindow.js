@@ -165,8 +165,22 @@ var SPIKA_CallWindow = Backbone.View.extend({
 		SPIKA_VideoCallManager.callReceived(function(callerUserId){
 		    // on receive
             
-            U.l(callerUserId);
+			$$('#btn_call_close').hide();
+			$$('#btn_call_accept').show();
+			$$('#btn_call_decline').show();
+
+
+            $$(self.windowEmlSelector).fadeIn();
+            $$(self.windowEmlSelectorCalling).fadeIn();
+
+            self.currentCallOptions = {
+                userId: callerUserId,
+                useAudio: true,
+                useVideo: true
+            };
             
+            self.loadAvatars();
+
 		},function(errorMessage){
 		    
 		    // on error
@@ -208,12 +222,17 @@ var SPIKA_CallWindow = Backbone.View.extend({
 		$$('#btn_call_accept').hide();
 		$$('#btn_call_decline').hide();
 
+
+        $$(self.windowEmlSelector).fadeIn();
+        $$(self.windowEmlSelectorCalling).fadeIn();
+
         this.loadAvatars();
         
-		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,function(errorMessage){
+		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,function(isError,message){
 		    
 		    // on error
-			SPIKA_AlertManager.show(LANG.general_errortitle,errorMessage);
+		    if(isError)
+			    SPIKA_AlertManager.show(LANG.general_errortitle,message);
 			
             _.debounce(function() {
               

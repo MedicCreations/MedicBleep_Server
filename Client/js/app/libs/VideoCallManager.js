@@ -26,7 +26,7 @@ SPIKA_VideoCallManager = {
     callerFromUserId:null,
 
     // general callbacks
-    onError:null,
+    onFinish:null,
 
     connecionState: IDLE, 
     isConnected:false,
@@ -68,7 +68,7 @@ SPIKA_VideoCallManager = {
             remoteVideosEl: 'remotevideo_holder',
             // immediately ask for camera access
             autoRequestMedia: false,
-            debug: true,
+            debug: false,
             detectSpeakingEvents: false,
             autoAdjustMic: false,
             peerVolumeWhenSpeaking: 0.25,
@@ -96,7 +96,7 @@ SPIKA_VideoCallManager = {
 
 
             this.webRTC.on('localMediaError', function () {
-                self.callback(self.onError,"Failed to initialize local devices.");
+                self.callback(self.onFinish,true,"Failed to initialize local devices.");
                 self.finishCalling();
             });
             
@@ -104,12 +104,8 @@ SPIKA_VideoCallManager = {
             
                 self.callback(self.onStateChangedCaller,"Establishing Connection...");
                 
-                self.joinRoom(self.callTargetUserId);
-                
                 // caller
                 if(self.isCalling() && self.connecionState == CALLERSTATE_ESTABLISHINGCONNECTION){
-                    
-                    U.l(self.callTargetUserId);
                     
                     // send call offer
         	        self.webRTC.connection.emit('room', self.callTargetUserId, function (err, room) {
@@ -118,26 +114,29 @@ SPIKA_VideoCallManager = {
                             
         	            if (err) {
                             
-                            self.callback(self.onError,LANG.call_error_general);
+                            self.callback(self.onFinish,true,LANG.call_error_general);
+        	                self.finishCalling();
         	                
         	            } else {
         	
         	                var clients = room.clients;
                             
         	                if(_.isNull(clients)){
-        	                    self.callback(self.onError,LANG.call_error_general);
+        	                    self.callback(self.onFinish,true,LANG.call_error_general);
+        	                    self.finishCalling();
         	                    return;
         	                }
         	                
         	                var keys = _.keys(clients);
         	
         	                if(keys.length == 0){
-        	                    self.callback(self.onError,LANG.call_error_usernotonline);
+        	                    self.callback(self.onFinish,true,LANG.call_error_usernotonline);
+        	                    self.finishCalling();
         	                    return;
         	                }
                             
         	                self.callTargetSessionId = keys[0];
-        	                        	                
+        	                	                
         	                self.callback(self.onStateChanged,"User session id is " + self.currentPartnerSessionId);
         
         	                var payload = {
@@ -148,14 +147,13 @@ SPIKA_VideoCallManager = {
         	                        user: SPIKA_UserManager.getUser().get('originalData')
         	                    }
         	                };
-        	                
-        	                
+
         	                // make call request
         	                self.webRTC.connection.emit('message', payload, function (err, result) {
 
         	                });
         	                
-        	                
+        	                self.joinRoom(self.callTargetUserId);
         	
         	            }
         	        });
@@ -183,11 +181,24 @@ SPIKA_VideoCallManager = {
                 
                 if(_.isNull(commandType))
                     return;
-            
+                
+                U.l(message);
+                
+                if(commandType == 'callEnd'){
+                    
+                    U.l("callEnd");
+
+                    self.finishCalling();
+
+	                self.callback(self.onFinish,false,LANG.call_finished);
+		                	
+                }
+                
                 if(commandType == 'callOffer'){
                     
                     
                     self.callerFromUserId = message.payload.user.id;
+                    self.callTargetSessionId = message.from;
                     
                     if(!_.isEmpty(self.callerFromUserId)){
                     
@@ -200,6 +211,7 @@ SPIKA_VideoCallManager = {
                     
                     
                 }
+
 
             });
 
@@ -217,12 +229,12 @@ SPIKA_VideoCallManager = {
     isCalling: function(){
         return this.callTargetUserId != 0;
     },
-    startCalling: function(userId,onError,onStateChangedCaller,onP2PEstablishedCaller){
+    startCalling: function(userId,onFinish,onStateChangedCaller,onP2PEstablishedCaller){
         
         this.connecionState = CALLERSTATE_ESTABLISHINGCONNECTION;
 
         this.callTargetUserId = userId;
-        this.onError = onError;
+        this.onFinish = onFinish;
         this.onStateChangedCaller = onStateChangedCaller;
         this.onP2PEstablishedCaller = onP2PEstablishedCaller;
         
@@ -231,28 +243,62 @@ SPIKA_VideoCallManager = {
         this.webRTC.startLocalVideo();
         
     },
-    callReceived: function(onCallReceived,onError,onStateChangedReceiver,onP2PEstablishedReceiver){
+    callReceived: function(onCallReceived,onFinish,onStateChangedReceiver,onP2PEstablishedReceiver){
         
         this.connecionState = RECEIVERSTATE_CALLRECEIVED;
         this.onCallReceived = onCallReceived;
-        this.onError = onError;
+        this.onFinish = onFinish;
         this.onStateChangedReceiver = onStateChangedReceiver;
         this.onP2PEstablishedReceiver = onP2PEstablishedReceiver;
         
         this.callback(this.onStateChangedReceiver,"Initializing local devices...");
                 
     },
-    callback: function(callbackfunc,param){
+    callback: function(callbackfunc,param1,param2){
         
         if(_.isFunction(callbackfunc)){
-            callbackfunc(param);
+            callbackfunc(param1,param2);
         }
         
     },
     
     finishCalling: function(){
+    
+        var self = this;
+        
+        if(this.connecionState == IDLE)
+            return;
+            
         this.callTargetUserId == 0;
         this.connecionState = IDLE;
+        
+        this.webRTC.stopLocalVideo();
+        this.joinRoom(SPIKA_UserManager.getUser().get('id'));
+
+        var payload = {
+            to: this.callTargetSessionId,
+            from: this.webRTC.connection.socket.sessionid,
+            type : 'callEnd',
+            payload : {
+                user: SPIKA_UserManager.getUser().get('originalData')
+            }
+        };
+        
+        // send call end
+        this.webRTC.connection.emit('message', payload, function (err, result) {
+            
+            if (err) {
+                
+                self.error(LANG.call_error_general);
+                
+            } else {
+                
+                U.l(result);
+                
+            }
+
+        });
+        
         
     },
     
