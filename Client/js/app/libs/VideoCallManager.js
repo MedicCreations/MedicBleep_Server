@@ -2,8 +2,13 @@ var IDLE = 0;
 
 var CALLERSTATE_IDLE = 1;
 var CALLERSTATE_ESTABLISHINGCONNECTION = 2;
+var CALLERSTATE_CONNECTIONESTSBLISHED = 3;
+var CALLERSTATE_CALLESTABLISHED = 4;
 
 var RECEIVERSTATE_CALLRECEIVED = 10;
+var RECEIVERSTATE_ESTABLISHINGCONNECTION = 11;
+var RECEIVERSTATE_CONNECTIONESTSBLISHED = 12;
+var RECEIVERSTATE_CALLESTABLISHED = 14;
 
 
 SPIKA_VideoCallManager = {
@@ -15,6 +20,7 @@ SPIKA_VideoCallManager = {
     
     // caller callbacks
     onP2PEstablishedCaller:null,
+    onAcceptedCaller:null,
     onStateChangedCaller:null,
     callTargetUserId:0,
     callTargetSessionId:'',
@@ -23,6 +29,8 @@ SPIKA_VideoCallManager = {
     onCallReceived:null,
     onStateChangedReceiver:null,
     onP2PEstablishedReceiver:null,
+    onAcceptedReceiver:null,
+
     callerFromUserId:null,
 
     // general callbacks
@@ -31,6 +39,8 @@ SPIKA_VideoCallManager = {
     connecionState: IDLE, 
     isConnected:false,
     callbackListener: null,
+    audioActivated: false,
+    videoActivated: false,
     init:function(userId){
          
         var self = this;
@@ -99,6 +109,70 @@ SPIKA_VideoCallManager = {
                 self.callback(self.onFinish,true,"Failed to initialize local devices.");
                 self.finishCalling();
             });
+
+            // a peer video has been added
+            this.webRTC.on('videoAdded', function (video, peer) {
+                
+                
+                // show the ice connection state
+                if (peer && peer.pc) {
+                    
+                    peer.pc.on('iceConnectionStateChange', function (event) {
+                    
+                        switch (peer.pc.iceConnectionState) {
+	                        case 'checking':
+	                            U.l('webrtc con checking'); 
+	                            break;
+	                        case 'connected':
+	                            U.l('webrtc con connected'); 
+	                        case 'completed':{
+
+                                // caller
+                                if(self.isCalling() && self.connecionState == CALLERSTATE_ESTABLISHINGCONNECTION){
+                                    
+                                    self.callback(self.onStateChangedCaller,"Connection Established...");
+                                    self.callback(self.onP2PEstablishedCaller);
+                                    
+                                    self.connecionState = CALLERSTATE_CONNECTIONESTSBLISHED;
+                                    
+                                    
+                                    
+                                }
+                                
+                                // reciver
+                                if(!self.isCalling() && self.connecionState == RECEIVERSTATE_ESTABLISHINGCONNECTION){
+                                    
+                                    self.callback(self.onStateChangedReceiver,"Connection Established...");
+                                    self.callback(self.onP2PEstablishedReceiver);
+                                    
+                                    self.connecionState = RECEIVERSTATE_CONNECTIONESTSBLISHED;
+                                    
+                                    
+                                    
+                                }
+
+                                
+	                            break;
+	                        }
+	                        case 'disconnected':
+	                            U.l('webrtc con disconnected'); 
+	                            break;
+	                        case 'failed':
+	                        	U.l('webrtc con failed'); 
+	                        	if(self.callState != 0)
+	                            	self.error(LANG.call_error_rtc_failed);
+	                            	
+	                            break;
+	                        case 'closed':
+	                            U.l('webrtc con closed'); 
+	                            break;
+                        }
+                        
+                    });
+                    
+                }
+                    
+            });
             
             this.webRTC.on('readyToCall', function () {
             
@@ -153,6 +227,8 @@ SPIKA_VideoCallManager = {
 
         	                });
         	                
+                            self.muteAudio();
+                            self.muteVideo();
         	                self.joinRoom(self.callTargetUserId);
         	
         	            }
@@ -161,15 +237,14 @@ SPIKA_VideoCallManager = {
                 } // caller
                 
                 // reciver
-                U.l(self.callTargetUserId);
-                U.l(self.callTargetUserId);
-                U.l(self.isCalling());
                 
                 if(!self.isCalling() && self.connecionState == RECEIVERSTATE_CALLRECEIVED){
                     
-                    U.l('joining to the room');
+                    self.muteAudio();
+                    self.muteVideo();
                     self.joinRoom(SPIKA_UserManager.getUser().get('id'));
-                    
+                    self.connecionState = RECEIVERSTATE_ESTABLISHINGCONNECTION;
+                    self.callback(self.onStateChangedReceiver,"Connecting to peer...");
                 }
                 
             });
@@ -186,14 +261,27 @@ SPIKA_VideoCallManager = {
                 
                 if(commandType == 'callEnd'){
                     
-                    U.l("callEnd");
-
+                    self.callback(self.onFinish,false,LANG.call_finished);
                     self.finishCalling();
-
-	                self.callback(self.onFinish,false,LANG.call_finished);
-		                	
+	
                 }
-                
+
+                if(commandType == 'callAnswer'){
+                    
+                    U.l("accepted");
+                    U.l(self.connecionState);
+                    
+                    if(self.connecionState != CALLERSTATE_CONNECTIONESTSBLISHED)
+                        return;
+                        
+                    self.connecionState = CALLERSTATE_CALLESTABLISHED;
+                    
+                    self.callback(self.onStateChangedReceiver,"Call established");
+                    self.callback(self.onAcceptedCaller);
+                    
+                }
+
+
                 if(commandType == 'callOffer'){
                     
                     
@@ -202,7 +290,7 @@ SPIKA_VideoCallManager = {
                     
                     if(!_.isEmpty(self.callerFromUserId)){
                     
-                        self.connecionState == RECEIVERSTATE_CALLRECEIVED;
+                        self.connecionState = RECEIVERSTATE_CALLRECEIVED;
                         self.callback(self.onCallReceived,self.callerFromUserId);
                         
                         self.webRTC.startLocalVideo();
@@ -229,7 +317,7 @@ SPIKA_VideoCallManager = {
     isCalling: function(){
         return this.callTargetUserId != 0;
     },
-    startCalling: function(userId,onFinish,onStateChangedCaller,onP2PEstablishedCaller){
+    startCalling: function(userId,onFinish,onStateChangedCaller,onP2PEstablishedCaller,onAcceptedCaller){
         
         this.connecionState = CALLERSTATE_ESTABLISHINGCONNECTION;
 
@@ -237,19 +325,21 @@ SPIKA_VideoCallManager = {
         this.onFinish = onFinish;
         this.onStateChangedCaller = onStateChangedCaller;
         this.onP2PEstablishedCaller = onP2PEstablishedCaller;
+        this.onAcceptedCaller = onAcceptedCaller;
         
         this.callback(this.onStateChangedCaller,"Initializing local devices...");
         
         this.webRTC.startLocalVideo();
         
     },
-    callReceived: function(onCallReceived,onFinish,onStateChangedReceiver,onP2PEstablishedReceiver){
+    callReceived: function(onCallReceived,onFinish,onStateChangedReceiver,onP2PEstablishedReceiver,onAcceptedReceiver){
         
         this.connecionState = RECEIVERSTATE_CALLRECEIVED;
         this.onCallReceived = onCallReceived;
         this.onFinish = onFinish;
         this.onStateChangedReceiver = onStateChangedReceiver;
         this.onP2PEstablishedReceiver = onP2PEstablishedReceiver;
+        this.onAcceptedReceiver = onAcceptedReceiver;
         
         this.callback(this.onStateChangedReceiver,"Initializing local devices...");
                 
@@ -301,6 +391,39 @@ SPIKA_VideoCallManager = {
         
         
     },
+
+    acceptCall:function(){
+        
+        var self = this;
+        
+        var payload = {
+            to: this.callTargetSessionId,
+            from: this.webRTC.connection.socket.sessionid,
+            type : 'callAnswer',
+            payload : {
+                user: SPIKA_UserManager.getUser().get('originalData')
+            }
+        };
+        
+        // make call request
+        self.webRTC.connection.emit('message', payload, function (err, result) {
+            
+            if (err) {
+                
+                self.error(LANG.call_error_general);
+                
+            } else {
+                
+                // do nothing because who received a call is already in the room
+                
+            }
+            
+        });
+        
+        this.connecionState = RECEIVERSTATE_CALLESTABLISHED;
+        this.callback(this.onAcceptedReceiver);
+        
+    },
     
     joinRoom: function(userId){
         
@@ -310,5 +433,51 @@ SPIKA_VideoCallManager = {
         
         this.webRTC.joinRoom(params);
         
+    },
+    
+    muteAudio: function(){
+        
+        this.audioActivated = false;
+        this.webRTC.mute();
+        
+    },
+    unmuteAudio: function(){
+        
+        this.audioActivated = true;
+        this.webRTC.unmute();
+        
+    },
+    tuggleAudio: function(){
+        
+        if(this.audioActivated)
+            this.muteAudio();
+        else
+            this.unmuteAudio();
+        
+        return this.audioActivated;
+    },
+    
+    muteVideo: function(){
+        
+        this.videoActivated = false;
+        this.webRTC.pauseVideo();
+        
+    },
+    unmuteVideo: function(){
+        
+        this.videoActivated = true;
+        this.webRTC.resumeVideo();
+        
+    },
+    tuggleVideo: function(){
+        
+        if(this.videoActivated)
+            this.muteVideo();
+        else
+            this.unmuteVideo();
+        
+        return this.videoActivated;
     }
+
+
 }

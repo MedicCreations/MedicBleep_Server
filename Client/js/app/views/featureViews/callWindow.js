@@ -105,22 +105,16 @@ var SPIKA_CallWindow = Backbone.View.extend({
 
         $$('#btn_tuggle_audio').click(function(){
             
-            if(SPIKA_VideoCallManager.tuggleAudio()){
-                $(this).text(LANG.muteaudio);
-            }else{
-                $(this).text(LANG.unmuteaudio);
-            }
+            SPIKA_VideoCallManager.tuggleAudio();
+            self.syncMediaStateWithButton();
             
         });
         
 
         $$('#btn_tuggle_video').click(function(){
             
-            if(SPIKA_VideoCallManager.tuggleVideo()){
-                $(this).text(LANG.mutevideo);
-            }else{
-                $(this).text(LANG.unmutevideo);
-            }
+            SPIKA_VideoCallManager.tuggleVideo();
+            self.syncMediaStateWithButton();
             
         });
         
@@ -137,8 +131,9 @@ var SPIKA_CallWindow = Backbone.View.extend({
         
         $$('#btn_call_accept').click(function(){
             
+            SPIKA_soundManager.stopRinging();
             SPIKA_VideoCallManager.acceptCall();
-			SPIKA_soundManager.stopRinging();
+			
 			
 			$$('#btn_call_close').show();
 			$$('#btn_call_accept').hide();
@@ -151,14 +146,11 @@ var SPIKA_CallWindow = Backbone.View.extend({
         
         $$('#btn_call_decline').click(function(){
             
-            SPIKA_VideoCallManager.declineCall();
-            
+            SPIKA_soundManager.stopRinging();
             SPIKA_VideoCallManager.finishCalling();
+            
             $$(self.windowEmlSelector).fadeOut();
             $$(self.windowEmlSelectorCalling).fadeOut();
-            
-            SPIKA_soundManager.stopRinging();
-
 
         });
 
@@ -170,8 +162,9 @@ var SPIKA_CallWindow = Backbone.View.extend({
 			$$('#btn_call_decline').show();
 
 
-            $$(self.windowEmlSelector).fadeIn();
-            $$(self.windowEmlSelectorCalling).fadeIn();
+            $$(self.windowEmlSelector).hide();
+            $$(self.windowEmlSelectorCalling).hide();
+
 
             self.currentCallOptions = {
                 userId: callerUserId,
@@ -180,23 +173,36 @@ var SPIKA_CallWindow = Backbone.View.extend({
             };
             
             self.loadAvatars();
+            
 
-		},function(errorMessage){
+		},function(isError,errorMessage){
 		    
 		    // on error
-			SPIKA_AlertManager.show(LANG.general_errortitle,errorMessage);
+		    
+		    if(isError)
+			    SPIKA_AlertManager.show(LANG.general_errortitle,errorMessage);
 			
             $$(self.windowEmlSelector).fadeOut();
             $$(self.windowEmlSelectorCalling).fadeOut();
             
+            SPIKA_soundManager.stopRinging();
+            
 		},function(stateDescription){
 		    
 		    // on statuschanged
+		    U.l(stateDescription);
 		    $$(self.windowEmlSelectorCalling + " .statustext").text(stateDescription);
 		    
 		},function(){
     		
     		// on established
+    		SPIKA_soundManager.playRinging();
+    		$$(self.windowEmlSelectorCalling).fadeIn();
+    		
+		},function(){
+            
+            // on accepted
+            self.syncMediaStateWithButton();
     		
 		});
 
@@ -223,10 +229,11 @@ var SPIKA_CallWindow = Backbone.View.extend({
 		$$('#btn_call_decline').hide();
 
 
-        $$(self.windowEmlSelector).fadeIn();
+        $$(self.windowEmlSelector).hide();
         $$(self.windowEmlSelectorCalling).fadeIn();
 
         this.loadAvatars();
+        SPIKA_soundManager.playCalling();
         
 		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,function(isError,message){
 		    
@@ -240,7 +247,8 @@ var SPIKA_CallWindow = Backbone.View.extend({
                 $$(self.windowEmlSelectorCalling).fadeOut();
                 
             }, 500)();
-              
+            
+            SPIKA_soundManager.stopCalling();
 
             
 		},function(stateDescription){
@@ -250,7 +258,22 @@ var SPIKA_CallWindow = Backbone.View.extend({
 		    
 		},function(){
     		
+    		// on established
     		
+		},function(){
+    		
+    		// on accept
+            SPIKA_soundManager.stopCalling();
+            
+            // on accepted
+            self.syncMediaStateWithButton();
+
+			$$('#btn_call_close').show();
+			$$('#btn_call_accept').hide();
+			$$('#btn_call_decline').hide();
+
+			$$(self.windowEmlSelector).fadeIn();
+			$$(self.windowEmlSelectorCalling).fadeOut();
     		
 		});
 
@@ -346,14 +369,15 @@ var SPIKA_CallWindow = Backbone.View.extend({
                     $$('#calling_window .info_from span').text(SPIKA_UserManager.getUser().get('firstname') + " " + SPIKA_UserManager.getUser().get('lastname'));
                     $$('#calling_window .info_to span').text(userData.get('firstname') + " " + userData.get('lastname'));
         		}else{
-            		AvatarManager.process($$('#calling_window .info_to img'),userData.get('image_thumb'));  		
-            		AvatarManager.process($$('#calling_window .info_from img'),SPIKA_UserManager.getUser().get('image_thumb'));  		
+            		AvatarManager.process($$('#calling_window .info_to img'),SPIKA_UserManager.getUser().get('image_thumb'));  	
+            		AvatarManager.process($$('#calling_window .info_from img'),userData.get('image_thumb')); 		
 
                     $$('#calling_window .info_to span').text(SPIKA_UserManager.getUser().get('firstname') + " " + SPIKA_UserManager.getUser().get('lastname'));
                     $$('#calling_window .info_from span').text(userData.get('firstname') + " " + userData.get('lastname'));
         		}
     		
-                $$(self.windowEmlSelectorCalling).show();
+                if(SPIKA_VideoCallManager.isCalling())
+                    $$(self.windowEmlSelectorCalling).show();
                 
 	        },function(data){
 	        
@@ -368,16 +392,22 @@ var SPIKA_CallWindow = Backbone.View.extend({
 		    
     		if(self.currentCallOptions.callerIsMe){
         		AvatarManager.process($$('#calling_window .info_from img'),SPIKA_UserManager.getUser().get('image_thumb'));  		
-        		AvatarManager.process($$('#calling_window .info_to img'),userData.get('image_thumb'));  		
+        		AvatarManager.process($$('#calling_window .info_to img'),userData.get('image_thumb'));  
+        		
+                $$('#calling_window .info_from span').text(SPIKA_UserManager.getUser().get('firstname') + " " + SPIKA_UserManager.getUser().get('lastname'));
+                $$('#calling_window .info_to span').text(userData.get('firstname') + " " + userData.get('lastname'));
     		}else{
-        		AvatarManager.process($$('#calling_window .info_to img'),userData.get('image_thumb'));  		
-        		AvatarManager.process($$('#calling_window .info_from img'),SPIKA_UserManager.getUser().get('image_thumb'));  		
+        		AvatarManager.process($$('#calling_window .info_to img'),SPIKA_UserManager.getUser().get('image_thumb'));  	
+        		AvatarManager.process($$('#calling_window .info_from img'),userData.get('image_thumb')); 		
+
+                $$('#calling_window .info_to span').text(SPIKA_UserManager.getUser().get('firstname') + " " + SPIKA_UserManager.getUser().get('lastname'));
+                $$('#calling_window .info_from span').text(userData.get('firstname') + " " + userData.get('lastname'));
     		}
-            
-            $$(self.windowEmlSelectorCalling).show();
+    		
+    		if(SPIKA_VideoCallManager.isCalling())
+    		    $$(self.windowEmlSelectorCalling).show();
 
 		}
-		
 
     },
     setPartnerAvatar:function(userData){
@@ -391,5 +421,22 @@ var SPIKA_CallWindow = Backbone.View.extend({
         EncryptManager.decryptImage($$('#call_window .my_video_holder .avatar'),userData.get('image_thumb'),THUMB_PIC_SIZE,apiClient,null,null,false);
         
 	    
+    },
+    
+    syncMediaStateWithButton:function(){
+
+        if(SPIKA_VideoCallManager.videoActivated){
+             $$('#btn_tuggle_video').text(LANG.mutevideo);
+        }else{
+             $$('#btn_tuggle_video').text(LANG.unmutevideo);
+        }            
+        
+        if(SPIKA_VideoCallManager.audioActivated){
+            $$('#btn_tuggle_audio').text(LANG.muteaudio);
+        }else{
+            $$('#btn_tuggle_audio').text(LANG.unmuteaudio);
+        }
+            
     }
+
 });
