@@ -338,6 +338,10 @@ SPIKA_VideoCallManager = {
                 }
 
                 if(commandType == 'callAnswer'){
+
+                    _.debounce(function() {
+                        self.setInitiateMediaState();
+                    }, 500)();
                     
                     self.connecionState = CALLERSTATE_CALLESTABLISHED;
                     
@@ -349,8 +353,6 @@ SPIKA_VideoCallManager = {
                     this.onP2PEstablishedCaller = null;
                     this.onAcceptedCaller = null;
 
-
-                    self.setInitiateMediaState();
                 }
 
 
