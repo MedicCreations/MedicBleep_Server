@@ -6,7 +6,7 @@
 	</div>
 	
 	<div class="my_video_holder">
-		<img class="avatar" />
+		<img class="avatar" style="display:none"/>
 		<video id="localvideo" class="video" />
 	</div>
 	

@@ -19,6 +19,8 @@ var EVENT_CALL_FINISH = 'eventCallFinish';
 var EVENT_CALL_OFFER = 'eventCallOffer';
 var EVENT_CALL_INITIATE = 'eventCallInitiate';
 var EVENT_OPEN_NOTE = 'eventOpenNote';
+var EVENT_OPEN_VIDEO_MESSAGE = 'eventOpenVideoMessage';
+var EVENT_OPEN_VOICE_MESSAGE = 'eventOpenVoiceMessage';
 
 var EVENT_START_PRIVATE_CHAT = 'startPrivateChat';
 var EVENT_START_GROUP_CHAT = 'startGroupChat';

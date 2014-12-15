@@ -895,6 +895,7 @@ footer #mess_type ul li textarea.disabled{
 
 .media_loading_holder{
     position: relative;
+    min-height: 50px;
 }
 
 .media_loading_holder video{
@@ -1373,6 +1374,9 @@ ul#user_menu li a{
     height: 300px;
 }
 
+.record_buttons{
+    margin-top: 10px;
+}
 .record_buttons li{
     width: 60px;
     cursor: pointer;

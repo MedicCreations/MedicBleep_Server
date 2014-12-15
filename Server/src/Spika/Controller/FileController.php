@@ -15,6 +15,8 @@ class FileController extends SpikaBaseController {
 	static $paramName = 'file';
 	static $fileDirName = 'uploads';
 	
+	//static $filePath = $_SERVER['DOCUMENT_ROOT'] . '/msg/spikaenterprise_web/Server/uploads';
+	
 	public function connect(Application $app) {
 		$self = $this;
 		
@@ -27,13 +29,14 @@ class FileController extends SpikaBaseController {
 		$controllers->post('/upload', function (Request $request) use ($app, $self, $mySql) {
 				
 			$file = $request->files->get(FileController::$paramName);
-				
+			
+			$filePath = $_SERVER['DOCUMENT_ROOT'] . '/msg/spikaenterprise_web/Server/uploads';			
 			$fineName = $mySql->randomString(20, 20) . time();
 				
-			if(!is_writable(__DIR__.'/../../../'.FileController::$fileDirName))
+			if(!is_writable($filePath))
 				return $self->returnErrorResponse(FileController::$fileDirName ." dir is not writable.", ER_DIR_NOT_WRITABLE);
 		
-			$file->move(__DIR__.'/../../../'.FileController::$fileDirName, $fineName);
+			$file->move($filePath, $fineName);
 			
 			return $app->json(array("message" => "file uploaded", "code" => CODE_SUCCESS, "file_id" => $fineName,), 200);
 		
@@ -45,7 +48,8 @@ class FileController extends SpikaBaseController {
 
 			$requestBodyAry = $request->query->all();
 			$fileID = $requestBodyAry['file_id'];
-			$filePath = __DIR__.'/../../../'.FileController::$fileDirName."/".basename($fileID);
+			$filePath = $_SERVER['DOCUMENT_ROOT'] . '/msg/spikaenterprise_web/Server/uploads';
+			$filePath = $filePath."/".basename($fileID);
             
             $fileContent = file_get_contents($filePath);
             $size = filesize($filePath);

@@ -6,6 +6,7 @@ var SPIKA_CallWindow = Backbone.View.extend({
     windowEmlSelector: "#call_window",
     windowEmlSelectorCalling: "#calling_window",
     currentCallOptions: null,
+    disableMute: false,
     initialize: function(options) {
 	    
 	    var self = this;
@@ -49,6 +50,15 @@ var SPIKA_CallWindow = Backbone.View.extend({
 
         $$('#btn_tuggle_audio').click(function(){
             
+            if(self.disableMute)
+                return;
+            
+            self.disableMute = true;
+            
+            _.debounce(function() {
+                self.disableMute = false;
+            }, 1000)();
+            
             SPIKA_VideoCallManager.tuggleAudio();
             self.syncMediaStateWithButton();
             
@@ -56,6 +66,15 @@ var SPIKA_CallWindow = Backbone.View.extend({
         
 
         $$('#btn_tuggle_video').click(function(){
+
+            if(self.disableMute)
+                return;
+            
+            self.disableMute = true;
+            
+            _.debounce(function() {
+                self.disableMute = false;
+            }, 1000)();
             
             SPIKA_VideoCallManager.tuggleVideo();
             self.syncMediaStateWithButton();
@@ -121,7 +140,7 @@ var SPIKA_CallWindow = Backbone.View.extend({
 
 		},function(isError,errorMessage){
 		    
-		    // on error
+		    // on finish
 		    
 		    if(isError)
 			    SPIKA_AlertManager.show(LANG.general_errortitle,errorMessage);
@@ -196,9 +215,20 @@ var SPIKA_CallWindow = Backbone.View.extend({
         
 		SPIKA_VideoCallManager.startCalling(this.currentCallOptions.userId,function(isError,message){
 		    
-		    // on error
-		    if(isError)
-			    SPIKA_AlertManager.show(LANG.general_errortitle,message);
+		    // on finish
+		    if(isError){
+			    SPIKA_CallFailedDialogManager.show(LANG.general_errortitle,message,function(){
+    			    
+			    },function(){
+    			    
+    			    Backbone.trigger(EVENT_OPEN_VOICE_MESSAGE);
+    			    
+			    },function(){
+    			    
+    			    Backbone.trigger(EVENT_OPEN_VIDEO_MESSAGE);
+
+			    });
+			}
 			
             _.debounce(function() {
               
