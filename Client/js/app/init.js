@@ -18,4 +18,3 @@ var WEBRTC_TURN = "turn:spikaent.com:3478";
 var WEBRTC_TURN_USER = "turn";
 var WEBRTC_TURN_PASSWORD = "turn";
 var WEBRTC_SIGNALING = "https://www.spikaent.com:32443";
- 

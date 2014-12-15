@@ -67,6 +67,7 @@ else{
                     'app/libs/EncryptionManager',
                     'app/libs/AvatarManager',
                     'app/libs/VideoCallManager',
+                    'app/views/dialogs/callFailedDialog',
                     'app/views/dialogs/alertView',
                     'app/views/dialogs/inputPasswordDialog',
                     'app/views/progressView',

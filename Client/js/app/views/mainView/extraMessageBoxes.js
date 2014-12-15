@@ -22,6 +22,29 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 self.hide();
         });
 
+        Backbone.on(EVENT_OPEN_VOICE_MESSAGE, function() {
+
+            if(self.chatId == 0){
+                return;
+            }
+            
+            $$('#extramessage_dialog_view_takeaudio .alert_bottom_ok').css('display','none');
+            self.startRecordingAudio();
+
+
+        });
+
+        Backbone.on(EVENT_OPEN_VIDEO_MESSAGE, function() {
+
+            if(self.chatId == 0){
+                return;
+            }
+            
+            $$('#extramessage_dialog_view_takevideo .alert_bottom_ok').css('display','none');
+            self.startRecordingVideo();
+
+        });
+
     },
 
     render: function() {
