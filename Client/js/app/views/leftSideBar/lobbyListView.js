@@ -5,6 +5,7 @@ var SPIKA_LobbyListView = Backbone.View.extend({
     refreshFromMemory:false,
     chatList:[],
     currentChatId:0,
+    lastSelectedChatId:0,
     initialize: function(options) {
         
         var self = this;
@@ -37,7 +38,7 @@ var SPIKA_LobbyListView = Backbone.View.extend({
             self.listView.refresh();
         });
                 
-        Backbone.on(EVENT_START_CHAT, function(chatId) {
+        Backbone.on(EVENT_ENTER_CHAT, function(chatId) {
             
             self.currentChatId = chatId;
             
@@ -213,17 +214,18 @@ var SPIKA_LobbyListView = Backbone.View.extend({
             if(self.refreshFromMemory == false){
             
                 if(!_.isNull(mainView.chatView.chatData)){
-                    if(chatIdElm == mainView.chatView.chatData.get('chat_id'))
+                    if(chatIdElm == self.lastSelectedChatId)
                         $(this).addClass('selected');        
                 }
                 
             }else{
                 
-                if(chatIdElm == self.currentChatId){
+                if(chatIdElm == self.lastSelectedChatId){
                     $(this).addClass('selected');                   
                 }
                 
             }
+
                 
         });
             
@@ -234,6 +236,8 @@ var SPIKA_LobbyListView = Backbone.View.extend({
         this.ignoreAutoSelect = true;
 
         var chatId = $(elm).attr('chatid');
+        this.lastSelectedChatId = chatId;
+        
         Backbone.trigger(EVENT_START_CHAT,chatId);
 
         $$('#menu_container_lobby li.selected').removeClass('selected');        

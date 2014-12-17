@@ -6,6 +6,7 @@ else{
     requirejs.config({
     
       baseUrl: WEB_ROOT + '/js',
+      waitSeconds: 200,
       shim: {
         'jQuery': { exports: '$' },
         'underscore': { exports: '_' },
