@@ -292,7 +292,6 @@ var SPIKA_ChatView = Backbone.View.extend({
 
         if(!_.isNull(this.chatData.get("chat_id"))){
             this.startChat();
-            Backbone.trigger(EVENT_ENTER_CHAT,this.chatData.get("chat_id"));
         }
     },
     updateWindowSize: function(){
@@ -362,9 +361,10 @@ var SPIKA_ChatView = Backbone.View.extend({
             self.messages.add(newMessages);
 			self.messages.sort();
 
-			if(refresh)
+			if(refresh){
+			    Backbone.trigger(EVENT_ENTER_CHAT,self.chatData.get("chat_id"));
             	self.renderMessages(REFRESH,self.messages.models);
-            else
+            }else
             	self.renderMessages(APPENDTOP,newMessages);
             	
                         

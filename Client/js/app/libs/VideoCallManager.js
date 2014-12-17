@@ -266,6 +266,7 @@ SPIKA_VideoCallManager = {
                     
                 }
                 
+                self.allMute();
 
             });
 
