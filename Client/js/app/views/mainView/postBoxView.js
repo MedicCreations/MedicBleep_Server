@@ -138,7 +138,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
 
     },
 
-    sendMessage : function(message){
+    sendMessage : function(message,type){
         
         if(this.isSending == true)
             return;
@@ -146,6 +146,9 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         if(this.chatId == 0){
             return;
         }
+        
+        if(_.isUndefined(type))
+            type = MESSAGE_TYPE_TEXT;
         
         var self = this;
         
@@ -166,7 +169,7 @@ var SPIKA_PostBoxView = Backbone.View.extend({
         
         var data = {
                 chat_id:self.chatId,
-                type:MESSAGE_TYPE_TEXT,
+                type:type,
                 text:encryptedHex,
                 file_id:'',
                 parent_id:this.replyMeessageId

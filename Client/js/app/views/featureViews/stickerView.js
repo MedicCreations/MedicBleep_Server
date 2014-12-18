@@ -67,7 +67,7 @@ var SPIKA_StickerView = Backbone.View.extend({
             
             var imageUrl = $(this).attr('sticker');
             
-            mainView.chatView.postBoxView.sendMessage(imageUrl);
+            mainView.chatView.postBoxView.sendMessage(imageUrl,MESSAGE_TYPE_STICKER);
             
         });
           
