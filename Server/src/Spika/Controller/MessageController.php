@@ -443,9 +443,11 @@ class MessageController extends SpikaBaseController {
 			$chat_seen_by = "";
 			$chat_seen_by = $mySql->getSeenBy($app, $chat_id);
 			
+			$chat_data = $mySql->getChatWithID($app, $chat_id);
+			
 			$is_chat_member = $mySql->isChatMember($app, $my_user_id, $chat_id);
 			
-			if (!$is_chat_member){
+			if (!$is_chat_member && $chat_data['is_private']){
 				$result = array('code' => ER_NOT_CHAT_MEMBER, 
 						'message' => 'Not chat member');
 				
