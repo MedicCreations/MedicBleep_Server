@@ -150,8 +150,7 @@ Spika Enterprise Team
 				$app['db']->insert('organization', $values);
 				
 				$self->sendEmail($email,$self->lang['registEmailSubject'],$emailBody);
-				$self->sendEmail("info@clover-studio.com","Spika Registration","We got new customer !
-" . $email);
+				$self->sendEmail("info@clover-studio.com","Spika Registration","We got new customer !" . $email);
 
 	            return $self->render('regist_thankyou.twig', array(
 	            ));
