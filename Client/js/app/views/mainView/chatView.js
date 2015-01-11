@@ -498,7 +498,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             U.l(ex);
         }        
         
-        if(messageType == MESSAGE_TYPE_TEXT){
+        if(messageType == MESSAGE_TYPE_TEXT || messageType == MESSAGE_TYPE_STICKER){
             content = decryptedText;
            
             var isCode = false;
@@ -568,7 +568,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
         
         else {
-            content = message.get('text');
+            content = decryptedText;
         }
         
         if(message.get('is_deleted') == 1){
