@@ -56,6 +56,8 @@ class LobbyController extends SpikaBaseController {
 						$chat['chat_name'] = $chat_data['name'];
 						$chat['image'] = $chat_data['image'];
 						$chat['image_thumb'] = $chat_data['image_thumb'];
+						
+						$chat['last_message'] = $mySql->getLastMessage($app, $chat['chat_id']);
 					
 					}
 						
@@ -71,6 +73,8 @@ class LobbyController extends SpikaBaseController {
 							$chat_members = $mySql->getChatMembers($app, $chat['chat_id']);
 							$chat['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
 						}
+						
+						$chat['last_message'] = $mySql->getLastMessage($app, $chat['chat_id']);
 						
 					}
 						
@@ -105,6 +109,8 @@ class LobbyController extends SpikaBaseController {
 						$chat['chat_name'] = $chat_data['name'];
 						$chat['image'] = $chat_data['image'];
 						$chat['image_thumb'] = $chat_data['image_thumb'];
+						
+						$chat['last_message'] = $mySql->getLastMessage($app, $chat['chat_id']);
 							
 					}
 					
@@ -136,6 +142,8 @@ class LobbyController extends SpikaBaseController {
 							$chat_members = $mySql->getChatMembers($app, $chat['chat_id']);
 							$chat['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
 						}
+						
+						$chat['last_message'] = $mySql->getLastMessage($app, $chat['chat_id']);
 					
 					}
 					
@@ -174,6 +182,8 @@ class LobbyController extends SpikaBaseController {
 								$chat['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
 							}
 						}
+						
+						$chat['last_message'] = $mySql->getLastMessage($app, $chat['chat_id']);
 						
 					}
 					

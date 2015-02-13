@@ -24,14 +24,18 @@ class UserController extends SpikaBaseController {
 		
 		$controllers = $app ['controllers_factory'];
 		
-		// login user
-		$controllers->post ( '/login', function (Request $request) use($app, $self, $mySql, $ldap) {
-						
+		// pre login
+		$controllers->post ( '/prelogin', function (Request $request) use($app, $self, $mySql, $ldap) {
+            
+            $body = $request->getContent();
+            
+            $app['monolog']->addDebug("--" . $body . "---");
+            
 			$paramsAry = $request->request->all();
 			
 			$username = $paramsAry['username'];
 			$password = $paramsAry['password'];
-			
+
 			//try login with temp password
 			$user = $mySql->loginWithTempPass($app, $username, $password);
 			
@@ -39,7 +43,7 @@ class UserController extends SpikaBaseController {
 			
 				$temp_pass_timestamp = $user ['temp_password_timestamp'];
 				$currentTimestamp = time ();
-				$temp_pass_time = $temp_pass_timestamp + TEMP_PASSWORD_VALID_TIME;
+				$temp_pass_time = $temp_pass_timestamp + PW_RESET_CODE_VALID_TIME;
 					
 				if ($temp_pass_time < $currentTimestamp) {
 					//temp password is not valid
@@ -61,22 +65,48 @@ class UserController extends SpikaBaseController {
 			
 			}
 			
+            $organizations = $mySql->getOrganizationsByCredential($app, $username, $password);
+            
+            if(count($organizations) > 0){
+    			$result = array(
+    			    'code' => CODE_SUCCESS, 
+    			    'organizations' => $organizations);
+    			
+            } else {
+                $result = array('code' => ER_INVALID_LOGIN, 'message' => 'Invalid username or password');
+            }
+            
+            return $app->json($result, 200);
+			
+		});
+		
+		// login user
+		$controllers->post ( '/login', function (Request $request) use($app, $self, $mySql, $ldap) {
+						
+			$paramsAry = $request->request->all();
+			
+			$username = $paramsAry['username'];
+			$password = $paramsAry['password'];
+			$organizationId = 0;
+			
+			if(isset($paramsAry['organization_id'])){
+    			$organizationId = $paramsAry['organization_id'];
+			}
+			
 			//login
-			$login_result = $mySql->loginUser($app, $password, $username, $self->getDeviceType($request->headers->get('user-agent')) );
-			
-			
-			$app['monolog']->addDebug(" login user " . print_r($login_result,true));  
-			$app['monolog']->addDebug(" login device " . $self->getDeviceType($request->headers->get('user-agent')) . "::" . $request->headers->get('user-agent'));  
+			$login_result = $mySql->loginUser($app, $password, $username, $organizationId, $self->getDeviceType($request->headers->get('user-agent')) );
 			
 			if ($login_result['auth_status'] === FALSE) {
 				$result = array('code' => ER_INVALID_LOGIN, 'message' => 'Invalid username or password');
 			} else {
 				$result = array('code' => CODE_SUCCESS, 
 						'user_id' =>  $login_result['user']['id'],
+						'organization_id' =>  $login_result['user']['organization_id'],
 						'token' => $login_result['user']['token'],
 						'firstname' => $login_result['user']['firstname'],
 						'lastname' => $login_result['user']['lastname'],
 						'image' => $login_result['user']['image'],
+						'organizations' => $login_result['organizations'],
 						'image_thumb' => $login_result['user']['image_thumb']);
 				
 				// regist device
@@ -348,6 +378,8 @@ class UserController extends SpikaBaseController {
 			
 			$details = json_decode($user['details'],true);
 			$user['details'] = $details;
+			
+			$user['organization'] = $mySql->getOrganizationByID($app, $app['user']['organization_id']);
 				
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK', 
@@ -419,40 +451,16 @@ class UserController extends SpikaBaseController {
 			
 			}
 			
-			$my_user_id = $user['id'];
-			$user_details = $user['details'];
-			
-			$details_ary = json_decode($user_details, true);
-			
-			$has_email = false;
-			$email = "";
-			foreach ($details_ary as $detail){
-			
-				if (isset($detail['email'])){
-					$has_email = true;
-					$email = $detail['email'];
-					break;
-				}
-			
-			}
-			
-			if (!$has_email){
+			if (empty($user['email'])){
 				$result = array('code' => ER_EMAIL_MISSING,
 					'message' => 'Your email is missing');
 				return $app->json($result, 200);	
 			}
 			
 			//create temp pass
-			$temp_pass = $mySql->createTempPassword($app, $my_user_id);
+			$temp_pass = $mySql->createTempPassword($app, $user['id']);
 			
-			//send email
-			$message = \Swift_Message::newInstance()
-				->setSubject('Spika forgot password')
-				->setFrom(array('sinisa.brcina@clover-studio.com'))
-				->setTo(array($email))
-				->setBody('Your temp password is: ' . $temp_pass . ' and will be valid for one hour');
-	
-			$app['mailer']->send($message);
+			$self->sendEmail($user['email'],'Spika forgot password','Your temp password is: ' . $temp_pass . ' and will be valid for one hour');
 			
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK');
@@ -479,33 +487,13 @@ class UserController extends SpikaBaseController {
 			
 			}
 			
-			$passwordExist = $mySql->checkPassword($app, $user['username'], $new_password);
-			
-			if ($passwordExist){
-				
-				$result = array('code' => ER_PASSWORD_EXIST,
-					'message' => 'Password already exist');
-				return $app->json($result, 200);
-			
-			}
-			
 			$my_user_id = $user['id'];
-			
-			$token = $self->randomString(40,40);
-			$values = array('password' => $new_password,
-						'token' => $token);
-			
-			$mySql->updateUser($app, $my_user_id, $values);
-			
-			$user = $mySql->getUserById($app, $my_user_id);
-			
-			$result = array('code' => CODE_SUCCESS,
-						'user_id' =>  $user['id'],
-						'token' => $user['token'],
-						'firstname' => $user['firstname'],
-						'lastname' => $user['lastname'],
-						'image' => $user['image'],
-						'image_thumb' => $user['image_thumb']);
+						
+			$mySql->updateUserPassword($app, $my_user_id, $new_password);
+						
+            $organizations = $mySql->getOrganizationsByCredential($app, $user['username'], $new_password);
+    			    
+			$result = array('code' => CODE_SUCCESS,'organizations' => $organizations);
 		
 			return $app->json($result, 200);
 		
@@ -518,7 +506,7 @@ class UserController extends SpikaBaseController {
 			
 			$new_password = $paramsAry['new_password'];
 			
-			$my_user_id = $app['user']['id'];
+			$my_user_id = $app['user']['master_user_id'];
 			
 			$passwordExist = $mySql->checkPassword($app, $app['user']['username'], $new_password);
 			
@@ -531,12 +519,16 @@ class UserController extends SpikaBaseController {
 			}
 			
 			$token = $self->randomString(40,40);
-			$values = array('password' => $new_password,
-						'token' => $token);
+			$values = array('password' => $new_password);
 			
-			$mySql->updateUser($app, $my_user_id, $values);
+			$mySql->updateUserMst($app, $app['user']['master_user_id'], $values);
+
+			$values = array('token' => $token);
+			$mySql->updateUser($app, $app['user']['id'], $values);
 			
-			$user = $mySql->getUserById($app, $my_user_id);
+
+			
+			$user = $mySql->getUserById($app, $app['user']['id']);
 			
 			$result = array('code' => CODE_SUCCESS,
 						'user_id' =>  $user['id'],

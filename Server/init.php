@@ -26,6 +26,8 @@ define('DB_USERNAME', "root");
 define('DB_PASSWORD', "cloverpass013");
 
 
+define("AES_PASSWORD","jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB"); 
+
 define('LDAP_SERVER', '192.168.1.180');
 define('LDAP_PORT', 389);
 define('LDAP_BASE_DN', 'DC=clover-studio,DC=com');
@@ -100,6 +102,10 @@ define('ER_LOGIN_WITH_TEMP_PASS', 1012);
 define('ER_USERNAME_NOT_EXIST', 1013);
 define('ER_INVALID_TEMP_PASSWORD', 1014);
 define('ER_PASSWORD_EXIST', 1015);
+
+define('ER_ROOM_LIMIT', 1016);
+define('ER_DISKSPACE_LIMIT', 1017);
+
 
 // device types
 define('DEVICE_IOS', 2);

@@ -175,6 +175,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             self.openCallDialog(false,true);
             
         });
+
         
 
 

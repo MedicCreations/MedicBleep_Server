@@ -36,8 +36,9 @@
 					</div>
 					<!-- end: PAGE HEADER -->
 					<!-- start: PAGE CONTENT -->
-					     
 
+                    {% include 'alert.twig' %}
+	
                     <form role="form" class="form-horizontal form-groups" method="post" action="{{ADMIN_ROOT_URL}}/groups/edit/{{form.id}}" enctype="multipart/form-data">
                         
                         {% include 'groups_form.twig' %}
@@ -61,7 +62,7 @@
 
         var runGroupFormValidator = function () {
             var form = $('.form-groups');
-            var errorHandler = $('.errorHandler', form);
+            var errorHandler = $('.errorHandler');
             form.validate({
                 rules: {
                     name: {

@@ -113,6 +113,19 @@ class RoomController extends SpikaBaseController {
 				array_push($users_to_add_ary, $res['id']);
 			}
 			
+			// check limit
+			$organizationInfo = $app['db']->fetchAssoc("select * from organization where id = ?",array($app['user']['organization_id']));
+			$roomNum = $app['db']->fetchAssoc("select count(*) as count from chat where type=3 and organization_id = ?",array($app['user']['organization_id']));
+			$limitNum = $organizationInfo['max_rooms'];
+            
+			if($roomNum['count'] > $limitNum){
+			    
+    			$result = array('code' => ER_ROOM_LIMIT, 
+    					'message' => 'Rooms limit exceeded.');
+    			
+    			return $app->json($result, 200);
+
+			}
 			//end for web app part
 			
 			$custom_chat_id = $self->createChatCustomID($users_to_add_ary);

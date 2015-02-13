@@ -1,33 +1,5 @@
 	<div class="row">
-    
-        {% if information is defined %}
-            <div class="col-md-12">
-                <div class="alert alert-success">
-                	<button data-dismiss="alert" class="close">
-                		×
-                	</button>
-                	<i class="fa fa-check-circle"></i>
-                	{{information}}
-                </div>
-            </div>
-        {% endif %}
-        
-        {% if error is not defined %}
-            <div class="col-md-12 errorHandler no-display">
-        		<div class="alert alert-danger">
-        			<i class="fa fa-remove-sign"></i>{{lang.users15}}
-        		</div>
-            </div>
-        {% else %}
-            <div class="col-md-12 errorHandler">
-        		<div class="alert alert-danger">
-        			<i class="fa fa-remove-sign"></i> {{error}}
-        		</div>
-            </div>
-        {% endif %}
-    
-        
-		<div class="col-md-9">
+    		<div class="col-md-9">
 		
     		<div class="form-group">
     			<label class="col-sm-3 control-label" for="form-field-1">

@@ -38,19 +38,7 @@
 					<!-- start: PAGE CONTENT -->
 					
 
-                    {% if infomessage is defined %}
-                         <div class="row">
-    					    <div class="col-md-12">
-                                <div class="alert alert-success">
-                                	<button data-dismiss="alert" class="close">
-                                		×
-                                	</button>
-                                	<i class="fa fa-check-circle"></i>
-                                	{{infomessage}}
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
+                    {% include 'alert.twig' %}
                         					
 					<div class="row">
 					    <div class="col-md-3">
@@ -85,7 +73,7 @@
                                                         
                                                         {% for row in users %}
                                                             
-                                                            <option value="{{row.id}}">{{row.firstname}} {{row.lastname}}</option>
+                                                            <option value="{{row.id}}">{{row.email}}</option>
                                                             
                                                         {% endfor %}
                                                         
@@ -110,7 +98,7 @@
                                             </td>
 
     										<td>
-    										      {{row.firstname}} {{row.lastname}}
+    										      {{row.email}} {{row.firstname}} {{row.lastname}}
                                             </td>
     										
     										<td class="right">

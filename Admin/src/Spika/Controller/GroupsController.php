@@ -32,7 +32,7 @@ class GroupsController extends BaseController {
             
             $offset = ($page - 1) * PAGINATOR_PAGESIZE;
             $list = $self->app['db']->fetchAll("select * from groups where is_deleted = 0 and organization_id = {$self->user['id']} limit " . PAGINATOR_PAGESIZE . " offset {$offset} ");
-            $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from groups where is_deleted = 0");
+            $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from groups where is_deleted = 0 and organization_id = {$self->user['id']} ");
             $count = $countAssoc['count'];
             
             return $self->render('groups.twig', array(
@@ -116,10 +116,17 @@ class GroupsController extends BaseController {
                 return $app->redirect(ADMIN_ROOT_URL . '');
 
             $self->page = 'groups';
+
+            $dataUsage = $self->getDataUsage($app);
+            
             return $self->render('groups_add.twig', array(
                 'form' => $self->defaultFormValues(),
                 'mode' => 'add',
-                'categoryList' => $self->getCategoryList()
+                'categoryList' => $self->getCategoryList(),
+                'limit' => $dataUsage['limit'],
+                'usage' => $dataUsage['usage'],
+                'persentage' => $dataUsage['persentage']
+
             ));
 		});		
 
@@ -130,16 +137,29 @@ class GroupsController extends BaseController {
 
             $self->page = 'groups';
             $formValues = $request->request->all();
-            
+
+            $dataUsage = $self->getDataUsage($app);
+
             $errorMessage = $self->validate($request);
             
-            if(!empty($errorMessage)){
+            if($dataUsage['usage'] >= $dataUsage['limit']){
+                
+                $errorMessage = $self->lang['validateionError13'];
+                
+            }
             
+            if(!empty($errorMessage)){
+                
+                $self->setErrorMessage($errorMessage);
+                
                 return $self->render('groups_add.twig', array(
                     'form' => $formValues,
-                    'error' => $errorMessage,
                     'mode' => 'add',
-                    'categoryList' => $self->getCategoryList()
+                    'categoryList' => $self->getCategoryList(),
+                    'limit' => $dataUsage['limit'],
+                    'usage' => $dataUsage['usage'],
+                    'persentage' => $dataUsage['persentage']
+
                 ));
                 
             }else{
@@ -172,15 +192,23 @@ class GroupsController extends BaseController {
                 
                 $lastGourpIdAry = $this->app['db']->fetchAssoc("select max(id) as maxid from groups");
                 $lastGourpId = $lastGourpIdAry['maxid'];
+				
+				$values = array(
+						'type' => 2,
+						'is_active' => 1,
+						'group_id' => $lastGourpId,
+    			        'organization_id' => $self->user['id'],
+    					'name' => $formValues['name'],
+    					'category' => $formValues['category'],
+    					'image' => $image,
+    					'image_thumb' => $imageThumb,
+    					'created' => time(), 
+    					'modified' => time());
+
+    			$app['db']->insert('chat', $values);
                 
                 $self->setInfoMessage($self->lang['groups5']);
                 return $app->redirect(ADMIN_ROOT_URL . '/groups/members/' . $lastGourpId);
-                
-                return $self->render('groups_add.twig', array(
-                    'form' => $self->defaultFormValues(),
-                    'information' => $self->lang['groups9'],
-                    'mode' => 'add'
-                ));
                 
             }
             
@@ -225,12 +253,13 @@ class GroupsController extends BaseController {
             if(isset($formValues['edit_profile'])){
 
                 $errorMessage = $self->validate($request,true);
-                
+                                
                 if(!empty($errorMessage)){
-                
+
+                    $self->setErrorMessage($errorMessage);
+
                     return $self->render('groups_edit.twig', array(
                         'form' => array_merge($data,$formValues),
-                        'error' => $errorMessage,
                         'mode' => 'edit',
                         'categoryList' => $self->getCategoryList()
                     ));
@@ -262,12 +291,10 @@ class GroupsController extends BaseController {
         			$app['db']->update('groups', $values,array('id' => $groupId));
                     
                     $data = $this->app['db']->fetchAssoc("select * from groups where id = ? and organization_id = {$self->user['id']} ", array($groupId));
-                    return $self->render('groups_edit.twig', array(
-                        'form' => $data,
-                        'information' => $self->lang['groups14'],
-                        'mode' => 'edit',
-                        'categoryList' => $self->getCategoryList()
-                    ));
+
+                    $self->setInfoMessage($self->lang['groups14']);
+                    return $app->redirect(ADMIN_ROOT_URL . '/groups/');
+
                     
                 }	
             
@@ -291,13 +318,32 @@ class GroupsController extends BaseController {
             
             $offset = ($page - 1) * PAGINATOR_PAGESIZE;
             
-            $list = $self->app['db']->fetchAll("select * from user where id in ( select user_id from group_member where group_id = ? ) and is_deleted = 0  and organization_id = {$self->user['id']}  order by created desc limit " . PAGINATOR_PAGESIZE . " offset {$offset} ", array($groupId));
+            $list = $self->app['db']->fetchAll("
+                select user.*,user_mst.email
+                from user 
+                left join user_mst on user_mst.id = user.master_user_id
+                where user.id in ( select user_id from group_member where group_id = ? ) 
+                and user.is_deleted = 0  
+                and organization_id = {$self->user['id']}  
+                order by created desc limit " . PAGINATOR_PAGESIZE . " offset {$offset} ", array($groupId));
 
-            $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from user where id in ( select user_id from group_member where group_id = ? ) and is_deleted = 0 and organization_id = {$self->user['id']} ", array($groupId));
+            $countAssoc = $self->app['db']->fetchAssoc("
+                select count(*) as count 
+                from user 
+                left join user_mst on user_mst.id = user.master_user_id
+                where user.id in ( select user_id from group_member where group_id = ? ) 
+                and user.is_deleted = 0 
+                and organization_id = {$self->user['id']} ", array($groupId));
             
             $count = $countAssoc['count'];
             
-            $memberList = $self->app['db']->fetchAll("select id,firstname,lastname from user where is_deleted = 0 and not id in ( select user_id from group_member where group_id = ? ) and organization_id = {$self->user['id']} ", array($groupId));
+            $memberList = $self->app['db']->fetchAll("
+                select user.id,user_mst.email
+                from user 
+                left join user_mst on user_mst.id = user.master_user_id
+                where user_mst.is_deleted = 0 
+                and not user_mst.id in ( select user_id from group_member where group_id = ? ) 
+                and organization_id = {$self->user['id']} ", array($groupId));
             
             return $self->render('groups_member.twig', array(
                 'pager' => array(
@@ -328,6 +374,18 @@ class GroupsController extends BaseController {
                 $usersToAdd = $formValues['usersselect'];
             }
             
+			//get chat id
+			$chat = $self->app['db']->fetchAssoc("select * from chat where group_id = ? and organization_id = {$self->user['id']} ", array($groupId));
+			$chat_id = $chat['id'];
+			//get chat members
+			$chatUsersList = $self->app['db']->fetchAll("select user_id from chat_member where chat_id = ? and organization_id = {$self->user['id']} ", array($chat_id));
+            $originalChatUsers = array();
+            
+            foreach($chatUsersList as $row){
+                $originalChatUsers[] = $row['user_id'];
+            }
+			
+			//get group members
             $usersList = $self->app['db']->fetchAll("select user_id from group_member where group_id = ? and organization_id = {$self->user['id']} ", array($groupId));
             $originalUsers = array();
             
@@ -348,6 +406,19 @@ class GroupsController extends BaseController {
                     ));
                                  
                 }
+				
+				//add to chat
+				if(!in_array($userId, $originalChatUsers)){
+                    
+                    $app['db']->insert('chat_member', array(
+                        'organization_id' => $self->user['id'],
+                        'chat_id' => $chat_id,
+                        'user_id' => $userId,
+                        'created' => time(),
+                        'modified' => time()
+                    ));
+                                 
+                }
                 
             }
             
@@ -362,13 +433,22 @@ class GroupsController extends BaseController {
 
             $self->page = 'groups';
             $self->setInfoMessage($self->lang['groups28']);
-            
 
             $app['db']->delete('group_member', array(
                 'group_id' => $groupId,
                 'user_id' => $userId
             ));
-                    
+			
+			//get chat id
+			$chat = $self->app['db']->fetchAssoc("select * from chat where group_id = ? and organization_id = {$self->user['id']} ", array($groupId));
+			$chat_id = $chat['id'];
+            
+			//delete user from chat
+			 $app['db']->delete('chat_member', array(
+                'chat_id' => $chat_id,
+                'user_id' => $userId
+            ));
+			
             return $app->redirect(ADMIN_ROOT_URL . '/groups/members/' . $groupId);
             			
 		});
@@ -429,6 +509,21 @@ class GroupsController extends BaseController {
         }
         
         return $categoryList;
+	}
+
+	function getDataUsage($app){
+    	
+        $organization = $app['db']->fetchAssoc('select * from organization where id = ?',array($this->user['id']));
+        $limit = $organization['max_groups'];
+        $usageData = $app['db']->fetchAssoc('select count(*) as count from groups where organization_id = ? and is_deleted = 0',array($this->user['id']));
+        $usage = $usageData['count'];
+        
+        return array(
+            'limit' => $limit,
+            'usage' => $usage,
+            'persentage' => floor(intval($usage) / intval($limit) * 100)
+        );
+            
 	}
 	
 	

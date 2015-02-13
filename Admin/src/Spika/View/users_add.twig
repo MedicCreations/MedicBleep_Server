@@ -35,16 +35,66 @@
 </div>
 <!-- end: PAGE HEADER -->
 
+{% include 'alert.twig' %}
+
+	
 <!-- start: PAGE CONTENT -->
 <form role="form" class="form-horizontal form-user" method="post" action="{{ADMIN_ROOT_URL}}/users/add" enctype="multipart/form-data">
 
-    {% include 'users_form.twig' %}
-    
-	<div class="row">
-		<div class="col-md-12 right">
-			<input type="submit" class="btn btn-primary" value="{{lang.users13}}" / >
+	<div class="col-md-9">
+		
+		<div class="form-group">
+			<div class="col-sm-2" for="form-field-1">
+			    
+			</div>
+			<div class="col-sm-9">
+                {{lang.users53}} ( {{usage}} of {{limit}} )
+                <div class="progress">
+                	<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{persentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{persentage}}%">
+                		<span class="sr-only"> {{persentage}} % </span>
+                	</div>
+                </div>
+
+			</div>
 		</div>
+	
+    </div>
+    
+	<div class="col-md-9">
+		
+		<div class="form-group">
+		
+			<label class="col-sm-2 control-label" for="form-field-1">
+			    {{lang.users9}}
+			</label>
+			<div class="col-sm-4">
+				<input type="text" name="firstname" placeholder="{{lang.users9}}" id="form-field-1" class="form-control" value="{{form.firstname}}">
+			</div>
+			
+			<label class="col-sm-2 control-label" for="form-field-2">
+			    {{lang.users10}}
+			</label>
+			<div class="col-sm-4">
+				<input type="text" name="lastname" placeholder="{{lang.users10}}" id="form-field-2" class="form-control" value="{{form.lastname}}">
+			</div>
+		</div>
+		
+		<div class="form-group">
+			<label class="col-sm-2 control-label" for="form-field-3">
+			    {{lang.users43}}
+			</label>
+			<div class="col-sm-10">
+				<input type="text" name="email" placeholder="{{lang.users44}}" id="form-field-3" class="form-control" value="{{form.email}}">
+			</div>
+		</div>
+	
+    </div>
+
+<div class="row">
+	<div class="col-md-12 right">
+		<input type="submit" class="btn btn-primary" value="{{lang.users45}}" / >
 	</div>
+</div>
 	
 </form>
 		
@@ -61,23 +111,14 @@
             var errorHandler = $('.errorHandler', form);
             form.validate({
                 rules: {
-                    username: {
-                        minlength: 6,
-                        loginRegex: true,
-                        required: true
-                    },
-                    password: {
-                        minlength: 6,
-                        loginRegex: true,
-                        required: true
-                    },
-                    password_confirm: {
-                        equalTo: '#input_password'
-                    },
                     firstname: {
                         required: true
                     },
                     lastname: {
+                        required: true
+                    },
+                    email: {
+                        email: true,
                         required: true
                     }
                 },

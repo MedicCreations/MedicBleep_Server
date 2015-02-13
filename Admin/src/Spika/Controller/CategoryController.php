@@ -129,10 +129,11 @@ class CategoryController extends BaseController {
             $errorMessage = $self->validate($request);
             
             if(!empty($errorMessage)){
-            
+                
+                $self->setErrorMessage($errorMessage);
+                
                 return $self->render('categories_add.twig', array(
                     'form' => $formValues,
-                    'error' => $errorMessage,
                     'mode' => 'add'
                 ));
                 
@@ -146,12 +147,9 @@ class CategoryController extends BaseController {
 
     			$app['db']->insert('categories', $values);
 			
-                return $self->render('categories_add.twig', array(
-                    'form' => $self->defaultFormValues(),
-                    'information' => $self->lang['category10'],
-                    'mode' => 'add'
-                ));
-
+                $self->setInfoMessage($self->lang['category10']);
+                return $app->redirect(ADMIN_ROOT_URL . '/categories');
+                
             }
             			
 		});
@@ -194,9 +192,10 @@ class CategoryController extends BaseController {
             
             if(!empty($errorMessage)){
             
+                $self->setErrorMessage($errorMessage);
+
                 return $self->render('categories_edit.twig', array(
                     'form' => array_merge($data,$formValues),
-                    'error' => $errorMessage,
                     'mode' => 'edit'
                 ));
                 
@@ -210,12 +209,10 @@ class CategoryController extends BaseController {
     			$app['db']->update('categories', $values,array('id' => $categoryId));
                 
                 $data = $self->app['db']->fetchAssoc("select * from categories where id = ? and organization_id = {$self->user['id']} ", array($categoryId));
-                
-                return $self->render('categories_edit.twig', array(
-                    'form' => $data,
-                    'information' => $self->lang['category17'],
-                    'mode' => 'edit'
-                ));
+
+                $self->setInfoMessage($self->lang['category17']);
+
+                return $app->redirect(ADMIN_ROOT_URL . '/categories');
                 
             }	
             	

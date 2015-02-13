@@ -36,23 +36,32 @@
 					</div>
 					<!-- end: PAGE HEADER -->
 					<!-- start: PAGE CONTENT -->
-					
+					                
+                	{% include 'alert.twig' %}
+	
+                    <form role="form" class="form-horizontal form-groups" method="post" action="{{ADMIN_ROOT_URL}}/groups/add" enctype="multipart/form-data">
 
-                     <div class="row">
-					    <div class="col-md-12">
-                            <div class="alert alert-warning">
-                            	<button data-dismiss="alert" class="close">
-                            		×
-                            	</button>
-                            	<i class="fa fa-check-circle"></i>
-                            	{{lang.groups5}}
+                        <div class="row">
+                    		<div class="col-md-9">
+                    			
+                        		<div class="form-group">
+                        			<div class="col-sm-2" for="form-field-1">
+                        			    
+                        			</div>
+                        			<div class="col-sm-9">
+                                        {{lang.users53}} ( {{usage}} of {{limit}} )
+                                        <div class="progress">
+                                        	<div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="{{persentage}}" aria-valuemin="0" aria-valuemax="100" style="width: {{persentage}}%">
+                                        		<span class="sr-only"> {{persentage}} % </span>
+                                        	</div>
+                                        </div>
+                    
+                        			</div>
+                        		</div>
+                    		
                             </div>
                         </div>
-                    </div>
-                                        
-
-                    <form role="form" class="form-horizontal form-groups" method="post" action="{{ADMIN_ROOT_URL}}/groups/add" enctype="multipart/form-data">
-                        
+                    
                         {% include 'groups_form.twig' %}
                         
                     	<div class="row">
@@ -74,7 +83,7 @@
 
         var runGroupFormValidator = function () {
             var form = $('.form-groups');
-            var errorHandler = $('.errorHandler', form);
+            var errorHandler = $('.errorHandler');
             form.validate({
                 rules: {
                     name: {

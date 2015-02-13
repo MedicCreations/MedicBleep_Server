@@ -4918,3 +4918,8 @@ td.column-right {
 .add_sticker_holder a{
     text-decoration: none;
 }
+
+.main-navigation-menu .fa{
+    width: 30px;
+    text-align: center;
+}

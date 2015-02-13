@@ -107,13 +107,14 @@ class LoginController extends BaseController {
 			
 			// validation
 			$checkEmail = $self->app['db']->fetchAssoc("select * from organization where email = ?", array($email));
-			$checkUsername = $self->app['db']->fetchAssoc("select * from organization where admin_name = ?", array($username));
+			$checkUsername1 = $self->app['db']->fetchAssoc("select * from organization where admin_name = ?", array($username));
+			$checkUsername2 = $self->app['db']->fetchAssoc("select * from user_mst where username = ?", array($username));
 			
 			if(isset($checkEmail['id'])){
 				$errorMessage = $self->lang['registError1'];
 			}
 			
-			if(isset($checkUsername['id'])){
+			if(isset($checkUsername1['id']) || isset($checkUsername2['id'])){
 				$errorMessage = $self->lang['registError2'];
 			}
 			
@@ -174,7 +175,34 @@ Spika Enterprise Team
 			$result = false;
 			
 			if(!empty($data['id'])){
-
+                
+                // create user
+                $masterUser = $self->app['db']->fetchAssoc("select * from user_mst where email = ? ", array($data['email']));
+                
+                if(!isset($masterUser['id'])){
+                                        
+                    // create master user                    
+                    $self->app['db']->insert("user_mst",array(
+                        'email' => $data['email'],
+                        'username' => $data['admin_name'],
+                        'password' => $data['admin_password'],
+                        'email_verified' => 1,
+                        'created' => time()
+                    ));
+                    
+                    $masterUser = $self->app['db']->fetchAssoc("select * from user_mst where email = ? ", array($data['email']));
+                    
+                }
+                
+                // create master user                    
+                $self->app['db']->insert("user",array(
+                    'master_user_id' => $masterUser['id'],
+                    'is_admin' => 1,
+                    'is_valid' => 1,
+                    'organization_id' => $data['id'],
+                    'created' => time()
+                ));
+                
     			$values = array(
     					'email_verified' => 1,
     					'email_verification_code' => '',
@@ -192,8 +220,8 @@ Please add following URL to your bookmark.
 {$adminURL}
 
 Important!
-To use Spika Enterprise, you have to create user to login to Apps. This account is used only to login admin area.
-After making new user please login to web client from the link below.
+First please login to admin interface and create users. You can also login to web client with 
+this account you created.
 {$clientURL}
 
 To download mobile apps please open the link below with your iPhone or Android device.

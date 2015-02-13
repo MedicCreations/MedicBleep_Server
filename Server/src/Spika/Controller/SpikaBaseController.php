@@ -330,5 +330,57 @@ class SpikaBaseController implements ControllerProviderInterface
 		}
 		return $string;
 	}
+	
+	public function sendEmail($toAddress,$subject,$body){
+		
+        $url = 'http://local.clover-studio.com/spikaent.email/sender.php';
+        
+        $fields = array(
+        		'email' => urlencode($toAddress),
+        		'body' => urlencode(urlencode($body)),
+        		'subject' => urlencode(urlencode($subject))
+        );
+
+        $fields_string = '';
+        
+        //url-ify the data for the POST
+        foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+        rtrim($fields_string, '&');
+        
+        //open connection
+        $ch = curl_init();
+        
+        //set the url, number of POST vars, POST data
+        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_POST, count($fields));
+        curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+        
+        //execute post
+        $result = curl_exec($ch);
+        
+        //close connection
+        curl_close($ch);
+
+		
+		/*
+        $transport = \Swift_SmtpTransport::newInstance('smtp.googlemail.com', 465, 'ssl')
+            ->setUsername(GMAIL_USER)
+            ->setPassword(GMAIL_PASSWORD);
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject($subject)
+            ->setFrom(GMAIL_USER)
+            ->setTo($toAddress)
+            ->setBody($body);
+        
+        $mailer = \Swift_Mailer::newInstance($transport);
+        
+        $mailer->send($message);
+        
+        */
+
+	            
+	}
+
     		
 }

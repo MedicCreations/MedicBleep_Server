@@ -110,8 +110,9 @@ function SimpleWebRTC(opts) {
     // using same logger from logic here
     opts.logger = this.logger;
     opts.debug = false;
+    opts.connection = connection;
     this.webrtc = new WebRTC(opts);
-
+    this.webrtc.connection = connection;
     // attach a few methods from underlying lib to simple.
     ['mute', 'unmute', 'pauseVideo', 'resumeVideo', 'pause', 'resume', 'sendToAll', 'sendDirectlyToAll'].forEach(function (method) {
         self[method] = self.webrtc[method].bind(self.webrtc);
@@ -304,6 +305,7 @@ SimpleWebRTC.prototype.setVolumeForAll = function (volume) {
 SimpleWebRTC.prototype.joinRoom = function (name, cb) {
     var self = this;
     this.roomName = name;
+
     this.connection.emit('join', name, function (err, roomDescription) {
         if (err) {
             self.emit('error', err);
@@ -5414,16 +5416,26 @@ Peer.prototype.handleMessage = function (message) {
 
 // send via signalling channel
 Peer.prototype.send = function (messageType, payload) {
+    
+    if(payload != undefined)
+        payload.user = SPIKA_UserManager.getUser().get('originalData');
+    
     var message = {
         to: this.id,
+        from: this.parent.connection.socket.sessionid,
         broadcaster: this.broadcaster,
         roomType: this.type,
         type: messageType,
         payload: payload,
         prefix: webrtc.prefix
     };
+    
+    //if(this.config != undefined)
+    //    message.from = this.config.sdpSessionID;
+        
     this.logger.log('sending', messageType, message);
     this.parent.emit('message', message);
+    
 };
 
 // send via data channel
@@ -5482,7 +5494,7 @@ Peer.prototype.start = function () {
     if (this.enableDataChannels) {
         this.getDataChannel('simplewebrtc');
     }
-
+    
     this.pc.offer(this.receiveMedia, function (err, sessionDescription) {
         self.send('offer', sessionDescription);
     });
@@ -7593,9 +7605,16 @@ PeerConnection.prototype.offer = function (constraints, cb) {
 
                         expandedOffer.jingle = jingle;
                     }
+                    
+                    U.l(SPIKA_VideoCallManager.offersent);
+                    
+                    if(SPIKA_VideoCallManager.offersent == false){
+                        U.l('sending offer');
+                        self.emit('offer', expandedOffer);
+                        cb(null, expandedOffer);
+                        SPIKA_VideoCallManager.offersent = true;
+                    }
 
-                    self.emit('offer', expandedOffer);
-                    cb(null, expandedOffer);
                 },
                 function (err) {
                     self.emit('error', err);
@@ -9049,3 +9068,4 @@ module.exports = TraceablePeerConnection;
 },{"util":8,"webrtcsupport":4,"wildemitter":2}]},{},[1])(1)
 });
 ;
+

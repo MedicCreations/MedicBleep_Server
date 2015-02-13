@@ -54,7 +54,8 @@ EncryptManager = {
             
             return decryptedText;
         } catch(ex){
-            
+            U.l(text);
+            U.l(ex);
         }
         
         return '';

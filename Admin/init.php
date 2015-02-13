@@ -2,9 +2,10 @@
 
 define('ROOT_DIR', "/var/www/www.spikaent.com/dev/spikaenterprise_web/Admin/wwwroot");
 define('ROOT_URL', "https://www.spikaent.com/dev/admin");
+define('CONTENTS_URL', "https://www.spikaent.com/dev/page");
 define('CLIENT_URL', "https://www.spikaent.com/dev/web");
 define('ADMIN_ROOT_URL', "https://www.spikaent.com/dev/admin");
-define('API_URL', "http://local.clover-studio.com/SpikaAPI/wwwroot/v1");
+define('API_URL', "https://www.spikaent.com/dev/server/v1");
 define('FILE_DOWNLOAD_URL', API_URL . "/file/download?file_id=");
 
 define('USERNAME','admin');
@@ -29,3 +30,4 @@ define('GMAIL_PASSWORD','cloverpass013');
 define('STICKERS_DIR', "/var/www/www.spikaent.com/dev/spikaenterprise_web/Server/wwwroot/stickers");
 define('STICKERS_URL', "https://www.spikaent.com/dev/server/stickers");
 
+define("AES_PASSWORD","jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB"); 

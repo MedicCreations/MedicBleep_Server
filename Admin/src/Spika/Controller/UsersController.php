@@ -30,8 +30,25 @@ class UsersController extends BaseController {
                 $page = 1;
             
             $offset = ($page - 1) * PAGINATOR_PAGESIZE;
-            $list = $self->app['db']->fetchAll("select * from user where is_deleted = 0 and organization_id = {$self->user['id']} order by username limit " . PAGINATOR_PAGESIZE . " offset {$offset} ");
-            $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from user where is_deleted = 0 and organization_id = {$self->user['id']} ");
+            
+            $list = $self->app['db']->fetchAll("
+                select 
+                    user.id,
+                    user_mst.email,
+                    user.is_valid,
+                    user.is_admin,
+                    user.created
+                from user
+                left join user_mst on user.master_user_id = user_mst.id
+                where user.is_deleted = 0 and organization_id = {$self->user['id']} 
+                order by user_mst.created desc limit " . PAGINATOR_PAGESIZE . " offset {$offset} ");
+            
+            $countAssoc = $self->app['db']->fetchAssoc("
+                select count(*) as count 
+                from user 
+                left join user_mst on user.master_user_id = user_mst.id
+                where user.is_deleted = 0 and organization_id = {$self->user['id']} ");
+            
             $count = $countAssoc['count'];
             
             $self->page = 'users';
@@ -48,58 +65,6 @@ class UsersController extends BaseController {
             ));
             			
 		});
-        
-
-        /* user view */
-		$controllers->get('/view/{userId}', function (Request $request,$userId) use ($app, $self){
-
-            if(!$self->checkLoginUser())
-                return $app->redirect(ADMIN_ROOT_URL . '');
-
-            $self->page = 'users';
-            $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
-            
-            return $self->render('users_view.twig', array(
-                 'data' => $data,
-                 'mode' => 'view'
-            ));
-            			
-		});
-		       
-        /* user delete */
-		$controllers->get('/delete/{userId}', function (Request $request,$userId) use ($app, $self){
-
-            if(!$self->checkLoginUser())
-                return $app->redirect(ADMIN_ROOT_URL . '');
-
-            $self->page = 'users';
-            $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
-            
-            return $self->render('users_view.twig', array(
-                 'data' => $data,
-                 'mode' => 'delete'
-            ));
-            			
-		});
-
-		$controllers->post('/delete/{userId}', function (Request $request,$userId) use ($app, $self){
-
-            if(!$self->checkLoginUser())
-                return $app->redirect(ADMIN_ROOT_URL . '');
-
-            $self->page = 'users';
-            $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
-
-			$values = array(
-					'is_deleted' => 1,
-					'modified' => time());
-
-			$app['db']->update('user', $values,array('id' => $userId));
-    			
-            $self->setInfoMessage($self->lang['users37']);
-            return $app->redirect(ADMIN_ROOT_URL . '/users');
-            			
-		});
 				       
         /* user add */
 		$controllers->get('/add', function (Request $request) use ($app, $self){
@@ -109,9 +74,14 @@ class UsersController extends BaseController {
 
             $self->page = 'users';
             
+            $dataUsage = $self->getDataUsage($app);
+
             return $self->render('users_add.twig', array(
-                 'form' => $self->defaultFormValues(),
-                 'mode' => 'add'
+                 'form' => $self->defaultFormValuesAdd(),
+                 'mode' => 'add',
+                 'limit' => $dataUsage['limit'],
+                 'usage' => $dataUsage['usage'],
+                 'persentage' => $dataUsage['persentage']
             ));
             			
 		});
@@ -125,223 +95,195 @@ class UsersController extends BaseController {
             $formValues = $request->request->all();
             
             $errorMessage = $self->validate($request);
+
+            $dataUsage = $self->getDataUsage($app);
+            
+            if($dataUsage['usage'] >= $dataUsage['limit']){
+                
+                $errorMessage = $self->lang['validateionError12'];
+                
+            }
+            
             
             if(!empty($errorMessage)){
-            
+                
+                $self->setErrorMessage($errorMessage);
+                
                 return $self->render('users_add.twig', array(
                     'form' => $formValues,
-                    'error' => $errorMessage,
-                    'mode' => 'add'
+                    'mode' => 'add',
+                    'limit' => $dataUsage['limit'],
+                    'usage' => $dataUsage['usage'],
+                    'persentage' => $dataUsage['persentage']
                 ));
                 
             }else{
-
-                $pictureFile = $request->files->get('picture');
-                $image = DEFAULT_USER_IMAGE;
-                $imageThumb = DEFAULT_USER_IMAGE;
                 
-                if(!empty($pictureFile)){
+                $email = $formValues['email'];
+                $firstname = $formValues['firstname'];
+                $lastname = $formValues['lastname'];
+                
+                $existData = $self->app['db']->fetchAssoc("select * from user_mst where email = ?", array($email));
+                
+                if(!isset($existData['id'])){
+                    
+                    $app['db']->insert('user_mst', array(
+                        'email' => $email,
+                        'email_verified' => 0,
+                        'created' => time()
+                    ));
 
-                    $test = $self->processPicture($pictureFile,'picture');
-
-                    if($test != null){
-                        $image = $test[0];
-                        $imageThumb = $test[1];
-                    }
+                    $existData = $self->app['db']->fetchAssoc("select * from user_mst where email = ?", array($email));
                     
                 }
-
+                
+                $code = $self->randomString(32,32);
+                
     			$values = array('outside_id' => 0,
     			        'organization_id' => $self->user['id'],
-    					'firstname' => $formValues['firstname'],
-    					'lastname' => $formValues['lastname'],
-    					'password' => md5($formValues['password']),
-    					'username' => $formValues['username'],
-    					'image' => $image,
-    					'image_thumb' => $imageThumb,
+    			        'master_user_id' => $existData['id'],
+    			        'firstname' => $firstname,
+    			        'lastname' => $lastname,
+    			        'registration_code' => $code,
     					'created' => time(), 
     					'modified' => time());
 
     			$app['db']->insert('user', $values);
-			
-                return $self->render('users_add.twig', array(
-                    'form' => $self->defaultFormValues(),
-                    'information' => $self->lang['users14'],
-                    'mode' => 'add'
-                ));
+                
+                $registraionUrl = CONTENTS_URL . "/accept/" . $code;
+                
+                // send invitation email
+                $self->sendEmail($email,$self->lang['users48'],'You got invitation for Spika Enterprise
+Please finish registration from following URL.
+' . $registraionUrl);
+                
+                $dataUsage = $self->getDataUsage($app);
+                
+                $self->setInfoMessage($self->lang['users14']);
+                
+                return $app->redirect(ADMIN_ROOT_URL . '/users');
                 
             }
             			
 		});
-		
-		/* Edit */
-		$controllers->get('/edit/{userId}', function (Request $request,$userId) use ($app, $self){
+
+		$controllers->get('/disable/{userid}', function (Request $request,$userid) use ($app, $self){
 
             if(!$self->checkLoginUser())
                 return $app->redirect(ADMIN_ROOT_URL . '');
 
             $self->page = 'users';
-            $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
             
-            if(!isset($data['id'])){
-                return $app->redirect(ADMIN_ROOT_URL . '/users');
-            }
+            $app['db']->update('user',array(
+                'is_valid' => 0
+            ),array('id'=>$userid));
             
-            return $self->render('users_edit.twig', array(
-                 'form' => $data,
-                 'mode' => 'edit'
+            $self->setInfoMessage($self->lang['users51']);
+            
+            return $app->redirect(ADMIN_ROOT_URL . '/users');
+            			
+		});
+		
+		$controllers->get('/resend/{userid}', function (Request $request,$userid) use ($app, $self){
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
+            $self->page = 'users';
+            $userMst = $app['db']->fetchAssoc("select * from user_mst where id in ( select master_user_id from user where id = ? )",array($userid));
+            
+            $code = $self->randomString(32,32);
+            
+            $app['db']->update('user',array(
+    			 'registration_code' => $code
+            ),array('id'=>$userid));
+            
+            $registraionUrl = CONTENTS_URL . "/accept/" . $code;
+            
+            $self->sendEmail($userMst['email'],$self->lang['users48'],'You got invitation for Spika Enterprise
+Please finish registration from following URL.
+' . $registraionUrl);
+
+            $self->setInfoMessage($self->lang['users52']);
+
+            return $app->redirect(ADMIN_ROOT_URL . '/users');
+            			
+		});
+
+		$controllers->get('/sendmessage', function (Request $request) use ($app, $self){
+            
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
+            $self->page = 'sendmessage';
+            
+            // get number of all users
+            $userList = $app['db']->fetchAll('
+                select * from user where organization_id = ?
+            ',array($self->user['id']));
+            
+            $groupList = $app['db']->fetchAll('
+                select * from groups where organization_id = ?
+            ',array($self->user['id']));
+            
+            $roomList = $app['db']->fetchAll('
+                select * from chat where organization_id = ? and type=3
+            ',array($self->user['id']));
+            
+            return $self->render('users_sendmessage.twig', array(
+                'userList' => $userList,
+                'groupList' => $groupList,
+                'roomList' => $roomList,
+                'userCount' => count($userList)
             ));
             			
 		});
 
-		$controllers->post('/edit/{userId}', function (Request $request,$userId) use ($app, $self){
-
+		$controllers->post('/sendmessage/user', function (Request $request) use ($app, $self){
+            
             if(!$self->checkLoginUser())
                 return $app->redirect(ADMIN_ROOT_URL . '');
 
-            $self->page = 'users';
             $formValues = $request->request->all();
-            $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
+            $userId = $formValues['touserid'];
+            $message = $formValues['message'];
             
-            if(!isset($data['id'])){
-                return $app->redirect(ADMIN_ROOT_URL . '/user');
-            }
-            
-            if(isset($formValues['edit_profile'])){
+            $self->sendMessageToUserAsAdmin($self->user['id'],$userId,$message);
 
-                $errorMessage = $self->validate($request,true);
-                
-                if(!empty($errorMessage)){
-                
-                    return $self->render('users_edit.twig', array(
-                        'form' => array_merge($data,$formValues),
-                        'error' => $errorMessage,
-                        'mode' => 'edit'
-                    ));
-                    
-                }else{
-    
-                    $pictureFile = $request->files->get('picture');
-                    $image = $data['image'];
-                    $imageThumb = $data['image_thumb'];
-                    
-                    if(!empty($pictureFile)){
-    
-                        $test = $self->processPicture($pictureFile,'picture');
-    
-                        if($test != null){
-                            $image = $test[0];
-                            $imageThumb = $test[1];
-                        }
-                        
-                    }
-                    
-        			$values = array(
-        					'firstname' => $formValues['firstname'],
-        					'lastname' => $formValues['lastname'],
-        					'image' => $image,
-        					'image_thumb' => $imageThumb,
-        					'modified' => time());
-    
-        			$app['db']->update('user', $values,array('id' => $userId));
-                    
-                    $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
-                    return $self->render('users_edit.twig', array(
-                        'form' => $data,
-                        'information' => $self->lang['users22'],
-                        'mode' => 'edit'
-                    ));
-                    
-                }	
-            
-            }
-            
-            if(isset($formValues['edit_username'])){
-                
-                $username = $formValues['username'];
-                
-                $userData = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
-                
-               
-                $checkDuplication1 = 
-                    $self->app['db']->fetchAll(
-                        "select * from user where username = ? and id != ?  and organization_id = {$self->user['id']} and is_deleted = 0", 
-                        array($formValues['username'],$userId));
-            
-                $checkDuplication2 = 
-                    $self->app['db']->fetchAll(
-                        "select * from user where username = ? and id != ? and password = ? and is_deleted = 0", 
-                        array($formValues['username'],$userId,$userData['password']));
-                    
-                if(count($checkDuplication1) > 0 || count($checkDuplication2) > 0 ){
-                    return $self->render('users_edit.twig', array(
-                        'form' => $data,
-                        'error' => $self->lang['validateionError3'],
-                        'mode' => 'edit'
-                    ));
-                }
-                
-    			$values = array(
-    					'username' => $username,
-    					'modified' => time());
-
-    			$app['db']->update('user', $values,array('id' => $userId));
-                
-                $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
-                return $self->render('users_edit.twig', array(
-                    'form' => $data,
-                    'information' => $self->lang['users22'],
-                    'mode' => 'edit'
-                ));
-                
-            }
-            
-            if(isset($formValues['edit_password'])){
-            
-                $password = $formValues['password'];
-                $userData = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
-
-                if(empty($password)){
-                    return $self->render('users_edit.twig', array(
-                        'form' => $data,
-                        'error' => $self->lang['validateionError2'],
-                        'mode' => 'edit'
-                    ));
-                }
-                
-                $checkDuplication1 = 
-                    $self->app['db']->fetchAll(
-                        "select * from user where username = ? and id != ? and password = ? and is_deleted = 0", 
-                        array($userData['username'],$userId,md5($password)));
-                    
-                if(count($checkDuplication1) > 0){
-                    return $self->render('users_edit.twig', array(
-                        'form' => $data,
-                        'error' => $self->lang['validateionError3'],
-                        'mode' => 'edit'
-                    ));
-                }
-
-
-    			$values = array(
-    					'password' => md5($password),
-    					'modified' => time());
-
-    			$app['db']->update('user', $values,array('id' => $userId));
-                
-                $data = $self->app['db']->fetchAssoc("select * from user where id = ? and organization_id = {$self->user['id']} ", array($userId));
-                
-                return $self->render('users_edit.twig', array(
-                    'form' => $data,
-                    'information' => $self->lang['users22'],
-                    'mode' => 'edit'
-                ));
-                
-            }
-            
-	
+            return 'OK';
+            			
 		});
 				
+		$controllers->post('/sendmessage/group', function (Request $request) use ($app, $self){
+            
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
+            $formValues = $request->request->all();
+            $groupId = $formValues['togroupid'];
+            $message = $formValues['message'];
+
+            $self->sendMessageToGroupAsAdmin($self->user['id'],$groupId,$message);
+			
+            return 'OK';
+            			
+		});
+
+		$controllers->post('/sendmessage/room', function (Request $request) use ($app, $self){
+            
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
+            $formValues = $request->request->all();
+            $roomId = $formValues['toroomid'];
+            $message = $formValues['message'];
+
+            $self->sendMessageToRoomAsAdmin($self->user['id'],$roomId,$message);
+
+            return 'OK';
+            			
+		});
+		
 		return $controllers;
 		
 	}
@@ -357,6 +299,15 @@ class UsersController extends BaseController {
     	);
 	}
 	
+	function defaultFormValuesAdd(){
+    	return array(
+    	    'id' => '',
+    	    'email' => '',
+    	    'firstname' => '',
+    	    'lastname' => ''
+    	);
+	}
+	
 	function validate($request,$isEdit = false){
     	
     	$formValues = $request->request->all();
@@ -364,26 +315,24 @@ class UsersController extends BaseController {
         
         if($isEdit == false){
     
-        	if(empty($formValues['username']))
-        	    return $this->lang['validateionError1'];
-    	    
-        	if(isset($formValues['password']) && empty($formValues['password']))
-        	    return $this->lang['validateionError2'];
+        	if(empty($formValues['email']))
+        	    return $this->lang['validateionError10'];
         	    
-            $checkDuplication1 = $this->app['db']->fetchAll("
-                select * from user where username = ? and organization_id = {$this->user['id']} and is_deleted = 0", 
-                array($formValues['username']));
+            $test =  $this->app['db']->fetchAssoc("
+                select * 
+                from user where organization_id = ? 
+                and master_user_id in (
+                    select id from user_mst where email = ?
+                )", array(
+                    $this->user['id'],
+                    $formValues['email']
+                ));
             
-            if(count($checkDuplication1) > 0)
-                return $this->lang['validateionError3'];
-        
-            $checkDuplication2 = $this->app['db']->fetchAll("
-                select * from user where username = ? and password = ? and is_deleted = 0", 
-                array($formValues['username'],md5($formValues['password'])));
-            
-            if(count($checkDuplication2) > 0)
-                return $this->lang['validateionError3'];
-        
+            if(isset($test['id'])){
+                
+                return $this->lang['validateionError11'];
+                
+            }
         }
 
             
@@ -391,6 +340,20 @@ class UsersController extends BaseController {
     	
 	}
 	
+	function getDataUsage($app){
+    	
+        $organization = $app['db']->fetchAssoc('select * from organization where id = ?',array($this->user['id']));
+        $limit = $organization['max_users'];
+        $usageData = $app['db']->fetchAssoc('select count(*) as count from user where organization_id = ? and is_deleted = 0',array($this->user['id']));
+        $usage = $usageData['count'];
+        
+        return array(
+            'limit' => $limit,
+            'usage' => $usage,
+            'persentage' => floor(intval($usage) / intval($limit) * 100)
+        );
+            
+	}
 
 	
 }
