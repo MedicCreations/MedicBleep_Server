@@ -29,7 +29,7 @@ class RoomController extends SpikaBaseController {
 			$image = DEFAULT_GROUP_IMAGE;
 			$image_thumb = DEFAULT_GROUP_IMAGE;
 			$category_id = 0;
-			$is_private = 0;
+			$is_private = 1;
 			$password = "";
 			
 			$users = array();

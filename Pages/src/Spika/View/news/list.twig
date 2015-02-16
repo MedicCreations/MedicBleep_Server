@@ -1,0 +1,23 @@
+{% extends "news/base.twig" %}
+
+{% block content %}
+
+	
+	<div class="container">
+	
+	    {% for news in newsList %}
+	    
+		<div class="row mt">
+			<div class="col-lg-6 col-lg-offset-3">
+				<h1>{{ news.title }}</h1>
+				<h3>{{ news.body }}</h3>
+				<div class="date">{{ news.created|date("Y.m.d") }}</div>				
+			</div>
+		</div>
+		
+		{% endfor %}
+
+	</div>
+			
+
+{% endblock %}

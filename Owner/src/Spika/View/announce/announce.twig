@@ -1,0 +1,276 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+		<!-- start: PAGE HEADER -->
+		<div class="row">
+			<div class="col-sm-12">
+
+				<!-- start: PAGE TITLE & BREADCRUMB -->
+				<ol class="breadcrumb">
+					<li>
+						<i class="clip-home-3"></i>
+						<a href="{{OWNER_ROOT_URL}}/dashboard">
+							{{lang.dashboard1}}
+						</a>
+					</li>
+					<li class="active">
+						{{lang.announce1}}
+					</li>
+													
+				</ol>
+				<div class="page-header">
+					<h1>{{lang.announce1}} <small> {{lang.announce2}}</small></h1>
+				</div>
+				<!-- end: PAGE TITLE & BREADCRUMB -->
+			</div>
+		</div>
+		<!-- end: PAGE HEADER -->
+		<!-- start: PAGE CONTENT -->
+        
+        <div class="row">
+
+            <div class="col-sm-12">
+                
+                <div id="progresspanel" class="alert alert-block alert-info" style="display:none">
+
+					<h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> {{lang.announce13}}</h4>
+					<p>
+						{{lang.announce14}}
+					</p>
+					<p>
+					</p>
+					
+                    <div class="progress progress-striped active" style="margin-bottom:0px">
+                    	<div id="progressbar" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                    		<span class="sr-only"> </span>
+                    	</div>
+                    </div>
+                    
+					<p class="cener">
+                        <strong id="progresstext"></strong>
+					</p>
+                </div>
+                
+            </div>
+            
+        </div>
+        
+	    <div class="row form-group targetselector">
+    		
+			<label class="col-sm-2 control-label" for="form-field-1">
+				{{lang.announce3}}
+			</label>
+			<div class="col-sm-10 targeradiobuttons">
+				
+				<label class="radio-inline">
+					<input type="radio" name="target" value="user" class="grey" checked="checked">
+					{{lang.announce4}}
+				</label>
+				<label class="radio-inline">
+					<input type="radio" name="target" value="admin" class="grey">
+					{{lang.announce5}}
+				</label>
+			</div>
+            
+        </div>
+
+	    <div class="row form-group typeselector">
+    		
+			<label class="col-sm-2 control-label" for="form-field-2">
+				{{lang.announce6}}
+			</label>
+			<div class="col-sm-10 targeradiobuttons">
+				
+				<label class="radio-inline">
+					<input type="radio" name="type" value="message" class="grey" checked="checked">
+                    {{lang.announce7}}
+				</label>
+				<label class="radio-inline">
+					<input type="radio" name="type" value="email" class="grey">
+					{{lang.announce8}}
+				</label>
+
+			</div>
+            
+        </div>
+
+
+		<div class="row form-group " id="subject_holder" style="display:none">
+			<label class="col-sm-2 control-label" for="form-field-3">
+			{{lang.announce17}}
+			</label>
+			<div class="col-sm-10">
+				<input id="subject" type="text" name="subject"  class="form-control"/>
+			</div>
+		</div>
+
+
+
+		<div class="row form-group ">
+			<label class="col-sm-2 control-label" for="form-field-4">
+			{{lang.announce9}}
+			</label>
+			<div class="col-sm-10">
+				<textarea id="messagebody" rows="5" class="form-control"></textarea>
+			</div>
+		</div>
+
+		<div class="row">
+		    <div class="col-sm-12 right">
+			    <input id="btnsend" type="button" class="btn btn-primary" value="{{lang.announce10}}" />
+		    </div>
+		</div>
+        
+{% endblock %}
+
+{% block pageScript %}
+
+<script>
+    
+    var count = 0;
+    var sendingIndex = 0;
+    
+    function isNumber(x){ 
+        if( typeof(x) != 'number' && typeof(x) != 'string' )
+            return false;
+        else 
+            return (x == parseFloat(x) && isFinite(x));
+    }
+
+	jQuery(document).ready(function() {
+		
+		$('#btnsend').click(function(){
+			
+			var messageBody = $('#messagebody').val();
+			var subject = $('#subject').val();
+
+			var target = $(".targetselector input[type='radio']:checked").val();
+			var type = $(".typeselector input[type='radio']:checked").val();
+			
+			if(messageBody == ''){
+				alert('{{lang.announce11}}');
+				return;
+			}
+			
+			if(type == 'email' && subject == ''){
+				alert('{{lang.announce18}}');
+				return;
+			}
+			
+			if(!confirm('{{lang.announce15}}'))
+			    return;
+			    
+            // get count first
+            $.post("{{OWNER_ROOT_URL}}/announce/count",
+                { type: type, target: target },function(data){
+    
+               
+                if(isNumber(data)){
+                    count = data;
+                    sendingIndex = 0;
+                    $('#progresspanel').show();
+                    $('#btnsend').attr('disabled','disabled');
+
+                    sendNext();
+                    
+                }else{
+    				alert('{{lang.announce12}}');
+    				return;
+                }
+                
+            }).fail(function(){
+            
+                alert('{{lang.announce16}}');
+                finishSending();
+
+                
+            });	
+		    
+		});
+		
+		$("input[name='type']").on('ifClicked',function(){
+                
+            setTimeout(function() {
+                
+                var type = $(".typeselector input[type='radio']:checked").val();
+                
+                if(type == 'email'){
+                    
+                    $('#subject_holder').show();
+                    
+                }else{
+                    
+                    $('#subject_holder').hide();
+                    
+                }
+                
+            }, 100);
+
+            
+		});
+
+        
+	});
+	
+	function sendNext(){
+	    
+		
+		var messageBody = $('#messagebody').val();
+		var subject = $('#subject').val();
+		
+		
+		var target = $(".targetselector input[type='radio']:checked").val();
+		var type = $(".typeselector input[type='radio']:checked").val();
+
+		if(messageBody == ''){
+			alert('{{lang.announce11}}');
+			return;
+		}
+		
+		if(type == 'email' && subject == ''){
+			alert('{{lang.announce18}}');
+			return;
+		}
+        var progress = Math.ceil((sendingIndex / count) * 100);
+        
+        $('#progresstext').text(sendingIndex + "/" + count);
+        $('#progressbar').css('width',progress + '%');
+        
+        $.post("{{OWNER_ROOT_URL}}/announce/send",
+            { 
+                type: type, 
+                target: target,
+                message: messageBody,
+                subject: subject,
+                index:sendingIndex
+            },function(data){
+
+            if(sendingIndex == count){
+                finishSending();
+            }else{
+                sendingIndex++;
+                sendNext();            
+            }
+            
+        }).fail(function(){
+
+            alert('{{lang.announce16}}');
+            finishSending();
+            
+        });	
+            
+	}
+	
+	function finishSending(){
+	    
+	    $('#progresspanel').fadeOut();
+        $('#btnsend').removeAttr('disabled');
+
+	    sendingIndex = 0;
+	    count = 0;
+	    
+	}
+
+</script>
+{% endblock %}

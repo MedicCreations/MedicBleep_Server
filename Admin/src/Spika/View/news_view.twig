@@ -1,0 +1,103 @@
+{% extends "adminbase.twig" %}
+{% block content %}
+
+<!-- start: PAGE HEADER -->
+<div class="row">
+	<div class="col-sm-12">
+
+		<!-- start: PAGE TITLE & BREADCRUMB -->
+		<ol class="breadcrumb">
+			<li>
+				<i class="clip-home-3"></i>
+				<a href="{{ADMIN_ROOT_URL}}/dashboard">
+					{{lang.general11}}
+				</a>
+			</li>
+			<li>
+				<a href="{{ADMIN_ROOT_URL}}/news">
+				    {{lang.news1}}
+                </a>
+			</li>
+			<li class="active">
+
+			    {% if mode == 'view' %}
+				    {{lang.news14}}
+				{% endif %}
+			    {% if mode == 'delete' %}
+				    {{lang.news15}}
+				{% endif %}
+				
+			</li>
+			
+			{% include 'searchbox.twig' %}
+			
+		</ol>
+		<div class="row page-header">
+		    <div class="col-md-6">
+			    <h1>{{data.title}}</h1>
+			</div>
+		</div>
+		<!-- end: PAGE TITLE & BREADCRUMB -->
+	</div>
+</div>
+<!-- end: PAGE HEADER -->
+<!-- start: PAGE CONTENT -->
+
+<!-- start: PAGE CONTENT -->
+<div class="row">
+    
+    {% if mode == 'delete' %}
+        
+        <div class="col-md-12" style="padding-bottom:20px">
+    
+            <div class="alert alert-warning">
+            	<i class="fa fa-exclamation-triangle"></i>
+            	<strong>Warning!</strong> 
+            	{{lang.news17}}
+            </div>
+            
+            <form role="form" class="form-horizontal form-user right" method="post" action="{{ADMIN_ROOT_URL}}/news/delete/{{data.id}}">
+
+                <button type="button" class="btn btn-success" onclick="history.back()">{{lang.general9}}</button>
+                <button type="submit" class="btn btn-warning">{{lang.news18}}</button>
+
+            </form>
+            
+        </div>
+        
+    {% endif %}
+    		
+    <div class="col-md-9">
+
+        <table class="table table-hover" id="sample-table-1">
+
+    		<tr>
+    			<td>{{lang.news8}}</td>
+    			<td>{{data.id}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.news9}}</td>
+    			<td>{{data.title}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.news6}}</td>
+    			<td>{{data.body}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.news16}}</td>
+    			<td>{{data.created|date("Y.m.d")}}</td>
+    		</tr>
+    		<tr>
+    			<td>{{lang.news10}}</td>
+    			<td>{{data.modified|date("Y.m.d")}}</td>
+    		</tr>
+
+
+        </table>
+
+    </div>
+
+</div>
+
+
+{% endblock %}

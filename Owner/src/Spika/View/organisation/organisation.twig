@@ -1,0 +1,97 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+        
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{OWNER_ROOT_URL}}/dashboard">
+										{{lang.general1}}
+									</a>
+								</li>
+								<li class="active">
+									{{lang.organisation1}}
+								</li>
+																
+							</ol>
+							<div class="row page-header">
+							    <div class="col-md-6">
+								    <h1>{{lang.organisation1}} <small> {{lang.organisation2}}</small></h1>
+								</div>
+								<div class="col-md-6 right">
+								    <a class="btn btn-primary" href="{{OWNER_ROOT_URL}}/organisation/add"><i class="fa fa-plus"></i> {{lang.general3}}</a>
+								</div>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+					
+                    {% include "alert.twig" %}
+                        
+					{% include 'paginator.twig' %}
+					
+					<div class="row">
+					    <div class="col-md-12">
+
+                            <table class="table table-hover" id="sample-table-1">
+								<thead>
+									<tr>
+										<th>{{lang.general4}}</th>
+										<th class="hidden-xs">{{lang.general5}}</th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+								
+                                    {% for row in list %}
+
+                    				    <tr>
+    										<td>
+    										    <a href="{{OWNER_ROOT_URL}}/organisation/view/{{row.id}}">
+    										        {{row.name}}
+    										    </a>
+                                            </td>
+    										<td class="hidden-xs">{{row.modified|date("Y.m.d")}} </td>
+    										<td class="right">
+        										<div class="visible-md visible-lg hidden-sm hidden-xs">
+        											<a href="{{OWNER_ROOT_URL}}/organisation/edit/{{row.id}}" class="btn btn-xs btn-teal tooltips" data-placement="top" data-original-title="Edit"><i class="fa fa-edit"></i></a>
+        											<a href="{{OWNER_ROOT_URL}}/organisation/delete/{{row.id}}" class="btn btn-xs btn-bricky tooltips" data-placement="top" data-original-title="Remove"><i class="fa fa-times fa fa-white"></i></a>
+        										</div>
+        										<div class="visible-xs visible-sm hidden-md hidden-lg">
+        											<div class="btn-group">
+        												<a class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" href="#">
+        													<i class="fa fa-cog"></i> <span class="caret"></span>
+        												</a>
+        												<ul role="menu" class="dropdown-menu pull-right">
+        													<li role="presentation">
+        														<a role="menuitem" tabindex="-1" href="{{OWNER_ROOT_URL}}/organisation/edit/{{row.id}}">
+        															<i class="fa fa-edit"></i> {{lang.general7}}
+        														</a>
+        													</li>
+        													<li role="presentation">
+        														<a role="menuitem" tabindex="-1" href="{{OWNER_ROOT_URL}}/organisation/delete/{{row.id}}">
+        															<i class="fa fa-times"></i> {{lang.general8}}
+        														</a>
+        													</li>
+        												</ul>
+        											</div>
+        										</div>
+    										</td>
+    									</tr>
+									
+                                    {% endfor %}
+								</tbody>
+							</table>
+                        </div>
+					</div>
+                    
+                    {% include 'paginator.twig' %}
+
+{% endblock %}

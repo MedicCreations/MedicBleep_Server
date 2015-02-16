@@ -1131,7 +1131,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getRoomsCount(Application $app, $user_id, $search, $category_id){
 	
-		$sql = "SELECT chat.*, chat_member.* FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat.type = 3 AND ((chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0) OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0)) and chat.organization_id = ? ";
+		$sql = "SELECT chat.*, chat_member.* FROM chat_member, chat WHERE chat.is_deleted = 0 AND (chat.type = 3 OR chat.type = 2) AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.organization_id = ?"; // OR (chat_member.chat_id = chat.id AND chat_member.is_deleted = 0 AND chat.is_private = 0)) and chat.organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND chat.name LIKE '" . $search . "%'";
@@ -1166,17 +1166,17 @@ class MySqlDb implements DbInterface{
 		
 		$users = $app['db']->fetchAll($sql, array($my_user_id,$app['organization_id']));
 		
-		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups WHERE groups.is_deleted = 0 AND groups.organization_id = ?";
+		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups, group_member WHERE groups.is_deleted = 0 AND groups.id = group_member.group_id AND group_member.user_id = ? AND groups.organization_id = ?";
 		if ($search != ""){
 			$sql = $sql . " and groups.name LIKE '" . $search . "%'";
 		}
-		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
+		$groups = $app['db']->fetchAll($sql, array($my_user_id, $app['organization_id']));
 		
-		$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND chat.organization_id = ?";
+		$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat, chat_member WHERE chat.id = chat_member.chat_id AND chat_member.user_id = ? AND chat.is_deleted = 0 AND chat.type = 3 AND chat.organization_id = ?";
 		if ($search != ""){
 			$sql = $sql . " and chat.name LIKE '" . $search . "%'";
 		}
-		$rooms = $app['db']->fetchAll($sql, array($app['organization_id']));
+		$rooms = $app['db']->fetchAll($sql, array($my_user_id, $app['organization_id']));
 		
 		$result = array_merge($groups,$rooms,$users);
 		

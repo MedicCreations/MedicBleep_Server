@@ -1,0 +1,300 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{ADMIN_ROOT_URL}}/dashboard">
+										{{lang.dashboard1}}
+									</a>
+								</li>
+								<li class="active">
+									{{lang.sendmessage1}}
+								</li>
+								
+								{% include 'searchbox.twig' %}
+								
+							</ol>
+							<div class="page-header">
+								<h1>{{lang.sendmessage1}} <small> {{lang.sendmessage2}}</small></h1>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+					<div class="row">
+					    <div class="col-md-12">
+                        
+                            <div class="col-sm-12">
+                                
+                                <div id="progresspanel" class="alert alert-block alert-info" style="display:none">
+
+										<h4 class="alert-heading"><i class="fa fa-exclamation-triangle"></i> {{lang.sendmessage4}}</h4>
+										<p>
+											{{lang.sendmessage5}}
+										</p>
+										<p>
+										</p>
+										
+                                        <div class="progress progress-striped active" style="margin-bottom:0px">
+                                        	<div id="progressbar" class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                                        		<span class="sr-only"> </span>
+                                        	</div>
+                                        </div>
+                                        
+										<p class="cener">
+                                            <strong id="progresstext"></strong>
+										</p>
+										
+									</div>
+                            </div>
+                            
+                            <form role="form" class="form-horizontal form-user">
+                            	
+                        		<div class="form-group">
+                        		
+                        			<label class="col-sm-2 control-label" for="form-field-1">
+                        				{{lang.sendmessage8}}
+                        			</label>
+                        			<div class="col-sm-10 targeradiobuttons">
+                        				
+										<label class="radio-inline">
+											<input type="radio" name="target" value="all" class="grey" checked="checked">
+											{{lang.sendmessage9}}
+										</label>
+										<label class="radio-inline">
+											<input type="radio" name="target" value="group" class="grey">
+											{{lang.sendmessage10}}
+										</label>
+										<label class="radio-inline">
+											<input type="radio" name="target" value="room" class="grey">
+											{{lang.sendmessage11}}
+										</label>
+										
+                        			</div>
+                        		</div>
+
+                        		<div class="form-group" id="group_select" style="display:none">
+                        		
+                        			<label class="col-sm-2 control-label" for="form-field-1">
+                        				{{lang.sendmessage12}}
+                        			</label>
+                        			<div class="col-sm-10 targeradiobuttons">
+                        				
+										<select name="group">
+											
+											{% for group in groupList %}
+												
+												<option value="{{ group.id }}">{{ group.name }}</option>
+												
+											{% endfor %}
+											
+										</select>
+										
+                        			</div>
+                        		</div>
+
+
+                        		<div class="form-group" id="room_select" style="display:none">
+                        		
+                        			<label class="col-sm-2 control-label" for="form-field-1">
+                        				{{lang.sendmessage13}}
+                        			</label>
+                        			<div class="col-sm-10 targeradiobuttons">
+                        				
+										<select name="room">
+											
+											{% for room in roomList %}
+												
+												<option value="{{ room.id }}">{{ room.name }}</option>
+												
+											{% endfor %}
+											
+										</select>
+										
+                        			</div>
+                        		</div>
+
+                        		<div class="form-group">
+                        			<label class="col-sm-2 control-label" for="form-field-1">
+                        			{{lang.sendmessage6}}
+                        			</label>
+                        			<div class="col-sm-10">
+                        				<textarea id="messagebody" rows="5" class="form-control"></textarea>
+                        			</div>
+                        		</div>
+
+                        		<div class="right">
+                        			<input id="btnsend" type="button" class="btn btn-primary" value="{{lang.sendmessage3}}" />
+                        		</div>
+
+                            </form>
+
+                            
+                        </div>
+					</div>
+					
+{% endblock %}
+
+{% block pageScript %}
+
+<script>
+    
+    var users = {{userList|json_encode()|raw}};
+    var currnetIndex = 0;
+    var target = 'all';
+    
+	jQuery(document).ready(function() {
+		
+		$('#btnsend').click(function(){
+			
+			var messageBody = $('#messagebody').val();
+			
+			if(messageBody == ''){
+				alert('{{lang.sendmessage14}}');
+				return;
+			}
+			
+            if(confirm('{{lang.sendmessage7}}')){
+                
+                $('#btnsend').attr('disabled','disabled');
+                
+                $('#progresspanel').show();
+                
+                currnetIndex = 0;
+                
+                if(target == 'all')
+    		    	sendNextMessage();
+		    
+                if(target == 'group')
+    		    	sendGroupMessage();
+		    
+                if(target == 'room')
+    		    	sendRoomMessage();
+		    
+            }
+
+		    
+		});
+
+		$('input[type="radio"]').on('ifChecked', function(event){
+			
+			var value = $(this).val();
+			target = value;
+			
+			$('#group_select').hide();
+			$('#room_select').hide();
+			
+			if(value == 'group')
+				$('#group_select').show();
+				
+			if(value == 'room')
+				$('#room_select').show();
+				
+		});
+        
+        
+	});
+	
+	function sendNextMessage(){
+	    
+	    var self = this;
+
+	    var messageBody = $('#messagebody').val();
+
+	    if(currnetIndex >= users.length){
+	        currnetIndex = 0;
+	        
+	        setTimeout(function(){
+	           self.resetSendingState();
+	        },1000);
+	        
+	        return;
+	    }
+	    
+	    var toUser = users[currnetIndex];
+	    
+        $.post("{{ADMIN_ROOT_URL}}/users/sendmessage/user",
+            { touserid: toUser.id, message: messageBody },function(data){
+            
+            currnetIndex++;
+            var progress = (currnetIndex / users.length) * 100;
+            progress = Math.ceil(progress);
+            
+            $('#progressbar').css('width',progress + "%");
+            $('#progressbar .sr-only').text(progress + "% complete");
+            
+            $('#progresstext').text(currnetIndex + "/" + users.length);
+            
+            sendNextMessage();
+            
+        });
+	
+	}
+	
+	function sendGroupMessage(){
+		
+		var self = this;
+		
+	    var messageBody = $('#messagebody').val();
+		
+		$('#progresstext').text("");
+		
+        $.post("{{ADMIN_ROOT_URL}}/users/sendmessage/group",
+            { togroupid: $('select[name="group"]').val(), message: messageBody },function(data){
+
+            $('#progressbar').css('width',"100%");
+            $('#progressbar .sr-only').text("100% complete");
+
+	        setTimeout(function(){
+	           self.resetSendingState();
+	        },1000);
+	        
+        });
+		
+	}
+	
+	function sendRoomMessage(){
+		
+		var self = this;
+		
+	    var messageBody = $('#messagebody').val();
+	    
+		$('#progresstext').text("");
+
+
+        $.post("{{ADMIN_ROOT_URL}}/users/sendmessage/room",
+            { toroomid: $('select[name="room"]').val(), message: messageBody },function(data){
+
+            $('#progressbar').css('width',"100%");
+            $('#progressbar .sr-only').text("100% complete");
+
+	        setTimeout(function(){
+	           self.resetSendingState();
+	        },1000);
+        });
+	}
+	
+	function resetSendingState(){
+		
+		$('#progresspanel').fadeOut();
+		$('#btnsend').removeAttr('disabled');
+		$('#messagebody').val('');
+		
+        setTimeout(function(){
+			$('#progressbar').css('width',"0%");
+			$('#progressbar .sr-only').text("0% complete");
+        },1000);
+	        
+	}
+</script>
+{% endblock %}

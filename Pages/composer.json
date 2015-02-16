@@ -1,0 +1,17 @@
+{
+    "require": {
+        "silex/silex": "~1.1",
+		"symfony/monolog-bridge": "~2.3",
+		"symfony/locale": "~2.3",
+        "monolog/monolog": ">=1.0.0",
+        "swiftmailer/swiftmailer": ">=4.1.2",
+        "guzzle/guzzle": "~3.7",
+        "doctrine/dbal": ">=2.2.0,<2.4.0-dev",
+        "imagine/imagine": "~0.5.0",
+        "twig/twig": ">=1.8,<2.0-dev",
+        "swiftmailer/swiftmailer": ">=4.1.2,<4.2-dev"
+    },
+    "autoload": {
+        "psr-0": {"Spika\\": "src/"}
+    }
+}

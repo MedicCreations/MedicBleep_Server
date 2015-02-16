@@ -1,0 +1,92 @@
+		
+    		<div class="form-group">
+    			<label class="col-sm-3 control-label" for="form-field-1">
+    			{{lang.organisation5}}
+    			</label>
+    			<div class="col-sm-8">
+    				<input type="text" name="name" {% if mode == 'add' %}placeholder="{{lang.organisation5}}"{% endif %} id="form-field-1" class="form-control" value="{{form.name}}">
+    			</div>
+    		</div>
+		
+    		<div class="form-group">
+    			<label class="col-sm-3 control-label" for="form-field-2">
+    			{{lang.organisation13}}
+    			</label>
+    			<div class="col-sm-8">
+    				<input type="text" name="email" {% if mode == 'add' %}placeholder="{{lang.organisation13}}"{% endif %} id="form-field-2" class="form-control" value="{{form.email}}">
+    			</div>
+    		</div>
+		
+    		<div class="form-group">
+    			<label class="col-sm-3 control-label" for="form-field-3">
+    			{{lang.organisation14}}
+    			</label>
+    			<div class="col-sm-8">
+    				<input type="text" name="admin_name" {% if mode == 'add' %}placeholder="{{lang.organisation14}}"{% endif %} id="form-field-3" class="form-control" value="{{form.admin_name}}">
+    			</div>
+    		</div>
+
+            
+            {% if mode == 'add' %}
+            
+        		<div class="form-group">
+        			<label class="col-sm-3 control-label" for="form-field-4">
+        			{{lang.organisation15}}
+        			</label>
+        			<div class="col-sm-8">
+        				<input type="text" name="admin_password" {% if mode == 'add' %}placeholder="{{lang.organisation15}}"{% endif %} id="form-field-4" class="form-control" value="{{form.admin_password}}">
+        			</div>
+        		</div>
+                
+            {% endif %}
+            
+    		<div class="form-group">
+    			<label class="col-sm-3 control-label" for="form-field-5">
+    			{{lang.organisation16}}
+    			</label>
+    			<div class="col-sm-8">
+    				<input type="radio" name="email_verified" id="form-field-5" value="1" {% if form.email_verified == 1 %}checked{% endif %}> {{lang.general15}}
+    				<input type="radio" name="email_verified" id="form-field-5" value="0" {% if form.email_verified == 0 %}checked{% endif %}> {{lang.general16}}
+    			</div>
+    		</div>
+		
+
+            
+    		<div class="form-group">
+    			<label class="col-sm-3 control-label" for="form-field-5">
+    			{{lang.organisation23}}
+    			</label>
+    			<div class="col-sm-8">
+    				<input type="text" name="max_users" {% if mode == 'add' %}placeholder="100"{% endif %} id="form-field-5" class="form-control" value="{{form.max_users}}">
+    			</div>
+    		</div>
+            
+    		<div class="form-group">
+    			<label class="col-sm-3 control-label" for="form-field-6">
+    			{{lang.organisation24}}
+    			</label>
+    			<div class="col-sm-8">
+    				<input type="text" name="max_groups" {% if mode == 'add' %}placeholder="100"{% endif %} id="form-field-6" class="form-control" value="{{form.max_groups}}">
+    			</div>
+    		</div>
+            
+    		<div class="form-group">
+    			<label class="col-sm-3 control-label" for="form-field-7">
+    			{{lang.organisation25}}
+    			</label>
+    			<div class="col-sm-8">
+    				<input type="text" name="max_rooms" {% if mode == 'add' %}placeholder="1000"{% endif %} id="form-field-7" class="form-control" value="{{form.max_rooms}}">
+    			</div>
+    		</div>
+            
+    		<div class="form-group">
+    			<label class="col-sm-3 control-label" for="form-field-8">
+    			{{lang.organisation26}}
+    			</label>
+    			<div class="col-sm-8">
+    				<input type="text" name="disk_quota" {% if mode == 'add' %}placeholder="10"{% endif %} id="form-field-8" class="form-control" value="{{form.disk_quota}}">
+    				<span class="help-block"><i class="fa fa-info-circle"></i> GB </span>
+    			</div>
+    		</div>
+    		
+            <input type="hidden" name="id" value="{{form.id}}">
