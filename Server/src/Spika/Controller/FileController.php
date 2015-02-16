@@ -32,15 +32,25 @@ class FileController extends SpikaBaseController {
 			
 			$filePath = $_SERVER['DOCUMENT_ROOT'] . '/msg/spikaenterprise_web/Server/uploads';			
 			$fineName = $mySql->randomString(20, 20) . time();
-				
+            
 			if(!is_writable($filePath))
 				return $self->returnErrorResponse(FileController::$fileDirName ." dir is not writable.", ER_DIR_NOT_WRITABLE);
-		
+            
 			$file->move($filePath, $fineName);
 			
+            $userId = $app['user']['id'];
+            $organizationId = $app['user']['organization_id'];
+            $fileSize = $file->getClientSize();
+            
+			if(!$mySql->checkDiskSpace($app, $organizationId, $fileSize)){
+    			return $app->json(array("message" => "Disk quota exceeded", "code" => ER_DISKSPACE_LIMIT), 200);
+			}            
+                        
+			$mySql->addNewFile($app, $userId, $organizationId, $fileSize, $fineName);
+
 			return $app->json(array("message" => "file uploaded", "code" => CODE_SUCCESS, "file_id" => $fineName,), 200);
 		
-		});
+		})->before($app['beforeSpikaTokenChecker']);
 		
 		
 		//image download

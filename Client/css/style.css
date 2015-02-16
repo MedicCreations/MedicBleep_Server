@@ -179,6 +179,11 @@ body#chat {
 	color: #000;
 }
 
+.box_select{
+    display: block;
+    width: 100%;
+}
+
 
 /*==============================*/
 /*		END		Loading			*/
@@ -1415,10 +1420,10 @@ ul#user_menu li a{
 #call_window{
 	position: absolute;
 	z-index: 1000;
-	bottom: 60px;
+	bottom: 50px;
 	right: 5px;
 	width: 400px;
-	height: 400px;
+	height: 430px;
 	background-color: #000;
 	border: 1px solid #2C2D32;
 }
@@ -1430,8 +1435,13 @@ ul#user_menu li a{
 	bottom: 0px;
 	left: 0px;
 	width: 100%;
-	height: 40px;
 }
+
+#call_window .footer_buttons img{
+	margin: 5px;
+}
+
+
 #call_window .footer_buttons .button{
 	margin: 5px;
 	
@@ -1441,19 +1451,20 @@ ul#user_menu li a{
 
 	position: absolute;
 	z-index: 1010;
-	bottom: 45px;
+	bottom: 65px;
 	right: 5px;
 	width: 150px;
 	height: 150px;
-¥¥
 	overflow: hidden;
+	border: 1px solid #222;
+	background: #000;
 }
 
 #call_window .partner_video_holder{
 	
 	position: absolute;
 	z-index: 1010;
-	bottom: 45px;
+	bottom: 65px;
 	right: 5px;
 	width: 390px;
 	height: 350px;
@@ -1512,6 +1523,11 @@ ul#user_menu li a{
     vertical-align: middle;
 }
 
+
+img.imgbutton{
+	width: 48px;
+	height: 48px;
+}
 
 /*------------------------------*/
 /*   END CALL WINDO             */

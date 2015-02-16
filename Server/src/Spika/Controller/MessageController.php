@@ -80,7 +80,7 @@ class MessageController extends SpikaBaseController {
 			
 			$is_chat_member = $mySql->isChatMember($app, $user_id, $chat_id);
 			
-			if (!$is_chat_member && !$chat_data['is_private']){
+			if ((!$is_chat_member && !$chat_data['is_private']) || (!$is_chat_member && $user['is_admin'] == 1) ){
 			
 				//add member to chat
 				$mySql->addChatMembers($app, $chat_id, array($user_id));
@@ -134,6 +134,15 @@ class MessageController extends SpikaBaseController {
 				
 			}
 			
+			 $app['monolog']->addDebug(" message type " . $type . " " . MSG_FILE);
+
+			if($type == MSG_IMAGE || $type == MSG_VIDEO || $type == MSG_VOICE || $type == MSG_FILE){
+    		    
+    		    $mySql->updateFile($app, $file_id, $msg_id, $chat_id);
+    		    $mySql->updateFile($app, $thumb_id, $msg_id, $chat_id);
+    		    	
+			}
+			
 			$mySql->updateUnreadMessagesForMembers($app, $chat_id, $user_id);
 			
 			$chat_values = array('seen_by' => "" ,'modified' => time());
@@ -141,6 +150,8 @@ class MessageController extends SpikaBaseController {
 			
 			//get chat name
 			$chat = $mySql->getChatWithID($app, $chat_id);
+			
+			$organization_id = $chat['organization_id'];
 			
 			if (!$chat['has_messages']){
 				$mySql->updateChatHasMessages($app, $chat_id);
@@ -266,6 +277,7 @@ class MessageController extends SpikaBaseController {
 					'registration_ids' => $android_push_members,
 					'data' => array('type' => PUSH_TYPE_MESSAGE,
 							'chat_id' => $chat_id,
+							'organization_id' => 'ddfdfd',
 							'firstname' => $user_firstname,
 							'chat_password' => $chat_password,
 							)
@@ -289,6 +301,7 @@ class MessageController extends SpikaBaseController {
 			$dataAry = array('t' => PUSH_TYPE_MESSAGE,
 					'ci' => $chat_id,
 					'cn' => $chat_name,
+					'oi' => $organization_id,
 					'ct' => $chat_thumb,
 					'cty' => $chat_type,
 					'cp' => $chat_password
@@ -443,9 +456,11 @@ class MessageController extends SpikaBaseController {
 			$chat_seen_by = "";
 			$chat_seen_by = $mySql->getSeenBy($app, $chat_id);
 			
+			$chat_data = $mySql->getChatWithID($app, $chat_id);
+			
 			$is_chat_member = $mySql->isChatMember($app, $my_user_id, $chat_id);
 			
-			if (!$is_chat_member){
+			if (!$is_chat_member && $chat_data['is_private']){
 				$result = array('code' => ER_NOT_CHAT_MEMBER, 
 						'message' => 'Not chat member');
 				

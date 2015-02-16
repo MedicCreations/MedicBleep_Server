@@ -1,0 +1,126 @@
+h3.page-subtitle{
+    margin-top: 0px;
+}
+
+#cfsdropzone{
+    background-color: #f7f7f7;
+    padding-top: 5px;
+    text-align: center;
+    font-size: 12pt;
+    border-top: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    position: fixed;
+    bottom: 0px;
+}
+
+.foldername{
+    margin-top: 10px;
+}
+.main-container, .footer, .main-navigation, ul.main-navigation-menu > li > ul.sub-menu, .navigation-small ul.main-navigation-menu > li > ul.sub-menu {
+	background: none!important;
+}
+
+div.navbar-fixed-top {
+	background-image: radial-gradient(center top, ellipse cover, #91C1D0, #569FC0);
+	background-image: -o-radial-gradient(center top, ellipse cover, #91C1D0, #569FC0);
+	background-image: -ms-radial-gradient(center top, ellipse cover, #91C1D0, #569FC0);
+	background-image: -moz-radial-gradient(center top, ellipse cover, #91C1D0, #569FC0);
+	background-image: -webkit-radial-gradient(center top, ellipse cover, #91C1D0, #569FC0);
+}
+
+.navbar-inverse .navbar-brand, .navbar-inverse .navbar-brand:hover, .navbar-inverse .nav > li > a  {
+	color: #FFFFFF;
+}
+
+div.main-container {
+	background-image: radial-gradient(left 60%, ellipse cover, #64ACD0, #257097)!important;
+	background-image: -o-radial-gradient(left 60%, ellipse cover, #64ACD0, #257097)!important;
+	background-image: -ms-radial-gradient(left 60%, ellipse cover, #64ACD0, #257097)!important;
+	background-image: -moz-radial-gradient(left 60%, ellipse cover, #64ACD0, #257097)!important;
+	background-image: -webkit-radial-gradient(left 60%, ellipse cover, #64ACD0, #257097)!important;
+}
+
+ul.main-navigation-menu > li.open > a, ul.main-navigation-menu > li > a:hover, ul.main-navigation-menu > li:hover > a {
+	background: none!important;
+}
+ul.main-navigation-menu > li.active > a {
+	background: rgba(255, 255, 255, 0.2)!important;
+	border-top: none !important;
+}
+
+ul.main-navigation-menu > li a {
+	border-top: none;
+}
+
+ul.main-navigation-menu > li a,
+ul.main-navigation-menu > li a > i,
+.navbar-inverse .navbar-brand i, .navbar-inverse .navbar-brand:hover i {
+	color: #FFFFFF;
+}
+ul.main-navigation-menu > li.active > a .selected:before {
+	color: #3983A6 !important;
+}
+
+.navbar-inverse {
+	border: none;
+}
+
+.main-content .container {
+	box-shadow:0 8px 12px -8px #777 inset;
+}
+
+.breadcrumb {
+	background: none;
+}
+
+body.login.example2 {
+	background-image: radial-gradient(center center, ellipse cover, #91C1D0, #569FC0);
+	background-image: -o-radial-gradient(center center, ellipse cover, #91C1D0, #569FC0);
+	background-image: -ms-radial-gradient(center center, ellipse cover, #91C1D0, #569FC0);
+	background-image: -moz-radial-gradient(center center, ellipse cover, #91C1D0, #569FC0);
+	background-image: -webkit-radial-gradient(center center, ellipse cover, #91C1D0, #569FC0);
+}
+
+body.login {
+	color: #FFFFFF;
+}
+
+body.login .box-login, body.login .box-forgot, body.login .box-register {
+	background: none;
+	box-shadow: none;
+}
+
+.login input[type="text"], .login input[type="password"], .login input[type="datetime"], .login input[type="datetime-local"], .login input[type="date"], .login input[type="month"], .login input[type="time"], .login input[type="week"], .login input[type="number"], .login input[type="email"], .login input[type="url"], .login input[type="search"], .login input[type="tel"], .login input[type="color"] {
+    background-color: rgba(255,255,255,0.2);
+    border:  1px solid #fff;
+    color : #fff;
+}
+
+.login .has-error .form-control {
+	border: 2px solid #fff;
+}
+
+.login .input-icon > [class*="fa-"], .login .input-icon > [class*="clip-"]{
+	color: #FFFFFF;
+}
+
+.login .btn-bricky {
+	background-color: rgba(255, 255, 255, 0.1);
+	border-color: #FFFFFF;
+	color: #FFFFFF;
+}
+.login .btn-bricky:hover, .login .btn-bricky:focus, .login .btn-bricky:active, .login .btn-bricky.active {
+	background-color: rgba(255, 255, 255, 0.2);
+	border-color: #FFFFFF;
+	color: #FFFFFF;
+}
+
+.login .alert-danger{
+    color: #a94442;
+    background-color: rgba(255,255,255,0.2)
+}
+
+body.login label{
+    color: #2a6496;
+    
+}

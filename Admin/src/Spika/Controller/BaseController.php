@@ -262,4 +262,267 @@ class BaseController implements ControllerProviderInterface {
 	            
 	}
 	
+    function makePostRequest($url,$fields,$headers = array()){
+        
+        $fields_string = "";
+        
+        //url-ify the data for the POST
+        foreach($fields as $key=>$value) { $fields_string .= $key.'='.$value.'&'; }
+        rtrim($fields_string, '&');
+
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        
+        //set the url, number of POST vars, POST data
+        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_POST, count($fields));
+        curl_setopt($ch,CURLOPT_POSTFIELDS, $fields_string);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+
+        //execute post
+        $result = curl_exec($ch);
+        
+        //close connection
+        curl_close($ch);
+        
+        return $result;
+
+    }
+
+    function makeGetRequest($url,$headers){
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        
+        //set the url, number of POST vars, POST data
+        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        
+        //execute post
+        $result = curl_exec($ch);
+        
+        //close connection
+        curl_close($ch);
+        
+        return $result;
+
+    }
+
+
+
+	public function sendMessageToUserAsAdmin($organizationId,$toUserId,$message){
+    
+        // find admin user
+        $user = $this->app['db']->fetchAssoc("
+            select * from user_mst where id in (
+                select master_user_id
+                from user 
+                where user.is_admin = 1 
+                and user.organization_id = ?
+            )",array($organizationId));
+            
+        $userTo = $this->app['db']->fetchAssoc("select * from user where id = ?",array($toUserId));
+                
+        if(empty($userTo['id']) || empty($user['id']))
+            return false;
+            
+        $username = $user['username'];
+        $password = $user['password'];
+        
+    	$response = $this->makePostRequest(API_URL . '/user/login',array(
+    	   'username' => $username,
+           'password' => $password,
+           'organization_id' => $organizationId
+    	));
+        
+        $responseAry = json_decode($response,true);
+        
+        if(empty($responseAry['token']))
+            return false;
+            
+        $token = $responseAry['token'];
+        
+        $cryptor = new \RNCryptor\Encryptor();
+		$cryptedMessage = bin2hex(base64_decode($cryptor->encrypt($message, AES_PASSWORD)));
+        $cryptedMessage = mb_strtoupper($cryptedMessage);
+        
+        // get chat id
+    	$response = $this->makePostRequest(API_URL . '/user/chat/start',array(
+    	   'user_id' => $toUserId,
+           'firstname' => $userTo['firstname'],
+           'lastname' => $userTo['lastname']
+    	),array(
+    	    "token: {$token}"
+    	));
+
+        $responseAry = json_decode($response,true);
+        
+        if(empty($responseAry['chat_id']))
+            return false;
+        
+        $chatId = $responseAry['chat_id'];
+        
+        // send message
+    	$response = $this->makePostRequest(API_URL . '/message/send',array(
+    	   'user_id' => $user['id'],
+           'chat_id' => $chatId,
+           'type' => 1,
+           'text' => $cryptedMessage
+    	),array(
+    	    "token: {$token}"
+    	));
+
+        return true;
+	}
+	
+	public function sendMessageToGroupAsAdmin($organizationId,$toGroupId,$message){
+    
+        // find admin user
+        $user = $this->app['db']->fetchAssoc("
+            select * from user_mst where id in (
+                select master_user_id
+                from user 
+                where user.is_admin = 1 
+                and user.organization_id = ?
+            )",array($organizationId));
+            
+        $groupTo = $this->app['db']->fetchAssoc("select * from groups where id = ?",array($toGroupId));
+        
+        if(empty($groupTo['id']) || empty($groupTo['id']))
+            return false;
+            
+        $username = $user['username'];
+        $password = $user['password'];
+        
+    	$response = $this->makePostRequest(API_URL . '/user/login',array(
+    	   'username' => $username,
+           'password' => $password,
+           'organization_id' => $organizationId
+    	));
+        
+        $responseAry = json_decode($response,true);
+        
+        if(empty($responseAry['token']))
+            return false;
+            
+        $token = $responseAry['token'];
+        
+        $cryptor = new \RNCryptor\Encryptor();
+		$cryptedMessage = bin2hex(base64_decode($cryptor->encrypt($message, AES_PASSWORD)));
+        $cryptedMessage = mb_strtoupper($cryptedMessage);
+        
+        // get chat id
+    	$response = $this->makePostRequest(API_URL . '/groups/chat/start',array(
+           'group_id' => $toGroupId,
+           'groupname' => $groupTo['name']
+    	),array(
+    	    "token: {$token}"
+    	));
+
+        $responseAry = json_decode($response,true);
+        
+        if(empty($responseAry['chat_id']))
+            return false;
+        
+        $chatId = $responseAry['chat_id'];
+        
+        // send message
+    	$response = $this->makePostRequest(API_URL . '/message/send',array(
+    	   'user_id' => $user['id'],
+           'chat_id' => $chatId,
+           'type' => 1,
+           'text' => $cryptedMessage
+    	),array(
+    	    "token: {$token}"
+    	));
+				
+        return true;
+	}
+	
+	public function sendMessageToRoomAsAdmin($organizationId,$roomId,$message){
+    
+        // find admin user
+        $user = $this->app['db']->fetchAssoc("
+            select * from user_mst where id in (
+                select master_user_id
+                from user 
+                where user.is_admin = 1 
+                and user.organization_id = ?
+            )",array($organizationId));
+            
+        $username = $user['username'];
+        $password = $user['password'];
+        
+    	$response = $this->makePostRequest(API_URL . '/user/login',array(
+    	   'username' => $username,
+           'password' => $password,
+           'organization_id' => $organizationId
+    	));
+        
+        $responseAry = json_decode($response,true);
+        
+        if(empty($responseAry['token']))
+            return false;
+            
+        $token = $responseAry['token'];
+        
+        $cryptor = new \RNCryptor\Encryptor();
+		$cryptedMessage = bin2hex(base64_decode($cryptor->encrypt($message, AES_PASSWORD)));
+        $cryptedMessage = mb_strtoupper($cryptedMessage);
+        
+        
+        // send message
+    	$response = $this->makePostRequest(API_URL . '/message/send',array(
+    	   'user_id' => $user['id'],
+           'chat_id' => $roomId,
+           'type' => 1,
+           'text' => $cryptedMessage
+    	),array(
+    	    "token: {$token}"
+    	));
+				
+        return true;
+	}
+	
+	public function sendMessage($user,$chatId,$text,$messageType){
+    	
+    	$response = $this->makePostRequest(API_URL . '/user/login',array(
+    	   'username' => $user['username'],
+           'password' => $user['password']
+    	));
+    	
+    	$responseAry = json_decode($response,true);
+    	
+    	if(empty($responseAry['token'])){
+        	return false;
+    	}
+        
+        $token = $responseAry['token'];
+
+        $cryptor = new \RNCryptor\Encryptor();
+		$cryptedMessage = bin2hex(base64_decode($cryptor->encrypt($text, AES_PASSWORD)));
+        $cryptedMessage = mb_strtoupper($cryptedMessage);
+        
+        // メッセージの送信
+    	$response = $this->makePostRequest(API_URL . '/message/send',array(
+    	   'user_id' => $user['id'],
+           'chat_id' => $chatId,
+           'type' => $messageType,
+           'text' => $cryptedMessage
+    	),array(
+    	    "token: {$token}"
+    	));
+
+        $responseAry = json_decode($response,true);
+
+    	if(empty($responseAry['id'])){
+        	return false;
+    	}
+    	
+        return $responseAry['id'];
+    	
+	}
+
 }

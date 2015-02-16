@@ -32,33 +32,7 @@
 					<!-- end: PAGE HEADER -->
 					<!-- start: PAGE CONTENT -->
 					
-                    {% if infomessage is defined %}
-                         <div class="row">
-    					    <div class="col-md-12">
-                                <div class="alert alert-success">
-                                	<button data-dismiss="alert" class="close">
-                                		×
-                                	</button>
-                                	<i class="fa fa-check-circle"></i>
-                                	{{infomessage}}
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
-                        
-                    {% if errormessage is defined %}
-                         <div class="row">
-    					    <div class="col-md-12">
-                                <div class="alert alert-danger">
-                                	<button data-dismiss="alert" class="close">
-                                		×
-                                	</button>
-                                	<i class="fa fa-check-circle"></i>
-                                	{{errormessage}}
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
+                    {% include 'alert.twig' %}
                         
 					<div class="row">
 

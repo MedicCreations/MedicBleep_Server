@@ -1,0 +1,92 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+        
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{ADMIN_ROOT_URL}}/dashboard">
+										{{lang.general11}}
+									</a>
+								</li>
+								<li>
+									<a href="{{ADMIN_ROOT_URL}}/news">
+									    {{lang.news1}}
+                                    </a>
+								</li>
+								<li class="active">
+									{{lang.news4}}
+								</li>
+								
+								{% include 'searchbox.twig' %}
+								
+							</ol>
+							<div class="row page-header">
+							    <div class="col-md-6">
+								    <h1>{{lang.news4}}</h1>
+								</div>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+					                
+                	{% include 'alert.twig' %}
+	
+                    <form role="form" class="form-horizontal form" method="post" action="{{ADMIN_ROOT_URL}}/news/add" enctype="multipart/form-data">
+                    
+                        {% include 'news_form.twig' %}
+                        
+                    	<div class="row">
+                    		<div class="col-md-12 right">
+                    			<input type="submit" class="btn btn-primary" value="{{lang.general13}}" / >
+                    		</div>
+                    	</div>
+                    	
+                    </form>
+
+{% endblock %}
+
+
+{% block pageScript %}
+    <script src="{{ROOT_URL}}/assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="{{ROOT_URL}}/assets/js/sp-validator.js"></script>
+	<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
+	<script>
+
+        var runGroupFormValidator = function () {
+            var form = $('.form');
+            var errorHandler = $('.errorHandler');
+            form.validate({
+                rules: {
+                    title: {
+                        required: true
+                    },
+                    body: {
+                        required: true
+                    }
+                },
+                submitHandler: function (form) {
+                    errorHandler.hide();
+                    form.submit();
+                },
+                invalidHandler: function (event, validator) {
+                    errorHandler.show();
+                }
+            });
+        };
+        
+		jQuery(document).ready(function() {
+			SpValidator.initValidator();
+			runGroupFormValidator();
+		});
+		
+	</script>
+{% endblock %}
+

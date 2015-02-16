@@ -21,6 +21,9 @@ SpikaClient.prototype.handleLogicalErrors = function(data,listener){
     if(data.code == 1001 || data.code == 1000){ // invalid token, token expired
         alert('Your token is expired or you logged in from another device. Please login again.');
         Backbone.trigger(EVENT_FORCE_LOGOUT);
+    }else if(data.code == 1017 ){ 
+        alert('Your account reaches limit of disk space.');
+        listener(data);
     }else{
         listener(data);
     }
@@ -46,7 +49,48 @@ SpikaClient.prototype.handleCriticalErrors = function(jqXHR,listener){
 }
 
 // Login
-SpikaClient.prototype.login = function(userName,password,succeessListener,failedListener)
+SpikaClient.prototype.prelogin = function(userName,password,succeessListener,failedListener)
+{
+    
+    this.error = false;
+    var self = this;
+    
+    password = CryptoJS.MD5(password).toString();
+        
+    var requestLogin = $.ajax({
+        url: this.apiEndPointUrl + '/user/prelogin',
+        type: 'POST',
+        data: 'json',
+        data:{'username':userName,'password':password},
+        headers: {"api-agent":this.UA}
+    });
+    
+    requestLogin.done(function( data ) {
+        
+        if(data.code == 2000 && data.token != ''){
+            
+            succeessListener(data);
+            
+        } else if(data.code == 1003){ // invalid login
+        
+            failedListener(data);
+            
+        }else {
+        
+            self.handleLogicalErrors(data,failedListener);
+            
+        }
+        
+    });
+    
+    requestLogin.fail(function( jqXHR, textStatus ) {
+        self.handleCriticalErrors(jqXHR,failedListener);
+    });
+
+};
+
+// Login
+SpikaClient.prototype.login = function(userName,password,organizationId,succeessListener,failedListener)
 {
     
     this.error = false;
@@ -58,7 +102,11 @@ SpikaClient.prototype.login = function(userName,password,succeessListener,failed
         url: this.apiEndPointUrl + '/user/login',
         type: 'POST',
         data: 'json',
-        data:{'username':userName,'password':password},
+        data:{
+            'username':userName,
+            'password':password,
+            'organization_id':organizationId
+        },
         headers: {"api-agent":this.UA}
     });
     
@@ -464,7 +512,7 @@ SpikaClient.prototype.fileUpload = function(file,succeessListener,failedListener
     });
     
     request.done(function( data ) {
-
+                
         if(data.code == 2000){
             succeessListener(data);
         } else {

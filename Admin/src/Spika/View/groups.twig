@@ -26,7 +26,7 @@
 								    <h1>{{lang.groups2}} <small> {{lang.groups3}}</small></h1>
 								</div>
 								<div class="col-md-6 right">
-								    <a class="btn btn-primary" href="{{ADMIN_ROOT_URL}}/groups/add"><i class="fa fa-plus"></i>{{lang.groups4}}</a>
+								    <a class="btn btn-primary" href="{{ADMIN_ROOT_URL}}/groups/add"><i class="fa fa-plus"></i> {{lang.groups4}}</a>
 								</div>
 							</div>
 							<!-- end: PAGE TITLE & BREADCRUMB -->
@@ -36,19 +36,7 @@
 					<!-- start: PAGE CONTENT -->
 					
 
-                    {% if infomessage is defined %}
-                         <div class="row">
-    					    <div class="col-md-12">
-                                <div class="alert alert-success">
-                                	<button data-dismiss="alert" class="close">
-                                		×
-                                	</button>
-                                	<i class="fa fa-check-circle"></i>
-                                	{{infomessage}}
-                                </div>
-                            </div>
-                        </div>
-                    {% endif %}
+                   {% include 'alert.twig' %}
                         
 					{% include 'paginator.twig' %}
 					

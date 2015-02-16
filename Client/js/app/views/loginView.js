@@ -17,32 +17,9 @@ var SPIKA_LoginView = Backbone.View.extend({
 	        
 			var username = $.cookie(COOKIE_USERNAME);
 			var password = $.cookie(COOKIE_PASSWORD);
-			
-	        apiClient.login(username,password,function(data){
-	            
-	            SPIKA_VideoCallManager.init(data.user_id);
-	            
-	            apiClient.getUserById(data.user_id,function(data){
-	                
-	                SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
-	                SPIKA_notificationManger.attachUser(data.user.id);
-	                AvatarManager.init();
-	                
-	                U.goPage("main");
-	                
-	            },function(data){
-	                
-	                self.showAlert(LANG.login_failed);
-	                
-	            });
-	
-	            
-	        },function(data){
-	            
-	            U.goPage("logout");
-	            
-	        });
-        
+
+            this.proceedLogin(username,password,true);
+            
 	        return this;
 	        
         }else{
@@ -117,7 +94,6 @@ var SPIKA_LoginView = Backbone.View.extend({
                 LANG.forget_password,
                 LANG.forget_password_firststep_text,
             function(username){
-                
                 
     	        apiClient.sendTempPassword(username,function(data){
     	            
@@ -227,74 +203,132 @@ var SPIKA_LoginView = Backbone.View.extend({
             $.cookie(COOKIE_USERNAME, '', { expires: COOKIE_EXPIRES });
             $.cookie(COOKIE_PASSWORD, '', { expires: COOKIE_EXPIRES });
         }
-
-        apiClient.login(username,password,function(data){
+        
+        this.proceedLogin(username,password);
+    },
+    
+    proceedLogin: function(username,password,forceLogout){
+        
+        if(_.isUndefined(forceLogout))
+            forceLogout = false;
             
-			SPIKA_VideoCallManager.init(data.user_id);
-			
-            apiClient.getUserById(data.user_id,function(data){
-                
-                SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
-                SPIKA_notificationManger.attachUser(data.user.id);
-                AvatarManager.init();
-                
-                U.goPage("main");
-                
-            },function(data){
-                
+        var self = this;
+        
+        U.l('proceedLogin');
+        
+        apiClient.prelogin(username,password,function(data){
+            
+            if(_.isNull(data.organizations)){
                 self.showAlert(LANG.login_failed);
-                
-            });
-
-            
-        },function(data){
-            
-            var code = data.code;
-
-            if(code == 1012){ // temporary password login
-                
-                SPIKA_ForgetPasswordManager.showDialogForNewPassword(
-                    LANG.forget_password_secondstep_title,
-                    LANG.forget_password_secondstep_text,
-                function(tempPass,newPass){
+                if(forceLogout)
+                    U.goPage('logout');
                     
-        			var errorMessage = U.validatePassword(newPass,newPass);
-        			
-        			if(!_.isEmpty(errorMessage)){
-        				self.showAlert(errorMessage);
-        				return;
-        			}
-                    
-                    apiClient.resetPassword(tempPass,newPass,function(data){
-                    
-                        self.showAlert(LANG.forget_password_done);
-                    
-                    },function(data){
-                        
-                        var code = data.code;
-                        
-                        if(code == 1015){
-                            
-                            self.showAlert(LANG.forget_password_secondstep_failed_samepassword);
-                            return;
-                        }
-                        
-                        self.showAlert(LANG.forget_password_secondstep_failed);
-                    
-                    });
-                
-                },function(){
-                
-                
-                
-                })
                 return;
             }
+            
+            if(data.organizations.length < 1){
+                self.showAlert(LANG.login_failed);
+                if(forceLogout)
+                    U.goPage('logout');
+                return;
+            }
+            
+            if(data.organizations.length == 1){
+                
+                var tmpOrganization = data.organizations[0];
+                
+                apiClient.login(username,password,tmpOrganization.id,function(data){
+                    
+        			SPIKA_VideoCallManager.init(data.user_id);
+        			
+                    apiClient.getUserById(data.user_id,function(data){
                         
+                        SPIKA_UserManager.setUser(userFactory.createModelByAPIResponse(data.user));
+                        SPIKA_notificationManger.attachUser(data.user.id);
+                        AvatarManager.init();
+                        
+                        U.goPage("main");
+                        
+                    },function(data){
+                        
+                        self.showAlert(LANG.login_failed);
+                        if(forceLogout)
+                            U.goPage('logout');
+                        
+                    });
+        
+                    
+                },function(data){
+                    
+                    var code = data.code;                    
+                    self.showAlert(LANG.login_failed);
+                    
+                });
+    
+            } else {
+                
+                SPIKA_UserManager.preloginData = {
+                    organizations : data.organizations,
+                    username : username,
+                    password : password
+                };
+                
+                U.goPage("organizationSelect");  
+                              
+            }
+                    
+        },function(data){
+            
+            if(data.code == 1012){ // temporary password login
+                
+                SPIKA_ForgetPasswordManager.showDialogForNewPassword(
+                
+                    LANG.forget_password_secondstep_title,
+                    LANG.forget_password_secondstep_text,
+                    
+                    function(tempPass,newPass){
+                        
+            			var errorMessage = U.validatePassword(newPass,newPass);
+            			
+            			if(!_.isEmpty(errorMessage)){
+            				self.showAlert(errorMessage);
+            				return;
+            			}
+                        
+                        apiClient.resetPassword(tempPass,newPass,function(data){
+                        
+                            self.showAlert(LANG.forget_password_done);
+                        
+                        },function(data){
+                            
+                            var code = data.code;
+                            
+                            if(code == 1015){
+                                
+                                self.showAlert(LANG.forget_password_secondstep_failed_samepassword);
+                                return;
+                            }
+                            
+                            self.showAlert(LANG.forget_password_secondstep_failed);
+                        
+                        });
+                    
+                    },function(){
+                    
+                    
+                    
+                    });
+                    
+                return;
+            }
+            
             self.showAlert(LANG.login_failed);
+            if(forceLogout)
+                U.goPage('logout');
             
         });
-    
+
+
     }
     
 });

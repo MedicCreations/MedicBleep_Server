@@ -35,6 +35,8 @@
 </div>
 <!-- end: PAGE HEADER -->
 
+{% include 'alert.twig' %}
+
 <!-- start: PAGE CONTENT -->
 <form role="form" class="form-horizontal form-user" method="post" action="{{ADMIN_ROOT_URL}}/categories/add" enctype="multipart/form-data">
 
@@ -58,7 +60,7 @@
 
         var runUserFormValidator = function () {
             var form = $('.form-user');
-            var errorHandler = $('.errorHandler', form);
+            var errorHandler = $('.errorHandler');
             form.validate({
                 rules: {
                     username: {

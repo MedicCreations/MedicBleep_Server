@@ -1,0 +1,189 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+        
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{OWNER_ROOT_URL}}/dashboard">
+										{{lang.general1}}
+									</a>
+								</li>
+								<li>
+									<a href="{{OWNER_ROOT_URL}}/organisation/">
+									{{lang.organisation1}}
+									</a>
+								</li>
+								<li class="active">
+									{{lang.organisation7}}
+								</li>								
+							</ol>
+							<div class="row page-header">
+							    <div class="col-md-6">
+								    <h1>{{lang.organisation7}}</h1>
+								</div>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+        
+                    {% include "alert.twig" %}
+					
+					<div class="row">
+					
+						<div class="col-sm-12">
+                            
+                            <form role="form" class="form-horizontal form" method="post" action="{{OWNER_ROOT_URL}}/organisation/edit/{{form.id}}" enctype="multipart/form-data">
+                                
+                                {% include 'organisation/organisation_form.twig' %}
+                                
+                        		<div class="right">
+                        			<input type="submit" name="edit_profile" class="btn btn-primary" value="{{lang.general11}}" / >
+                        		</div>
+                            	
+                            </form>
+                        
+                        </div>
+                        
+                    </div>
+                    
+					<div class="row">
+						<div class="col-sm-12">
+                            
+                            <h3>{{lang.organisation17}}</h3>
+                            
+                            <form role="form" class="form-horizontal form-pw" method="post" action="{{OWNER_ROOT_URL}}/organisation/edit/{{form.id}}" enctype="multipart/form-data">
+                                
+                        		<div class="form-group">
+                        			<label class="col-sm-3 control-label" for="form-field-12">
+                        			{{lang.organisation19}}
+                        			</label>
+                        			<div class="col-sm-8">
+                        				<input type="text" name="new_password" id="form-field-12" class="form-control">
+                        			</div>
+                        		</div>
+
+                        		<div class="form-group">
+                        			<label class="col-sm-3 control-label" for="form-field-13">
+                        			{{lang.organisation20}}
+                        			</label>
+                        			<div class="col-sm-8">
+                        				<input type="text" name="new_password_again"  id="form-field-13" class="form-control">
+                        			</div>
+                        		</div>
+
+                        		<div class="right">
+                        			<input type="submit" name="edit_profile" class="btn btn-primary" value="{{lang.organisation17}}" / >
+                        		</div>
+                                
+                                <input type="hidden" name="id" value="{{form.id}}">
+                                <input type="hidden" name="type" value="password">
+                                
+                            </form>
+
+                            
+                        </div>
+                        
+                    </div>
+                    
+                    
+
+{% endblock %}
+
+
+{% block pageScript %}
+    <script src="{{ROOT_URL}}/assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="{{ROOT_URL}}/assets/js/sp-validator.js"></script>
+	<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
+	<script>
+
+        var runFormValidator1 = function () {
+            var form = $('.form');
+            var errorHandler = $('.errorHandler');
+            form.validate({
+                rules: {
+                    name: {
+                        minlength: 6,
+                        required: true
+                    },
+                    email: {
+	                    email: true,
+                        required: true
+                    },
+                    admin_name: {
+                        minlength: 6,
+                        loginRegex: true,
+                        required: true
+                    },
+                    admin_password: {
+                        minlength: 6,
+                        loginRegex: true,
+                        required: true
+                    },
+                    max_users: {
+                        number: true,
+                        required: true
+                    },
+                    max_groups: {
+                        number: true,
+                        required: true
+                    },
+                    max_rooms: {
+                        number: true,
+                        required: true
+                    },
+                    disk_quota: {
+                        number: true,
+                        required: true
+                    }
+                },
+                submitHandler: function (form) {
+                    errorHandler.hide();
+                    form.submit();
+                },
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    errorHandler.show();
+                }
+            });
+        };
+
+        var runFormValidator2 = function () {
+            var form = $('.form-pw');
+            var errorHandler = $('.errorHandler', form);
+            form.validate({
+                rules: {
+                    new_password: {
+                        minlength: 6,
+                        loginRegex: true,
+                        required: true
+                    },
+                    new_password_again: {
+                        equalTo: '#form-field-12'
+                    }
+                },
+                submitHandler: function (form) {
+                    errorHandler.hide();
+                    form.submit();
+                },
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    errorHandler.show();
+                }
+            });
+        };
+                
+		jQuery(document).ready(function() {
+			SpValidator.initValidator();
+			runFormValidator1();
+			runFormValidator2();
+		});
+		
+	</script>
+{% endblock %}
+

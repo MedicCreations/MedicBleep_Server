@@ -8,6 +8,7 @@
             "login": "loginRoute",
             "logout": "logoutRoute",
             "forcelogout": "loginRoute",
+            "organizationSelect": "organizationSelect",
             "*actions": "defaultRoute"
         }
     });
@@ -21,7 +22,7 @@
     });
     
     app_router.on('route:loginRoute', function(actions) {
-
+                
         // load models
         require(['app/views/loginView',
                     'thirdparty/text!templates/login.tpl'
@@ -220,7 +221,36 @@
             
         });
         
-    }); 
+    });
+    
+    app_router.on('route:organizationSelect', function(actions) {
+        
+        if(_.isEmpty(SPIKA_UserManager.preloginData)){
+            
+            U.goPage('login');
+            return;
+        }
+        
+        // load models
+        require(['app/views/organizationSelectView',
+                    'thirdparty/text!templates/organizationSelect.tpl'
+                ], function (DashboardPage,Template) {
+            
+            var view = new SPIKA_OrganizationSelectView({
+                template: Template
+            });
+            
+            $(HOLDER).fadeOut('slow',function(){
+                $(HOLDER).attr('id', 'login');
+                $(HOLDER).html(view.render().el);
+                $(HOLDER).fadeIn('slow');
+            });
+            
+        });
+        
+    });
+
+
     // Start Backbone history a necessary step for bookmarkable URL's
     Backbone.history.start();
     

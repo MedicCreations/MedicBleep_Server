@@ -1,0 +1,39 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{OWNER_ROOT_URL}}/dashboard">
+										{{lang.dashboard1}}
+									</a>
+								</li>
+								<li class="active">
+									{{lang.dashboard2}}
+								</li>
+																
+							</ol>
+							<div class="page-header">
+								<h1>{{lang.dashboard1}} <small> {{lang.dashboard3}}</small></h1>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+					<div class="row">
+					    <div class="col-md-12">
+                            Welcome to Spika Owner's web interface
+                        </div>
+					</div>
+					
+
+{% endblock %}

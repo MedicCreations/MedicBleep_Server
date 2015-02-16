@@ -2,6 +2,7 @@ SPIKA_UserManager = {
     
     loginedUser: null,
     userDataCache: {},
+    preloginData: {},
     setUser: function(userModel){
         this.loginedUser = userModel;
     },

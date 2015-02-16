@@ -4,6 +4,8 @@ vagrant/
 
 Admin/logs/
 Admin/tmp/
+Owner/logs/
+Owner/tmp/
 Server/logs/
 Server/uploads/
 Server/wwwroot/stickers/

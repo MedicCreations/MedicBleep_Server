@@ -6,7 +6,7 @@ use Silex\Application;
 interface DbInterface
 {
 	public function registerUser(Application $app, $outside_id, $firstname, $lastname, $password, $username, $android_push_token, $ios_push_token);
-	public function loginUser(Application $app, $password, $username, $deviceType);
+	public function loginUser(Application $app, $password, $username,$organizationId, $deviceType);
 	public function loginWithTempPass(Application $app, $username, $password);
 	public function getUserByToken(Application $app, $token_received);
 	public function getUserByUsername(Application $app, $username);
@@ -88,5 +88,7 @@ interface DbInterface
 	public function getUsersNotMeNotChatMembers(Application $app, $my_user_id, $search, $offset, $chat_id);
 	public function getUsersCountNotMeNotChatMembers(Application $app, $my_user_id, $search, $chat_id);
 	public function getSearchUsersGroupsRoomsNotChatMembers(Application $app, $search, $my_user_id, $chat_id);
+	
+	public function getOrganizationByID(Application $app, $organization_id);
 	
 }

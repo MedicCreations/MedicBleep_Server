@@ -826,8 +826,14 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
     
             },function(data){
                 
-                SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to create room");
-    
+                var code = data.code;
+                
+                if(code == 1016){
+                    SPIKA_AlertManager.show(LANG.general_errortitle,LANG.error_roomlimit);
+                }else{
+                    SPIKA_AlertManager.show(LANG.general_errortitle,"Failed to create room");
+                }
+                    
             });
 
             

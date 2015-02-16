@@ -11,9 +11,9 @@
 	</div>
 	
 	<div class="footer_buttons">
-        <a href="javascript:void(0)" class="button" id="btn_tuggle_video">{mutevideo}</a>
-        <a href="javascript:void(0)" class="button" id="btn_tuggle_audio">{muteaudio}</a>
-        <a href="javascript:void(0)" class="button" id="btn_call_close">{close}</a>
+        <a href="javascript:void(0)" id="btn_tuggle_video"><img class="imgbutton" src="{rooturl}/img/call_mute_video_on.png"/></a>
+        <a href="javascript:void(0)" id="btn_tuggle_audio"><img class="imgbutton" src="{rooturl}/img/call_mute_audio_on.png"/></a>
+        <a href="javascript:void(0)" id="btn_call_close"><img class="imgbutton" src="{rooturl}/img/call_decline.png"/></a>
 	</div>
 	
 </div>
@@ -42,9 +42,18 @@
     <br style="clear: both" />
     
     <div class="operations">
-        <a href="javascript:void(0)" class="button" id="btn_call_close">{stop}</a>
-        <a href="javascript:void(0)" class="button" id="btn_call_accept">{accept}</a>
-        <a href="javascript:void(0)" class="button red" id="btn_call_decline">{decline}</a>
+        <a href="javascript:void(0)" id="btn_call_close">
+            <img class="imgbutton" src="{rooturl}/img/call_decline.png"/>
+        </a>
+        <a href="javascript:void(0)" id="btn_call_accept_audio">
+            <img class="imgbutton" src="{rooturl}/img/voice_call_accept.png"/>
+        </a>
+        <a href="javascript:void(0)" id="btn_call_accept_video">
+            <img class="imgbutton" src="{rooturl}/img/video_call_accept.png"/>
+        </a>
+        <a href="javascript:void(0)" id="btn_call_decline">
+            <img class="imgbutton" src="{rooturl}/img/call_decline.png"/>
+        </a>
     </div>
     
 </div>

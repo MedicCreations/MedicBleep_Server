@@ -108,16 +108,37 @@
 								<span class="title"> {{lang.general3}} </span><span class="selected"></span>
 							</a>
 						</li>
-						<li class="{% if page == 'users' %}active open{% endif %}">
-							<a href="{{ADMIN_ROOT_URL}}/users"><i class="fa fa-user"></i>
+						<li class="dropdown {% if page == 'users' or page == 'sendmessage'%}active open{% endif %}">
+							<a href="javascript:void(0)"><i class="fa fa-user"></i>
 								<span class="title"> {{lang.general4}} </span>
 							</a>
+
+							<ul class="sub-menu">
+								<li class="{% if page == 'users' %}active{% endif %}">
+									<a href="{{ADMIN_ROOT_URL}}/users">
+										<span class="title"> {{lang.general21}} </span>
+									</a>
+								</li>
+								<li class="{% if page == 'sendmessage' %}active{% endif %}">
+									<a href="{{ADMIN_ROOT_URL}}/users/sendmessage">
+										<span class="title"> {{lang.general22}} </span>
+									</a>
+								</li>
+							</ul>
+
+
 						</li>
 						<li class="{% if page == 'groups' %}active open{% endif %}">
 							<a href="{{ADMIN_ROOT_URL}}/groups"><i class="fa fa-users"></i>
 								<span class="title"> {{lang.general5}} </span>
 							</a>
 						</li>
+						<li class="{% if page == 'news' %}active open{% endif %}">
+							<a href="{{ADMIN_ROOT_URL}}/news"><i class="fa fa-info"></i>
+								<span class="title"> {{lang.general23}} </span>
+							</a>
+						</li>
+
 						<li class="{% if page == 'categories' %}active open{% endif %}">
 							<a href="{{ADMIN_ROOT_URL}}/categories"><i class="fa fa-book"></i>
 								<span class="title"> {{lang.general17}} </span>

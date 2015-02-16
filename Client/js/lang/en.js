@@ -128,5 +128,8 @@ LANG = {
 	  unmuteaudio: "Unmute",
 	  mutevideo: "Stop",
 	  unmutevideo: "Play",
+	  select_organization: "Select Organization",
+	  select: "Select",
+	  error_roomlimit: "You exceed number of rooms in your plan. Please ask administrator for detail.",
       dummy : 'dummy'
 };

@@ -1,0 +1,36 @@
+{% extends "acceptInvitaiton/base.twig" %}
+
+{% block content %}
+
+    <div class="container">
+    
+        
+        <form class="form-signin" method="post" action="{{ROOT_URL}}/accept/signup">
+        
+            <h2 class="form-signin-heading">Accept Invitaion</h2>
+            <p>
+                You have a invitaion from <strong>{{organization.name}}</strong>.
+                Please accept invitation to start using Spika Enterprise.
+            </p>
+            
+            <p> Your email address is <strong>{{userMst.email}}</strong></p>
+            
+            {% include "alert.twig" %}
+            
+            <label for="inputEmail" class="sr-only">Usermane</label>            
+            <input type="username" name="username" id="inputEmail" class="form-control" placeholder="Username" autofocus>
+            
+            <label for="inputPassword" class="sr-only">Password</label>
+            <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Password">
+            
+            <label for="inputPassword" class="sr-only">Password Again</label>
+            <input type="password" name="password_again" id="inputPassword" class="form-control" placeholder="Password Again">
+            
+            <input type="hidden" name="code" value="{{code}}">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Accept</button>
+            
+        </form>
+
+    </div> <!-- /container -->					
+
+{% endblock %}

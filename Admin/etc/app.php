@@ -70,4 +70,5 @@ $app->mount ( '/chats', new Spika\Controller\ChatsController() );
 $app->mount ( '/categories', new Spika\Controller\CategoryController() );
 $app->mount ( '/account', new Spika\Controller\AccountController() );
 $app->mount ( '/userparams', new Spika\Controller\UserParamsController() );
+$app->mount ( '/news', new Spika\Controller\NewsController() );
 $app->mount ( '/stickers', new Spika\Controller\StickersController() );
