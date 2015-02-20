@@ -34,6 +34,14 @@ class OrganisationController extends BaseController {
             
             $self->page = 'organisation';
             
+            foreach($list as $index => $row){
+                
+                $usersCount = $self->getUsersCount($row['id']);
+                
+                $list[$index]['usageUsers'] = "{$usersCount}/{$row['max_users']}";
+                
+            }
+            
             return $self->render('organisation/organisation.twig', array(
                 'pager' => array(
                     'baseURL' => OWNER_ROOT_URL . "/organisation/?page=",
@@ -353,6 +361,18 @@ class OrganisationController extends BaseController {
 
         
         return '';
+    	
+	}
+	
+	function getUsersCount($organizationId){
+    	
+    	$usersCountResult = $this->app['db']->fetchAssoc("
+    	    select count(*) as count 
+    	    from user 
+    	    where organization_id = ?"
+        ,array($organizationId));
+        
+        return $usersCountResult['count'];
     	
 	}
 	

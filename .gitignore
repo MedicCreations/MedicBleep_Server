@@ -13,3 +13,20 @@ Server/wwwroot/stickers/
 Client/apps/
 
 sourcetreeconfig
+
+Admin/init.php
+Admin/wwwroot/.htaccess
+
+Client/init.php
+
+Owner/init.php
+Owner/wwwroot/.htaccess
+
+Pages/init.php
+Pages/wwwroot/.htaccess
+
+Server/init.php
+Server/wwwroot/.htaccess
+
+
+

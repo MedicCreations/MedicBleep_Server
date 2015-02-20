@@ -2,7 +2,7 @@
     Options -MultiViews
 
     RewriteEngine On
-    RewriteBase /dev/owner
+    RewriteBase /spikaenterprise_web.git/Owner/wwwroot/
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [QSA,L]
 </IfModule>
