@@ -259,7 +259,6 @@ class BaseController implements ControllerProviderInterface {
         $mailer->send($message);
         
         */
-
 	            
 	}
 	

@@ -2,6 +2,13 @@
 .vagrant/
 vagrant/
 
+!logs/.gitkeep
+Client/apps/
+
+sourcetreeconfig
+
+Settings
+
 Admin/logs/
 Admin/tmp/
 Owner/logs/
@@ -9,9 +16,25 @@ Owner/tmp/
 Server/logs/
 Server/uploads/
 Server/wwwroot/stickers/
-!logs/.gitkeep
-Client/apps/
+Pages/logs/
 
+Subsystems/push/tmp/
+Subsystems/notification/log/
+Subsystems/video_encoder/tmp/
+
+Admin/init.php
+Admin/wwwroot/.htaccess
+Client/js/app/init.js
+Owner/init.php
+Owner/wwwroot/.htaccess
+Pages/init.php
+Pages/wwwroot/.htaccess
+Server/init.php
+Server/wwwroot/.htaccess
+Subsystems/push/lib/init.php
+notification/init.php
+
+<<<<<<< HEAD
 sourcetreeconfig
 
 Admin/init.php
@@ -30,3 +53,5 @@ Server/wwwroot/.htaccess
 
 
 
+=======
+>>>>>>> 2ecd1d8398ea7b3ed92e3af1dc01ea51d86305d1

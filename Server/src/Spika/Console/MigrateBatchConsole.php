@@ -24,7 +24,7 @@ class MigrateBatchConsole extends \Knp\Command\Command {
             $users = $app['db']->fetchAll("select * from user");
             
             foreach($users as $user){
-                
+                                
                 $userMst = $app['db']->fetchAssoc("select * from user_mst where id = ?",array($user['master_user_id']));
                 
                 if(!isset($userMst['id'])){

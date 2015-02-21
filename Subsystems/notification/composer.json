@@ -1,0 +1,13 @@
+{
+    "autoload": {
+        "psr-0": {
+            "SpikaWebNotification": "src"
+        }
+    },
+    "require": {
+        "cboden/ratchet": "0.3.*",
+        "monolog/monolog": ">=1.0.0",
+        "doctrine/dbal": "2.5.0-RC2"
+    }
+}
+
