@@ -130,6 +130,7 @@ class BaseController implements ControllerProviderInterface {
         
         $chatId = $responseAry['chat_id'];
         
+        
         // send message
     	$response = $this->makePostRequest(API_URL . '/message/send',array(
     	   'user_id' => $user['id'],

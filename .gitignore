@@ -34,3 +34,24 @@ Server/wwwroot/.htaccess
 Subsystems/push/lib/init.php
 notification/init.php
 
+<<<<<<< HEAD
+sourcetreeconfig
+
+Admin/init.php
+Admin/wwwroot/.htaccess
+
+Client/init.php
+
+Owner/init.php
+Owner/wwwroot/.htaccess
+
+Pages/init.php
+Pages/wwwroot/.htaccess
+
+Server/init.php
+Server/wwwroot/.htaccess
+
+
+
+=======
+>>>>>>> 2ecd1d8398ea7b3ed92e3af1dc01ea51d86305d1

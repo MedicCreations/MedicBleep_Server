@@ -585,7 +585,7 @@ class MessageController extends SpikaBaseController {
 			
 			foreach($stickerData as $index => $row){
     			
-    			$stickerData[$index]['url'] = ROOT_URL . "stickers/" .$stickerData[$index]['filename'];
+    			$stickerData[$index]['url'] = ROOT_URL . "/stickers/" .$stickerData[$index]['filename'];
     			
 			}
 			
