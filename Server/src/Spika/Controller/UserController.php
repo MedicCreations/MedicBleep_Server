@@ -429,7 +429,7 @@ class UserController extends SpikaBaseController {
 			
 			$result = array('code' => CODE_SUCCESS,
 						'message' => 'OK',
-						'url' => INFORMATION_URL);
+						'url' => INFORMATION_URL . $app['user']['token']);
 			return $app->json($result, 200);
 			
 		})->before($app['beforeSpikaTokenChecker']);

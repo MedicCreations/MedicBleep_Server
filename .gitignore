@@ -2,6 +2,11 @@
 .vagrant/
 vagrant/
 
+!logs/.gitkeep
+Client/apps/
+
+sourcetreeconfig
+
 Admin/logs/
 Admin/tmp/
 Owner/logs/
@@ -9,7 +14,21 @@ Owner/tmp/
 Server/logs/
 Server/uploads/
 Server/wwwroot/stickers/
-!logs/.gitkeep
-Client/apps/
+Pages/logs/
 
-sourcetreeconfig
+Subsystems/push/tmp/
+Subsystems/notification/log/
+Subsystems/video_encoder/tmp/
+
+Admin/init.php
+Admin/wwwroot/.htaccess
+Client/js/app/init.js
+Owner/init.php
+Owner/wwwroot/.htaccess
+Pages/init.php
+Pages/wwwroot/.htaccess
+Server/init.php
+Server/wwwroot/.htaccess
+Subsystems/push/lib/init.php
+notification/init.php
+
