@@ -1,0 +1,18 @@
+{
+    "isDev": true,
+    "logLevel": 3,
+    "server": {
+        "port": 32400
+    },
+    "stunservers" : [
+        {"url": "stun:spikaent.com:3478"}
+    ],
+    "turnservers" : [
+        /*
+        { "url": "turn:your.turn.server.here",
+          "secret": "turnserversharedsecret"
+          "expiry": 86400 }
+          */
+    ] 
+}
+
