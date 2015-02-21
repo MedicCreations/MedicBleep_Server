@@ -1,10 +1,10 @@
 <?php
 
-define('ROOT_DIR', "/var/www/www.spikaent.com/dev/spikaenterprise_web/Pages/wwwroot");
-define('ROOT_URL', "https://www.spikaent.com/dev/page");
-define('CLIENT_URL', "https://www.spikaent.com/dev/web");
+define('ROOT_DIR', "/data/www/spikaenterprise_web.git/Pages/wwwroot");
+define('ROOT_URL', "http://210.140.172.50/spikaenterprise_web.git/Pages/wwwroot");
+define('CLIENT_URL', "http://210.140.172.50/spikaenterprise_web.git/Client");
 
-define ('DB_NAME','clover');
-define ('DB_USER','root');
-define ('DB_PASS','cloverpass013');
+define('DB_NAME', "medline");
+define('DB_USER', "medline");
+define('DB_PASS', "7BhQb2ZLSc");
 

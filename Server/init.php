@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
  
-define('TOKEN_VALID_TIME', 60*60*24);d
+define('TOKEN_VALID_TIME', 60*60*24);
 define('PW_RESET_CODE_VALID_TIME', 60*5);
 define('ROOT_URL', "http://210.140.172.50/spikaenterprise_web.git/Server/wwwroot");
 define('PUSH_ROOT_URL', "http://210.140.172.50/spikaent_subsysytem/push/receiver.php");
@@ -18,7 +18,8 @@ define('WEBSOCKET_SERVER_HOST', "localhost");
 define('WEBSOCKET_SERVER_PORT', "8080");
 define('USEWEBSOCKET',true);
 
-define('INFORMATION_URL', "http://210.140.172.50/spikaenterprise_web.git/Pages/news/list");
+define('INFORMATION_URL', "http://210.140.172.50/spikaenterprise_web.git/Pages/wwwroot/news/list/");
+define('ROOT_DIR', "/data/www/spikaenterprise_web.git/Server");
 
 //define sql database
 define('DB_NAME', "medline");

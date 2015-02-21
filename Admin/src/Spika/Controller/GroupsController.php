@@ -199,7 +199,7 @@ class GroupsController extends BaseController {
 						'group_id' => $lastGourpId,
     			        'organization_id' => $self->user['id'],
     					'name' => $formValues['name'],
-    					'category' => $formValues['category'],
+    					'category_id' => $formValues['category'],
     					'image' => $image,
     					'image_thumb' => $imageThumb,
     					'created' => time(), 

@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 class FileController extends SpikaBaseController {
 	
 	static $paramName = 'file';
-	static $fileDirName = 'uploads';
+	static $fileDirName = '/uploads';
 	
 	//static $filePath = $_SERVER['DOCUMENT_ROOT'] . '/msg/spikaenterprise_web/Server/uploads';
 	
@@ -30,9 +30,9 @@ class FileController extends SpikaBaseController {
 				
 			$file = $request->files->get(FileController::$paramName);
 			
-			$filePath = $_SERVER['DOCUMENT_ROOT'] . '/msg/spikaenterprise_web/Server/uploads';			
+			$filePath = ROOT_DIR . FileController::$fileDirName;						
 			$fineName = $mySql->randomString(20, 20) . time();
-            
+                        
 			if(!is_writable($filePath))
 				return $self->returnErrorResponse(FileController::$fileDirName ." dir is not writable.", ER_DIR_NOT_WRITABLE);
             
@@ -58,7 +58,7 @@ class FileController extends SpikaBaseController {
 
 			$requestBodyAry = $request->query->all();
 			$fileID = $requestBodyAry['file_id'];
-			$filePath = $_SERVER['DOCUMENT_ROOT'] . '/msg/spikaenterprise_web/Server/uploads';
+			$filePath = ROOT_DIR . FileController::$fileDirName;	
 			$filePath = $filePath."/".basename($fileID);
             
             $fileContent = file_get_contents($filePath);
