@@ -1,8 +1,8 @@
 // config
-var API_URL = 'https://www.spikaent.com/dev/server/v1';
-var WEB_ROOT = 'https://www.spikaent.com/dev/web'
+var API_URL = 'https://www.spikaent.com/msg/server/v1';
+var WEB_ROOT = 'https://www.spikaent.com/msg/web'
 var NOTIFICATION_SERVER_URL = 'wss://www.spikaent.com:8443/chat';
-var ENCODER_URL = 'https://www.spikaent.com/dev/spikaenterprise_web/Subsystems/video_encoder';
+var ENCODER_URL = 'https://www.spikaent.com/msg/spikaenterprise_web/Subsystems/video_encoder';
 var AES_PASSWORD = 'jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB';
 var SYSTEM_IDENTIFIER = 'clover';
 var USE_DESKTOPNOTIFICATION = true;

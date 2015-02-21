@@ -2,7 +2,7 @@
     Options -MultiViews
 
     RewriteEngine On
-    RewriteBase /dev/server
+    RewriteBase /msg/server
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ api.php [QSA,L]
 </IfModule>

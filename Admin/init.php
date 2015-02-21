@@ -1,11 +1,11 @@
 <?php
 
-define('ROOT_DIR', "/var/www/www.spikaent.com/dev/spikaenterprise_web/Admin/wwwroot");
-define('ROOT_URL', "https://www.spikaent.com/dev/admin");
-define('CONTENTS_URL', "https://www.spikaent.com/dev/page");
-define('CLIENT_URL', "https://www.spikaent.com/dev/web");
-define('ADMIN_ROOT_URL', "https://www.spikaent.com/dev/admin");
-define('API_URL', "https://www.spikaent.com/dev/server/v1");
+define('ROOT_DIR', "/var/www/www.spikaent.com/msg/spikaenterprise_web/Admin/wwwroot");
+define('ROOT_URL', "https://www.spikaent.com/msg/admin");
+define('CONTENTS_URL', "https://www.spikaent.com/msg/page");
+define('CLIENT_URL', "https://www.spikaent.com/msg/web");
+define('ADMIN_ROOT_URL', "https://www.spikaent.com/msg/admin");
+define('API_URL', "http://www.spikaent.com/msg/server/v1");
 define('FILE_DOWNLOAD_URL', API_URL . "/file/download?file_id=");
 
 define('USERNAME','admin');
@@ -27,7 +27,7 @@ define ('USE_LOGICAL_DELETE_GROUP', true);
 define('GMAIL_USER','admin@spikaent.com');
 define('GMAIL_PASSWORD','cloverpass013');
 
-define('STICKERS_DIR', "/var/www/www.spikaent.com/dev/spikaenterprise_web/Server/wwwroot/stickers");
-define('STICKERS_URL', "https://www.spikaent.com/dev/server/stickers");
+define('STICKERS_DIR', "/var/www/www.spikaent.com/msg/spikaenterprise_web/Server/wwwroot/stickers");
+define('STICKERS_URL', "https://www.spikaent.com/msg/server/stickers");
 
 define("AES_PASSWORD","jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB"); 
