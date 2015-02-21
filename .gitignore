@@ -34,7 +34,6 @@ Server/wwwroot/.htaccess
 Subsystems/push/lib/init.php
 notification/init.php
 
-<<<<<<< HEAD
 sourcetreeconfig
 
 Admin/init.php
@@ -52,6 +51,3 @@ Server/init.php
 Server/wwwroot/.htaccess
 
 
-
-=======
->>>>>>> 2ecd1d8398ea7b3ed92e3af1dc01ea51d86305d1
