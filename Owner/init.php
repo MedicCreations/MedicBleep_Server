@@ -1,10 +1,10 @@
 <?php
 
-define('ROOT_DIR', "/var/www/www.spikaent.com/dev/spikaenterprise_web/Owner/wwwroot");
-define('ROOT_URL', "https://www.spikaent.com/dev/owner");
-define('OWNER_ROOT_URL', "https://www.spikaent.com/dev/owner");
-define('CLIENT_URL', "https://www.spikaent.com/dev/web");
-define('API_URL', "https://www.spikaent.com/dev/server/v1");
+define('ROOT_DIR', "/var/www/www.spikaent.com/msg/spikaenterprise_web/Owner/wwwroot");
+define('ROOT_URL', "https://www.spikaent.com/msg/owner");
+define('OWNER_ROOT_URL', "https://www.spikaent.com/msg/owner");
+define('CLIENT_URL', "https://www.spikaent.com/msg/web");
+define('API_URL', "https://www.spikaent.com/msg/server/v1");
 define('FILE_DOWNLOAD_URL', API_URL . "/file/download?file_id=");
 
 define('USERNAME','admin');
@@ -19,5 +19,5 @@ define ('DB_PASS','cloverpass013');
 
 define ('PAGINATOR_PAGESIZE',10);
 
-define ('SUPERUSER_ID',201425);
+define ('SUPERUSER_ID',201470);
 define("AES_PASSWORD","jFglBLpOJQ4RLlVTl5EulWS2NLrTgHzB"); 
