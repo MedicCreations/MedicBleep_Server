@@ -2,6 +2,11 @@
 .vagrant/
 vagrant/
 
+!logs/.gitkeep
+Client/apps/
+
+sourcetreeconfig
+
 Admin/logs/
 Admin/tmp/
 Owner/logs/
@@ -9,10 +14,7 @@ Owner/tmp/
 Server/logs/
 Server/uploads/
 Server/wwwroot/stickers/
-!logs/.gitkeep
-Client/apps/
-
-sourcetreeconfig
+Pages/logs/
 
 Subsystems/push/tmp/
 Subsystems/notification/log/
