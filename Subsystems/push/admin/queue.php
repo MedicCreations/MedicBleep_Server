@@ -188,7 +188,7 @@ $(document).ready(function() {
 										</tr>
 									</thead>
 									<tbody>
-										<? if(is_array($result)) {
+										<?php if(is_array($result)) {
 												foreach($result as $row){
 												
 												$rowClass = "";
