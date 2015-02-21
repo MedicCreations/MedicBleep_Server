@@ -12,7 +12,7 @@
 define('TOKEN_VALID_TIME', 60*60*24);
 define('PW_RESET_CODE_VALID_TIME', 60*5);
 define('ROOT_URL', "https://www.spikaent.com/msg/server/");
-define('PUSH_ROOT_URL', "https://www.spikaent.com/push/receiver.php");
+define('PUSH_ROOT_URL', "https://www.spikaent.com/msg/spikaenterprise_web/Subsystems/push/receiver.php");
 define('SYSTEM_IDENTIFIER', "clover");
 define('WEBSOCKET_SERVER_HOST', "localhost");
 define('WEBSOCKET_SERVER_PORT', "8080");
