@@ -30,7 +30,7 @@ class FileController extends SpikaBaseController {
 				
 			$file = $request->files->get(FileController::$paramName);
 			
-			$filePath = ROOT_DIR . FileController::$fileDirName;						
+			$filePath = FILEPATH;						
 			$fineName = $mySql->randomString(20, 20) . time();
                         
 			if(!is_writable($filePath))
@@ -58,7 +58,7 @@ class FileController extends SpikaBaseController {
 
 			$requestBodyAry = $request->query->all();
 			$fileID = $requestBodyAry['file_id'];
-			$filePath = ROOT_DIR . FileController::$fileDirName;	
+			$filePath = FILEPATH;	
 			$filePath = $filePath."/".basename($fileID);
             
             $fileContent = file_get_contents($filePath);
