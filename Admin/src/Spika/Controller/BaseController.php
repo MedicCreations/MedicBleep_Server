@@ -27,6 +27,7 @@ class BaseController implements ControllerProviderInterface {
 	
     public function render($templateName,$params){
 
+        $params['APP_TITLE'] = APP_TITLE;
         $params['ADMIN_ROOT_URL'] = ADMIN_ROOT_URL;
         $params['ROOT_URL'] = ROOT_URL;
         $params['lang'] = $this->lang;
