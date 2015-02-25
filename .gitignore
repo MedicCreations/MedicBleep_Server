@@ -25,6 +25,7 @@ Subsystems/video_encoder/tmp/
 Admin/init.php
 Admin/wwwroot/.htaccess
 Client/js/app/init.js
+Client/init.php
 Owner/init.php
 Owner/wwwroot/.htaccess
 Pages/init.php
