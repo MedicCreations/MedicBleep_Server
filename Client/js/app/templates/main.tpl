@@ -1,5 +1,5 @@
 <header>
-    <span id="maintitle">{title_initial}</span>
+    <span id="maintitle">{APP_TITLE}</span>
     <div class="userprofile">
         <img class="profile_pic" src="{rooturl}/img/default_user.png" />
         <span></span>

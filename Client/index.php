@@ -1,8 +1,10 @@
-<html lang="en">
+<?php
+    include('init.php');
+?><html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title>Spika Enterprise</title>
+    <title><?php echo APP_TITLE ?></title>
 
     <link rel="stylesheet" href="css/style.css?rnd=<?php echo time() ?>">
     <link rel="stylesheet" href="css/progressbar.css?rnd=<?php echo time() ?>">
@@ -26,7 +28,7 @@
         <section>
         
             <p><i class="fa fa-spinner fa-spin fa-4x"></i></p>
-            <h1>Spika Enterprise</h1>
+            <h1><?php echo APP_TITLE ?></h1>
             
         </section>
         

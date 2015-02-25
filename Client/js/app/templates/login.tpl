@@ -1,5 +1,5 @@
     
-    <header>{spika_title}</header>
+    <header>{APP_TITLE}</header>
     
     <nav id="login_div_alert"></nav>
     

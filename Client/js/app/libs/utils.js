@@ -288,6 +288,8 @@ var U = {
             html = html.replace(new RegExp(keyword, 'g'), val);
         });
         
+        html = html.replace(new RegExp('{APP_TITLE}', 'g'), APP_TITLE);
+        
         // predefined constants
         html = html.replace(/\{rooturl\}/g, WEB_ROOT);
         
