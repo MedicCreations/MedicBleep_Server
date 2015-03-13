@@ -57,7 +57,9 @@ class LobbyController extends SpikaBaseController {
 						$chat['image'] = $chat_data['image'];
 						$chat['image_thumb'] = $chat_data['image_thumb'];
 						
-						$chat['last_message'] = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $self->getFormattedMessage($last_message);
+						$chat['last_message'] = $last_message;
 					
 					}
 						
@@ -74,7 +76,9 @@ class LobbyController extends SpikaBaseController {
 							$chat['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
 						}
 						
-						$chat['last_message'] = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $self->getFormattedMessage($last_message);
+						$chat['last_message'] = $last_message;
 						
 					}
 						
@@ -110,7 +114,9 @@ class LobbyController extends SpikaBaseController {
 						$chat['image'] = $chat_data['image'];
 						$chat['image_thumb'] = $chat_data['image_thumb'];
 						
-						$chat['last_message'] = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $self->getFormattedMessage($last_message);
+						$chat['last_message'] = $last_message;
 							
 					}
 					
@@ -143,7 +149,9 @@ class LobbyController extends SpikaBaseController {
 							$chat['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
 						}
 						
-						$chat['last_message'] = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $self->getFormattedMessage($last_message);
+						$chat['last_message'] = $last_message;
 					
 					}
 					
@@ -183,7 +191,9 @@ class LobbyController extends SpikaBaseController {
 							}
 						}
 						
-						$chat['last_message'] = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $self->getFormattedMessage($last_message);
+						$chat['last_message'] = $last_message;
 						
 					}
 					

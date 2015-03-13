@@ -832,7 +832,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getLastMessages(Application $app, $chat_id){
 		
-		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 and message.root_id = 0 ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
+		$sql = "SELECT message.*, user.id AS user_id, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 and message.root_id = 0 ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
 		
 		$messages = $app['db']->fetchAll($sql, array($chat_id));
 		
@@ -843,7 +843,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getMessagesPaging(Application $app, $chat_id, $last_msg_id){
 
-		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 AND message.id < ? and message.root_id = 0 ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
+		$sql = "SELECT message.*, user.id AS user_id, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 AND message.id < ? and message.root_id = 0 ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
 		
 		$messages = $app['db']->fetchAll($sql, array($chat_id, $last_msg_id));
 		
@@ -1069,7 +1069,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getLastMessage(Application $app, $chat_id){
 		
-		$sql = "SELECT * FROM message WHERE chat_id = ? ORDER BY message.id DESC LIMIT 1";
+		$sql = "SELECT message.*, user.id AS user_id, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND chat_id = ? AND message.root_id = 0 ORDER BY message.id DESC LIMIT 1";
 		
 		$last_message = $app['db']->fetchAssoc($sql, array($chat_id));
 		

@@ -333,6 +333,8 @@ class ChatController extends SpikaBaseController {
 			$messages = $mySql->getLastMessages($app, $chat_id);
 			$total_messages = $mySql->getCountMessagesForChat($app, $chat_id);
 			
+			$messages = $self->getFormattedMessages($messages);
+			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK', 
 					'chat' => $chat,

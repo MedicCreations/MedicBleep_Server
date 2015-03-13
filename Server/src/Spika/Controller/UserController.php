@@ -253,6 +253,8 @@ class UserController extends SpikaBaseController {
 			
 			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
 			
+			$messages = $self->getFormattedMessages($messages);
+			
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK', 
 					'chat_id' => $chat_id, 
@@ -569,9 +571,13 @@ class UserController extends SpikaBaseController {
 			
 			$chat_id = 762;
 			
-			$res = $mySql->getChatMembersGroupsRooms($app, $chat_id);
+			$messages = $mySql->getLastMessages($app, $chat_id);
 			
-			var_dump($res);
+			var_dump($messages);
+			
+			$messages = $self->getFormattedMessages($messages);
+			
+			var_dump($messages);
 						
 			$result = "OK";
 			return $app->json($result, 200);

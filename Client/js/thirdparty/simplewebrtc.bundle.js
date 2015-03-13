@@ -5494,8 +5494,9 @@ Peer.prototype.start = function () {
     if (this.enableDataChannels) {
         this.getDataChannel('simplewebrtc');
     }
-    
+    // 
     this.pc.offer(this.receiveMedia, function (err, sessionDescription) {
+        U.l(sessionDescription);
         self.send('offer', sessionDescription);
     });
 };

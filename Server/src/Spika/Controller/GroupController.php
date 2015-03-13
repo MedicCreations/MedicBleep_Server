@@ -89,6 +89,7 @@ class GroupController extends SpikaBaseController {
 				//get messages
 				$chat_id = $result['chat_id'];
 				$messages = $mySql->getLastMessages($app, $chat_id);
+				$messages = $self->getFormattedMessages($messages);
 				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 				
 				//update seen
@@ -123,6 +124,8 @@ class GroupController extends SpikaBaseController {
 			$chat['category'] = $category;
 			
 			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
+			
+			$messages = $self->getFormattedMessages($messages);
 			
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK',

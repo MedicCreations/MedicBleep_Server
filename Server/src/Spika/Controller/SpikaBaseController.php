@@ -381,6 +381,34 @@ class SpikaBaseController implements ControllerProviderInterface
 
 	            
 	}
+	
+	public function getFormattedMessages($messages){
+	
+		foreach($messages as &$message){
+			$user = array('user_id' => $message['user_id'], 
+					'firstname' => $message['firstname'],
+					'lastname' => $message['lastname'],
+					'image' => $message['image'],
+					'image_thumb' => $message['image_thumb']);
+			$message['user'] = $user;
+		}
+		
+		return $messages;
+	
+	}
+	
+	public function getFormattedMessage($message){
+	
+			$user = array('user_id' => $message['user_id'], 
+					'firstname' => $message['firstname'],
+					'lastname' => $message['lastname'],
+					'image' => $message['image'],
+					'image_thumb' => $message['image_thumb']);
+			$message['user'] = $user;
+		
+		return $message;
+	
+	}
 
     		
 }

@@ -328,8 +328,12 @@ class MessageController extends SpikaBaseController {
 				$self->sendPushRequest($ios_fields_prod);
 			}
 			
+			$message = $mySql->getMessageByID($app, $msg_id, true);
+			$message = $self->getFormattedMessage($message);
+			
 			$result = array('code' => CODE_SUCCESS, 
-					'message' => 'Message created');
+					'message' => 'Message created',
+					'message_model' => $message);
 
 			return $app->json($result, 200);
 			
@@ -377,7 +381,12 @@ class MessageController extends SpikaBaseController {
 			if (isset($last_msg_id) && ($last_msg_id != "")){
 				//return messages before last_msg
 				$messages = $mySql->getMessagesPaging($app, $chat_id, $last_msg_id);
+				
 				$chat_seen_by = $mySql->getSeenBy($app, $chat_id);
+				
+				//reset unread messages
+				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
+				
 			} else {
 				//reset unread messages
 				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
@@ -419,6 +428,8 @@ class MessageController extends SpikaBaseController {
 				$category = $mySql->getCategoryById($app, $chat['category_id']);
 				$chat['category'] = $category;
 			}
+			
+			$messages = $self->getFormattedMessages($messages);
 			
 			$total_messages = $mySql->getCountMessagesForChat($app, $chat_id);
 			
@@ -476,6 +487,8 @@ class MessageController extends SpikaBaseController {
 			$modified_messages = $mySql->getModifiedMessages($app, $chat_id, $message['modified'], $last_msg_id);
 			
 			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
+			
+			$messages = $self->getFormattedMessages($messages);
 			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK', 
@@ -544,12 +557,17 @@ class MessageController extends SpikaBaseController {
 			if ($child_id_list != ""){
 				$messages = $mySql->getChildMessages($app, $child_id_list);
 				$messages[] = $root_message;
+				
+				$messages = $self->getFormattedMessages($messages);
 					
 				$result = array('code' => CODE_SUCCESS,
 						'message' => 'OK',
 						'messages' => $messages);
 			} else {
 				$messages[] = $root_message;
+				
+				$messages = $self->getFormattedMessages($messages);
+				
 				$result = array('code' => CODE_SUCCESS,
 						'message' => 'OK',
 						'messages' => $messages);

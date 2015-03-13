@@ -145,7 +145,11 @@ class SearchController extends SpikaBaseController {
 								$chat_members = $mySql->getChatMembers($app, $room['chat_id']);
 								$room['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
 							}
-						
+							
+							$category = $mySql->getCategoryById($app, $room['category_id']);
+							
+							$room['category'] = $category;
+							
 							$item = array('type' => ROOMS, 
 									'chat' => $room);
 							array_push($result_list, $item);
