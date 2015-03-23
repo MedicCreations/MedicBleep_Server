@@ -1,6 +1,6 @@
 <?php
     include('init.php');
-?><html lang="en">
+?><html lang="<?php echo LANG ?>">
 
 <head>
     <meta charset="utf-8">
@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="js/thirdparty/highlight/styles/railscasts.css?rnd=<?php echo time() ?>">
     <link rel="stylesheet" href="js/thirdparty/chosen/chosen.css?rnd=<?php echo time() ?>">
     
-    <script type="text/javascript" src="js/lang/en.js?rnd=<?php echo time() ?>"></script>
-
+    <script type="text/javascript" src="js/lang/<?php echo LANG ?>.js?rnd=<?php echo time() ?>"></script>
+		
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="AMC Walking Dead Story Sync">

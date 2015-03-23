@@ -387,6 +387,18 @@ class MessageController extends SpikaBaseController {
 				//reset unread messages
 				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 				
+				//get buddy profile if private chat
+				$chat = $mySql->getChatByID($app, $chat_id);
+				
+				if ($chat['type'] == CHAT_USER_TYPE){
+					$data = $mySql->getPrivateChatData($app, $chat_id, $my_user_id);
+					$user = array('id' => $data['user_id'], 
+							'firstname' => $data['user_firstname'],
+							'lastname' => $data['user_lastname'],
+							'image' => $data['image'],
+							'image_thumb' => $data['image_thumb']);
+				}
+				
 			} else {
 				//reset unread messages
 				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
@@ -430,6 +442,10 @@ class MessageController extends SpikaBaseController {
 			}
 			
 			$messages = $self->getFormattedMessages($messages);
+			
+			if (count($messages) == 0){
+				$chat_seen_by = "";
+			}
 			
 			$total_messages = $mySql->getCountMessagesForChat($app, $chat_id);
 			
@@ -603,7 +619,7 @@ class MessageController extends SpikaBaseController {
 			
 			foreach($stickerData as $index => $row){
     			
-    			$stickerData[$index]['url'] = ROOT_URL . "/stickers/" .$stickerData[$index]['filename'];
+    			$stickerData[$index]['url'] = ROOT_URL . "stickers/" .$stickerData[$index]['filename'];
     			
 			}
 			

@@ -156,6 +156,9 @@ class ChatController extends SpikaBaseController {
 			$chat['chat_name'] = $chat_name;
 			$chat['chat_id'] = $chat_id;
 			
+			$category = $mySql->getCategoryById($app, $chat['category_id']);
+			$chat['category'] = $category;
+			
 			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
 				
 			$result = array('code' => CODE_SUCCESS,

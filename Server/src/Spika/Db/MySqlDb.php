@@ -1166,13 +1166,13 @@ class MySqlDb implements DbInterface{
 		
 		$users = $app['db']->fetchAll($sql, array($my_user_id,$app['organization_id']));
 		
-		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups, group_member WHERE groups.is_deleted = 0 AND groups.id = group_member.group_id AND group_member.user_id = ? AND groups.organization_id = ?";
+		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.category, groups.image_thumb, '1' as is_group FROM groups, group_member WHERE groups.is_deleted = 0 AND groups.id = group_member.group_id AND group_member.user_id = ? AND groups.organization_id = ?";
 		if ($search != ""){
 			$sql = $sql . " and groups.name LIKE '" . $search . "%'";
 		}
 		$groups = $app['db']->fetchAll($sql, array($my_user_id, $app['organization_id']));
 		
-		$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat, chat_member WHERE chat.id = chat_member.chat_id AND chat_member.user_id = ? AND chat.is_deleted = 0 AND chat.type = 3 AND chat.organization_id = ?";
+		$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.category_id, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat, chat_member WHERE chat.id = chat_member.chat_id AND chat_member.user_id = ? AND chat.is_deleted = 0 AND chat.type = 3 AND chat.organization_id = ?";
 		if ($search != ""){
 			$sql = $sql . " and chat.name LIKE '" . $search . "%'";
 		}
@@ -1289,7 +1289,7 @@ class MySqlDb implements DbInterface{
 		
 		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened FROM user";
 		
-		$sql = $sql . " WHERE user.id <> ? AND user.is_deleted = 0 ";
+		$sql = $sql . " WHERE user.id <> ? AND user.is_deleted = 0 AND organization_id = ?";
 		
 		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ? AND is_deleted = 0) ";
 		
@@ -1300,14 +1300,16 @@ class MySqlDb implements DbInterface{
 		$sql = $sql . " ORDER BY user.firstname,user.lastname LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
 		
 		$resultFormated = array();
-		$result = $app['db']->fetchAll($sql, array($my_user_id, $chat_id));
+		$result = $app['db']->fetchAll($sql, array($my_user_id, $app['organization_id'], $chat_id));
+		
+		return $result;
 	
 	}
 	
 	
 	public function getUsersCountNotMeNotChatMembers(Application $app, $my_user_id, $search, $chat_id){
 		
-		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ? AND user.is_deleted = 0";
+		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ? AND user.is_deleted = 0 AND organization_id = ? ";
 		
 		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ? AND is_deleted = 0) ";
 		
@@ -1315,7 +1317,7 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
 		}
 		
-		$result = $app['db']->executeQuery($sql, array($my_user_id))->fetch();
+		$result = $app['db']->executeQuery($sql, array($my_user_id, $app['organization_id'], $chat_id))->fetch();
 		
 		if ($result == false){
 			return 0;
@@ -1332,7 +1334,7 @@ class MySqlDb implements DbInterface{
 		
 		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened, '1' as is_user FROM user WHERE user.id <> ? ";
 		
-		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ? AND is_deleted = 0) ";
+		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ? AND is_deleted = 0) AND organization_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND (CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
@@ -1340,9 +1342,9 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " OR user.lastname LIKE '" . $search . "%')";
 		}
 		
-		$users = $app['db']->fetchAll($sql, array($my_user_id, $chat_id));
+		$users = $app['db']->fetchAll($sql, array($my_user_id, $chat_id, $app['organization_id']));
 		
-		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups WHERE groups.is_deleted = 0 ";
+		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups WHERE groups.is_deleted = 0 AND organization_id = ? ";
 		
 		if ($chat['group_ids'] != ""){
 			$sql .= " AND groups.id NOT IN (" . $chat['group_ids'] . ") ";
@@ -1351,9 +1353,9 @@ class MySqlDb implements DbInterface{
 		if ($search != ""){
 			$sql = $sql . " and groups.name LIKE '" . $search . "%'";
 		}
-		$groups = $app['db']->fetchAll($sql);
+		$groups = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
-		$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 ";
+		$sql = "SELECT chat.id, chat.name as name, chat.name as chat_name, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password, '1' as is_room FROM chat WHERE chat.is_deleted = 0 AND chat.name <> '' AND chat.type = 3 AND chat.is_private = 0 AND organization_id = ? ";
 		
 		if ($chat['room_ids'] != ""){
 			$sql .= " AND chat.id NOT IN (" . $chat['room_ids'] . ") ";
@@ -1362,7 +1364,7 @@ class MySqlDb implements DbInterface{
 		if ($search != ""){
 			$sql = $sql . " and chat.name LIKE '" . $search . "%'";
 		}
-		$rooms = $app['db']->fetchAll($sql);
+		$rooms = $app['db']->fetchAll($sql, array($app['organization_id']));
 		
 		$result = array_merge($groups,$rooms,$users);
 		

@@ -92,8 +92,11 @@ class GroupController extends SpikaBaseController {
 				$messages = $self->getFormattedMessages($messages);
 				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 				
-				//update seen
-				$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id);
+				if (count($messages)>0){
+					//update seen
+					$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id);
+				}
+				
 			} else {
 				//create chat and chat_members
 				$chat_id = $mySql->createChat($app, $chat_name, CHAT_GROUP_TYPE, $my_user_id, $group_id, DEFAULT_GROUP_IMAGE, DEFAULT_GROUP_IMAGE, "", 0, 1, "");

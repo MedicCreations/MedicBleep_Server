@@ -34,6 +34,7 @@ class BaseController implements ControllerProviderInterface {
         $params['page'] = $this->page;
         $params['FILE_DOWNLOAD_URL'] = FILE_DOWNLOAD_URL;
         $params['user'] = $this->user;
+        $params['sys_lang'] = LANG;
         
         if($this->app['session']->has('infomessage')){
             

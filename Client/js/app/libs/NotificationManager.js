@@ -6,6 +6,7 @@ var SPIKA_notificationManger = {
     flgStopPooling:false,
     wsConnection : null,
     websocketMode : false,
+//     webSocketSession : null,
     init : function(){
         
         var self = this;
@@ -52,6 +53,7 @@ var SPIKA_notificationManger = {
         
         self.wsConnection.onopen = function(e) {
         
+	        U.l('SOCKET MODE');
             self.websocketMode = true;
             
             if(SPIKA_UserManager.isAuthorised()){
@@ -59,26 +61,47 @@ var SPIKA_notificationManger = {
             }
             
             self.stopPooling();
-
+			
+			
         };
         
         self.wsConnection.onmessage = function(e) {
                         
             var data = JSON.parse(e.data);
 
-            if(SPIKA_UserManager.getUser().get('id') != data.from_user_id)
-                self.newMessage(data.chat_id,data.message);
-            
+            if(SPIKA_UserManager.getUser().get('id') != data.from_user_id){
+	            self.newMessage(data.chat_id,data.message);	
+            }
+                
+/*
+			if(data.hasOwnProperty('socketSessionID')){
+				self.webSocketSession = data.socketSessionID;
+			}else{
+*/
+			
+// 			}
+			
         };
 
         self.wsConnection.onerror = function(e) {
             U.l('web socket error');
+
+            self.webSocketSession = null;
+/*            self.websocketMode = false;
+*/
+            
             self.usePoing();
         };
 
 
         _.debounce(function() {
-            self.resetWebSocket();
+	        
+	        if(_.isNull(this.wsConnection)){
+           		self.resetWebSocket();		        
+	        }else{
+		        self.socketIsAlive();
+	        }
+	        
         }, 60 * 1000)();
 
     },
@@ -253,6 +276,20 @@ var SPIKA_notificationManger = {
             identifier:SYSTEM_IDENTIFIER,
             userId:userId
         }));
+    }
+
+    ,
+   
+    socketIsAlive: function(){
+	  
+		if(_.isNull(this.wsConnection))
+			return;
+	    U.l('SOCKET ALIVE');
+	    this.wsConnection.send(JSON.stringify({
+		    command:'keepSessionAlive',
+		    sessionID:self.webSocketSession
+	    }));
+	    
     },
     
     

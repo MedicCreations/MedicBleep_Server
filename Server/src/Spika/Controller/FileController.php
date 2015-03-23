@@ -75,7 +75,7 @@ class FileController extends SpikaBaseController {
 				return $response;
 				
 			}else{
-				return $self->returnErrorResponse("File doesn't exists.", "1010");
+				return $self->returnErrorResponse("File doesn't exists.", "1018");
 			}
 		});
 		

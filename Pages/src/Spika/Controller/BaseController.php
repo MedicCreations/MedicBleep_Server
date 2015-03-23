@@ -33,6 +33,7 @@ class BaseController implements ControllerProviderInterface {
         $params['lang'] = $this->lang;
         $params['page'] = $this->page;
         $params['user'] = $this->user;
+        $params['sys_lang'] = LANG;
         
         if($this->app['session']->has('infomessage')){
             

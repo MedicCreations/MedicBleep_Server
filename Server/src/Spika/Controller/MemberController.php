@@ -55,7 +55,7 @@ class MemberController extends SpikaBaseController {
 			if ($chat_id != ""){
 				
 				$admin = $mySql->getChatAdmin($app, $chat_id);
-				$admin['is_admin'] = true;
+				$admin['is_admin'] = 1;
 				
 				switch ($type){
 					case USERS:

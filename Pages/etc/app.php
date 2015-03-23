@@ -25,14 +25,14 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
 ));
 
 $app->register ( new Spika\Provider\LocalizationProvider(),array(
-    'defaultLang' => 'en',
+    'defaultLang' => LANG,
     'langDir' => __DIR__.'/lang',
 ));
 
 $app->register ( new Silex\Provider\DoctrineServiceProvider(), array (
 		'db.options' => array (
 				'driver' => 'pdo_mysql',
-				'host' => 'localhost',
+				'host' => DB_HOST,
 				'dbname' => DB_NAME,
 				'user' => DB_USER,
 				'password' => DB_PASS,

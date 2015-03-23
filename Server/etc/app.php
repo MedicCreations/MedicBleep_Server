@@ -31,7 +31,7 @@ $app->register(new MonologServiceProvider(), array(
 $app->register ( new Silex\Provider\DoctrineServiceProvider (), array (
 		'db.options' => array (
 				'driver' => 'pdo_mysql',
-				'host' => 'localhost',
+				'host' => DB_HOST,
 				'dbname' => DB_NAME,
 				'user' => DB_USERNAME,
 				'password' => DB_PASSWORD,

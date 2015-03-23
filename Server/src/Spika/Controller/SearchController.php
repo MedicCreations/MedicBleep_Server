@@ -129,6 +129,10 @@ class SearchController extends SpikaBaseController {
 						$search_count = $mySql->getGroupsCount($app, $my_user_id, $search, $category_id);
 						
 						foreach($groups as $group){
+						
+							$category = $mySql->getCategoryById($app, $group['category']);
+							$group['category'] = $category;							
+							
 							$item = array('type' => GROUPS, 
 									'group' => $group);
 							array_push($result_list, $item);
@@ -173,9 +177,17 @@ class SearchController extends SpikaBaseController {
 								$item = array('type' => USERS, 
 									'user' => $all_item);
 							} else if (array_key_exists('is_group', $all_item)){
+							
+								$category = $mySql->getCategoryById($app, $all_item['category']);
+								$all_item['category'] = $category;
+								
 								$item = array('type' => GROUPS, 
 									'group' => $all_item);
 							} else if (array_key_exists('is_room', $all_item)){
+								
+								$category = $mySql->getCategoryById($app, $all_item['category_id']);
+								$all_item['category'] = $category;
+								
 								$item = array('type' => ROOMS, 
 									'chat' => $all_item);
 							}

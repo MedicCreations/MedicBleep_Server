@@ -299,9 +299,9 @@ class SpikaBaseController implements ControllerProviderInterface
 	
 	public function sendWebSocketSignal($message,$app){
         
-        $app['monolog']->addDebug('connecting to ws server');
+        $app['monolog']->addDebug('PHP_webSocket connecting to ws server');
         $result = $app['websocket_send']($message);
-        $app['monolog']->addDebug('sent:'.$result);
+        $app['monolog']->addDebug('PHP_webSocket sent:'.$result);
 	}
 	
 	public function getDeviceType($userAgent){

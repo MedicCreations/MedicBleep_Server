@@ -239,8 +239,10 @@ class UserController extends SpikaBaseController {
 				$messages = $mySql->getLastMessages($app, $chat_id);
 				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 				
-				//update seen
-				$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id);
+				if (count($messages)>0){
+					//update seen
+					$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id);
+				}
 				
 			} else {
 				//create chat and chat_members
