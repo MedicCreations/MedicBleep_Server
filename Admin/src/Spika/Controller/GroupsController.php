@@ -319,7 +319,7 @@ class GroupsController extends BaseController {
             $offset = ($page - 1) * PAGINATOR_PAGESIZE;
             
             $list = $self->app['db']->fetchAll("
-                select user.*,user_mst.email
+                select user.*,user_mst.email,user_mst.username as user_name
                 from user 
                 left join user_mst on user_mst.id = user.master_user_id
                 where user.id in ( select user_id from group_member where group_id = ? ) 
