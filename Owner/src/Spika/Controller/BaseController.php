@@ -56,8 +56,8 @@ class BaseController implements ControllerProviderInterface {
     
     public function checkLoginUser(){
         
-        if($this->app['session']->has('loginuser')){
-            $this->user = $this->app['session']->get('loginuser');
+        if($this->app['session']->has('loginuser_owner')){
+            $this->user = $this->app['session']->get('loginuser_owner');
             return true;
         }else{
             return false;
@@ -143,6 +143,7 @@ class BaseController implements ControllerProviderInterface {
     	    "token: {$token}"
     	));
     	
+    	print "success";
     	print($response);
     	die();
 		

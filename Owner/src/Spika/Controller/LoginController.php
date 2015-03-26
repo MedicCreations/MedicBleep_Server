@@ -61,7 +61,7 @@ class LoginController extends BaseController {
             // check
             if($username == USERNAME && md5($password) == md5(PASSWORD)){
                 
-                $self->app['session']->set('loginuser',$username);
+                $self->app['session']->set('loginuser_owner',$username);
                 return $app->redirect(OWNER_ROOT_URL . '/dashboard');
                 
             }else{
@@ -77,7 +77,7 @@ class LoginController extends BaseController {
 		});
 		
 		$controllers->get('/logout', function (Request $request) use ($app, $self){
-            $self->app['session']->remove('loginuser');
+            $self->app['session']->remove('loginuser_owner');
             return $app->redirect(OWNER_ROOT_URL . '/');
 		});
 		
