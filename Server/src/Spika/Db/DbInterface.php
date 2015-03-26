@@ -91,4 +91,8 @@ interface DbInterface
 	
 	public function getOrganizationByID(Application $app, $organization_id);
 	
+	public function addMessageLog(Application $app, $user_id, $chat_id, $msg_id, $type);
+	public function updateMessageLog(Application $app,$userId,$chatId,$messages);
+	public function addAuditInfo(Application $app,$userId,$chatId,$messages);
+	
 }

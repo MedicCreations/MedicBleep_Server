@@ -1545,4 +1545,103 @@ class MySqlDb implements DbInterface{
 
 	}
 	
+	function addMessageLog(Application $app, $user_id, $chat_id, $msg_id, $type){
+    	
+    	$app['db']->insert('message_log', array(
+    	    'user_id' => $user_id,
+    	    'message_id' => $msg_id,
+    	    'chat_id' => $chat_id,
+    	    'organization_id' => $app['organization_id'],
+    	    'type' => $type,
+    	    'created' => time()
+    	));
+    	
+	}
+	
+	function updateMessageLog(Application $app,$userId,$chatId,$messages){
+    	    	
+    	$ids = array();
+    	
+    	foreach($messages as $message){
+        	
+        	$ids[] = $message['id'];
+        	
+    	}
+    	
+    	$logs = $app['db']->fetchAll("
+    	    select message_id
+    	    from message_log
+    	    where message_id in ( " . implode(',',$ids) . ")
+    	    and user_id = ?
+    	    and type = ?
+    	",array($userId,MESSAGE_LOG_READ));
+    	
+    	$idsToInsert = array();
+    	$idsInserted = array();
+    	
+    	foreach($logs as $log){
+        	
+        	$idsInserted[] = $log['message_id'];
+        	
+    	}
+    	
+    	foreach($messages as $message){
+            
+            if(!in_array($message['id'], $idsInserted)){
+                
+                $idsToInsert[] = $message['id'];
+                
+            }
+                    	
+    	}
+    	
+    	if(count($idsToInsert) > 0){
+        	$query = "insert into message_log(user_id,chat_id,message_id,organization_id,type,created) values ";
+        	$now = time();
+        	
+        	foreach($idsToInsert as $messageId){
+            	
+            	$query .= " ({$userId},{$chatId},{$messageId},{$app['organization_id']}," . MESSAGE_LOG_READ . ",{$now}),";
+            	
+        	}
+        	
+        	$query = substr($query, 0, strlen($query) - 1);
+        	
+        	$app['db']->query($query);        	
+    	}
+	}
+    
+    function addAuditInfo(Application $app,$userId,$chatId,$messages){
+        
+    	$ids = array();
+    	
+    	foreach($messages as $message){
+        	$ids[] = $message['id'];
+    	}
+
+    	$logs = $app['db']->fetchAll("
+    	    select *
+    	    from message_log
+    	    where message_id in ( " . implode(',',$ids) . ")
+    	    and type = ?
+    	",array(MESSAGE_LOG_READ));
+        
+    	foreach($messages as $index => $message){
+        	
+        	if(isset($messages[$index]['seen']))
+        	    $messages[$index]['seen'] = array();
+        	    
+        	foreach($logs as $log){
+            	
+            	if($log['message_id'] == $message['id'])
+            	    $messages[$index]['seen'][] = $log['user_id'];
+            	    
+        	}
+        	
+    	}
+        
+        return $messages;
+        
+    }
+
 }

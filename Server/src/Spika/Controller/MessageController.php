@@ -119,6 +119,8 @@ class MessageController extends SpikaBaseController {
 			
 			$msg_id = $mySql->createMessage($app, $values);
 			
+			$mySql->addMessageLog($app, $user_id, $chat_id, $msg_id,MESSAGE_LOG_SEND);
+			
 			if ($root_id > 0){
 				//update child list for root message
 				$root_message = $mySql->getMessageByID($app, $root_id);
@@ -449,6 +451,9 @@ class MessageController extends SpikaBaseController {
 			
 			$total_messages = $mySql->getCountMessagesForChat($app, $chat_id);
 			
+            $mySql->updateMessageLog($app,$my_user_id,$chat_id,$messages);
+            $messages = $mySql->addAuditInfo($app,$my_user_id,$chat_id,$messages);
+            
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK', 
 					'messages' => $messages, 
@@ -459,7 +464,7 @@ class MessageController extends SpikaBaseController {
 			if (count($user)>0){
 				$result['user'] = $user;
 			}
-				
+							
 			return $app->json($result, 200);
 				
 		})->before($app['beforeSpikaTokenChecker']);
@@ -505,6 +510,9 @@ class MessageController extends SpikaBaseController {
 			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
 			
 			$messages = $self->getFormattedMessages($messages);
+			
+			$mySql->updateMessageLog($app,$my_user_id,$chat_id,$messages);
+			$messages = $mySql->addAuditInfo($app,$my_user_id,$chat_id,$messages);
 			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK', 
@@ -634,6 +642,10 @@ class MessageController extends SpikaBaseController {
 		return $controllers;
 	}
 	
-	
+	function updateMessageLog($app,$mysql,$userId,$chatId,$messages){
+    	
+    	$mysql->updateMessageLog($app,$mysql,$userId,$chatId,$messages);
+
+	}
 	
 }
