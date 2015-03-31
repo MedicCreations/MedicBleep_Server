@@ -48,11 +48,16 @@
                 			<h2>
                 				<%= message.get('firstname') %> <%= message.get('lastname') %>
                 			</h2>
-                			<p class="text">
-                			    <!-- <%= message.get('id') %> -->
-                				<%= message.get('content') %>
-                				<!-- <input class="download" type="button" value="Download" /> -->
-                			</p>
+                			<% if(message.get('type') == "4"){ %>
+	                			<%= message.get('content') %>
+                			<%}else{%>
+	                			<p class="text">
+	                			    <!-- <%= message.get('id') %> -->
+	                				<%= message.get('content') %>
+	                				<!-- <input class="download" type="button" value="Download" /> -->
+	                			</p>
+                			<%}%>
+                			
                 			<div class="time_stamp">
                 				<%= message.get('created_formated') %>
                 			</div>

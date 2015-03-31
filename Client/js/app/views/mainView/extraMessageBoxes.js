@@ -103,9 +103,10 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             $$('#extramessage_btn_audio').css('display','none');
             
         }
-
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Source Code //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
         $$('#extramessage_btn_code').click(function(){
             
             if(self.chatId == 0){
@@ -117,8 +118,8 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
 
-        // take picture
-        $$('#extramessage_dialog_view_code .alert_bottom_ok').click(function(){
+        $$('#extramessage_dialog_view_code .alertRightButton').click(function(){
+/*
             
             var text = $$('#extramessage_dialog_view_code textarea').val();
             
@@ -136,51 +137,71 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             };
 
             self.postBoxView.sendTextMessage(data);
+*/
             $$('#extramessage_dialog_view_code').fadeOut();
             
         });
         
-        $$('#extramessage_dialog_view_code .alert_bottom_cancel').click(function(){
+        $$('#extramessage_dialog_view_code .alertLeftButton').click(function(){
             
             $$('#extramessage_dialog_view_code').fadeOut();
             
         });
-        
-        $$('#extramessage_btn_video_call').click(function(){
-            
-            if(self.chatId == 0){
-                return;
-            }
-            
-            if(!SPIKA_VideoCallManager.canUseWebRTC()){
-                SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_nowebrtc);    
-                return;
-            }
-            
-            self.openCallDialog(true,true);
-            
+
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Map events //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+        $$('#extramessage_btn_location').click(function(){
+	        
+	        $$('#extramessage_dialog_view_map').fadeIn();
+		    $$('#extramessage_dialog_view_mapView').css('width','100%');
+		    $$('#extramessage_dialog_view_mapView').css('height','508px');		    
+		    $$('#extramessage_dialog_view_map').css('display','block');
+	        
+			if(navigator.geolocation){
+		    	var location = navigator.geolocation.getCurrentPosition(self.showLocation);
+	    	}else{
+		    	alert("Browser doesn't support geolocation ");
+	    	}
+	    	
         });
 
-        $$('#extramessage_btn_voice_call').click(function(){
+		$$('#extramessage_dialog_view_map .alertRightButton').click(function(){
+			
+			var point = SPIKA_LocationManager.getPoint();
+			
+			$$('#extramessage_dialog_view_map').fadeOut();
+			//put it here
+			$$('#extramessage_dialog_view_mapView').empty();
             
-            if(self.chatId == 0){
-                return;
-            }
-            
-            if(!SPIKA_VideoCallManager.canUseWebRTC()){
-                SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_nowebrtc);    
-                return;
-            }
-            
-            self.openCallDialog(false,true);
-            
-        });
+            var data = {
+                    chat_id:self.chatId,
+                    type:MESSAGE_TYPE_LOCATION,
+                    longitude:EncryptManager.encryptText(point.lon),
+                    latitude:EncryptManager.encryptText(point.lat)
+            };
+			
+			apiClient.sendMessage(data,function(e){
+				
+			},function(e){
+				
+			});
+			
+//             self.postBoxView.sendMessage(data,MESSAGE_TYPE_LOCATION);
+			
+		});
 
+		$$('#extramessage_dialog_view_map .alertLeftButton').click(function(){
+			$$('#extramessage_dialog_view_map').fadeOut();
+			//put it here
+			$$('#extramessage_dialog_view_mapView').empty();
+			
+		});
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
+        // Picture events ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
-
-
-        // Picture events //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
         $$('#extramessage_btn_picture').click(function(){
             
             if(self.chatId == 0){
@@ -192,7 +213,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         });
         
         // take picture
-        $$('#extramessage_dialog_view_takepicture .alert_bottom_ok').click(function(){
+        $$('#extramessage_dialog_view_takepicture .alertRightButton').click(function(){
             
 
             Webcam.snap( function(data_uri, canvas, context) {
@@ -226,17 +247,17 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
         
-        $$('#extramessage_dialog_view_takepicture .alert_bottom_cancel').click(function(){
+        $$('#extramessage_dialog_view_takepicture .alertLeftButton').click(function(){
             
             Webcam.reset();
             $$('#extramessage_dialog_view_takepicture').fadeOut();
             
         });
         
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Video events //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
         $$('#extramessage_dialog_view_takevideo video').on('play',function(){
             $$('#extramessage_dialog_view_takevideo audio')[0].play();
         });
@@ -247,7 +268,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 return;
             }
             
-            $$('#extramessage_dialog_view_takevideo .alert_bottom_ok').css('display','none');
+            $$('#extramessage_dialog_view_takevideo .alertRightButton').css('display','none');
             self.startRecordingVideo();
             
         });
@@ -285,7 +306,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             } else {
                 
                 self.isRecording = false;
-                $$('#extramessage_dialog_view_takevideo .alert_bottom_ok').css('display','inline-block');
+                $$('#extramessage_dialog_view_takevideo .alertRightButton').css('display','inline-block');
                 
                 $$('.recording').css('display','none');
                 $$('#extramessage_dialog_view_takevideo .record').removeClass('red');
@@ -322,7 +343,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
                 
-        $$('#extramessage_dialog_view_takevideo .alert_bottom_ok').click(function(){
+        $$('#extramessage_dialog_view_takevideo .alertRightButton').click(function(){
             
             try { self.videoRecordingStream.stop(); } catch (e) {;}
             try { self.audioRecordingStream.stop(); } catch (e) {;}
@@ -370,7 +391,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
 
         });
         
-        $$('#extramessage_dialog_view_takevideo .alert_bottom_cancel').click(function(){
+        $$('#extramessage_dialog_view_takevideo .alertLeftButton').click(function(){
             
             try { self.videoRecordingStream.stop(); } catch (e) {;}
             try { self.audioRecordingStream.stop(); } catch (e) {;}
@@ -379,19 +400,19 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
         
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Audio events //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                
         $$('#extramessage_btn_audio').click(function(){
             
             if(self.chatId == 0){
                 return;
             }
             
-            $$('#extramessage_dialog_view_takeaudio .alert_bottom_ok').css('display','none');
-            
+            $$('#extramessage_dialog_view_takeaudio .alertRightButton').css('display','none');
+            $$('#extramessage_dialog_view_takeaudio .alert_box').css('height','120px');
+            $$('#extramessage_dialog_view_takeaudio .alert_box').css('top','35%');
             self.startRecordingAudio();
             
         });
@@ -428,7 +449,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 $$('.recording').css('display','none');
     
                 var audioPreview = $$('#extramessage_dialog_view_takeaudio audio')[0];
-                $$('#extramessage_dialog_view_takeaudio .alert_bottom_ok').css('display','inline-block');
+                $$('#extramessage_dialog_view_takeaudio .alertRightButton').css('display','inline-block');
 
                 self.audioVideoRecorder.stopRecording(function(url) {
                     audioPreview.src = url;
@@ -448,7 +469,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
 
         });
                 
-        $$('#extramessage_dialog_view_takeaudio .alert_bottom_ok').click(function(){
+        $$('#extramessage_dialog_view_takeaudio .alertRightButton').click(function(){
             
             var blob = self.audioVideoRecorder.getBlob();
             blob.name = 'audio.wav';
@@ -462,7 +483,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
         
-        $$('#extramessage_dialog_view_takeaudio .alert_bottom_cancel').click(function(){
+        $$('#extramessage_dialog_view_takeaudio .alertLeftButton').click(function(){
             
             try { self.audioRecordingStream.stop(); } catch (e) {;}
             $$('#extramessage_dialog_view_takeaudio').fadeOut();
@@ -470,10 +491,10 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         });
         
         
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        // Calling //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Calling ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
         $$('#extramessage_dialog_view_conference .alert_bottom_decline').click(function(){
             
             SPIKA_VideoCallManager.declineCall();
@@ -514,17 +535,20 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
             
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
-        //Sticker ////////////////////////////////////////////////////////////////////////////////////////////////////////
-        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //Sticker ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                
         $$('#extramessage_btn_sticker').click(function(){
             
             mainView.chatView.stickerView.show();
             
         });
         
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////        
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        
     },
     
     show : function(){
@@ -560,9 +584,12 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         var self = this;
 
         $$('#extramessage_dialog_view_takepicture').fadeIn(function(){
-            
+            Webcam.set({
+	           width: videoSelfie.width,
+	           height: videoSelfie.height
+            });            
             Webcam.attach( '#extramessage_dialog_view_takepicture .video_preview' );
-            
+
         });
 
 
@@ -599,7 +626,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
                 videoPreview.muted = true;
                 videoPreview.controls = true;
                 videoPreview.play();
-
+				
                 self.videoRecordingStream = stream;
 
                 navigator.getUserMedia({ audio: true, video: false }, function(stream) {
@@ -663,8 +690,10 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
 
     },
     
-    // Calling //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+	    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+	    // Calling ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            
     openCallDialog : function(useVideo,useAudio){
         
         // check it is private chat and there is partner.
@@ -714,6 +743,12 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
         
+    },
+    
+    showLocation:function(position){
+
+		SPIKA_LocationManager.showMap('extramessage_dialog_view_mapView',false,position);
+
     }
 
 });
