@@ -55,6 +55,10 @@ var COOKIE_ROOMPASSWORD_PREFIX = 'cookieRoompassword_';
 var COOKIE_LAST_CHATID = 'lastchatid';
 var COOKIE_LAST_CHATNAME = 'lastchatname';
 
+//video
+var videoSelfie = {width:700, height:540};
+var videoPreview = {width:700, height:540};
+
 // right column
 var RIGHTCOLUMN_DISPLAYMODE_NORMALCHAT = 'displaymode_normal_chat';
 var RIGHTCOLUMN_DISPLAYMODE_GROUPCHAT = 'displaymode_group_chat';
