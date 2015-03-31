@@ -261,7 +261,7 @@ body#chat {
 	z-index: 110;
 	font-size: 1.8em;
 	background: #F8F8F8;
-	border-bottom: 1px solid #DFDFDF;
+	border-bottom: 5px solid #DFDFDF;
 }
 
 #chat header .userprofile{
@@ -306,14 +306,15 @@ body#chat {
 	width: 324px;
 	height: 100%;
 	background: #F8F8F8;
-	z-index: 100;
+	z-index: 111;
 	border-right: 1px solid #DFDFDF;
 }
 
 #chat nav #tab_menu {
 	display: table;
-	margin-top: 43px;
+	margin-top: 2px;
 	width: 100%;
+	height: 44px;
 }
 #chat nav #tab_menu ul {
 	display: table-row;
@@ -437,6 +438,7 @@ body#chat {
 	color: #FFFFFF;
 	background: #4BA4DF;
 	cursor: pointer;
+	border-top: 1px solid #BDBDBD;
 }
 
 #chat nav #nav_bottom a {
@@ -478,6 +480,14 @@ body#chat {
 	color: #4BA4DF;
 }
 
+#selected_tab_name{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 1.7em;
+	line-height: 2;
+	text-align: center;
+	color: #222222;
+}
+
 /*------------------------------*/
 /*   END    	navigation		*/
 /*------------------------------*/
@@ -496,13 +506,14 @@ footer {
 footer #mess_type {
 	margin-left: 325px;
 	background: #fff;
+	height: 0px;
 }
 
 footer #mess_type  ul {
 	display: table;
 	width: 100%;
 	height: 48px;
-	border-top: 2px solid #DFDFDF;
+	border-top: 1px solid #DFDFDF;
 }
 
 footer #mess_type ul li {
@@ -520,18 +531,19 @@ footer #mess_type ul li a  {
 	color: #000000;
 	display: block;
 	position: relative;
-	top: 5px;
+	top: 25%;
 }
 
 footer #mess_type ul li textarea {
-	border: none;
 	width: 100%;
 	color: #222;
 	font-style: normal;
 	height: 2.0em;
-	margin-top: 10px;
+	margin-top: 5px;
 	font-size: 1.5em;
-	padding: 1px 0px 0px 5px;
+	padding: 5px 5px 5px 5px;
+	border: 1px solid #DFDFDF;
+	resize: none;
 }
 footer #mess_type ul li textarea.disabled{
     color: #ccc;
@@ -544,7 +556,7 @@ footer #mess_type ul li textarea.disabled{
 	min-height: 100px;
 }
 #chat article {
-	padding-top: 43px;
+	padding-top: 47px;
 	margin-left: 325px;
 	margin-right: 150px;
 	margin-bottom: 48px;
@@ -555,6 +567,7 @@ footer #mess_type ul li textarea.disabled{
 	text-align: left;
 	position: relative;
 	min-height: 65px;
+	z-index: 109;
 }
 
 #chat article section div.message_icon_holder{
@@ -652,10 +665,18 @@ footer #mess_type ul li textarea.disabled{
 	color: #4BA4DF;
 }
 
+#chat article section .locationMap{
+	position: relative;
+	width: 500px;
+	height: 50%;
+	left: 70px;
+	top: -30px;
+}
+
 #chat #room_actions{
 	width: 150px;
 	position: absolute;
-	top: 43px;
+	top: 47px;
 	right: 0px;
 	background: #2C2D32;
 }
@@ -663,10 +684,9 @@ footer #mess_type ul li textarea.disabled{
 #chat #room_actions .button{
 	width: 130px;
 	margin-left: 5px;
-	margin-top: 5px;
+	margin-top: 10px;
 	padding: 0px;
 }
-
 
 /*------------------------------*/
 /*   	 	  Profile 			*/
@@ -1284,6 +1304,8 @@ ul#user_menu li a{
     bottom: 60px;
     width: 250px;
     height: 200px;
+    border-radius: 8px;
+    z-index: 200;
 }
 
 #extra_message_box li{
@@ -1317,13 +1339,18 @@ ul#user_menu li a{
 	z-index: 200;
 }
 
-.extramessage_dialog_view .alert_box {
-	width: 400px;
+.extramessage_dialog_view .alert_box{	
+
+	width: 750px;
+	height: 600px;
 	position: absolute;
 	left: 50%;
-	top: 100px;
-	margin-left: -200px;
+	top: 10%;
 	background: #FFFFFF;
+	border-radius: 10px;
+	box-shadow: 5px 5px 15px 2px rgba(0, 0, 0, 0.8);
+	margin-left: -20%;
+	
 }
 
 .extramessage_dialog_view .alert_box .alert_title {
@@ -1332,6 +1359,21 @@ ul#user_menu li a{
 	color: #FFFFFF;
 	font-size: 1.4em;
 	padding: 5px 10px;
+	border-radius: 8px 8px 0px 0px;
+}
+
+.alertLeftButton{
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	cursor: pointer;
+}
+
+.alertRightButton{
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	cursor: pointer;
 }
 
 .extramessage_dialog_view .alert_box .alert_title a {
@@ -1343,14 +1385,22 @@ ul#user_menu li a{
 }
 
 .extramessage_dialog_view .alert_box .alert_content {
-	text-align: center;
-	padding: 10px;
+
+	position: relative;
+	margin: 10px;
+	-moz-box-align: center;
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+	box-pack: center;
+	box-align: center;
+	
 }
 
 .extramessage_dialog_view .alert_box .alert_bottom {
 	background: #F8F8F8;
-	padding: 7px 0;
+	padding: 5px;
 	text-align: right;
+	border-radius: 0px 0px 10px 10px;
 }
 
 .extramessage_dialog_view .alert_box .alert_bottom a {
@@ -1362,11 +1412,13 @@ ul#user_menu li a{
 	color: #FFFFFF;
 	text-align: center;
 	text-decoration: none;
+	border-radius: 10px;
 }
 
 .video_preview{
-    text-align: center;
-    margin-left: 30px;
+/*     text-align: center; */
+    width: 100%;
+    height: 545px;
 }
 
 #extramessage_dialog_view_code .alert_box{
@@ -1383,19 +1435,30 @@ ul#user_menu li a{
     margin-top: 10px;
 }
 .record_buttons li{
-    width: 60px;
-    cursor: pointer;
+	width: 60px;
+	cursor: pointer;
+	border-radius: 10px;
 }
 
 .recording{
-    color: red;
-    display: none;
+	color: red;
+	display: none;
+	width: 50px;
+	position: absolute;
+	right: 0px;
+	top: 8px;
 }
 
 #videoRemotes video{
     height: 200px;
     width: 100%;
 }
+
+#extramessage_dialog_view_mapView{
+	width: 100%;
+	height: 508px;
+}
+
 /*------------------------------*/
 /*   END EXTRA MESSAGE          */
 /*------------------------------*/
@@ -1546,7 +1609,7 @@ img.imgbutton{
 	background: #F8F8F8;
 	overflow-x: auto;
 	overflow-y: none;
-
+	z-index: 110;
 }
 
 #sticker_selecter .sticker_holder{
@@ -1619,4 +1682,12 @@ img.imgbutton{
 /*------------------------------*/
 
 
+/*------------------------------*/
+/*   FONT AWESOME ICONS		    */
+/*------------------------------*/
+
+
+/*------------------------------*/
+/*   END FONT AWESOME           */
+/*------------------------------*/
 

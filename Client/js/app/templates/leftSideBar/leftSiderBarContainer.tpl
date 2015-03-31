@@ -1,3 +1,6 @@
+	<div id="selected_tab">
+		<p id="selected_tab_name">Selected Tab</p>
+	</div>
 	<div id="tab_menu">
 		<ul>
 			<li class="selected" id="tab_btn_inbox" tab="menu_container_lobby">
@@ -32,7 +35,7 @@
 
 	<div id="nav_bottom">
 		<a href="javascript:void(0)">
-		<span class="fa-stack fa-lg">
+		<span class="fa-stack fa-lg" style="position: absolute; top: 20%; left: 47%;">
 		  <i class="fa fa-plus fa-stack-1x"></i>
 		</span>
 		</a>
