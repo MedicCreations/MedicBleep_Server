@@ -1,3 +1,4 @@
+
 SPIKA_LocationManager = {
 	
 	mapViewer:null,
@@ -6,17 +7,22 @@ SPIKA_LocationManager = {
 	mapInteractionEnabled:false,
 	pointLayer:null,
 	currentPoint:null,
+/*
+	fromProjection: new OpenLayers.Projection("EPSG:4326"),
+	toProjection: new OpenLayers.Projection("EPSG:900913"),
+*/
 	
 	onClose:function(){
 		alert("i will close now");
 	},
 	
 	showMap:function(showInDiv, divIsCell, coordinates){
+				
+		this.renderToDiv = showInDiv;
 		
 		var fromProjection = new OpenLayers.Projection("EPSG:4326");
 		var toProjection = new OpenLayers.Projection("EPSG:900913");
-		
-		this.renderToDiv = showInDiv;
+
 		
 		if(divIsCell){
 			this.mapCoordinate = new OpenLayers.LonLat(coordinates.longitude, coordinates.latitude).transform(fromProjection, toProjection);		
@@ -69,6 +75,10 @@ SPIKA_LocationManager = {
   	},
   	
   	getPoint:function(){
+	  	
+	  	var fromProjection = new OpenLayers.Projection("EPSG:4326");
+		var toProjection = new OpenLayers.Projection("EPSG:900913");
+	  	
 	  	return new OpenLayers.LonLat(this.mapCoordinate.lon, this.mapCoordinate.lat).transform(toProjection, fromProjection);
   	}
   	
