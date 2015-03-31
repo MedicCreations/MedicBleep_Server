@@ -1,0 +1,101 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+        
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+                    			<li>
+                    				<i class="clip-home-3"></i>
+                    				<a href="{{OWNER_ROOT_URL}}/dashboard">
+                    					{{lang.general1}}
+                    				</a>
+                    			</li>
+                    			<li>
+                    				<a href="{{OWNER_ROOT_URL}}/organisation/">
+                    				    {{lang.organisation1}}
+                    				</a>
+                    			</li>
+                    			<li class="active">
+                    			    <a href="{{OWNER_ROOT_URL}}/organisation/payment/list/{{organizationId}}">
+                    				    {{lang.payment1}}
+                    				</a>
+                    			</li>	
+                    			</li>
+                    			<li class="active">
+                    				{{lang.payment21}}
+                    			</li>
+							</ol>
+							<div class="row page-header">
+							    <div class="col-md-6">
+                                    <h1>{{lang.payment21}} # {{form.id}} <small> {{lang.payment22}} {{company.name}}</small></h1>
+								</div>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+        
+                    {% include "alert.twig" %}
+					
+					<div class="row">
+					
+						<div class="col-sm-12">
+                            
+                            <form role="form" class="form-horizontal form" method="post" action="{{OWNER_ROOT_URL}}/organisation/payment/edit/{{organizationId}}/{{form.id}}" enctype="multipart/form-data">
+                            
+                                {% include 'payment/payment_form.twig' %}
+                                
+                            	<div class="row">
+                            		<div class="col-md-12 right">
+                            			<input type="submit" class="btn btn-primary" value="{{lang.general11}}" / >
+                            		</div>
+                            	</div>
+                            	
+                            </form>
+                            
+                        </div>
+                        
+                    </div>
+                
+
+{% endblock %}
+
+
+{% block pageScript %}
+    <script src="{{ROOT_URL}}/assets/plugins/jquery-validation/dist/jquery.validate.min.js"></script>
+	<script src="{{ROOT_URL}}/assets/js/sp-validator.js"></script>
+	<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
+	<script>
+	
+        var runFormValidator = function () {
+            var form = $('.form');
+            var errorHandler = $('.errorHandler');
+            form.validate({
+                rules: {
+                    amount: {
+                        number: true,
+                        required: true
+                    }
+                },
+                submitHandler: function (form) {
+                    errorHandler.hide();
+                    form.submit();
+                },
+                invalidHandler: function (event, validator) { //display error alert on form submit
+                    errorHandler.show();
+                }
+            });
+        };
+        
+		jQuery(document).ready(function() {
+			SpValidator.initValidator();
+			runFormValidator();
+		});		
+	</script>
+{% endblock %}
+

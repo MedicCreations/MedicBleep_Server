@@ -1069,7 +1069,7 @@ class MySqlDb implements DbInterface{
 	
 	public function getLastMessage(Application $app, $chat_id){
 		
-		$sql = "SELECT message.*, user.id AS user_id, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND chat_id = ? AND message.root_id = 0 ORDER BY message.id DESC LIMIT 1";
+		$sql = "SELECT message.*, user.id AS user_id, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND chat_id = ? AND message.root_id = 0 AND message.is_deleted = 0 ORDER BY message.id DESC LIMIT 1";
 		
 		$last_message = $app['db']->fetchAssoc($sql, array($chat_id));
 		
@@ -1390,6 +1390,28 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
+	public function getMessagesOnPushForIOS(Application $app, $chat_id, $msg_id){
+		
+		$sql = "SELECT 
+		            message.*, user.firstname, 
+		            user.lastname, 
+		            user.image, 
+		            user.image_thumb 
+                FROM message, user 
+                WHERE message.user_id = user.id 
+                    AND message.chat_id = ? 
+                    AND message.is_deleted = 0 
+                    AND message.id >= ? 
+                    and message.root_id = 0 
+                    ORDER BY message.id DESC";
+		
+		$messages = $app['db']->fetchAll($sql, array($chat_id, $msg_id));
+		
+		return $messages;
+		
+	}
+	
+	
 	public function randomString($min = 5, $max = 8)
 	{
 		$length = rand($min, $max);
@@ -1482,7 +1504,7 @@ class MySqlDb implements DbInterface{
 
 	public function getStickers(Application $app){
 		
-		$sql = "SELECT * FROM sticker where organization_id = ? and is_deleted = 0";
+		$sql = "SELECT id, filename FROM sticker where organization_id = ? and is_deleted = 0";
 		$result = $app['db']->fetchAll($sql, array($app['organization_id']));
 		return $result;
 		

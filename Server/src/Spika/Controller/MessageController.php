@@ -282,6 +282,7 @@ class MessageController extends SpikaBaseController {
 							'organization_id' => 'ddfdfd',
 							'firstname' => $user_firstname,
 							'chat_password' => $chat_password,
+							'message_id' => $msg_id
 							)
 			);
 				
@@ -306,7 +307,8 @@ class MessageController extends SpikaBaseController {
 					'oi' => $organization_id,
 					'ct' => $chat_thumb,
 					'cty' => $chat_type,
-					'cp' => $chat_password
+					'cp' => $chat_password,
+					'mi' => $msg_id
 					);
 				
 			$payload['aps'] = $apsAry;
@@ -348,6 +350,11 @@ class MessageController extends SpikaBaseController {
 			$paramsAry = $request->query->all();
 				
 			$chat_id = $paramsAry['chat_id'];
+			$new = 0;
+			if (array_key_exists('new', $paramsAry)){
+				$new = $paramsAry['new'];
+			}
+			
 			
 			$chat_data = $mySql->getChatWithID($app, $chat_id);
 			if ($chat_data['is_deleted'] == 1){
@@ -451,8 +458,10 @@ class MessageController extends SpikaBaseController {
 			
 			$total_messages = $mySql->getCountMessagesForChat($app, $chat_id);
 			
-            $mySql->updateMessageLog($app,$my_user_id,$chat_id,$messages);
-            $messages = $mySql->addAuditInfo($app,$my_user_id,$chat_id,$messages);
+			if (count($messages) > 0){
+				$mySql->updateMessageLog($app,$my_user_id,$chat_id,$messages);
+				//$messages = $mySql->addAuditInfo($app,$my_user_id,$chat_id,$messages);
+			}
             
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK', 
@@ -460,6 +469,15 @@ class MessageController extends SpikaBaseController {
 					'total_count' => $total_messages, 
 					'seen_by' => $chat_seen_by, 
 					'chat' => $chat);
+			
+			if ($new == 1){
+			
+				$new_messages = $mySql->getMessagesOnPush($app, $chat_id, $last_msg_id);
+				$new_messages = $self->getFormattedMessages($new_messages);
+				$messages = array_merge($messages, $new_messages);
+				$result['messages'] = $messages;
+			
+			}
 					
 			if (count($user)>0){
 				$result['user'] = $user;
@@ -512,7 +530,8 @@ class MessageController extends SpikaBaseController {
 			$messages = $self->getFormattedMessages($messages);
 			
 			$mySql->updateMessageLog($app,$my_user_id,$chat_id,$messages);
-			$messages = $mySql->addAuditInfo($app,$my_user_id,$chat_id,$messages);
+			
+			//$messages = $mySql->addAuditInfo($app,$my_user_id,$chat_id,$messages);
 			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK', 
@@ -627,7 +646,7 @@ class MessageController extends SpikaBaseController {
 			
 			foreach($stickerData as $index => $row){
     			
-    			$stickerData[$index]['url'] = ROOT_URL . "stickers/" .$stickerData[$index]['filename'];
+    			$stickerData[$index]['url'] = STICKERSPATH .$stickerData[$index]['filename'];
     			
 			}
 			
@@ -638,6 +657,95 @@ class MessageController extends SpikaBaseController {
 			return $app->json($result, 200);
 			
 		})->before($app['beforeSpikaTokenChecker']);
+		
+		
+		//get messages on push for iOS
+		$controllers->get('/push', function (Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->query->all();
+			
+			$message_id = $paramsAry['message_id'];
+			$chat_id = $paramsAry['chat_id'];
+			
+			$my_user_id = $app['user']['id'];
+			
+			// $chat_seen_by = "";
+			// $chat_seen_by = $mySql->getSeenBy($app, $chat_id);
+			
+			$chat = $mySql->getChatByID($app, $chat_id);
+				
+				if ($chat['type'] == CHAT_USER_TYPE){
+					$data = $mySql->getPrivateChatData($app, $chat_id, $my_user_id);
+					$user = array('id' => $data['user_id'], 
+							'firstname' => $data['user_firstname'],
+							'lastname' => $data['user_lastname'],
+							'image' => $data['image'],
+							'image_thumb' => $data['image_thumb']);
+					
+					 
+					$chat_name = $data['name'];
+					$chat['image'] = $data['image'];
+					$chat['image_thumb'] = $data['image_thumb'];
+					
+				} else {
+					$chat_members = $mySql->getChatMembers($app, $chat_id);
+					$chat_name = $self->createChatName($app, $mySql, $chat_members, array());
+				}
+				
+				if ($chat['name'] != ""){
+					$chat_name = $chat['name'];
+				}
+				
+				$chat['chat_name'] = $chat_name;
+				$chat['chat_id'] = $chat_id;
+				
+				$category = $mySql->getCategoryById($app, $chat['category_id']);
+				$chat['category'] = $category;
+			
+			$is_chat_member = $mySql->isChatMember($app, $my_user_id, $chat_id);
+			
+			if (!$is_chat_member && $chat['is_private']){
+				$result = array('code' => ER_NOT_CHAT_MEMBER, 
+						'message' => 'Not chat member');
+				
+				return $app->json($result, 200);
+			}
+			
+			$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
+			
+			$messages = $mySql->getMessagesOnPushForIOS($app, $chat_id, $message_id);
+			
+			// $message = $mySql->getMessageByID($app, $first_msg_id);
+			
+			// $modified_messages = $mySql->getModifiedMessages($app, $chat_id, $message['modified'], $last_msg_id);
+			
+			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
+			
+			$messages = $self->getFormattedMessages($messages);
+			
+			// $mySql->updateMessageLog($app,$my_user_id,$chat_id,$messages);
+			// $messages = $mySql->addAuditInfo($app,$my_user_id,$chat_id,$messages);
+			
+			$result = array('code' => CODE_SUCCESS, 
+					'message' => 'OK', 
+					'total_count' => $total_count,
+					'messages' => $messages,
+					'chat' => $chat);
+			
+			if ($chat['type'] == CHAT_USER_TYPE){
+					$data = $mySql->getPrivateChatData($app, $chat_id, $my_user_id);
+					$user = array('id' => $data['user_id'], 
+							'firstname' => $data['user_firstname'],
+							'lastname' => $data['user_lastname'],
+							'image' => $data['image'],
+							'image_thumb' => $data['image_thumb']);
+					$result['user'] = $user;
+				}
+			
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
+		
 		
 		return $controllers;
 	}

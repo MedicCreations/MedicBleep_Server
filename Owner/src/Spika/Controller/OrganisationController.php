@@ -295,11 +295,210 @@ class OrganisationController extends BaseController {
             
             	
 		});
-				
+		
+
+		$controllers->get('/payment/list/{organizationId}', function (Request $request,$organizationId) use ($app, $self){
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(OWNER_ROOT_URL . '');
+                
+            $self->page = 'organisation';
+
+            $page = $request->get('page');
+            if(empty($page))
+                $page = 1;
+            
+            $offset = ($page - 1) * PAGINATOR_PAGESIZE;
+            $list = $self->app['db']->fetchAll("select * from payment where organization_id = ? order by created desc limit " . PAGINATOR_PAGESIZE . " offset {$offset} ",array($organizationId));
+            $countAssoc = $self->app['db']->fetchAssoc("select count(*) as count from payment where organization_id = ?  ",array($organizationId));
+            $count = $countAssoc['count'];
+            
+            $company = $self->app['db']->fetchAssoc("select * from organization where id = ?",array($organizationId));
+                        
+            return $self->render('payment/payment_list.twig', array(
+                'pager' => array(
+                    'baseURL' => OWNER_ROOT_URL . "/payment/list/{$organizationId}?page=",
+                    'pageCount' => ceil($count / PAGINATOR_PAGESIZE) - 1,
+                    'page' => $page,
+                    'count' => $count,
+                    'pageSize' => PAGINATOR_PAGESIZE
+                ),
+                'list' => $list,
+                'company' => $company
+            ));
+            			
+		});
+
+
+		$controllers->get('/payment/add/{organizationId}', function (Request $request,$organizationId) use ($app, $self){
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(OWNER_ROOT_URL . '');
+            
+            $self->page = 'organisation';
+            
+            $company = $self->app['db']->fetchAssoc("select * from organization where id = ?",array($organizationId));
+            
+            return $self->render('payment/payment_add.twig', array(
+                 'organizationId' => $organizationId,
+                 'form' => $self->defaultFormValuesPayment(),
+                 'mode' => 'add',
+                 'company' => $company
+            ));
+            			
+		});
+
+		$controllers->post('/payment/add/{organizationId}', function (Request $request,$organizationId) use ($app, $self){
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(OWNER_ROOT_URL . '');
+            
+            $self->page = 'organisation';
+                        
+            $files = $request->files;
+            
+            if($files->get('invoice') == null){
+                
+			    $self->setErrorMessage($this->lang['payment15']);
+                return $app->redirect(OWNER_ROOT_URL . '/organisation/payment/add/' . $organizationId);
+                
+            }
+            
+            $filename = $files->get('invoice')->getClientOriginalName();
+            $filenameSplited = explode('.',$filename);
+            $fileExtension = $filenameSplited[count($filenameSplited) - 1];
+            $newFileName = $filename . time();
+            
+            $path = INVOICEPATH;
+            
+            if($files->get('invoice')->move($path,$newFileName)){
+                
+                $formValues = $request->request->all();
+                $amount = $formValues['amount'];
+                
+                // insert to database
+    			$values = array(
+    			        'organization_id' => $organizationId,
+    			        'amount' => $amount,
+    			        'state' => INVOICE_STATE_SENT,
+    			        'note' => $formValues['note'],
+    					'invoice_name' => $filename,
+    					'sent' => time(),
+    					'created' => time());
+
+    			$app['db']->insert('payment', $values);
+                
+    			$self->setInfoMessage($this->lang['payment14']);
+    			return $app->redirect(OWNER_ROOT_URL . '/organisation/payment/list/' . $organizationId);
+            }else{
+
+			    $self->setErrorMessage($this->lang['payment16']);
+                return $app->redirect(OWNER_ROOT_URL . '/organisation/payment/add/' . $organizationId);
+
+            }
+            
+
+            			
+		});
+
+		$controllers->get('/payment/edit/{organizationId}/{paymentId}', function (Request $request,$organizationId,$paymentId) use ($app, $self){
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(OWNER_ROOT_URL . '');
+
+            $self->page = 'organisation';
+            
+            
+            $company = $self->app['db']->fetchAssoc("select * from organization where id = ? ", array($organizationId));
+            $data = $self->app['db']->fetchAssoc("select * from payment where id = ? ", array($paymentId));
+            
+            if(!isset($data['id'])){
+                return $app->redirect(OWNER_ROOT_URL . '/organisation/payment/' . $organizationId);
+            }
+            
+            return $self->render('payment/payment_edit.twig', array(
+                 'form' => $data,
+                 'mode' => 'edit',
+                 'company' => $company,
+                 'organizationId' => $organizationId
+            ));
+            			
+		});
+
+		$controllers->post('/payment/edit/{organizationId}/{paymentId}', function (Request $request,$organizationId,$paymentId) use ($app, $self){
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(OWNER_ROOT_URL . '');
+            
+            $self->page = 'organisation';
+                   
+            $data = $self->app['db']->fetchAssoc("select * from payment where id = ? ", array($paymentId));
+            if(!isset($data['id'])){
+                return $app->redirect(OWNER_ROOT_URL . '/organisation/payment/' . $organizationId);
+            }
+            
+            $files = $request->files;
+            
+            if($files->get('invoice') != null){
+                
+                $files = $request->files;
+                $filename = $files->get('invoice')->getClientOriginalName();
+                $filenameSplited = explode('.',$filename);
+                $fileExtension = $filenameSplited[count($filenameSplited) - 1];
+                $newFileName = $filename . time();
+                $path = INVOICEPATH;
+                
+                if($files->get('invoice')->move($path,$newFileName)){
+                    
+                    
+                    
+                }else{
+
+                    $self->setErrorMessage($this->lang['payment16']);
+                    return $app->redirect(OWNER_ROOT_URL . '/organisation/payment/edit/' . $organizationId);
+                
+                }
+            }
+
+            $formValues = $request->request->all();
+            $amount = $formValues['amount'];
+            
+            // insert to database
+			$values = array(
+			        'state' => $formValues['state'],
+			        'amount' => $amount,
+			        'note' => $formValues['note'],
+					'modified' => time());
+            
+            if(isset($filename)){
+                $values['invoice_name'] = $filename;
+            }
+            
+            if($formValues['state'] == INVOICE_STATE_PAID && $data['paid'] == 0){
+                $values['paid'] = time();
+            }
+
+			$app['db']->update('payment', $values,array('id' => $paymentId));
+            
+			$self->setInfoMessage($this->lang['payment23']);
+			return $app->redirect(OWNER_ROOT_URL . '/organisation/payment/list/' . $organizationId);
+            			
+		});
+
+
 		return $controllers;
 		
 	}
 	
+	function defaultFormValuesPayment(){
+    	return array(
+    	    'id' => '',
+    	    'amount' => '',
+    	    'note' => '',
+    	);
+	}
+
+
 	function defaultFormValues(){
     	return array(
     	    'id' => '',
