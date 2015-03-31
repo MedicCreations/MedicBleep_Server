@@ -100,7 +100,7 @@ else{
                     'thirdparty/chosen/chosen.jquery.min',
                     'thirdparty/base64',
                     'thirdparty/socket.io',
-                    'thirdparty/OpenLayers.light',
+                    'thirdparty/OpenLayers',
                     'app/libs/LocationManger'], function() {
 
 	        // load dependency libary
