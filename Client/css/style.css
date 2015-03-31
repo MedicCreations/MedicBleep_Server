@@ -483,9 +483,10 @@ body#chat {
 #selected_tab_name{
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 1.7em;
-	line-height: 2;
+	line-height: 2.2;
 	text-align: center;
 	color: #222222;
+	border-bottom: 1px solid #DFDFDF;
 }
 
 /*------------------------------*/
