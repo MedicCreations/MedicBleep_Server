@@ -458,7 +458,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         var self = this;
         
         _.each(messages,function(row){ 
-            row.set("content",self.generateContnt(row));
+            row.set("content",self.generateContnt(row)); 
 	        row.set("indentpixel",20);
         });
         
@@ -547,8 +547,11 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             var latitude = decryptedText = EncryptManager.decryptText(message.get('latitude'));
             var longitude = decryptedText = EncryptManager.decryptText(message.get('longitude'));
+            var mapID = "locationMap" + message.get('id');
             
-            content = '<a target="_blank" href="http://maps.google.com/?q=' + latitude + ',' + longitude + '">' + 'Lon:' + longitude+ ' Lat:' + latitude + '</a>';
+            content = '<div id="' + mapID +'" class="locationMap"></div>';
+            
+//             content = '<a target="_blank" href="http://maps.google.com/?q=' + latitude + ',' + longitude + '">' + 'Lon:' + longitude+ ' Lat:' + latitude + '</a>';
         }
         
         else if(messageType == MESSAGE_TYPE_VOICE){
@@ -894,6 +897,17 @@ var SPIKA_ChatView = Backbone.View.extend({
             
         }
         
+        for(cellMesssage in messages){
+	        
+        }
+        
+        //if message is location render map to cell
+        _.each(messages,function(cellMessage){
+			if(cellMessage.get("type") === "4"){
+				self.loadMapToDiv(cellMessage);
+            }
+        });
+        
         $$('#main_container article').removeClass('nochat');
         
         var afterHeight = $$('#main_container article')[0].scrollHeight
@@ -1143,6 +1157,22 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
     
         
+    },
+    
+    loadMapToDiv:function(locationMessage){
+		
+		//extract div ID	    
+	    var divider = document.createElement("div");
+	    divider.innerHTML = locationMessage.get("content");
+	    
+	    var coordinates = {
+		  latitude: EncryptManager.decryptText(locationMessage.get("latitude")),
+		  longitude: EncryptManager.decryptText(locationMessage.get("longitude"))
+	    };
+	    
+	    //show map in div
+	    SPIKA_LocationManager.showMap(divider.lastChild.id, true, coordinates);
+	    
     }
 
 });
