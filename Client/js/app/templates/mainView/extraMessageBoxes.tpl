@@ -43,7 +43,7 @@
             <i class="fa fa-globe"></i><br />
                 Map        
         </li>
-<!--        
+
         <li id="extramessage_btn_voice_call">
             <i class="fa fa-phone"></i><br />
                 Voice Call
@@ -53,7 +53,7 @@
             <i class="fa fa-video-camera"></i><br />
                 Video Call
         </li>
- -->
+ 
     </ul>
 
 	<div class="choose_file" style="display:none">
