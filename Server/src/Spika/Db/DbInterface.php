@@ -90,6 +90,7 @@ interface DbInterface
 	public function getSearchUsersGroupsRoomsNotChatMembers(Application $app, $search, $my_user_id, $chat_id);
 	
 	public function getOrganizationByID(Application $app, $organization_id);
+	public function getMessagesOnPushForIOS(Application $app, $chat_id, $msg_id);
 	
 	public function addMessageLog(Application $app, $user_id, $chat_id, $msg_id, $type);
 	public function updateMessageLog(Application $app,$userId,$chatId,$messages);

@@ -1,0 +1,121 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{OWNER_ROOT_URL}}/dashboard">
+										{{lang.dashboard1}}
+									</a>
+								</li>
+								<li>
+                    				<a href="{{OWNER_ROOT_URL}}/organisation/">
+                    				{{lang.organisation1}}
+                    				</a>
+								</li>
+								<li class="active">
+									{{lang.payment1}}
+								</li>																
+							</ol>
+
+							<div class="row page-header">
+							    <div class="col-md-6">
+								    <h1>{{company.name}} <small> {{lang.payment2}}</small></h1>
+								</div>
+								<div class="col-md-6 right">
+								    <a class="btn btn-primary" href="{{OWNER_ROOT_URL}}/organisation/payment/add/{{company.id}}"><i class="fa fa-plus"></i> {{lang.payment10}}</a>
+								</div>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+
+                    {% include "alert.twig" %}
+                        
+					{% include 'paginator.twig' %}
+					
+					<div class="row">
+					    <div class="col-md-12">
+
+                            <table class="table table-hover" id="sample-table-1">
+								<thead>
+									<tr>
+										<th>{{lang.payment3}}</th>
+										<th class="hidden-xs">{{lang.payment4}}</th>
+										<th class="hidden-xs">{{lang.payment5}}</th>
+										<th class="hidden-xs">{{lang.payment6}}</th>
+										<th class="hidden-xs">{{lang.payment7}}</th>
+										<th class="hidden-xs"></th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+								
+                                    {% for row in list %}
+
+                    				    <tr>
+    										<td>
+    										    {{row.id}}
+                                            </td>
+    										<td class="hidden-xs">
+                                                {{row.amount}}
+    										</td>
+    										<td class="hidden-xs">
+    										    {{lang.payment8}}: {{row.sent|date("Y.m.d")}}<br />
+    										    {{lang.payment9}}: 
+    										    {% if row.paid != 0 %}
+    										        {{row.paid|date("Y.m.d")}}<br /> 
+    										    {% endif %}   										    
+    										</td>
+    										<td class="hidden-xs">
+    										    {% if row.state == INVOICE_STATE_SENT %}{{lang.payment18}}{% endif %}
+    										    {% if row.state == INVOICE_STATE_PAID %}{{lang.payment19}}{% endif %}
+    										    {% if row.state == INVOICE_STATE_STALLED %}{{lang.payment20}}{% endif %}
+    										</td>
+    										<td class="hidden-xs">
+    										    <a href="{{OWNER_ROOT_URL}}/organisation/payment/downloadinvoice/{{row.id}}">
+    										        {{row.invoice_name}}
+    										    </a>
+    										</td>
+    										<td class="right">
+        										<div class="visible-md visible-lg hidden-sm hidden-xs">
+                                                    <a href="{{OWNER_ROOT_URL}}/organisation/payment/edit/{{company.id}}/{{row.id}}" class="btn btn-xs btn-teal tooltips" data-placement="top" data-original-title="Edit"><i class="fa fa-edit"></i></a>
+        										</div>
+        										<div class="visible-xs visible-sm hidden-md hidden-lg">
+        											<div class="btn-group">
+        												<a class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" href="#">
+        													<i class="fa fa-cog"></i> <span class="caret"></span>
+        												</a>
+        												<ul role="menu" class="dropdown-menu pull-right">
+        													<li role="presentation">
+        														<a role="menuitem" tabindex="-1" href="{{OWNER_ROOT_URL}}/organisation/payment/edit/{{company.id}}/{{row.id}}">
+        															{{lang.general7}}
+        														</a>
+        													</li>
+        												</ul>
+        											</div>
+        										</div>
+    										</td>
+    									</tr>
+									
+                                    {% endfor %}
+                                    
+								</tbody>
+							</table>
+                        </div>
+					</div>
+					
+					{% include 'paginator.twig' %}
+
+
+{% endblock %}
