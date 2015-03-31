@@ -100,7 +100,8 @@ else{
                     'thirdparty/chosen/chosen.jquery.min',
                     'thirdparty/base64',
                     'thirdparty/socket.io',
-                    'app/libs/LocationManger'], function() {
+                    'app/libs/LocationManger',
+                    'thirdparty/OpenLayers.light'], function() {
 
 	        // load dependency libary
 	        require(['thirdparty/sjcl/random'], function() { // thirdparty/sjcl/random depends on sjcl/sha256
