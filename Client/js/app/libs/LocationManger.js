@@ -1,6 +1,3 @@
-var fromProjection = new OpenLayers.Projection("EPSG:4326");
-var toProjection = new OpenLayers.Projection("EPSG:900913");
-
 SPIKA_LocationManager = {
 	
 	mapViewer:null,
@@ -15,6 +12,9 @@ SPIKA_LocationManager = {
 	},
 	
 	showMap:function(showInDiv, divIsCell, coordinates){
+		
+		var fromProjection = new OpenLayers.Projection("EPSG:4326");
+		var toProjection = new OpenLayers.Projection("EPSG:900913");
 		
 		this.renderToDiv = showInDiv;
 		
