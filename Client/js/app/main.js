@@ -98,7 +98,9 @@ else{
                     'thirdparty/webcamjs/webcam',
                     'thirdparty/highlight/highlight.pack',
                     'thirdparty/chosen/chosen.jquery.min',
-                    'thirdparty/base64'], function() {
+                    'thirdparty/base64',
+                    'thirdparty/socket.io',
+                    'app/libs/LocationManger'], function() {
 
 	        // load dependency libary
 	        require(['thirdparty/sjcl/random'], function() { // thirdparty/sjcl/random depends on sjcl/sha256

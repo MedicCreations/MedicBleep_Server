@@ -13,7 +13,8 @@
     <link rel="stylesheet" href="js/thirdparty/chosen/chosen.css?rnd=<?php echo time() ?>">
     
     <script type="text/javascript" src="js/lang/<?php echo LANG ?>.js?rnd=<?php echo time() ?>"></script>
-		
+	<script src="http://openlayers.org/api/OpenLayers.js"></script>
+	
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="AMC Walking Dead Story Sync">
