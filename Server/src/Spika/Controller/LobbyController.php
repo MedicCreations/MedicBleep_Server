@@ -53,6 +53,13 @@ class LobbyController extends SpikaBaseController {
 						
 						//find name of private chat
 						$chat_data = $mySql->getPrivateChatData($app, $chat['chat_id'], $user_id);
+						
+                        if(empty($chat_data['image']))
+                            $chat_data['image']='';
+                        
+                        if(empty($chat_data['image_thumb']))
+                            $chat_data['image_thumb']='';
+                                    
 						$chat['chat_name'] = $chat_data['name'];
 						$chat['image'] = $chat_data['image'];
 						$chat['image_thumb'] = $chat_data['image_thumb'];
@@ -111,6 +118,13 @@ class LobbyController extends SpikaBaseController {
 						//find name of private chat
 						$chat_data = $mySql->getPrivateChatData($app, $chat['chat_id'], $user_id);
 						$chat['chat_name'] = $chat_data['name'];
+						
+                        if(empty($chat_data['image']))
+                            $chat_data['image']='';
+                        
+                        if(empty($chat_data['image_thumb']))
+                            $chat_data['image_thumb']='';
+
 						$chat['image'] = $chat_data['image'];
 						$chat['image_thumb'] = $chat_data['image_thumb'];
 						
@@ -180,9 +194,18 @@ class LobbyController extends SpikaBaseController {
 						$chat['category'] = $category;
 						
 						if ($chat['chat_name'] == ""){
+						
 							if ($chat['type'] == CHAT_USER_TYPE){
 								$chat_data = $mySql->getPrivateChatData($app, $chat['chat_id'], $user_id);
 								$chat['chat_name'] = $chat_data['name'];
+								
+                                if(empty($chat_data['image']))
+                                    $chat_data['image']='';
+                                
+                                if(empty($chat_data['image_thumb']))
+                                    $chat_data['image_thumb']='';
+
+
 								$chat['image'] = $chat_data['image'];
 								$chat['image_thumb'] = $chat_data['image_thumb'];
 							} else {

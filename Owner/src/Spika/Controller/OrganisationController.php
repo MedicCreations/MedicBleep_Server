@@ -383,6 +383,7 @@ class OrganisationController extends BaseController {
     			        'state' => INVOICE_STATE_SENT,
     			        'note' => $formValues['note'],
     					'invoice_name' => $filename,
+    					'filename' => $newFileName,
     					'sent' => time(),
     					'created' => time());
 
@@ -433,6 +434,7 @@ class OrganisationController extends BaseController {
             $self->page = 'organisation';
                    
             $data = $self->app['db']->fetchAssoc("select * from payment where id = ? ", array($paymentId));
+            
             if(!isset($data['id'])){
                 return $app->redirect(OWNER_ROOT_URL . '/organisation/payment/' . $organizationId);
             }
@@ -472,6 +474,15 @@ class OrganisationController extends BaseController {
             
             if(isset($filename)){
                 $values['invoice_name'] = $filename;
+                $values['filename'] = $newFileName;
+            }
+                        
+            if(!empty($formValues['sent'])){
+                $values['sent'] = strtotime(str_replace('.','-',$formValues['sent']));
+            }
+            
+            if(!empty($formValues['paid'])){
+                $values['paid'] = strtotime(str_replace('.','-',$formValues['paid']));
             }
             
             if($formValues['state'] == INVOICE_STATE_PAID && $data['paid'] == 0){
@@ -482,6 +493,32 @@ class OrganisationController extends BaseController {
             
 			$self->setInfoMessage($this->lang['payment23']);
 			return $app->redirect(OWNER_ROOT_URL . '/organisation/payment/list/' . $organizationId);
+            			
+		});
+
+		$controllers->get('/payment/downloadinvoice/{paymentId}', function (Request $request,$paymentId) use ($app, $self){
+            
+            $data = $self->app['db']->fetchAssoc("select * from payment where id = ? ", array($paymentId));
+            
+            $filepath = INVOICEPATH . "/" . $data['filename'];
+            
+            if(!file_exists($filepath) || !is_file($filepath)){
+            
+    			$self->setErrorMessage($this->lang['payment26']);
+    			return $app->redirect(OWNER_ROOT_URL . '/organisation/payment/list/' . $data['organization_id']); 
+
+            }
+
+            $stream = function () use ($filepath) {
+                readfile($filepath);
+            };
+            
+            return $app->stream($stream, 200, array(
+                'Content-Type' => 'application/octet-stream',
+                'Content-length' => filesize($filepath),
+                'Content-Disposition' => 'attachment; filename="'. $data['invoice_name'] . '"' 
+            ));
+
             			
 		});
 

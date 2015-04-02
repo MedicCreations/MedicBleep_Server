@@ -93,6 +93,11 @@
         };
         
 		jQuery(document).ready(function() {
+
+            $('.date-picker').datepicker({
+                autoclose: true
+            });
+            
 			SpValidator.initValidator();
 			runFormValidator();
 		});		

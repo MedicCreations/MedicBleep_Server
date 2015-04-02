@@ -408,7 +408,7 @@ class MySqlDb implements DbInterface{
 	public function getGroups(Application $app, $user_id, $search, $offset, $category){
         
 
-		$sql = "SELECT groups.id, groups.name AS groupname, groups.image, groups.image_thumb FROM groups, group_member WHERE groups.is_deleted = 0 and groups.id = group_member.group_id AND group_member.user_id = ? ";
+		$sql = "SELECT groups.id, groups.name AS groupname, groups.image, groups.image_thumb, groups.category FROM groups, group_member WHERE groups.is_deleted = 0 and groups.id = group_member.group_id AND group_member.user_id = ? ";
 		
 		if ($search != ""){
 			$sql = $sql . " AND groups.name LIKE '" . $search . "%'";
@@ -1297,7 +1297,11 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
 		}
 		
-		$sql = $sql . " ORDER BY user.firstname,user.lastname LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
+		$sql = $sql . " ORDER BY user.firstname,user.lastname";
+
+		if($offset>0){
+			$sql .= " LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
+		}
 		
 		$resultFormated = array();
 		$result = $app['db']->fetchAll($sql, array($my_user_id, $app['organization_id'], $chat_id));
