@@ -1,5 +1,5 @@
 	<div id="selected_tab">
-		<p id="selected_tab_name">Selected Tab</p>
+		<p id="selected_tab_name"></p>
 	</div>
 	<div id="tab_menu">
 		<ul>
