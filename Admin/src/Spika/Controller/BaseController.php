@@ -35,7 +35,11 @@ class BaseController implements ControllerProviderInterface {
         $params['FILE_DOWNLOAD_URL'] = FILE_DOWNLOAD_URL;
         $params['user'] = $this->user;
         $params['sys_lang'] = LANG;
-        
+        $params['INVOICE_STATE_SENT'] = INVOICE_STATE_SENT;
+        $params['INVOICE_STATE_PAID'] = INVOICE_STATE_PAID;
+        $params['INVOICE_STATE_STALLED'] = INVOICE_STATE_STALLED;
+
+
         if($this->app['session']->has('infomessage')){
             
             $params['infomessage'] = $this->app['session']->get('infomessage');

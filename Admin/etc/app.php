@@ -6,6 +6,7 @@ date_default_timezone_set ( "GMT" );
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../init.php';
+require_once __DIR__ . '/const.php';
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -72,3 +73,4 @@ $app->mount ( '/account', new Spika\Controller\AccountController() );
 $app->mount ( '/userparams', new Spika\Controller\UserParamsController() );
 $app->mount ( '/news', new Spika\Controller\NewsController() );
 $app->mount ( '/stickers', new Spika\Controller\StickersController() );
+$app->mount ( '/payment', new Spika\Controller\PaymentController() );

@@ -1,0 +1,98 @@
+{% extends "adminbase.twig" %}
+
+{% block content %}
+
+
+
+					<!-- start: PAGE HEADER -->
+					<div class="row">
+						<div class="col-sm-12">
+
+							<!-- start: PAGE TITLE & BREADCRUMB -->
+							<ol class="breadcrumb">
+								<li>
+									<i class="clip-home-3"></i>
+									<a href="{{ADMIN_ROOT_URL}}/dashboard">
+										{{lang.dashboard1}}
+									</a>
+								</li>
+								<li class="active">
+									{{lang.payment1}}
+								</li>
+								
+								{% include 'searchbox.twig' %}
+								
+							</ol>
+							<div class="page-header">
+								<h1>{{lang.payment1}} <small> {{lang.payment2}}</small></h1>
+							</div>
+							<!-- end: PAGE TITLE & BREADCRUMB -->
+						</div>
+					</div>
+					<!-- end: PAGE HEADER -->
+					<!-- start: PAGE CONTENT -->
+
+                	{% include 'alert.twig' %}
+
+					{% include 'paginator.twig' %}
+					
+					<div class="row">
+					    <div class="col-md-12">
+
+                            <table class="table table-hover" id="sample-table-1">
+								<thead>
+									<tr>
+										<th>{{lang.payment3}}</th>
+										<th class="hidden-xs">{{lang.payment8}}</th>
+										<th class="hidden-xs">{{lang.payment4}}</th>
+										<th class="hidden-xs">{{lang.payment5}}</th>
+										<th class="hidden-xs">{{lang.payment6}}</th>
+										<th class="hidden-xs">{{lang.payment7}}</th>
+										<th class="hidden-xs"></th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+								
+                                    {% for row in list %}
+
+                    				    <tr>
+    										<td>
+    										    {{row.id}}
+                                            </td>
+    										<td class="hidden-xs">
+                                                {{row.amount}}
+    										</td>
+    										<td class="hidden-xs">
+                                                {{row.sent|date("Y.m.d")}}
+    										</td>
+    										<td class="hidden-xs">
+    										    {% if row.paid != 0 %}
+    										        {{row.paid|date("Y.m.d")}}<br /> 
+    										    {% endif %}   	
+    										</td>
+    										<td class="hidden-xs">
+    										    {% if row.state == INVOICE_STATE_SENT %}{{lang.payment9}}{% endif %}
+    										    {% if row.state == INVOICE_STATE_PAID %}{{lang.payment10}}{% endif %}
+    										    {% if row.state == INVOICE_STATE_STALLED %}{{lang.payment11}}{% endif %}
+    										</td>
+    										<td class="hidden-xs">
+    										    <a href="{{ADMIN_ROOT_URL}}/payment/downloadinvoice/{{row.id}}">
+                                                    {{row.invoice_name}}
+    										    </a>
+    										</td>
+    									</tr>
+									
+                                    {% endfor %}
+                                    
+								</tbody>
+							</table>
+                        </div>
+					</div>
+					
+					{% include 'paginator.twig' %}
+
+
+
+
+{% endblock %}

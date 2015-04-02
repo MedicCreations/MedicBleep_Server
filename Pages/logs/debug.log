@@ -5480,3 +5480,6 @@
 [2015-03-31 10:50:03] myapp.INFO: Matched route "_newsGET_list_token" (parameters: "_controller": "{}", "token": "9G76peAA1yRHN1BNrMkp4fya0nulFGcPnkVMzwnA", "_route": "_newsGET_list_token") [] []
 [2015-03-31 10:50:03] myapp.INFO: > GET /dev/page/news/list/9G76peAA1yRHN1BNrMkp4fya0nulFGcPnkVMzwnA [] []
 [2015-03-31 10:50:03] myapp.INFO: < 200 [] []
+[2015-04-02 15:40:13] myapp.INFO: Matched route "_newsGET_list_token" (parameters: "_controller": "{}", "token": "xpBzZbxlPOdeCaJEKFTHdQvzqRQg73wEs8esjMO8", "_route": "_newsGET_list_token") [] []
+[2015-04-02 15:40:13] myapp.INFO: > GET /dev/page/news/list/xpBzZbxlPOdeCaJEKFTHdQvzqRQg73wEs8esjMO8 [] []
+[2015-04-02 15:40:13] myapp.INFO: < 200 [] []
