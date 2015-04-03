@@ -219,7 +219,7 @@ var SPIKA_ChatView = Backbone.View.extend({
 	  	
 	  	var self = this;
 	  	
-	  	$$("img").remove("img.encrypted_image");
+	  	$$("img").remove("img.encrypted_image.chat_image");
 	  	
         // get chat data first
         apiClient.getChatById(chatId,function(data){
@@ -540,7 +540,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
         
         else if(messageType == MESSAGE_TYPE_IMAGE){
-            content = '<img width="' + THUMB_PIC_SIZE_INVIEW + '" height="' + THUMB_PIC_SIZE_INVIEW + '" class="encrypted_image" src="' + WEB_ROOT + '/img/loading.png" fileid="' + message.get('thumb_id') + '" state="loading" messageid= "'+ message.get('id') +'" style="cursor:pointer;"/>';
+            content = '<img width="' + THUMB_PIC_SIZE_INVIEW + '" height="' + THUMB_PIC_SIZE_INVIEW + '" class="encrypted_image chat_image" src="' + WEB_ROOT + '/img/loading.png" fileid="' + message.get('thumb_id') + '" state="loading" messageid= "'+ message.get('id') +'" style="cursor:pointer;"/>';
 
         }
 
