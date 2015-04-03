@@ -7,6 +7,7 @@ var SPIKA_ChatView = Backbone.View.extend({
     postBoxView: null,
     stickerView: null,
     noteView: null,
+    imagePreviewView:null,
     chatData: null,
     messages : new MessageResult([]),
     totalMessageCount:0,
@@ -130,10 +131,13 @@ var SPIKA_ChatView = Backbone.View.extend({
             'app/views/mainView/noteView',
             'thirdparty/text!templates/mainView/noteView.tpl',
             'app/views/featureViews/stickerView',
-            'thirdparty/text!templates/featureViews/stickerView.tpl'
+            'thirdparty/text!templates/featureViews/stickerView.tpl',
+            'app/views/featureViews/imagePreviewView',
+            'thirdparty/text!templates/featureViews/imagePreviewView.tpl'
         ], function (postBoxView,PostBoxViewTemplate,
                         noteView,NoteViewTemplate,
-                        stickerView,StickerViewTemplate) {
+                        stickerView,StickerViewTemplate,
+                        imagePreviewView,ImagePreviewViewTemplate) {
             
             self.postBoxView = new SPIKA_PostBoxView({
                 template: PostBoxViewTemplate
@@ -145,6 +149,10 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             self.noteView = new SPIKA_NoteView({
                 template: NoteViewTemplate
+            });
+            
+            self.imagePreviewView = new SPIKA_imagePreviewView({
+	           template: ImagePreviewViewTemplate 
             });
             
             self.onload();
@@ -163,6 +171,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         $$('#main_container footer').html(self.postBoxView.render().el);
         $$('#main_container').append(self.stickerView.render().el);
+        $$('#main_container').append(self.imagePreviewView.render().el);
         
         $$('#main_container .scrollable').scroll(function(){
             
@@ -529,8 +538,8 @@ var SPIKA_ChatView = Backbone.View.extend({
         }
         
         else if(messageType == MESSAGE_TYPE_IMAGE){
-            content = '<img width="' + THUMB_PIC_SIZE_INVIEW + '" height="' + THUMB_PIC_SIZE_INVIEW + '" class="encrypted_image" src="' + WEB_ROOT + '/img/loading.png" fileid="' + message.get('thumb_id') + '" state="loading" />';
-            content += '<input class="download" type="button" id="downloadlink_' + message.get('file_id') + '" onclick="EncryptManager.downloadFile(\'' + message.get('file_id') + '\',\'' + decryptedText + '\')" value="Download" />';
+            content = '<img width="' + THUMB_PIC_SIZE_INVIEW + '" height="' + THUMB_PIC_SIZE_INVIEW + '" class="encrypted_image" src="' + WEB_ROOT + '/img/loading.png" fileid="' + message.get('thumb_id') + '" state="loading" messageid= "'+ message.get('id') +'" style="cursor:pointer;"/>';
+
         }
 
         else if(messageType == MESSAGE_TYPE_VIDEO){
@@ -551,7 +560,6 @@ var SPIKA_ChatView = Backbone.View.extend({
             
             content = '<div id="' + mapID +'" class="locationMap"></div>';
             
-//             content = '<a target="_blank" href="http://maps.google.com/?q=' + latitude + ',' + longitude + '">' + 'Lon:' + longitude+ ' Lat:' + latitude + '</a>';
         }
         
         else if(messageType == MESSAGE_TYPE_VOICE){
@@ -604,7 +612,8 @@ var SPIKA_ChatView = Backbone.View.extend({
                 
                 //EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient,null,null,true,true);
                 EncryptManager.decryptImage(this,fileId,THUMB_PIC_SIZE_INVIEW,apiClient,null,null,true,true);
-                AvatarManager.process(this,fileId);
+                AvatarManager.process(this,fileId)
+                
                 
             }
             
@@ -684,12 +693,20 @@ var SPIKA_ChatView = Backbone.View.extend({
         $$("#main_container .chat_content .text").each(function(){
                 
             var elm = this;
-
+            
         });
         
         $$('.usericon').click(function(){
             var userId = $(this).attr('userid');
             Backbone.trigger(EVENT_OPEN_PROFLIE,userId);
+        });
+        
+        $$("#main_container article section img.encrypted_image").unbind().click(function(){
+
+			var messagePreview = self.getMessageFromCacheById($(this).attr('messageid'));
+
+	        self.imagePreviewView.show(messagePreview);
+
         });
         
         $$("#main_container article section").unbind().dblclick(function(){
@@ -895,10 +912,6 @@ var SPIKA_ChatView = Backbone.View.extend({
             var template = _.template($$('#template_message_row').html(), {messages: messages}); 
             $$('#main_container article').append(template);
             
-        }
-        
-        for(cellMesssage in messages){
-	        
         }
         
         //if message is location render map to cell
@@ -1173,6 +1186,10 @@ var SPIKA_ChatView = Backbone.View.extend({
 	    //show map in div
 	    SPIKA_LocationManager.showMap(divider.lastChild.id, true, coordinates);
 	    
+    },
+    
+    imageOnClick:function(e){
+		alert("image click");
     }
 
 });

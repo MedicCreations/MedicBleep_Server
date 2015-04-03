@@ -680,6 +680,7 @@ footer #mess_type ul li textarea.disabled{
 	top: 47px;
 	right: 0px;
 	background: #2C2D32;
+	z-index: 101;
 }
 
 #chat #room_actions .button{
@@ -849,9 +850,8 @@ footer #mess_type ul li textarea.disabled{
 
 
 #thread_view_header{
-	
 	position: absolute;
-	top: 42px;
+	top: 47px;
 	height: 20px;
 	line-height: 20px;
 	vertical-align: middle;
@@ -1367,6 +1367,7 @@ ul#user_menu li a{
 	position: absolute;
 	left: 10px;
 	top: 10px;
+	z-index: 9999;
 	cursor: pointer;
 }
 
@@ -1684,11 +1685,50 @@ img.imgbutton{
 
 
 /*------------------------------*/
-/*   FONT AWESOME ICONS		    */
+/*   IMAGE PREVIEW			    */
 /*------------------------------*/
+
+.dialog_close_color{
+	color: white;
+}
+
+.dialog_background{
+	display: none;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background: rgb(0,0,0);
+	background: rgba(0,0,0,0.5);
+	z-index: 200;
+}
+
+img.encrypted_preview_image{
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	top: 0;
+	margin: auto;
+}
+
+.previewButton{
+	color: white;
+	cursor: pointer;
+	width: 45px;
+	height: 40px;
+	padding-top: 5px;
+	background-color: #4BA4DF;
+	box-shadow: 1px 2px rgba(0,0,0,0.6);
+	-moz-box-shadow: 1px 2px rgba(0,0,0,0.6);
+	-webkit-box-shadow: 1px 2px rgba(0,0,0,0.6);
+	-o-box-shadow: 1px 2px rgba(0,0,0,0.6);
+	border-radius: 100px;
+}
 
 
 /*------------------------------*/
-/*   END FONT AWESOME           */
+/*   END IMAGE PREVIEW          */
 /*------------------------------*/
 
