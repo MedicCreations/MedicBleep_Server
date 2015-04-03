@@ -219,6 +219,8 @@ var SPIKA_ChatView = Backbone.View.extend({
 	  	
 	  	var self = this;
 	  	
+	  	$$("img").remove("img.encrypted_image");
+	  	
         // get chat data first
         apiClient.getChatById(chatId,function(data){
             
