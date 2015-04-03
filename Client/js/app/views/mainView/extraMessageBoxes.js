@@ -191,6 +191,10 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
 		
         $$('#extramessage_btn_location').click(function(){
 	        
+	        if(self.chatId == 0){
+                return;
+            }
+	        
 	        $$('#extramessage_dialog_view_map').fadeIn();
 		    $$('#extramessage_dialog_view_mapView').css('width','100%');
 		    $$('#extramessage_dialog_view_mapView').css('height','508px');		    
