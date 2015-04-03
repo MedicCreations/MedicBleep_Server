@@ -117,6 +117,13 @@ class SpikaBaseController implements ControllerProviderInterface
     		if ($chat['type'] == CHAT_USER_TYPE){
     			$chat_data = $mySql->getPrivateChatData($app, $chat_id, $user_id);
     			$chat['chat_name'] = $chat_data['name'];
+    			
+    			if(is_null($chat_data['image']))
+    			    $chat_data['image']='';
+    			    
+    			if(is_null($chat_data['image_thumb']))
+    			    $chat_data['image_thumb']='';
+    			    
     			$chat['image'] = $chat_data['image'];
     			$chat['image_thumb'] = $chat_data['image_thumb'];
     		} else {

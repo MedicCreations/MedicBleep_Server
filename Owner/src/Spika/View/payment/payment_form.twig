@@ -18,12 +18,22 @@
     			</div>
     		</div>
 
+    		<div class="form-group">
+    			<label class="col-sm-2 control-label" for="form-field-10" style="text-align:left">
+    			    {{lang.payment17}}
+    			</label>
+    			<div class="col-sm-8">
+    				<textarea type="text" class="form-control" name="note">{{form.note}}</textarea>
+    			</div>
+    		</div>
+                
+
             {% if mode == 'add' %}
             
             {% endif %}
             
             {% if mode == 'edit' %}
-                
+        		
         		<div class="form-group">
         			<label class="col-sm-2 control-label" for="form-field-2" style="text-align:left">
         			    {{lang.payment6}}
@@ -45,20 +55,44 @@
 	
         			</div>
         		</div>
+
                 
+        		<div class="form-group">
+        			<label class="col-sm-2 control-label" for="form-field-2" style="text-align:left">
+        			    {{lang.payment28}}
+        			</label>
+        			<div class="col-sm-8">
+
+						<div class="input-group">
+							<input type="text" name="sent" data-date-format="yyyy.mm.dd" data-date-viewmode="years" class="form-control date-picker" value="{{form.sent|date("Y.m.d")}}">
+							<span class="input-group-addon"> <i class="fa fa-calendar"></i> </span>
+						</div>
+
+						<span class="help-block"><i class="fa fa-info-circle"></i>{{lang.payment27}}</span>
+
+        			</div>
+        		</div>
+                
+        		<div class="form-group">
+        			<label class="col-sm-2 control-label" for="form-field-2" style="text-align:left">
+        			    {{lang.payment29}}
+        			</label>
+        			<div class="col-sm-8">
+
+						<div class="input-group">
+							<input type="text" name="paid" data-date-format="yyyy.mm.dd" data-date-viewmode="years" class="form-control date-picker" {% if form.paid != 0 %}value="{{form.paid|date("Y.m.d")}}"{% endif %}>
+							<span class="input-group-addon"> <i class="fa fa-calendar"></i> </span>
+						</div>
+
+						<span class="help-block"><i class="fa fa-info-circle"></i>{{lang.payment27}}</span>
+
+        			</div>
+        		</div>
+
+
                 		
                 <input type="hidden" name="id" value="{{form.id}}">
             
             {% endif %}
 
             
-    		<div class="form-group">
-    			<label class="col-sm-2 control-label" for="form-field-10" style="text-align:left">
-    			    {{lang.payment17}}
-    			</label>
-    			<div class="col-sm-8">
-    				<textarea type="text" class="form-control" name="note">{{form.note}}</textarea>
-    			</div>
-    		</div>
-                
-

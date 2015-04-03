@@ -125,7 +125,7 @@ class MemberController extends SpikaBaseController {
 							
 						}
 						
-						if ($page == 0){
+						if ($page == 0 || $page == -1){
 							$item = array('type' => USERS, 
 										'user' => $admin);
 							array_unshift($result_list, $item);
