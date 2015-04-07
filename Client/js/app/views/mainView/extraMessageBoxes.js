@@ -148,43 +148,6 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             
         });
 
-		$$('#extramessage_dialog_view_code .alert_bottom_cancel').click(function(){
-            
-            $$('#extramessage_dialog_view_code').fadeOut();
-            
-        });
-        
-        $$('#extramessage_btn_video_call').click(function(){
-            
-            if(self.chatId == 0){
-                return;
-            }
-            
-            if(!SPIKA_VideoCallManager.canUseWebRTC()){
-                SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_nowebrtc);    
-                return;
-            }
-            
-            self.openCallDialog(true,true);
-            
-        });
-
-        $$('#extramessage_btn_voice_call').click(function(){
-            
-            if(self.chatId == 0){
-                return;
-            }
-            
-            if(!SPIKA_VideoCallManager.canUseWebRTC()){
-                SPIKA_AlertManager.show(LANG.general_errortitle,LANG.call_error_nowebrtc);    
-                return;
-            }
-            
-            self.openCallDialog(false,true);
-            
-        });
-
-
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Map events //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -229,8 +192,10 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
 				
 			});
 			
-//             self.postBoxView.sendMessage(data,MESSAGE_TYPE_LOCATION);
-			
+		});
+
+		$$("#extramessage_dialog_view_map .alert_bottom_ok").click(function(){
+			SPIKA_LocationManager.resetPoint();
 		});
 
 		$$('#extramessage_dialog_view_map .alertLeftButton').click(function(){
