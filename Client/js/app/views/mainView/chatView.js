@@ -28,6 +28,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             self.chatData = null;
             $$('#main_container article').html('<div id="nochatbox"><i class="fa fa-exclamation-triangle"></i> ' + LANG.chat_nochat + '</div>');
             $$('#main_container article').addClass('nochat');
+            
             mainView.setTitle(LANG.title_initial);
         });
         
@@ -171,7 +172,7 @@ var SPIKA_ChatView = Backbone.View.extend({
         
         $$('#main_container footer').html(self.postBoxView.render().el);
         $$('#main_container').append(self.stickerView.render().el);
-        $$('#main_container').append(self.imagePreviewView.render().el);
+        $$('#main_container').append(self.imagePreviewView.render().el);   
         
         $$('#main_container .scrollable').scroll(function(){
             
@@ -560,7 +561,7 @@ var SPIKA_ChatView = Backbone.View.extend({
             var longitude = decryptedText = EncryptManager.decryptText(message.get('longitude'));
             var mapID = "locationMap" + message.get('id');
             
-            content = '<div id="' + mapID +'" class="locationMap"></div>';
+            content = '<div id="' + mapID +'" class="locationMap" messageid= "'+ message.get('id') +'" style="cursor:pointer;"></div>';
             
         }
         
@@ -698,17 +699,19 @@ var SPIKA_ChatView = Backbone.View.extend({
             
         });
         
-        $$('.usericon').click(function(){
+        $$('.usericon').unbind().click(function(){
             var userId = $(this).attr('userid');
             Backbone.trigger(EVENT_OPEN_PROFLIE,userId);
         });
         
-        $$("#main_container article section img.encrypted_image").unbind().click(function(){
+        
+        $$("img.encrypted_image").click(function(){
 
 			var messagePreview = self.getMessageFromCacheById($(this).attr('messageid'));
 
 	        self.imagePreviewView.show(messagePreview);
 
+			return;
         });
         
         $$("#main_container article section").unbind().dblclick(function(){
@@ -804,6 +807,16 @@ var SPIKA_ChatView = Backbone.View.extend({
 			self.goThreadMode(message);
             
         });
+
+		$$(".locationMap").unbind().click(function(){
+			
+			var messagePreview = self.getMessageFromCacheById($(this).attr('messageid'));
+			var coordinates = {
+				latitude: EncryptManager.decryptText(messagePreview.get("latitude")),
+				longitude: EncryptManager.decryptText(messagePreview.get("longitude"))
+		    };
+			window.open('http://maps.google.com/?q=' + coordinates.latitude + ',' + coordinates.longitude ,'_blank');
+		});
 
         $('pre code').each(function(i, block) {
             hljs.highlightBlock(block);
@@ -1188,10 +1201,6 @@ var SPIKA_ChatView = Backbone.View.extend({
 	    //show map in div
 	    SPIKA_LocationManager.showMap(divider.lastChild.id, true, coordinates);
 	    
-    },
-    
-    imageOnClick:function(e){
-		alert("image click");
     }
 
 });
