@@ -8,14 +8,14 @@
         
         <form class="form-signin" method="post" action="{{ROOT_URL}}/accept/accept">
         
-            <h2 class="form-signin-heading">Accept Invitaion</h2>
+            <h2 class="form-signin-heading">{{lang.invitation1}}</h2>
             <p>
-            You have a invitaion from <strong>{{organization.name}}</strong>.
-            Please accept invitation to start using Spika Enterprise
+            {{lang.invitation2}} <strong>{{organization.name}}</strong><br />
+            {{lang.invitation3}}
             </p>
             
             <input type="hidden" name="code" value="{{code}}">
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Accept</button>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">{{lang.invitation4}}</button>
             
         </form>
 

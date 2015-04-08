@@ -119,13 +119,12 @@ class AcceptInvitationController extends BaseController {
             
             $errorMessage = "";
             if(empty($username) || empty($password))
-                $errorMessage = "Please input username and password.";
-            
+                $errorMessage = $this->lang['invitation10'];
+
             if(empty($errorMessage)){
                 
                 if(!preg_match($self->loginRegex,$username) || !preg_match($self->loginRegex,$password)){
-                    
-                    $errorMessage = "Username and password must be only alphabet and number, at least 6 characters.";
+                    $errorMessage = $this->lang['invitation11'];
                     
                 }
                                     
@@ -137,7 +136,7 @@ class AcceptInvitationController extends BaseController {
                
                if(isset($test['id'])){
                    
-                   $errorMessage = "The user name is already taken.";
+                   $errorMessage = $this->lang['invitation8'];
                    
                }
                                     
@@ -147,7 +146,7 @@ class AcceptInvitationController extends BaseController {
                 
                if($password != $passwordAgain){
                    
-                   $errorMessage = "Passwords are not same.";
+                   $errorMessage = $this->lang['invitation9'];
                    
                }
                                     
