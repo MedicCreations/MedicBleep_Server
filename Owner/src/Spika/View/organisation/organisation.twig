@@ -47,6 +47,7 @@
 										<th class="hidden-xs">{{lang.general12}}</th>
 										<th class="hidden-xs">{{lang.organisation27}}</th>
 										<th class="hidden-xs">{{lang.organisation28}}</th>
+										<th class="hidden-xs">{{lang.organisation30}}</th>
 										<th></th>
 									</tr>
 								</thead>
@@ -67,11 +68,16 @@
     										<td class="hidden-xs">
     										    {{row.usageDisk}}
     										</td>
+    										<td class="hidden-xs">
+    										    {% if row.account_status == ACCOUNT_STATUS_ENABLED %}{{lang.organisation31}}{% endif %}
+    										    {% if row.account_status == ACCOUNT_STATUS_ADMINDISABLED %}{{lang.organisation32}}{% endif %}
+    										    {% if row.account_status == ACCOUNT_STATUS_DISABLED %}{{lang.organisation33}}{% endif %}
+    										</td>
     										<td class="right">
         										<div class="visible-md visible-lg hidden-sm hidden-xs">
         											<a href="{{OWNER_ROOT_URL}}/organisation/payment/list/{{row.id}}" class="btn btn-xs btn-teal tooltips" data-placement="top" data-original-title="Payments">{{lang.organisation29}}</a>
         											<a href="{{OWNER_ROOT_URL}}/organisation/edit/{{row.id}}" class="btn btn-xs btn-teal tooltips" data-placement="top" data-original-title="Edit"><i class="fa fa-edit"></i></a>
-        											<a href="{{OWNER_ROOT_URL}}/organisation/delete/{{row.id}}" class="btn btn-xs btn-bricky tooltips" data-placement="top" data-original-title="Remove"><i class="fa fa-times fa fa-white"></i></a>
+        											<!-- <a href="{{OWNER_ROOT_URL}}/organisation/delete/{{row.id}}" class="btn btn-xs btn-bricky tooltips" data-placement="top" data-original-title="Remove"><i class="fa fa-times fa fa-white"></i></a> -->
         										</div>
         										<div class="visible-xs visible-sm hidden-md hidden-lg">
         											<div class="btn-group">
@@ -89,11 +95,12 @@
         															<i class="fa fa-edit"></i> {{lang.general7}}
         														</a>
         													</li>
-        													<li role="presentation">
+        													<!-- <li role="presentation">
         														<a role="menuitem" tabindex="-1" href="{{OWNER_ROOT_URL}}/organisation/delete/{{row.id}}">
         															<i class="fa fa-times"></i> {{lang.general8}}
         														</a>
-        													</li>
+        													</li> 
+        													-->
         												</ul>
         											</div>
         										</div>

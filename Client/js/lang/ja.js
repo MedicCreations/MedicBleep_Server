@@ -7,6 +7,8 @@ LANG = {
       login_validation_failed1 : 'ユーザー名とパスワードを入力してください。',
       login_notification_alert : '通知を表示する.',
       login_notification_alert_title : 'デスクトップ通知の設定',
+      login_account_suspened : 'アカウント操作が停止されています。管理者にご連絡下さい',
+      login_account_disabled : '諸般の事情で利用が停止されました。管理者にご連絡下さい',
       unreadmessage : '未読',
       title_initial: 'トークルームを選択していません',
       chat_nochat: "トークを開始するにはルームまたはグループ、プライベートトークを行うにはユーザーを選択してください。",
@@ -131,5 +133,9 @@ LANG = {
 	  select_organization: "組織を選択",
 	  select: "選択",
 	  error_roomlimit: "ルーム設置可能数が上限に達しました。詳しくは管理者にご相談下さい。",
-      dummy : 'dummy'
+      dummy : 'dummy',
+      lobby : '履歴一覧',
+      rooms : 'ルーム一覧',
+      users : 'ユーザー一覧',
+      groups : 'グループ一覧'
 };

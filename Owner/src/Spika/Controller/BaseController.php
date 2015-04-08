@@ -38,7 +38,11 @@ class BaseController implements ControllerProviderInterface {
         $params['INVOICE_STATE_SENT'] = INVOICE_STATE_SENT;
         $params['INVOICE_STATE_PAID'] = INVOICE_STATE_PAID;
         $params['INVOICE_STATE_STALLED'] = INVOICE_STATE_STALLED;
-            
+
+        $params['ACCOUNT_STATUS_ENABLED'] = ACCOUNT_STATUS_ENABLED;
+        $params['ACCOUNT_STATUS_ADMINDISABLED'] = ACCOUNT_STATUS_ADMINDISABLED;
+        $params['ACCOUNT_STATUS_DISABLED'] = ACCOUNT_STATUS_DISABLED;
+ 
         if($this->app['session']->has('infomessage')){
             
             $params['infomessage'] = $this->app['session']->get('infomessage');

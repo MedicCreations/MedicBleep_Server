@@ -125,7 +125,8 @@ class MySqlDb implements DbInterface{
             AND user_mst.password = ? 
             AND user_mst.email_verified = 1
             AND user.is_valid = 1
-            AND organization.email_verified = 1";
+            AND organization.email_verified = 1
+        ";
         
         if($organizationId != 0)
             $sql .= " AND user.organization_id = ?";
@@ -184,7 +185,7 @@ class MySqlDb implements DbInterface{
     			if(count($userMaster) > 0){
         			
         			$organizaion = $app['db']->fetchAll("
-        			    select name,id
+        			    select *
         			    from organization 
         			    where id in ( 
         			        select organization_id 

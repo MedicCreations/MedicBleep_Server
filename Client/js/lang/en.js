@@ -7,6 +7,8 @@ LANG = {
       login_validation_failed1 : 'Plase endter username and password.',
       login_notification_alert : 'Please allow to show notification.',
       login_notification_alert_title : 'Desktop Notification Settings',
+      login_account_suspened : 'This account is currently suspended. Please ask user support about detail.',
+      login_account_disabled : 'This account is disabled. Please ask user support about detail.',    
       unreadmessage : 'unread messages',
       title_initial: 'No chat room selected',
       chat_nochat: "No room,user or groups is selected. Please select room,user or group to start chat.",
@@ -131,5 +133,10 @@ LANG = {
 	  select_organization: "Select Organization",
 	  select: "Select",
 	  error_roomlimit: "You exceed number of rooms in your plan. Please ask administrator for detail.",
-      dummy : 'dummy'
+      dummy : 'dummy',
+      lobby : 'Lobby',
+      rooms : 'Rooms',
+      users : 'Users',
+      groups : 'Groups'
+      
 };

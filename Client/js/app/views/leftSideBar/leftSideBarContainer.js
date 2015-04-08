@@ -67,7 +67,7 @@ var SPIKA_LeftSideBar = Backbone.View.extend({
         $$('#menu_container_group').html(self.groupListView.render().el);
 
         $$('#menu_container_lobby').css('display','block');
-        $('#selected_tab_name').text('Lobby');
+        $('#selected_tab_name').text(LANG.lobby);
         
         $$('#menu_container_room').css('display','none');
         $$('#menu_container_user').css('display','none');
@@ -90,25 +90,25 @@ var SPIKA_LeftSideBar = Backbone.View.extend({
             
            if(clickedTabIndex.search('lobby') != -1){
                 self.lobbyListView.onOpen();
-                $('#selected_tab_name').text('Lobby');
+                $('#selected_tab_name').text(LANG.lobby);
             }
                 
 
             if(clickedTabIndex.search('room') != -1){
                 self.roomListView.onOpen();
-                $('#selected_tab_name').text('Rooms');
+                $('#selected_tab_name').text(LANG.rooms);
             }
                 
                 
             if(clickedTabIndex.search('user') != -1){
                 self.userListView.onOpen();
-                $('#selected_tab_name').text('Users');
+                $('#selected_tab_name').text(LANG.users);
             }
                 
                 
             if(clickedTabIndex.search('group') != -1){
                 self.groupListView.onOpen();
-                $('#selected_tab_name').text('Groups');
+                $('#selected_tab_name').text(LANG.groups);
             }
                 
         });
