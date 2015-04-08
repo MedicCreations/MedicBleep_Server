@@ -4,13 +4,25 @@
 
     <div class="container center">
         
-        <form class="form-signin">
-        
-            {% include "alert.twig" %}
     
-            {{lang.invitation14}}
-        </form>
+        {{lang.invitation14}}
         
+    </div> <!-- /container -->
+    
+    <div class="container">
+    
+        
+        <form class="form-signin" method="post" action="{{ROOT_URL}}/accept/signup">
+        
+            <p style="padding-top:30px">
+                {{lang.invitation14}}
+            </p>
+            
+            
+        </form>
+
     </div> <!-- /container -->					
+
+			
 
 {% endblock %}
