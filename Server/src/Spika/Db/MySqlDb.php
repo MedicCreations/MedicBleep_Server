@@ -238,6 +238,16 @@ class MySqlDb implements DbInterface{
 	
 	}
 	
+	public function getUserByUsernameOrEmail(Application $app, $text){
+	
+		$sql = "SELECT * FROM user_mst WHERE username = ? or email = ?";
+	
+		$user = $app['db']->fetchAssoc($sql, array($text,$text));
+	
+		return $user;
+	
+	}
+	
 	
 	public function updateUserImage(Application $app, $user_id, $image, $image_thumb){
 		

@@ -17,6 +17,9 @@ class UserController extends SpikaBaseController {
 	static $fileDirName = 'Uploads';
 	
 	public function connect(Application $app) {
+	    
+	    parent::connect($app);
+	    
 		$self = $this;
 		
 		$mySql = new MySqlDb ();
@@ -502,7 +505,7 @@ class UserController extends SpikaBaseController {
 			
 			$username = $paramsAry['username'];
 			
-			$user = $mySql->getUserByUsername($app, $username);
+			$user = $mySql->getUserByUsernameOrEmail($app, $username);
 			
 			if (!is_array($user)){
 			
@@ -520,8 +523,10 @@ class UserController extends SpikaBaseController {
 			
 			//create temp pass
 			$temp_pass = $mySql->createTempPassword($app, $user['id']);
+			$body = sprintf($this->lang['forgotpassword_email_body'],$user['username'],$temp_pass);
+			$subject = $this->lang['forgotpassword_email_subject'];
 			
-			$self->sendEmail($user['email'],'Spika forgot password','Your temp password is: ' . $temp_pass . ' and will be valid for one hour');
+			$self->sendEmail($user['email'],$subject,$body);
 			
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK');

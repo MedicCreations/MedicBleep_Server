@@ -5514,3 +5514,6 @@
 [2015-04-08 13:32:12] myapp.INFO: Matched route "_acceptGET_success" (parameters: "_controller": "{}", "_route": "_acceptGET_success") [] []
 [2015-04-08 13:32:12] myapp.INFO: > GET /dev/page/accept/success [] []
 [2015-04-08 13:32:12] myapp.INFO: < 200 [] []
+[2015-04-08 15:43:18] myapp.INFO: Matched route "_newsGET_list_token" (parameters: "_controller": "{}", "token": "8a6tsfoR9PAlSSWFgOve3rwatC4Bq1NycT2F9rwi", "_route": "_newsGET_list_token") [] []
+[2015-04-08 15:43:18] myapp.INFO: > GET /dev/page/news/list/8a6tsfoR9PAlSSWFgOve3rwatC4Bq1NycT2F9rwi [] []
+[2015-04-08 15:43:19] myapp.INFO: < 200 [] []

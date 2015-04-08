@@ -114,7 +114,7 @@ LANG = {
 	  chat_wringpassword: "You entered wrong password. Please try again." ,
 	  password_notice_edit: "Keep this field empty if you don't change password or keep the room opened to members.",
 	  forget_password: "Forgot Password",
-	  forget_password_firststep_text: "Please enter user name and then you will get email with new password.",
+	  forget_password_firststep_text: "Please enter user name or email and then you will get email with new password.",
 	  forget_password_firststep_placehosler: "Please enter user name.",
 	  forget_password_firststep_emailsent: "Email with temporary password is sent. Please check your email account.",
 	  forget_password_firststep_wrongusername: "The user is not in our database. Please enter correct user name.",

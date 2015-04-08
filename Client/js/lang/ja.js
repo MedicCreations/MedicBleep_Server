@@ -114,7 +114,7 @@ LANG = {
 	  chat_wringpassword: "パスワードが違っています。" ,
 	  password_notice_edit: "もしあなたがパスワードを変更せず、公開ルームとするならば、この欄は空にしておて下さい。",
 	  forget_password: "パスワードを忘れた",
-	  forget_password_firststep_text: "ログイン名を入力して下さい。パスワードを登録したメールアドレス宛に送信します。",
+	  forget_password_firststep_text: "ログイン名かメールアドレスを入力して下さい。パスワードを登録したメールアドレス宛に送信します。",
 	  forget_password_firststep_placehosler: "ログイン名を入力",
 	  forget_password_firststep_emailsent: "仮パスワードを登録されたメール宛にお送りしました。メールをご確認下さい。",
 	  forget_password_firststep_wrongusername: "正しいログイン名を入力して下さい。",
