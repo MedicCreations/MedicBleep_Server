@@ -103,6 +103,7 @@ class MySqlDb implements DbInterface{
                         and email_verified = 1
 		        )
 		        and is_valid = 1
+		        and is_deleted = 0
 		    )
 		    and email_verified = 1", array($username,$password));
 
@@ -125,6 +126,7 @@ class MySqlDb implements DbInterface{
             AND user_mst.password = ? 
             AND user_mst.email_verified = 1
             AND user.is_valid = 1
+            AND user.is_deleted = 0
             AND organization.email_verified = 1
         ";
         
