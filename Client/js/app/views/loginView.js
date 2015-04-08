@@ -1,5 +1,6 @@
 var SPIKA_LoginView = Backbone.View.extend({
 
+    isAutologin : false,
     initialize: function(options) {
         this.template = options.template;
     },
@@ -17,7 +18,8 @@ var SPIKA_LoginView = Backbone.View.extend({
 	        
 			var username = $.cookie(COOKIE_USERNAME);
 			var password = $.cookie(COOKIE_PASSWORD);
-
+            
+            this.isAutologin = true;
             this.proceedLogin(username,password,true);
             
 	        return this;
@@ -261,8 +263,23 @@ var SPIKA_LoginView = Backbone.View.extend({
                     
                 },function(data){
                     
-                    var code = data.code;                    
-                    self.showAlert(LANG.login_failed);
+                    var code = data.code; 
+                            
+    	            if(!_.isUndefined(data.code) && data.code == 1018){
+        	             self.showAlert(LANG.login_account_suspened);
+    	            }
+    	            
+    	            else if(!_.isUndefined(data.code) && data.code == 1019){
+        	            self.showAlert(LANG.login_account_disabled);
+    	            }
+    	            
+    	            else{
+        	           self.showAlert(LANG.login_failed);
+    	            }
+    	            
+    	            if(self.isAutologin){
+        	            U.goPage('logout');
+    	            }
                     
                 });
     
