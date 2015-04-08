@@ -29,11 +29,31 @@
 					</div>
 					<!-- end: PAGE HEADER -->
 					<!-- start: PAGE CONTENT -->
+
 					<div class="row">
-					    <div class="col-md-12">
-                            Welcome to Spika Owner's web interface
-                        </div>
+						<ul class="mini-stats col-sm-12">
+							<li class="col-sm-4">
+								<div class="values">
+									<strong>{{organizationsCount}}</strong>
+									{{lang.dashboard4}}
+								</div>
+							</li>
+							<li class="col-sm-4">
+								<div class="values">
+									<strong>{{usersCount}}</strong>
+									{{lang.dashboard5}}
+								</div>
+							</li>
+							<li class="col-sm-4">
+								<div class="values">
+									<strong>{{messagesCount}}</strong>
+									{{lang.dashboard6}}
+								</div>
+							</li>
+						</ul>
 					</div>
+				
+
 					
 
 {% endblock %}
