@@ -15,7 +15,16 @@ class LocalizationProvider implements ServiceProviderInterface
             $langDir = $app['langDir'];    
             $langFile = $langDir . "/" . $defaultLang . ".ini";
             $data = parse_ini_file($langFile);
-            
+
+            foreach($data as $index => $row){
+                
+                $row = str_replace('\r\n', "\r\n", $row);
+                $row = str_replace('\n', "\n", $row);
+                
+                $data[$index] = $row;
+                
+            }
+
             return $data;
         });
         
