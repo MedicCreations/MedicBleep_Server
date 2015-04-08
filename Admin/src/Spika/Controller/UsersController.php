@@ -220,7 +220,7 @@ Please finish registration from following URL.
                 'is_deleted' => 1
             ),array('id'=>$userid));
             
-            $self->setInfoMessage($self->lang['users51']);
+            $self->setInfoMessage($self->lang['users55']);
             
             return $app->redirect(ADMIN_ROOT_URL . '/users');
             			
