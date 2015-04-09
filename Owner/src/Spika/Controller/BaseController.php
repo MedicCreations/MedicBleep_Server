@@ -167,7 +167,7 @@ class BaseController implements ControllerProviderInterface {
     
             $message = \Swift_Message::newInstance()
                 ->setSubject($subject)
-                ->setFrom(array(EMAIL_SENDER_NAME => EMAIL_SENDER_EMAIL))
+                ->setFrom(array(EMAIL_SENDER_EMAIL => EMAIL_SENDER_NAME))
                 ->setTo($toAddress)
                 ->setBody($body);
             
