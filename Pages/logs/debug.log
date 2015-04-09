@@ -5636,3 +5636,6 @@
 [2015-04-08 18:01:43] myapp.INFO: Matched route "_acceptGET_code" (parameters: "_controller": "{}", "code": "vEpD7cVweGhXaN9bsckrrzlNo6xJWmtr", "_route": "_acceptGET_code") [] []
 [2015-04-08 18:01:43] myapp.INFO: > GET /dev/page/accept/vEpD7cVweGhXaN9bsckrrzlNo6xJWmtr [] []
 [2015-04-08 18:01:43] myapp.INFO: < 200 [] []
+[2015-04-09 15:44:17] myapp.INFO: Matched route "_newsGET_list_token" (parameters: "_controller": "{}", "token": "AMDDB8JD3tyPZkQGpgykqID1dCHUqxO1jrEVAoyE", "_route": "_newsGET_list_token") [] []
+[2015-04-09 15:44:17] myapp.INFO: > GET /dev/page/news/list/AMDDB8JD3tyPZkQGpgykqID1dCHUqxO1jrEVAoyE [] []
+[2015-04-09 15:44:17] myapp.INFO: < 200 [] []
