@@ -1656,6 +1656,7 @@ img.imgbutton{
     height: 100%;
     width: 300px;
     border-left: 1px solid #DFDFDF;
+    z-index: 150;
 }
 
 #note_holder textarea{
