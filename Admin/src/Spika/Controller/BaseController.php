@@ -222,7 +222,7 @@ class BaseController implements ControllerProviderInterface {
 		
 		if(EMAIL_SEND_METHOD == 1){
     		
-            $transport = \Swift_SmtpTransport::newInstance();
+            $transport = \Swift_SmtpTransport::newInstance('/usr/sbin/sendmail -bs');
     
             $message = \Swift_Message::newInstance()
                 ->setSubject($subject)
