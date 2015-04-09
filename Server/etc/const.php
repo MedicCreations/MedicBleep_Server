@@ -75,6 +75,8 @@ define('ER_PASSWORD_EXIST', 1015);
 define('ER_ROOM_LIMIT', 1016);
 define('ER_DISKSPACE_LIMIT', 1017);
 
+define('ER_ACCOUNT_SUSPENDED', 1018);
+define('ER_ACCOUNT_DISABLED', 1019);
 
 // device types
 define('DEVICE_IOS', 2);

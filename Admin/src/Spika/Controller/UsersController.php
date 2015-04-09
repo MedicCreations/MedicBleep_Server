@@ -137,25 +137,48 @@ class UsersController extends BaseController {
                     
                 }
                 
+                // check deleted users
+                $deletedUser = $self->app['db']->fetchAssoc("
+                    select * 
+                    from user 
+                    where master_user_id = ?
+                    and organization_id = ?", 
+                    array($existData['id'],$self->user['id']));
+
                 $code = $self->randomString(32,32);
-                
-    			$values = array('outside_id' => 0,
-    			        'organization_id' => $self->user['id'],
-    			        'master_user_id' => $existData['id'],
+
+                if(isset($deletedUser['id'])){
+                    
+                    $app['db']->update('user',array(
     			        'firstname' => $firstname,
     			        'lastname' => $lastname,
-    			        'registration_code' => $code,
-    					'created' => time(), 
-    					'modified' => time());
-
-    			$app['db']->insert('user', $values);
+                        'is_deleted' => 0,
+                        'is_valid' => 0,
+                        'registration_code' => $code,
+                        'modified' => time()
+                    ),array(
+                        'id' => $deletedUser['id']
+                    ));
+                    
+                }else{
+                    
+        			$values = array('outside_id' => 0,
+        			        'organization_id' => $self->user['id'],
+        			        'master_user_id' => $existData['id'],
+        			        'firstname' => $firstname,
+        			        'lastname' => $lastname,
+        			        'registration_code' => $code,
+        					'created' => time(), 
+        					'modified' => time());
+    
+        			$app['db']->insert('user', $values);
+    			   
+                }
                 
                 $registraionUrl = CONTENTS_URL . "/accept/" . $code;
                 
                 // send invitation email
-                $self->sendEmail($email,$self->lang['users48'],'You got invitation for Spika Enterprise
-Please finish registration from following URL.
-' . $registraionUrl);
+                $self->sendEmail($email,$self->lang['users48'],$self->lang['users56'] . $registraionUrl);
                 
                 $dataUsage = $self->getDataUsage($app);
                 
@@ -179,6 +202,23 @@ Please finish registration from following URL.
             ),array('id'=>$userid));
             
             $self->setInfoMessage($self->lang['users51']);
+            
+            return $app->redirect(ADMIN_ROOT_URL . '/users');
+            			
+		});
+		
+		$controllers->get('/delete/{userid}', function (Request $request,$userid) use ($app, $self){
+
+            if(!$self->checkLoginUser())
+                return $app->redirect(ADMIN_ROOT_URL . '');
+
+            $self->page = 'users';
+            
+            $app['db']->update('user',array(
+                'is_deleted' => 1
+            ),array('id'=>$userid));
+            
+            $self->setInfoMessage($self->lang['users55']);
             
             return $app->redirect(ADMIN_ROOT_URL . '/users');
             			
@@ -323,7 +363,8 @@ Please finish registration from following URL.
                 from user where organization_id = ? 
                 and master_user_id in (
                     select id from user_mst where email = ?
-                )", array(
+                )
+                and is_deleted = 0", array(
                     $this->user['id'],
                     $formValues['email']
                 ));

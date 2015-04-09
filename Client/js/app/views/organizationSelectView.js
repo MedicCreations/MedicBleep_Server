@@ -53,7 +53,18 @@ var SPIKA_OrganizationSelectView = Backbone.View.extend({
 	            
 	        },function(data){
 	            
-	            U.goPage("logout");
+	            if(!_.isUndefined(data.code) && data.code == 1018){
+    	            alert(LANG.login_account_suspened);
+	            }
+	            
+	            else if(!_.isUndefined(data.code) && data.code == 1019){
+    	            alert(LANG.login_account_disabled);
+	            }
+	            
+	            else{
+    	            U.goPage("logout");
+	            }
+	            
 	            
 	        });
 

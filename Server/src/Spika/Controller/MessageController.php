@@ -83,7 +83,12 @@ class MessageController extends SpikaBaseController {
 			if ((!$is_chat_member && !$chat_data['is_private']) || (!$is_chat_member && $user['is_admin'] == 1) ){
 			
 				//add member to chat
-				$mySql->addChatMembers($app, $chat_id, array($user_id));
+				//$mySql->addChatMembers($app, $chat_id, array($user_id));
+				
+				$result = array('code' => ER_NOT_CHAT_MEMBER, 
+						'message' => 'Not chat member');
+				
+				return $app->json($result, 200);
 				
 			} else if (!$is_chat_member && $chat_data['is_private']){
 			

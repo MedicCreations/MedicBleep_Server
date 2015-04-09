@@ -18,11 +18,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SpikaBaseController implements ControllerProviderInterface
 {
+
+	var $app;
+	var $lang;
 	
     public function connect(Application $app)
     {
     	
     	$this->app = $app;
+	    $this->lang = $this->app['getLang']();
+	    
         $controllers = $app['controllers_factory'];
         return $controllers;        
     }

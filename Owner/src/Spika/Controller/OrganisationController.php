@@ -81,25 +81,6 @@ class OrganisationController extends BaseController {
         /* delete */
 		$controllers->get('/delete/{id}', function (Request $request,$id) use ($app, $self){
 
-            if(!$self->checkLoginUser())
-                return $app->redirect(OWNER_ROOT_URL . '');
-
-            $self->page = 'organisation';
-            $data = $self->app['db']->fetchAssoc("select * from organization where id = ? ", array($id));
-            
-            if(!isset($data['id'])){
-                return $app->redirect(OWNER_ROOT_URL . '/organisation/');
-            }            
-            return $self->render('organisation/organisation_view.twig', array(
-                 'data' => $data,
-                 'mode' => 'delete'
-            ));
-            		
-            			
-		});
-
-		$controllers->post('/delete/{id}', function (Request $request,$id) use ($app, $self){
-
 
             if(!$self->checkLoginUser())
                 return $app->redirect(OWNER_ROOT_URL . '');
@@ -118,7 +99,7 @@ class OrganisationController extends BaseController {
     		
             $self->setInfoMessage($self->lang['organisation12']);
             
-            return $app->redirect(OWNER_ROOT_URL . '/organisation/');
+            return $app->redirect(OWNER_ROOT_URL . '/organisation/');	
             			
 		});
 				       
@@ -168,6 +149,7 @@ class OrganisationController extends BaseController {
     					'max_groups' => $formValues['max_groups'],
     					'max_rooms' => $formValues['max_rooms'],
     					'disk_quota' => $formValues['disk_quota'],
+    					'account_status' => $formValues['account_status'],
     					'created' => time(), 
     					'modified' => time());
 
@@ -275,6 +257,7 @@ class OrganisationController extends BaseController {
         					'max_users' => $formValues['max_users'],
         					'max_groups' => $formValues['max_groups'],
         					'max_rooms' => $formValues['max_rooms'],
+                            'account_status' => $formValues['account_status'],
         					'disk_quota' => $formValues['disk_quota'],
         					'modified' => time());
     
@@ -284,10 +267,7 @@ class OrganisationController extends BaseController {
                     
                     $self->setInfoMessage($this->lang['organisation8']);
                     
-                    return $self->render('organisation/organisation_edit.twig', array(
-                        'form' => $data,
-                        'mode' => 'edit'
-                    ));
+                    return $app->redirect(OWNER_ROOT_URL . '/organisation/');
                     
                 }	
                 
@@ -548,6 +528,7 @@ class OrganisationController extends BaseController {
     	    'max_groups' => '',
     	    'max_rooms' => '',
     	    'disk_quota' => '',
+    	    'account_status' => 1
     	);
 	}
 	

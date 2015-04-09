@@ -82,8 +82,12 @@
                                                         
                                                     {% endif %}
                                                     
+                                                    <a class="btn btn-danger" href="{{ADMIN_ROOT_URL}}/users/delete/{{row.id}}" onclick="return confirm('{{lang.users54}}')">
+                                                        {{lang.general8}}
+                                                    </a>
+    
         										</div>
-        										
+
         										{% endif %}
         										
     										</td>

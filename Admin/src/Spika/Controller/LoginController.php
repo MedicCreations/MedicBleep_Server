@@ -61,9 +61,44 @@ class LoginController extends BaseController {
             }
             
             // check
-            $data = $self->app['db']->fetchAssoc("select * from organization where admin_name = ? and admin_password = ? and email_verified = 1", array($username,md5($password)));
+            $data = $self->app['db']->fetchAssoc("
+                select * from organization 
+                where admin_name = ? 
+                and admin_password = ? 
+                and email_verified = 1"
+            , array($username,md5($password)));
             
             if(!empty($data['id'])){
+                
+                if($data['account_status'] == ACCOUNT_STATUS_ADMINDISABLED){
+                        
+                    return $self->render('login.twig', array(
+                        'error_alert' => $self->lang['login9'],
+                        'password' => $password,
+                        'username' => $username
+                    ));
+                }
+
+                if($data['account_status'] == ACCOUNT_STATUS_DISABLED){
+                        
+                    return $self->render('login.twig', array(
+                        'error_alert' => $self->lang['login10'],
+                        'password' => $password,
+                        'username' => $username
+                    ));
+                    
+                }
+                
+                if($data['is_deleted'] == 1){
+                        
+                    return $self->render('login.twig', array(
+                        'error_alert' => $self->lang['login10'],
+                        'password' => $password,
+                        'username' => $username
+                    ));
+                    
+                }
+                
                 
                 $self->app['session']->set('loginuser',$data);
                 return $app->redirect(ADMIN_ROOT_URL . '/dashboard');

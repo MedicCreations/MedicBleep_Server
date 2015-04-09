@@ -24,9 +24,17 @@ class DashboardController extends BaseController {
 
             $self->page = 'dashboard';
             
+            // get statistics
+            $usersCount = $self->app['db']->fetchAssoc("select count(*) as count from user");
+            $organizationsCount = $self->app['db']->fetchAssoc("select count(*) as count from organization");
+            $messagesCount = $self->app['db']->fetchAssoc("select count(*) as count from message");
+            
             return $self->render('dashboard.twig', array(
+                'usersCount' => $usersCount['count'],
+                'organizationsCount' => $organizationsCount['count'],
+                'messagesCount' => $messagesCount['count']
             ));
-            			
+		
 		});
 		
 		return $controllers;

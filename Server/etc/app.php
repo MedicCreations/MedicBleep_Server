@@ -29,6 +29,12 @@ $app->register(new MonologServiceProvider(), array(
     'monolog.logfile' => __DIR__.'/../logs/debug.log',
 ));
 
+$app->register ( new Spika\Provider\LocalizationProvider(),array(
+    'defaultLang' => LANG,
+    'langDir' => __DIR__.'/lang',
+));
+
+
 $app->register ( new Silex\Provider\DoctrineServiceProvider (), array (
 		'db.options' => array (
 				'driver' => 'pdo_mysql',

@@ -17,6 +17,9 @@ class UserController extends SpikaBaseController {
 	static $fileDirName = 'Uploads';
 	
 	public function connect(Application $app) {
+	    
+	    parent::connect($app);
+	    
 		$self = $this;
 		
 		$mySql = new MySqlDb ();
@@ -95,10 +98,67 @@ class UserController extends SpikaBaseController {
 			
 			//login
 			$login_result = $mySql->loginUser($app, $password, $username, $organizationId, $self->getDeviceType($request->headers->get('user-agent')) );
-			
+						
 			if ($login_result['auth_status'] === FALSE) {
 				$result = array('code' => ER_INVALID_LOGIN, 'message' => 'Invalid username or password');
 			} else {
+			    
+			    
+			    
+			    if(is_array($login_result['organizations'])){
+			        
+			        $organization = null;
+			        
+    			    foreach($login_result['organizations'] as $row){
+        			    
+        			    if($row['id'] == $organizationId){
+            			    
+            			    $organization = $row;
+            			    
+        			    }
+        			    
+    			    }
+    			    
+    			    if(!empty($organization)){
+        			    
+        			    if($organization['is_deleted'] == 1){
+            			    
+        					$result = array(
+        						'code' => ER_ACCOUNT_DISABLED,
+        						'message' => 'This account is disabled. Please ask user support about detail. '
+        					);
+        					
+        					return $app->json($result, 200);
+            			    
+        			    }
+        			    
+        			    if($organization['account_status'] == 2){
+            			    
+        					$result = array(
+        						'code' => ER_ACCOUNT_SUSPENDED,
+        						'message' => 'This account is currently suspended. Please ask user support about detail.'
+        					);
+        					
+        					return $app->json($result, 200);
+            			    
+        			    }
+        			    
+        			    if($organization['account_status'] == 3){
+            			    
+        					$result = array(
+        						'code' => ER_ACCOUNT_DISABLED,
+        						'message' => 'This account is disabled. Please ask user support about detail. '
+        					);
+        					
+        					return $app->json($result, 200);
+            			    
+        			    }
+        			    
+        			    
+    			    }
+
+			    }
+			    
 				$result = array('code' => CODE_SUCCESS, 
 						'user_id' =>  $login_result['user']['id'],
 						'organization_id' =>  $login_result['user']['organization_id'],
@@ -445,7 +505,7 @@ class UserController extends SpikaBaseController {
 			
 			$username = $paramsAry['username'];
 			
-			$user = $mySql->getUserByUsername($app, $username);
+			$user = $mySql->getUserByUsernameOrEmail($app, $username);
 			
 			if (!is_array($user)){
 			
@@ -463,8 +523,10 @@ class UserController extends SpikaBaseController {
 			
 			//create temp pass
 			$temp_pass = $mySql->createTempPassword($app, $user['id']);
+			$body = sprintf($this->lang['forgotpassword_email_body'],$user['username'],$temp_pass);
+			$subject = $this->lang['forgotpassword_email_subject'];
 			
-			$self->sendEmail($user['email'],'Spika forgot password','Your temp password is: ' . $temp_pass . ' and will be valid for one hour');
+			$self->sendEmail($user['email'],$subject,$body);
 			
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK');

@@ -10,6 +10,7 @@ interface DbInterface
 	public function loginWithTempPass(Application $app, $username, $password);
 	public function getUserByToken(Application $app, $token_received);
 	public function getUserByUsername(Application $app, $username);
+	public function getUserByUsernameOrEmail(Application $app, $text);
 	public function getOrCreateUserWithOutsideID(Application $app, $outside_id, $firstname, $lastname);
 	public function getAllUsersWithOutsideId(Application $app, $outside_users_ary);
 	public function updateUserImage(Application $app, $user_id, $image, $image_thumb);
