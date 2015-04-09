@@ -240,7 +240,7 @@ class UsersController extends BaseController {
             
             $registraionUrl = CONTENTS_URL . "/accept/" . $code;
             
-            $self->sendEmail($email,$self->lang['users48'],$self->lang['users56'] . $registraionUrl);
+            $self->sendEmail($userMst['email'],$self->lang['users48'],$self->lang['users56'] . $registraionUrl);
 
             $self->setInfoMessage($self->lang['users52']);
 
