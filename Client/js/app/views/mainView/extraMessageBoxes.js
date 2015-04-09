@@ -119,7 +119,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
         });
 
         $$('#extramessage_dialog_view_code .alertRightButton').click(function(){
-            
+          
             var text = $$('#extramessage_dialog_view_code textarea').val();
             
             var encryptedHex = EncryptManager.encryptText(text);
@@ -136,6 +136,7 @@ var SPIKA_ExtraMessageBoxesView = Backbone.View.extend({
             };
 
             self.postBoxView.sendTextMessage(data);
+
             $$('#extramessage_dialog_view_code').fadeOut();
             
         });
