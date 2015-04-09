@@ -158,21 +158,8 @@ class LoginController extends BaseController {
 				// generate email
 				$verifyCode = $self->randomString(5);
 				$verifyURL = ROOT_URL . "/verify/" . $verifyCode;
-				$emailBody = "Welcome to your free trial of Spika Enterprise.
-	
-By signing up for Spika Enterprise, you're empowering your business to work smarter and faster, so you can focus on what really matters.
-
-Please open following URL and You're about to work better, together.
-
-{$verifyURL}
-
-Thanks for beginning your free trial of Spika Enterprise.
-
-Sincerely,
-Spika Enterprise Team
-	
-";
-				
+				$emailBody = sprintf($this->lang['registEmailBody'],$verifyURL);
+                				
 				$values = array(
 						'name' => $companyName,
 						'email' => $email,
@@ -247,24 +234,7 @@ Spika Enterprise Team
 				$result = true;
 				$adminURL = ROOT_URL;
 				$clientURL = CLIENT_URL;
-				$emailBody = "Your Spika Enterprise setup is complete.
-
-Please add following URL to your bookmark.
-
-{$adminURL}
-
-Important!
-First please login to admin interface and create users. You can also login to web client with 
-this account you created.
-{$clientURL}
-
-To download mobile apps please open the link below with your iPhone or Android device.
-{$clientURL}/apps
-
-Sincerely,
-Spika Enterprise Team
-	
-";
+				$emailBody = sprintf($this->lang['registFinishEmailBody'],$adminURL,$clientURL,$clientURL);
 				$self->sendEmail($data['email'],$self->lang['registEmailSubjectFinish'],$emailBody);
 	            
 			}else {

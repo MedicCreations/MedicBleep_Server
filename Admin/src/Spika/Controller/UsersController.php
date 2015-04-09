@@ -240,9 +240,7 @@ class UsersController extends BaseController {
             
             $registraionUrl = CONTENTS_URL . "/accept/" . $code;
             
-            $self->sendEmail($userMst['email'],$self->lang['users48'],'You got invitation for Spika Enterprise
-Please finish registration from following URL.
-' . $registraionUrl);
+            $self->sendEmail($email,$self->lang['users48'],$self->lang['users56'] . $registraionUrl);
 
             $self->setInfoMessage($self->lang['users52']);
 
