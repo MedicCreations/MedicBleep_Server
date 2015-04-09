@@ -347,7 +347,7 @@ class SpikaBaseController implements ControllerProviderInterface
 		
 		if(EMAIL_SEND_METHOD == 1){
     		
-            $transport = \Swift_SmtpTransport::newInstance('/usr/sbin/sendmail -bs');
+            $transport = \Swift_SmtpTransport::newInstance();
     
             $message = \Swift_Message::newInstance()
                 ->setSubject($subject)
@@ -356,6 +356,8 @@ class SpikaBaseController implements ControllerProviderInterface
                 ->setBody($body);
             
             $mailer = \Swift_Mailer::newInstance($transport);
+    		
+    		$mailer->send($message);
     		
 		}
 
