@@ -56,7 +56,8 @@ class MessageController extends SpikaBaseController {
 			}
 
 			if (array_key_exists('attributes', $paramsAry)){
-				$attributes = json_encode($paramsAry['attributes']);
+				//$attributes = json_encode($paramsAry['attributes']);
+				$attributes = $paramsAry['attributes'];
 			}
 
 			$chat_data = $mySql->getChatWithID($app, $chat_id);

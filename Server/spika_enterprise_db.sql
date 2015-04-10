@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 13, 2015 at 10:00 AM
+-- Generation Time: Apr 10, 2015 at 05:44 AM
 -- Server version: 5.5.38-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.4
 
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `categories` (
   `is_deleted` int(11) NOT NULL DEFAULT '0',
   `modified` int(11) NOT NULL,
   `created` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=71 ;
 
 -- --------------------------------------------------------
 
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `chat` (
   `modified` int(11) NOT NULL,
   `organization_id` int(11) NOT NULL DEFAULT '1',
   `notes` text NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1526 ;
 
 -- --------------------------------------------------------
 
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `chat_member` (
   `modified` int(11) NOT NULL,
   `organization_id` int(11) NOT NULL DEFAULT '1',
   `did_sent` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4781 ;
 
 -- --------------------------------------------------------
 
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `device` (
   `is_valid` int(11) NOT NULL COMMENT '1:valid,0:invalid',
   `modified` int(11) NOT NULL,
   `created` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=321 ;
 
 -- --------------------------------------------------------
 
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS `files` (
   `size` int(11) NOT NULL,
   `created` int(11) NOT NULL,
   `organization_id` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=688 ;
 
 -- --------------------------------------------------------
 
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `created` int(11) NOT NULL,
   `modified` int(11) NOT NULL,
   `organization_id` int(11) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=106 ;
 
 -- --------------------------------------------------------
 
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `group_member` (
   `created` int(11) NOT NULL,
   `modified` int(11) NOT NULL,
   `organization_id` int(11) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=253 ;
 
 -- --------------------------------------------------------
 
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS `information` (
   `is_deleted` int(11) NOT NULL,
   `modified` int(11) NOT NULL,
   `created` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=15 ;
 
 -- --------------------------------------------------------
 
@@ -192,7 +192,23 @@ CREATE TABLE IF NOT EXISTS `message` (
   `modified` int(11) NOT NULL,
   `organization_id` int(11) NOT NULL DEFAULT '1',
   `attributes` text NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17166 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `message_log`
+--
+
+CREATE TABLE IF NOT EXISTS `message_log` (
+`id` int(11) NOT NULL,
+  `message_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `type` int(11) NOT NULL COMMENT '1: send 2: read',
+  `chat_id` int(11) NOT NULL,
+  `organization_id` int(11) NOT NULL,
+  `created` int(11) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4252 ;
 
 -- --------------------------------------------------------
 
@@ -213,9 +229,30 @@ CREATE TABLE IF NOT EXISTS `organization` (
   `max_rooms` int(11) NOT NULL DEFAULT '100',
   `disk_quota` int(11) NOT NULL DEFAULT '10',
   `is_deleted` int(11) NOT NULL DEFAULT '0',
+  `account_status` int(11) NOT NULL DEFAULT '1' COMMENT '1: enabled 2: admin disabled 3: disabled',
   `modified` int(11) NOT NULL,
   `created` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=212 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=240 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payment`
+--
+
+CREATE TABLE IF NOT EXISTS `payment` (
+`id` int(11) NOT NULL,
+  `organization_id` int(11) NOT NULL,
+  `amount` int(11) NOT NULL,
+  `sent` int(11) NOT NULL,
+  `paid` int(11) NOT NULL,
+  `state` int(11) NOT NULL DEFAULT '0' COMMENT '1: sent 2: paid 3: denied',
+  `invoice_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `note` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `modified` int(11) NOT NULL,
+  `created` int(11) NOT NULL
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 -- --------------------------------------------------------
 
@@ -229,7 +266,7 @@ CREATE TABLE IF NOT EXISTS `sticker` (
   `filename` varchar(255) NOT NULL,
   `is_deleted` int(11) NOT NULL DEFAULT '0',
   `created` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=41 ;
 
 -- --------------------------------------------------------
 
@@ -252,8 +289,8 @@ CREATE TABLE IF NOT EXISTS `user` (
   `temp_password_timestamp` int(11) NOT NULL,
   `username` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `image` varchar(255) NOT NULL,
-  `image_thumb` varchar(255) NOT NULL,
+  `image` varchar(255) NOT NULL DEFAULT 'default_user_image',
+  `image_thumb` varchar(255) NOT NULL DEFAULT 'default_user_image',
   `details` varchar(1000) NOT NULL,
   `web_opened` int(11) NOT NULL DEFAULT '0',
   `web_lastkeepalive` int(11) NOT NULL DEFAULT '0',
@@ -263,7 +300,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `modified` int(11) NOT NULL,
   `organization_id` int(11) NOT NULL DEFAULT '1',
   `is_admin` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=201605 ;
 
 -- --------------------------------------------------------
 
@@ -279,7 +316,7 @@ CREATE TABLE IF NOT EXISTS `user_details` (
   `label` varchar(100) NOT NULL,
   `keyboard_type` int(11) NOT NULL DEFAULT '3',
   `is_deleted` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=32 ;
 
 -- --------------------------------------------------------
 
@@ -298,19 +335,7 @@ CREATE TABLE IF NOT EXISTS `user_mst` (
   `is_deleted` int(11) NOT NULL DEFAULT '0',
   `modified` int(11) NOT NULL,
   `created` int(11) NOT NULL
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
-
-CREATE TABLE IF NOT EXISTS `message_log` (
-`id` int(11) NOT NULL,
-  `message_id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `type` int(11) NOT NULL COMMENT '1: send 2: read',
-  `chat_id` int(11) NOT NULL,
-  `organization_id` int(11) NOT NULL,
-  `created` int(11) NOT NULL DEFAULT '0'
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=296 ;
 
 --
 -- Indexes for dumped tables
@@ -371,9 +396,21 @@ ALTER TABLE `message`
  ADD PRIMARY KEY (`id`), ADD KEY `chat_id` (`chat_id`), ADD KEY `user_id` (`user_id`);
 
 --
+-- Indexes for table `message_log`
+--
+ALTER TABLE `message_log`
+ ADD PRIMARY KEY (`id`), ADD KEY `message_id` (`message_id`,`user_id`), ADD KEY `chat_id` (`chat_id`), ADD KEY `organization_id` (`organization_id`);
+
+--
 -- Indexes for table `organization`
 --
 ALTER TABLE `organization`
+ ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `payment`
+--
+ALTER TABLE `payment`
  ADD PRIMARY KEY (`id`);
 
 --
@@ -408,62 +445,72 @@ ALTER TABLE `user_mst`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=67;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=71;
 --
 -- AUTO_INCREMENT for table `chat`
 --
 ALTER TABLE `chat`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1375;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1526;
 --
 -- AUTO_INCREMENT for table `chat_member`
 --
 ALTER TABLE `chat_member`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4258;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4781;
 --
 -- AUTO_INCREMENT for table `device`
 --
 ALTER TABLE `device`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=276;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=321;
 --
 -- AUTO_INCREMENT for table `files`
 --
 ALTER TABLE `files`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=370;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=688;
 --
 -- AUTO_INCREMENT for table `groups`
 --
 ALTER TABLE `groups`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=97;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=106;
 --
 -- AUTO_INCREMENT for table `group_member`
 --
 ALTER TABLE `group_member`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=249;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=253;
 --
 -- AUTO_INCREMENT for table `information`
 --
 ALTER TABLE `information`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=11;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=15;
 --
 -- AUTO_INCREMENT for table `message`
 --
 ALTER TABLE `message`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=14995;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=17166;
+--
+-- AUTO_INCREMENT for table `message_log`
+--
+ALTER TABLE `message_log`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4252;
 --
 -- AUTO_INCREMENT for table `organization`
 --
 ALTER TABLE `organization`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=212;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=240;
+--
+-- AUTO_INCREMENT for table `payment`
+--
+ALTER TABLE `payment`
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `sticker`
 --
 ALTER TABLE `sticker`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=35;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=41;
 --
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=201548;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=201605;
 --
 -- AUTO_INCREMENT for table `user_details`
 --
@@ -473,7 +520,7 @@ MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=32;
 -- AUTO_INCREMENT for table `user_mst`
 --
 ALTER TABLE `user_mst`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=249;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=296;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
