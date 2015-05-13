@@ -843,29 +843,45 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function getLastMessages(Application $app, $chat_id){
+	public function getLastMessages(Application $app, $chat_id, $countryCode){
 		
-		$sql = "SELECT message.*, user.id AS user_id, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 and message.root_id = 0 ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
+		$sql = "SELECT message.*, user.id AS user_id, user.firstname, user.lastname, user.image, user.image_thumb 
+					FROM message, user 
+					WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 and message.root_id = 0 AND message.country_code = ? ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
 		
-		$messages = $app['db']->fetchAll($sql, array($chat_id));
+		$messages = $app['db']->fetchAll($sql, array($chat_id, $countryCode));
 		
 		return $messages;
 		
 	}
 	
 	
-	public function getMessagesPaging(Application $app, $chat_id, $last_msg_id){
+	public function getMessagesPaging(Application $app, $chat_id, $last_msg_id, $countryCode){
 
-		$sql = "SELECT message.*, user.id AS user_id, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 AND message.id < ? and message.root_id = 0 ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
+		$sql = "SELECT message.*, 
+					   user.id AS 
+					   		user_id,
+						   	user.firstname, 
+						   	user.lastname, 
+						   	user.image, 
+						   	user.image_thumb FROM 
+						   		message, 
+						   		user WHERE 
+					   				message.user_id = user.id AND 
+					   				message.chat_id = ? AND 
+					   				message.is_deleted = 0 AND 
+					   				message.id <= ? AND 
+					   				message.root_id = 0 AND 
+					   				message.country_code = ? ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
 		
-		$messages = $app['db']->fetchAll($sql, array($chat_id, $last_msg_id));
+		$messages = $app['db']->fetchAll($sql, array($chat_id, $last_msg_id, $countryCode));
 		
 		return $messages;
 		
 	}
 	
 	
-	public function getMessagesOnPush(Application $app, $chat_id, $first_msg_id){
+	public function getMessagesOnPush(Application $app, $chat_id, $first_msg_id, $countryCode){
 		
 		$sql = "SELECT 
 		            message.*, user.firstname, 
@@ -877,21 +893,22 @@ class MySqlDb implements DbInterface{
                     AND message.chat_id = ? 
                     AND message.is_deleted = 0 
                     AND message.id > ? 
+                    AND message.country_code = ?
                     and message.root_id = 0 
                     ORDER BY message.id DESC";
 		
-		$messages = $app['db']->fetchAll($sql, array($chat_id, $first_msg_id));
+		$messages = $app['db']->fetchAll($sql, array($chat_id, $first_msg_id, $countryCode));
 		
 		return $messages;
 		
 	}
 	
 	
-	public function getCountMessagesForChat(Application $app, $chat_id){
+	public function getCountMessagesForChat(Application $app, $chat_id, $countryCode){
 		
-		$sql = "SELECT COUNT(*) FROM message WHERE chat_id = ? AND is_deleted = 0 and message.root_id = 0 ";
+		$sql = "SELECT COUNT(*) FROM message WHERE chat_id = ? AND is_deleted = 0 AND message.root_id = 0 AND message.country_code = ? ";
 		
-		$result = $app['db']->executeQuery($sql, array($chat_id))->fetch();
+		$result = $app['db']->executeQuery($sql, array($chat_id, $countryCode))->fetch();
 		$messages_number =  $result["COUNT(*)"];
 		
 		return $messages_number;
@@ -937,6 +954,12 @@ class MySqlDb implements DbInterface{
 		$where = array('id' => $message_id);
 		
 		$app['db']->update('message', $values, $where);
+		
+	}
+	
+	public function deleteOldMessages(Application $app){
+		
+		
 		
 	}
 	
@@ -1013,6 +1036,14 @@ class MySqlDb implements DbInterface{
 	
 	}
 	
+	public function updateSeenTimestamp(Application $app, $message_id){
+		
+		$values = array('seen_timestamp' => time());
+		$where = array('id' => $message_id, 'seen_timestamp' => 0);
+		
+		$app['db']->update('message', $values, $where);
+		
+	}
 	
 	public function getRecentAllChats(Application $app, $user_id, $offset){
 		
@@ -1080,11 +1111,22 @@ class MySqlDb implements DbInterface{
 	}
 	
 	
-	public function getLastMessage(Application $app, $chat_id){
+	public function getLastMessage(Application $app, $chat_id, $countryCode){
 		
-		$sql = "SELECT message.*, user.id AS user_id, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id AND chat_id = ? AND message.root_id = 0 AND message.is_deleted = 0 ORDER BY message.id DESC LIMIT 1";
+		$sql = "SELECT message.*, user.id AS
+					user_id, 
+					user.firstname, 
+					user.lastname, 
+					user.image, 
+					user.image_thumb FROM
+						message, user WHERE 
+						message.user_id = user.id AND 
+						chat_id = ? AND 
+						message.root_id = 0 AND 
+						message.is_deleted = 0 AND
+						message.country_code = ? ORDER BY message.id DESC LIMIT 1";
 		
-		$last_message = $app['db']->fetchAssoc($sql, array($chat_id));
+		$last_message = $app['db']->fetchAssoc($sql, array($chat_id, $countryCode));
 		
 		return $last_message;
 	}
@@ -1681,6 +1723,30 @@ class MySqlDb implements DbInterface{
         
         return $messages;
         
+    }
+    
+    function findOutdatedMessages(Application $app){
+	    
+	    $selectMessageQuery = "	SELECT * 
+							    FROM message WHERE 
+							    	message.seen_timestamp != 0 AND 
+							    	message.seen_timestamp NOT BETWEEN UNIX_TIMESTAMP(DATE_ADD(NOW(), INTERVAL -74 HOUR)) 
+							    	AND UNIX_TIMESTAMP(NOW());";
+	
+		$messages = $app['db']->fetchAll($selectMessageQuery);
+		
+		return $messages;
+	    
+    }
+    
+    function deleteMessageFrom(Application $app, $fromTable, $column, $id){
+	    
+	    $deleteMessageQuery = "DELETE FROM ". $fromTable ."  WHERE " . $fromTable . "." . $column . " = '" . $id . "';";
+	    
+	    echo($deleteMessageQuery . "\n\n");
+	    
+	    $app['db']->executeUpdate($deleteMessageQuery);
+	    
     }
 
 }

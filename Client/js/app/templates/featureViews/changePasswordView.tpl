@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <header>{title_chane_password}</header>
 
 

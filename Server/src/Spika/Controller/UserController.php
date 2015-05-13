@@ -275,6 +275,7 @@ class UserController extends SpikaBaseController {
 		$controllers->post('/chat/start', function (Request $request) use($app, $self, $mySql) {
 				
 			$paramsAry = $request->request->all();
+			$countryCode = $request->headers->get('country_code');
 			
 			$other_user_id = $paramsAry['user_id'];
 			$firstname = $paramsAry['firstname'];
@@ -296,12 +297,12 @@ class UserController extends SpikaBaseController {
 			if ($result['is_exist']){
 				//get messages
 				$chat_id = $result['chat_id'];
-				$messages = $mySql->getLastMessages($app, $chat_id);
+				$messages = $mySql->getLastMessages($app, $chat_id, $countryCode);
 				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 				
 				if (count($messages)>0){
 					//update seen
-					$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id);
+					$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id, $countryCode);
 				}
 				
 			} else {
@@ -313,7 +314,7 @@ class UserController extends SpikaBaseController {
 			
 			$chat = $self->getChatData($app, $mySql, $chat_id);
 			
-			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
+			$total_count = $mySql->getCountMessagesForChat($app, $chat_id, $countryCode);
 			
 			$messages = $self->getFormattedMessages($messages);
 			
@@ -398,7 +399,6 @@ class UserController extends SpikaBaseController {
 			return $app->json($result, 200);
 			
 		})->before($app['beforeSpikaTokenChecker']);
-		
 
 		//update user proflie
 		$controllers->post('/updateProflie', function (Request $request) use ($app, $self, $mySql){
@@ -534,7 +534,7 @@ class UserController extends SpikaBaseController {
 			return $app->json($result, 200);
 		
 		});
-		
+
 		
 		$controllers->post('password/change', function (Request $request) use ($app, $self, $mySql){
 			
@@ -607,7 +607,6 @@ class UserController extends SpikaBaseController {
 			return $app->json($result, 200);
 		
 		})->before($app['beforeSpikaTokenChecker']);
-		
 		
 		$controllers->get('push', function (Request $request) use ($app, $self, $mySql){
 			

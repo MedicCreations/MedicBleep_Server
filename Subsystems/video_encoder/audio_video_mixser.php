@@ -3,10 +3,13 @@
 /*
 works with ubuntu 14.04 with following setup
 
-sudo add-apt-repository ppa:jon-severinsson/ffmpeg
-sudo apt-get update
-sudo apt-get install ffmpeg
-sudo apt-get install frei0r-plugins
+add-apt-repository ppa:mc3man/trusty-media
+apt-get update
+apt-get install ffmpeg gstreamer0.10-ffmpeg
+apt-get install frei0r-plugins
+
+add-apt-repository --remove ppa:mc3man/trusty-media
+
 */
     
     $ffmpegPath = "/usr/bin/ffmpeg";

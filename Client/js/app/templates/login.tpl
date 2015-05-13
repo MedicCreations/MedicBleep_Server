@@ -1,4 +1,4 @@
-    
+	<!DOCTYPE html>    
     <header>{APP_TITLE}</header>
     
     <nav id="login_div_alert"></nav>

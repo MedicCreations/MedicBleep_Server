@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
     	<div class="scrollable">
 
         	<ul class="menu_list">

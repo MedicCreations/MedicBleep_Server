@@ -23,7 +23,9 @@ class MessageController extends SpikaBaseController {
 		$controllers->post ( '/send', function (Request $request) use($app, $self, $mySql) {
 			
 			$paramsAry = $request->request->all();
-			
+			$countryCode = $request->headers->get('Country-Code');
+			$app['monolog']->addDebug(" COuntry " . $request->headers);
+									
 			$chat_id = $paramsAry['chat_id'];
 			$type = $paramsAry['type'];
 			$text = "";
@@ -59,7 +61,7 @@ class MessageController extends SpikaBaseController {
 				//$attributes = json_encode($paramsAry['attributes']);
 				$attributes = $paramsAry['attributes'];
 			}
-
+			
 			$chat_data = $mySql->getChatWithID($app, $chat_id);
 			
 			if ($chat_data['is_deleted'] == 1){
@@ -121,7 +123,9 @@ class MessageController extends SpikaBaseController {
 				'root_id' => $root_id,
 				'attributes' => $root_id,
 				'parent_id' => $parent_id,
-				'attributes' => $attributes);
+				'attributes' => $attributes,
+				'country_code' => $countryCode,
+				'seen_timestamp' => 0);
 			
 			$msg_id = $mySql->createMessage($app, $values);
 			
@@ -354,13 +358,13 @@ class MessageController extends SpikaBaseController {
 		$controllers->get ( '/paging', function (Request $request) use ($app, $self, $mySql) {
 					
 			$paramsAry = $request->query->all();
+			$countryCode = $request->headers->get('Country-Code');
 				
 			$chat_id = $paramsAry['chat_id'];
 			$new = 0;
 			if (array_key_exists('new', $paramsAry)){
 				$new = $paramsAry['new'];
 			}
-			
 			
 			$chat_data = $mySql->getChatWithID($app, $chat_id);
 			if ($chat_data['is_deleted'] == 1){
@@ -395,7 +399,7 @@ class MessageController extends SpikaBaseController {
 			
 			if (isset($last_msg_id) && ($last_msg_id != "")){
 				//return messages before last_msg
-				$messages = $mySql->getMessagesPaging($app, $chat_id, $last_msg_id);
+				$messages = $mySql->getMessagesPaging($app, $chat_id, $last_msg_id, $countryCode);
 				
 				$chat_seen_by = $mySql->getSeenBy($app, $chat_id);
 				
@@ -419,10 +423,10 @@ class MessageController extends SpikaBaseController {
 				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 				
 				//set seen
-				$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id);
+				$chat_seen_by = $self->updateSeen($app, $mySql, $chat_id, $countryCode);
 				
 				//return last messages
-				$messages = $mySql->getLastMessages($app, $chat_id);
+				$messages = $mySql->getLastMessages($app, $chat_id, $countryCode);
 				
 				//get buddy profile if private chat
 				$chat = $mySql->getChatByID($app, $chat_id);
@@ -462,7 +466,7 @@ class MessageController extends SpikaBaseController {
 				$chat_seen_by = "";
 			}
 			
-			$total_messages = $mySql->getCountMessagesForChat($app, $chat_id);
+			$total_messages = $mySql->getCountMessagesForChat($app, $chat_id, $countryCode);
 			
 			if (count($messages) > 0){
 				$mySql->updateMessageLog($app,$my_user_id,$chat_id,$messages);
@@ -478,7 +482,7 @@ class MessageController extends SpikaBaseController {
 			
 			if ($new == 1){
 			
-				$new_messages = $mySql->getMessagesOnPush($app, $chat_id, $last_msg_id);
+				$new_messages = $mySql->getMessagesOnPush($app, $chat_id, $last_msg_id, $countryCode);
 				$new_messages = $self->getFormattedMessages($new_messages);
 				$messages = array_merge($messages, $new_messages);
 				$result['messages'] = $messages;
@@ -488,6 +492,25 @@ class MessageController extends SpikaBaseController {
 			if (count($user)>0){
 				$result['user'] = $user;
 			}
+			
+			if($total_messages > 0){
+
+				foreach($messages as $tmp_message){
+					$my_user_id = $app['user']['id'];
+					
+					if(intval($tmp_message["seen_timestamp"]) == 0 && intval($tmp_message["user_id"]) != $my_user_id){
+						$time_stamp = time();
+						$tmp_message["seen_timestamp"] = $time_stamp; 
+						$mySql->updateSeenTimestamp($app, $tmp_message["id"]);
+// 						echo "we have a 0 and it is not my message";
+					}
+            	}
+			}				
+
+			//check if message is from me
+            
+            
+			//if message is not from me and seen_timestamp is 0 then set time_stamp
 							
 			return $app->json($result, 200);
 				
@@ -498,6 +521,7 @@ class MessageController extends SpikaBaseController {
 		$controllers->get('/new', function (Request $request) use ($app, $self, $mySql){
 			
 			$paramsAry = $request->query->all();
+			$countryCode = $request->headers->get('Country-Code');
 			
 			$chat_id = $paramsAry['chat_id'];
 			$first_msg_id = $paramsAry['first_msg_id'];
@@ -525,19 +549,32 @@ class MessageController extends SpikaBaseController {
 			
 			$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 			
-			$messages = $mySql->getMessagesOnPush($app, $chat_id, $first_msg_id);
+			$messages = $mySql->getMessagesOnPush($app, $chat_id, $first_msg_id, $countryCode);
 			
 			$message = $mySql->getMessageByID($app, $first_msg_id);
 			
 			$modified_messages = $mySql->getModifiedMessages($app, $chat_id, $message['modified'], $last_msg_id);
 			
-			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
+			$total_count = $mySql->getCountMessagesForChat($app, $chat_id, $countryCode);
 			
 			$messages = $self->getFormattedMessages($messages);
 			
 			$mySql->updateMessageLog($app,$my_user_id,$chat_id,$messages);
 			
 			//$messages = $mySql->addAuditInfo($app,$my_user_id,$chat_id,$messages);
+			
+			if($total_count > 0){
+
+				foreach($messages as $tmp_message){
+					$my_user_id = $app['user']['id'];
+					
+					if(intval($tmp_message["seen_timestamp"]) == 0 && intval($tmp_message["user_id"]) != $my_user_id){
+						$time_stamp = time();
+						$tmp_message["seen_timestamp"] = $time_stamp; 
+						$mySql->updateSeenTimestamp($app, $tmp_message["id"]);
+					}
+            	}
+			}
 			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK', 
@@ -669,6 +706,7 @@ class MessageController extends SpikaBaseController {
 		$controllers->get('/push', function (Request $request) use ($app, $self, $mySql){
 			
 			$paramsAry = $request->query->all();
+			$countryCode = $request->headers->get('Country-Code');
 			
 			$message_id = $paramsAry['message_id'];
 			$chat_id = $paramsAry['chat_id'];
@@ -725,12 +763,26 @@ class MessageController extends SpikaBaseController {
 			
 			// $modified_messages = $mySql->getModifiedMessages($app, $chat_id, $message['modified'], $last_msg_id);
 			
-			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
+			$total_count = $mySql->getCountMessagesForChat($app, $chat_id, $countryCode);
 			
 			$messages = $self->getFormattedMessages($messages);
 			
 			// $mySql->updateMessageLog($app,$my_user_id,$chat_id,$messages);
 			// $messages = $mySql->addAuditInfo($app,$my_user_id,$chat_id,$messages);
+			
+			if($total_count > 0){
+
+				foreach($messages as $tmp_message){
+					$my_user_id = $app['user']['id'];
+					
+					if(intval($tmp_message["seen_timestamp"]) == 0 && intval($tmp_message["user_id"]) != $my_user_id){
+						$time_stamp = time();
+						$tmp_message["seen_timestamp"] = $time_stamp; 
+						$mySql->updateSeenTimestamp($app, $tmp_message["id"]);
+					}
+            	}
+            	
+			}
 			
 			$result = array('code' => CODE_SUCCESS, 
 					'message' => 'OK', 

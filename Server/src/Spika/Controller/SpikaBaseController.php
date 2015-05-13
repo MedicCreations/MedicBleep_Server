@@ -73,7 +73,6 @@ class SpikaBaseController implements ControllerProviderInterface
 			'Content-Length: ' . strlen($data_string))
 		);
 		$result = curl_exec($ch);
-		
 		$result = json_decode($result, true);
 		
 		curl_close($ch);
@@ -145,9 +144,9 @@ class SpikaBaseController implements ControllerProviderInterface
     }
     
     
-    public function updateSeen(Application $app, $mySql, $chat_id){
+    public function updateSeen(Application $app, $mySql, $chat_id, $countryCode){
     	
-    	$last_message = $mySql->getLastMessage($app, $chat_id);
+    	$last_message = $mySql->getLastMessage($app, $chat_id, $countryCode);
     	
     	$user = $app['user'];
     	

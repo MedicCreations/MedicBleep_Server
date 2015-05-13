@@ -49,19 +49,21 @@ interface DbInterface
 	public function updateSentLocalPush(Application $app, $chat_id, $user_id);
 	
 	public function createMessage(Application $app, $values);
-	public function getLastMessages(Application $app, $chat_id);
-	public function getMessagesPaging(Application $app, $chat_id, $last_msg_id);
-	public function getMessagesOnPush(Application $app, $chat_id, $first_msg_id);
-	public function getCountMessagesForChat(Application $app, $chat_id);
+	public function getLastMessages(Application $app, $chat_id, $countryCode);
+	public function getMessagesPaging(Application $app, $chat_id, $last_msg_id, $countryCode);
+	public function getMessagesOnPush(Application $app, $chat_id, $first_msg_id, $countryCode);
+	public function getCountMessagesForChat(Application $app, $chat_id, $countryCode);
 	public function updateUnreadMessagesForMembers(Application $app, $chat_id, $user_id);
 	public function resetUnreadMessagesForMember(Application $app, $chat_id, $user_id);
 	public function updateChatHasMessages(Application $app, $chat_id);
 	public function deleteMessage(Application $app, $message_id);
+	public function deleteOldMessages(Application $app);
 	public function updateMessage(Application $app, $message_id, $values);
 	public function getMessageByID(Application $app, $message_id);
 	public function getChildMessages(Application $app, $child_id_list);
 	public function getModifiedMessages(Application $app, $chat_id, $modified, $last_msg_id);
 	public function getLastMsgSender(Application $app, $chat_id);
+	public function updateSeenTimestamp(Application $app, $message_id);
 	
 	public function getRecentAllChats(Application $app, $user_id, $offset);
 	public function getCountRecentAllChats(Application $app, $user_id);
@@ -69,7 +71,7 @@ interface DbInterface
 	public function getCountRecentPrivateChats(Application $app, $user_id);
 	public function getRecentGroupChats(Application $app, $user_id, $offset);
 	public function getCountRecentGroupChats(Application $app, $user_id); 
-	public function getLastMessage(Application $app, $chat_id);
+	public function getLastMessage(Application $app, $chat_id, $countryCode);
 	
 	public function getCategories(Application $app);
 	public function createCategory(Application $app, $name);

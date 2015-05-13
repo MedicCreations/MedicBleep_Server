@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 
 <div id="extra_message_box">
     <ul>

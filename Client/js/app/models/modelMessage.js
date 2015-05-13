@@ -38,7 +38,8 @@
                     is_deleted: is_delete,
                     child_list: data.child_list,
                     indent:0,
-                    attributes:attributes
+                    attributes:attributes,
+                    countryCode:data.country_code
                 });   
         },
         createModelByTempData : function(data){
@@ -72,6 +73,7 @@
                     image: '',
                     latitude: '',
                     longitude: '',
+                    countryCode:data.country_code,
                     parent_id: 0,
                     root_id: 0,
                     is_deleted: 0,
@@ -87,9 +89,7 @@
             if(_.isArray(data.messages)){
                 
                 _.each(data.messages,function(row){
-                    
-                    messageAry.push(messageFactory.createModelByAPIResponse(row));
-                     
+					messageAry.push(messageFactory.createModelByAPIResponse(row));  
                 });
                 
             }
@@ -122,7 +122,8 @@
             child_list:'',
             is_deleted:0,
             indent:0,
-            attributes:null
+            attributes:null,
+            countryCode:''
 
         },
         initialize: function(){

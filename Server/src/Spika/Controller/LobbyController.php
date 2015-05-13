@@ -25,6 +25,7 @@ class LobbyController extends SpikaBaseController {
 		$controllers->get('/list', function (Request $request) use ($app, $self, $mySql, $ldap){
 			
 			$paramsAry = $request->query->all();
+			$countryCode = $request->headers->get('country_code');
 			
 			$type = 0;
 			if (array_key_exists('type', $paramsAry)){
@@ -35,6 +36,13 @@ class LobbyController extends SpikaBaseController {
 			if (array_key_exists('page', $paramsAry)){
 				$page = $paramsAry['page'];
 			}
+			
+/*
+			$countryCode = "";
+			if(array_key_exists('country_code', $paramsAry)){
+				$countryCode = $paramsAry['country_code'];
+			}
+*/
 			
 			$user_id = $app['user']['id'];
 			
@@ -64,7 +72,7 @@ class LobbyController extends SpikaBaseController {
 						$chat['image'] = $chat_data['image'];
 						$chat['image_thumb'] = $chat_data['image_thumb'];
 						
-						$last_message = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $mySql->getLastMessage($app, $chat['chat_id'], $countryCode);
 						$last_message = $self->getFormattedMessage($last_message);
 						$chat['last_message'] = $last_message;
 					
@@ -83,7 +91,7 @@ class LobbyController extends SpikaBaseController {
 							$chat['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
 						}
 						
-						$last_message = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $mySql->getLastMessage($app, $chat['chat_id'], $countryCode);
 						$last_message = $self->getFormattedMessage($last_message);
 						$chat['last_message'] = $last_message;
 						
@@ -128,7 +136,7 @@ class LobbyController extends SpikaBaseController {
 						$chat['image'] = $chat_data['image'];
 						$chat['image_thumb'] = $chat_data['image_thumb'];
 						
-						$last_message = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $mySql->getLastMessage($app, $chat['chat_id'], $countryCode);
 						$last_message = $self->getFormattedMessage($last_message);
 						$chat['last_message'] = $last_message;
 							
@@ -163,7 +171,7 @@ class LobbyController extends SpikaBaseController {
 							$chat['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());
 						}
 						
-						$last_message = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $mySql->getLastMessage($app, $chat['chat_id'], $countryCode);
 						$last_message = $self->getFormattedMessage($last_message);
 						$chat['last_message'] = $last_message;
 					
@@ -214,7 +222,7 @@ class LobbyController extends SpikaBaseController {
 							}
 						}
 						
-						$last_message = $mySql->getLastMessage($app, $chat['chat_id']);
+						$last_message = $mySql->getLastMessage($app, $chat['chat_id'], $countryCode);
 						$last_message = $self->getFormattedMessage($last_message);
 						$chat['last_message'] = $last_message;
 						

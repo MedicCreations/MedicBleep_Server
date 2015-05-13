@@ -14,6 +14,10 @@
     
     <script type="text/javascript" src="js/lang/<?php echo LANG ?>.js?rnd=<?php echo time() ?>"></script>
 	
+	<script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCS-Qq_tRVcXBhupjEgbnPoNgMHcR0UV9c">
+    </script>
+	
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="AMC Walking Dead Story Sync">

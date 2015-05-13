@@ -134,7 +134,7 @@ function sendAPN($deviceToken, $json,$cert,$host){
 	for ($i = 0; $i < 4; $i++) {
 	    $identifiers[$i] = rand(1, 100);
 	}
-
+	
 	$msg = chr(1) . chr($identifiers[0]) . chr($identifiers[1]) . chr($identifiers[2]) . chr($identifiers[3]) . pack('N', time() + 3600) 
     . chr(0) . chr(32) . pack('H*', str_replace(' ', '', $deviceToken)) . pack("n",strlen($json)) . $json;
 	

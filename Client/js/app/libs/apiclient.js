@@ -54,7 +54,8 @@ SpikaClient.prototype.prelogin = function(userName,password,succeessListener,fai
     
     this.error = false;
     var self = this;
-    
+    var countryCode = SPIKA_LocationManager.getCountry();
+        
     password = CryptoJS.MD5(password).toString();
         
     var requestLogin = $.ajax({
@@ -62,7 +63,7 @@ SpikaClient.prototype.prelogin = function(userName,password,succeessListener,fai
         type: 'POST',
         data: 'json',
         data:{'username':userName,'password':password},
-        headers: {"api-agent":this.UA}
+        headers: {"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -95,6 +96,7 @@ SpikaClient.prototype.login = function(userName,password,organizationId,succeess
     
     this.error = false;
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     password = CryptoJS.MD5(password).toString();
         
@@ -107,7 +109,7 @@ SpikaClient.prototype.login = function(userName,password,organizationId,succeess
             'password':password,
             'organization_id':organizationId
         },
-        headers: {"api-agent":this.UA}
+        headers: {"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -145,11 +147,12 @@ SpikaClient.prototype.logout = function(succeessListener,failedListener)
     
     this.error = false;
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/logout',
         type: 'POST',
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -173,7 +176,7 @@ SpikaClient.prototype.searchUsers = function(page,search,succeessListener,failed
 {
     
     var self = this;
-	
+    var countryCode = SPIKA_LocationManager.getCountry();	
 	var requestParams = {};
     
     requestParams.search = search;
@@ -186,7 +189,7 @@ SpikaClient.prototype.searchUsers = function(page,search,succeessListener,failed
         url: this.apiEndPointUrl + '/user/list',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -212,6 +215,7 @@ SpikaClient.prototype.searchGroups = function(page,search,categoryId,succeessLis
 	var self = this;
 	
 	var requestParams = {};
+    var countryCode = SPIKA_LocationManager.getCountry();   
     
     requestParams.search = search;
     requestParams.category_id = categoryId;
@@ -224,7 +228,7 @@ SpikaClient.prototype.searchGroups = function(page,search,categoryId,succeessLis
         url: this.apiEndPointUrl + '/groups/list',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -250,6 +254,7 @@ SpikaClient.prototype.searchRooms = function(page,search,categoryId,succeessList
     var self = this;
 	
 	var requestParams = {};
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     requestParams.search = search;
     requestParams.category_id = categoryId;
@@ -263,7 +268,7 @@ SpikaClient.prototype.searchRooms = function(page,search,categoryId,succeessList
         url: this.apiEndPointUrl + '/room/list',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -288,11 +293,13 @@ SpikaClient.prototype.lobby = function(succeessListener,failedListener)
     
     var self = this;
     
+    var countryCode = SPIKA_LocationManager.getCountry();
+    
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/lobby/list?type=3',
         type: 'GET',
         data: 'json',
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code": countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -317,6 +324,8 @@ SpikaClient.prototype.startPrivateChat = function(userModel,succeessListener,fai
     
     var self = this;
     
+    var countryCode = SPIKA_LocationManager.getCountry();
+    
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/chat/start',
         type: 'POST',
@@ -326,7 +335,10 @@ SpikaClient.prototype.startPrivateChat = function(userModel,succeessListener,fai
                 firstname:userModel.get('firstname'),
                 lastname:userModel.get('lastname')
             },
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {
+	        	"token":this.token,
+	        	"api-agent":this.UA,
+	        	"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -350,6 +362,7 @@ SpikaClient.prototype.startGroupChat = function(groupModel,succeessListener,fail
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/groups/chat/start',
@@ -359,7 +372,7 @@ SpikaClient.prototype.startGroupChat = function(groupModel,succeessListener,fail
                 group_id:groupModel.get('id'),
                 groupname:groupModel.get('groupname')
             },
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -383,12 +396,13 @@ SpikaClient.prototype.sendMessage = function(data,succeessListener,failedListene
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/message/send',
         type: 'POST',
         data: data,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -412,6 +426,7 @@ SpikaClient.prototype.getMessages = function(chatId,lastMessageId,succeessListen
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestParams = {};
     
@@ -420,11 +435,13 @@ SpikaClient.prototype.getMessages = function(chatId,lastMessageId,succeessListen
     if(lastMessageId > 0)
         requestParams.last_msg_id = lastMessageId;
         
+    requestParams.country_code = SPIKA_LocationManager.getCountry();
+        
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/message/paging',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -448,17 +465,19 @@ SpikaClient.prototype.getNewMessages = function(chatId,firstMessageId,succeessLi
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestParams = {};
     
     requestParams.chat_id = chatId;
     requestParams.first_msg_id = firstMessageId;
+    requestParams.country_code = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/message/new',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -483,7 +502,8 @@ SpikaClient.prototype.fileUpload = function(file,succeessListener,failedListener
 {
     
     var self = this;
-
+	var countryCode = SPIKA_LocationManager.getCountry();
+	
     // login
     var formData = new FormData();
     formData.append('file', file);
@@ -494,7 +514,7 @@ SpikaClient.prototype.fileUpload = function(file,succeessListener,failedListener
         data: formData,
         processData: false,
         contentType: false,
-        headers: {"token":this.token,"api-agent":this.UA},
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode},
         xhr: function() {
             var myXhr = $.ajaxSettings.xhr();
             if (myXhr.upload) {
@@ -533,12 +553,13 @@ SpikaClient.prototype.getChatMembers = function(chat_id,succeessListener,failedL
 {
     
     var self = this;
-    
+	var countryCode = SPIKA_LocationManager.getCountry();    
+	
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/chat/member/list',
         type: 'GET',
         data: {chat_id:chat_id},
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -561,12 +582,13 @@ SpikaClient.prototype.addUserToChat = function(chatId,userId,succeessListener,fa
 {
     
     var self = this;
-    
+	var countryCode = SPIKA_LocationManager.getCountry();   
+	
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/chat/member/add',
         type: 'POST',
         data: {chat_id:chatId,users_to_add:userId},
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -590,6 +612,7 @@ SpikaClient.prototype.getUserById = function(userId,succeessListener,failedListe
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestParams = {};
     
@@ -600,7 +623,7 @@ SpikaClient.prototype.getUserById = function(userId,succeessListener,failedListe
         url: this.apiEndPointUrl + '/user/profile',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -623,7 +646,8 @@ SpikaClient.prototype.getGroupById = function(groupId,succeessListener,failedLis
 {
     
     var self = this;
-    
+	var countryCode = SPIKA_LocationManager.getCountry();    
+	
     var requestParams = {};
     
     requestParams.group_id = groupId;
@@ -632,7 +656,7 @@ SpikaClient.prototype.getGroupById = function(groupId,succeessListener,failedLis
         url: this.apiEndPointUrl + '/groups/profile',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -656,7 +680,8 @@ SpikaClient.prototype.getThreadMessages = function(rootMessageId,succeessListene
 {
     
     var self = this;
-    
+	var countryCode = SPIKA_LocationManager.getCountry();    
+	
     var requestParams = {};
     
     requestParams.root_id = rootMessageId;
@@ -665,7 +690,7 @@ SpikaClient.prototype.getThreadMessages = function(rootMessageId,succeessListene
         url: this.apiEndPointUrl + '/message/child/list',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -690,14 +715,15 @@ SpikaClient.prototype.getChatById = function(chatId,succeessListener,failedListe
     var self = this;
     
     var requestParams = {};
-    
+	var countryCode = SPIKA_LocationManager.getCountry();    
+	
     requestParams.chat_id = chatId;
         
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/chat/data',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -721,7 +747,8 @@ SpikaClient.prototype.downloadFile = function(fileId,succeessListener,failedList
 {
     
     var self = this;
-    
+	var countryCode = SPIKA_LocationManager.getCountry();
+	    
     var requestParams = {
         file_id : fileId
     };
@@ -730,7 +757,7 @@ SpikaClient.prototype.downloadFile = function(fileId,succeessListener,failedList
         url: this.apiEndPointUrl + '/file/download',
         type: 'GET',
         data: requestParams,
-        headers: {"token":this.token,"api-agent":this.UA},
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode},
         xhr: function() {
 
             var xhr = new window.XMLHttpRequest();
@@ -779,12 +806,13 @@ SpikaClient.prototype.saveProflie = function(userId,values,succeessListener,fail
 {
     
     var self = this;
-    
+	var countryCode = SPIKA_LocationManager.getCountry();    
+	
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/updateProflie',
         type: 'POST',
         data: values,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -807,12 +835,13 @@ SpikaClient.prototype.saveProfliePicture = function(userId,fileId,thumbId,succee
 {
     
     var self = this;
-    
+	var countryCode = SPIKA_LocationManager.getCountry();   
+	
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/update',
         type: 'POST',
         data: {image:fileId,image_thumb:thumbId},
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -835,7 +864,8 @@ SpikaClient.prototype.createNewRoom = function(roomName,password,isPrivate,categ
 {
 
     var self = this;
-
+	var countryCode = SPIKA_LocationManager.getCountry();
+	
     var passwordHashed = "";
     
     if(!_.isEmpty(password)){
@@ -861,7 +891,7 @@ SpikaClient.prototype.createNewRoom = function(roomName,password,isPrivate,categ
 	        	image:fileId,
 	        	image_thumb:thumbId,
 	        	password: passwordHashed},
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -884,6 +914,7 @@ SpikaClient.prototype.updateRoom = function(chatId,roomName,password,isPrivate,c
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     var data = {};
     
     data.chat_id = chatId;
@@ -923,7 +954,7 @@ SpikaClient.prototype.updateRoom = function(chatId,roomName,password,isPrivate,c
         url: this.apiEndPointUrl + '/chat/update',
         type: 'POST',
         data: data,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -946,6 +977,7 @@ SpikaClient.prototype.addUsersToChat = function(chatId,usersToAdd,groupsToAdd,ro
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     var data = {};
     
     data.chat_id = chatId;
@@ -957,7 +989,7 @@ SpikaClient.prototype.addUsersToChat = function(chatId,usersToAdd,groupsToAdd,ro
         url: this.apiEndPointUrl + '/chat/member/add',
         type: 'POST',
         data: data,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -980,6 +1012,7 @@ SpikaClient.prototype.deleteUsersFromChat = function(chatId,usersToDelete,groups
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     var data = {};
     
     data.chat_id = chatId;
@@ -991,7 +1024,7 @@ SpikaClient.prototype.deleteUsersFromChat = function(chatId,usersToDelete,groups
         url: this.apiEndPointUrl + '/chat/member/remove',
         type: 'POST',
         data: data,
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -1016,12 +1049,12 @@ SpikaClient.prototype.sendKeepAlive = function(succeessListener,failedListener)
 {
     
     var self = this;
-
+	var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/webkeepalive',
         type: 'GET',
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -1045,12 +1078,13 @@ SpikaClient.prototype.deleteMessage = function(messageId,succeessListener,failed
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/message/delete',
         type: 'POST',
         data: {message_id:messageId},
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -1075,6 +1109,7 @@ SpikaClient.prototype.mixAudioVideo = function(fileVideo,fileAudio,succeessListe
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     // browser compatibility
     if (bowser.chrome || bowser.android) {
@@ -1097,7 +1132,7 @@ SpikaClient.prototype.mixAudioVideo = function(fileVideo,fileAudio,succeessListe
         data: formData,
         processData: false,
         contentType: false,
-        headers: {"token":this.token,"api-agent":this.UA},
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode},
         xhr: function() {
             var myXhr = $.ajaxSettings.xhr();
             if (myXhr.upload) {
@@ -1137,10 +1172,11 @@ SpikaClient.prototype.getCategories = function(succeessListener,failedListener)
 {
     
 	var self = this;
+	var countryCode = SPIKA_LocationManager.getCountry();
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/category/list',
         type: 'GET',
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -1164,12 +1200,13 @@ SpikaClient.prototype.updatePasword = function(newPasword,succeessListener,faile
     
 	var hashedPassword = CryptoJS.MD5(newPasword).toString();
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/password/update',
         type: 'POST',
         data: {new_password:hashedPassword},
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -1192,12 +1229,13 @@ SpikaClient.prototype.sendTempPassword = function(username,succeessListener,fail
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/password/forgot',
         type: 'POST',
         data: {username:username},
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -1221,6 +1259,7 @@ SpikaClient.prototype.resetPassword = function(tempPass,newPass,succeessListener
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/user/password/change',
@@ -1229,7 +1268,7 @@ SpikaClient.prototype.resetPassword = function(tempPass,newPass,succeessListener
             temp_password:CryptoJS.MD5(tempPass).toString(),
             new_password:CryptoJS.MD5(newPass).toString()                
         },
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -1252,11 +1291,12 @@ SpikaClient.prototype.getStickers = function(succeessListener,failedListener)
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/message/stickers',
         type: 'GET',
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -1281,12 +1321,13 @@ SpikaClient.prototype.getChatMembersAll = function(chat_id,succeessListener,fail
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/member/list',
         type: 'GET',
         data: {chat_id:chat_id,type:4},
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -1311,12 +1352,13 @@ SpikaClient.prototype.getChatNote = function(chat_id,succeessListener,failedList
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     var requestLogin = $.ajax({
         url: this.apiEndPointUrl + '/chat/note',
         type: 'GET',
         data: {chat_id:chat_id},
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {
@@ -1340,6 +1382,7 @@ SpikaClient.prototype.saveChatNote = function(chat_id,notes,succeessListener,fai
 {
     
     var self = this;
+    var countryCode = SPIKA_LocationManager.getCountry();
     
     U.l(chat_id);
     
@@ -1347,7 +1390,7 @@ SpikaClient.prototype.saveChatNote = function(chat_id,notes,succeessListener,fai
         url: this.apiEndPointUrl + '/chat/note',
         type: 'POST',
         data: {chat_id:chat_id,notes:notes},
-        headers: {"token":this.token,"api-agent":this.UA}
+        headers: {"token":this.token,"api-agent":this.UA,"Country-Code":countryCode}
     });
     
     requestLogin.done(function( data ) {

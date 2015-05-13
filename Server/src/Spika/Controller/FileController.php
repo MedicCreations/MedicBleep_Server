@@ -24,7 +24,6 @@ class FileController extends SpikaBaseController {
 		
 		$controllers = $app ['controllers_factory'];
 		
-		
 		//image upload
 		$controllers->post('/upload', function (Request $request) use ($app, $self, $mySql) {
 				
@@ -51,7 +50,6 @@ class FileController extends SpikaBaseController {
 			return $app->json(array("message" => "file uploaded", "code" => CODE_SUCCESS, "file_id" => $fineName,), 200);
 		
 		})->before($app['beforeSpikaTokenChecker']);
-		
 		
 		//image download
 		$controllers->get ( '/download', function (Request $request) use($app, $self, $mySql) {
