@@ -99,4 +99,7 @@ interface DbInterface
 	public function updateMessageLog(Application $app,$userId,$chatId,$messages);
 	public function addAuditInfo(Application $app,$userId,$chatId,$messages);
 	
+	public function selectOCRuser(Application $app, $OCRuserId);
+	public function updateUserByMasterId(Application $app, $master_Id, $values);
+	
 }

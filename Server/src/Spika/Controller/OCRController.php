@@ -14,6 +14,9 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 class OCRController extends SpikaBaseController {	
 	
 	public function connect(Application $app) {
+		
+		parent::connect($app);
+		
 		$self = $this;
 		
 		$mySql = new MySqlDb ();
@@ -23,17 +26,15 @@ class OCRController extends SpikaBaseController {
 		//OCR update user
 		$controllers->post('/updateProfile',function (Request $request) use ($app, $self, $mySql){
 			
-			//TO DO: change this API so search parameter is username
+			//API gets OCR user id and compares it to existing users OCR id
 			
-			$result_code = 0;
 			$result = null;
 			
 			$paramsAry = $request->query->all();
 			
-			print_r($paramsAry);
-			
 			$values = array();
 			
+			//Add keys if neccessary
 			if(array_key_exists('firstname', $paramsAry)){
 	            $values['firstname'] = $paramsAry['firstname'];	            
             }
@@ -46,73 +47,92 @@ class OCRController extends SpikaBaseController {
 				$values['details'] = $paramsAry['details'];
 			}
 
-			if(array_key_exists('userId', $paramsAry)){
-				$user_id = $paramsAry['userId'];	
+			if(array_key_exists('user_id', $paramsAry)){
+				$user_id = $paramsAry['user_id'];	
 			}
+			
+			$OCRuser = $mySql->selectOCRuser($app, $user_id);
 			
 			if(count($values) >= 3){
 				
-				var_dump($values);
 				
-				$mySql->updateUser($app, $user_id, $values);
+				$mySql->updateUser($app, $OCRuser['id'], $values);
 				
 				$result = array(
 					'code' => CODE_SUCCESS,
 					'message' => "OK"	
 				);
 				
-				$result_code = 200;
-				
 			}else{
 				$result = array(
 					'code' => ER_DEFAULT,
 					'message' => "No parameters or missing parameter"	
 				);
-				$result_code = 400;
 				
 			}
 			
-			return $app->json($result, $result_code);
+			return $app->json($result, 200);
 			
 		});	
 
 		$controllers->post('password/forgot',function(Request $request) use ($app, $self, $mySql){
 			
+			$result;
+			
 			$paramsAry = $request->query->all();
 			
-			$username = $paramsAry['username'];
-			
-			$user = $mySql->getUserByUsernameOrEmail($app, $username);
-			
-			if(!is_array($user)){
-				
-				$result = array('code' => ER_USERNAME_NOT_EXIST,
-					'message' => 'Username doesn\'t exist');
-				return $app->json($result, 200);
-				
+			if(array_key_exists('user_id', $paramsAry)){
+				$user_id = $paramsAry['user_id'];
 			}
 			
-			if (empty($user['email'])){
-				$result = array('code' => ER_EMAIL_MISSING,
-					'message' => 'Your email is missing');
-				return $app->json($result, 200);	
+			if(isset($user_id)){
+				
+				$OCRuser = $mySql->selectOCRuser($app, $user_id);
+				
+				if(is_array($OCRuser)){
+
+					print_r($OCRuser);
+					
+					if (empty($OCRuser['email'])){
+						$result = array('code' => ER_EMAIL_MISSING,
+							'message' => 'Your email is missing');
+						return $app->json($result, 200);	
+					}
+					
+					$temp_pass = $mySql->createTempPassword($app, $OCRuser['id']);
+					$body = sprintf($this->lang['forgotpassword_email_body'], $OCRuser['username'], $temp_pass);
+					echo("Body :" . $body);
+					$subject = $this->lang['forgotpassword_email_subject'];
+					echo("Subject :" . $subject);
+										
+					$self->sendEmail($OCRuser['email'],$subject,$body);
+					
+					$result = array(
+						'code' => CODE_SUCCESS,
+						'message' => 'OK'
+					);
+				
+				}else{
+					$result = array(
+						'code' => ER_DEFAULT,
+						'message' => 'No such user'
+					);
+				}
+				
+			}else{
+				$result = array(
+					'code' => ER_DEFAULT,
+					'message' => 'Missing user ID.'
+				);
 			}
 			
-			$temp_pass = $mySql->createTempPassword($app, $user['id']);
-			$body = sprintf($this->lang['forgotpassword_email_body'], $user['username'], $temp_pass);
-			$subject = $this->lang['forgotpassword_email_subject'];
 			
-			$self->sendEmail($user['email'],$subject,$body);
-			
-			$result = array(
-				'code' => CODE_SUCCESS,
-				'message' => 'OK'
-			);
 			
 			return $app->json($result,200);
 			
 		});
 		
+/*
 		$controllers->post('password/change', function(Request $request) use ($app, $self, $mySql){
 
 			$result_code = 0;
@@ -140,23 +160,65 @@ class OCRController extends SpikaBaseController {
 			return $app->json($result, $result_code);
 			
 		});
+*/
 		
 		//OCR password update
 		$controllers->post('password/update', function(Request $request) use ($app, $self, $mySql){
 
+			$result= null;
+			$new_password = null;
+			$user_id = null;
+			
 			$paramsAry = $request->query->all();
 			
-			print_r($paramsAry);
+			if(array_key_exists('new_password', $paramsAry)){
+				$new_password = $paramsAry['new_password'];	
+			}
 			
-			return "OCR password update";
+			if(array_key_exists('user_id', $paramsAry)){
+				$user_id = $paramsAry['user_id'];
+			}
+			
+			if(is_null($new_password) || is_null($user_id)){
+				$result = $result = array(
+					'code' => ER_DEFAULT,
+					'message' => 'Missing parameter user_id/new_password for password/update'
+				);								
+			}
+			
+			
+			if(is_null($result)){
+				
+				$OCRuser = $mySql->selectOCRuser($app, $user_id);
+				
+				print_r($OCRuser);
+				
+				$passwordExist = $mySql->checkPassword($app, $OCRuser['username'], $new_password);
+				
+				if($passwordExist){
+					$result = array(
+						'code' => ER_PASSWORD_EXIST,
+						'message' => 'Password already exist');
+					return $app->json($result, 200);
+				}
+				
+				$mySql->updateUserMst($app, $OCRuser['id'], array('password' => $new_password));
+				
+				$result = array('code' => CODE_SUCCESS,
+								'message' => 'OK');
+			}
+			
+			return $app->json($result, 200);
 		});
 		
 		
 		
+/*
 		//OCR image upload
 		$controllers->post('upload',function(Request $request) use ($app, $self, $mySql){
 			return "upload image from OCR";
 		});
+*/
 
 		return $controllers;
 		

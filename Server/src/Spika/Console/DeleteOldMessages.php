@@ -56,6 +56,8 @@ class DeleteOldMessages extends \Knp\Command\Command {
 		foreach($normalMesssage as $otherMessage){
 			
 			$mysql->deleteMessageFrom($app, "message", "id", $otherMessage['id']);
+			$mysql->deleteMessageFrom($app, "message", "root_id", $otherMessage['id']);
+			$mysql->deleteMessageFrom($app, "message_log" ,"message_id", $otherMessage['id']);
 			
 		}
 
@@ -85,7 +87,9 @@ class DeleteOldMessages extends \Knp\Command\Command {
 
 						//delete message
 						$mysql->deleteMessageFrom($app, "message", "id", $fileMessage['id']);
-
+						$mysql->deleteMessageFrom($app, "message", "root_id", $fileMessage['id']);
+						$mysql->deleteMessageFrom($app, "message_log" ,"message_id", $fileMessage['id']);
+						
 					}
 					
 				}

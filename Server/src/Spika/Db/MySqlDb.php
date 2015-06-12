@@ -1259,6 +1259,8 @@ class MySqlDb implements DbInterface{
 	
 	public function getGroupMembersForRoom(Application $app, $group_ids){
 	
+		
+	$app['monolog']->addDebug("groupdIDs (SQL): ".print_r($group_ids));
 		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb FROM group_member, user WHERE group_member.user_id = user.id AND group_member.group_id IN (" . $group_ids . ")";
 	
 		$groups = $app['db']->fetchAll($sql);
@@ -1730,7 +1732,7 @@ class MySqlDb implements DbInterface{
 	    $selectMessageQuery = "	SELECT * 
 							    FROM message WHERE 
 							    	message.seen_timestamp != 0 AND 
-							    	message.seen_timestamp NOT BETWEEN UNIX_TIMESTAMP(DATE_ADD(NOW(), INTERVAL -74 HOUR)) 
+							    	message.seen_timestamp NOT BETWEEN UNIX_TIMESTAMP(DATE_ADD(NOW(), INTERVAL -72 HOUR)) 
 							    	AND UNIX_TIMESTAMP(NOW());";
 	
 		$messages = $app['db']->fetchAll($selectMessageQuery);
@@ -1748,5 +1750,23 @@ class MySqlDb implements DbInterface{
 	    $app['db']->executeUpdate($deleteMessageQuery);
 	    
     }
+
+	public function selectOCRuser(Application $app, $OCRuserId){
+		
+		$sql = "SELECT * FROM user_mst WHERE user_mst.id_ocr = ?";
+				
+		$result = $app['db']->fetchAssoc($sql, array($OCRuserId));
+		
+		return $result;
+	}
+	
+	public function updateUserByMasterId(Application $app, $master_Id, $values){
+		
+		$where = array('master_user_id' => $master_Id);
+
+		$stmt = $app['db']->update('user', $values, $where);
+		
+	}
+	
 
 }

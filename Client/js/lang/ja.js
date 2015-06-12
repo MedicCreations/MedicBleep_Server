@@ -1,5 +1,5 @@
 LANG = {
-      spika_title : 'Spika Enterprise',
+      spika_title : 'Medic Bleep',
       username_label: 'ユーザー名',
       password_label: 'パスワード',
       savelogin_label: 'ログイン状態を保存する',   

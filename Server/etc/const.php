@@ -5,7 +5,7 @@ define('HTTP_PORT', 80);
 
 define ('TOKEN_DEFAULT', 'tokendefault');
 
-define ('MSG_PAGE_SIZE', 20);
+define ('MSG_PAGE_SIZE', 100);
 define ('USERS_PAGE_SIZE', 50);
 define ('GROUPS_PAGE_SIZE', 50);
 define ('RECENT_PAGE_SIZE', 50);

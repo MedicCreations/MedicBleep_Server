@@ -23,6 +23,8 @@ class ChatController extends SpikaBaseController {
 		//add members to chat
 		$controllers->post('/member/add', function (Request $request) use ($app, $self, $mySql){
 			
+			$countryCode = $request->headers->get('Country-Code');
+			
 			$paramsAry = $request->request->all();
 			
 			$my_user_id = $app['user']['id'];
@@ -138,7 +140,7 @@ class ChatController extends SpikaBaseController {
 					}
 					
 				
-					$messages = $mySql->getLastMessages($app, $chat_id);
+					$messages = $mySql->getLastMessages($app, $chat_id, $countryCode);
 				
 				}
 			} else {
@@ -159,7 +161,7 @@ class ChatController extends SpikaBaseController {
 			$category = $mySql->getCategoryById($app, $chat['category_id']);
 			$chat['category'] = $category;
 			
-			$total_count = $mySql->getCountMessagesForChat($app, $chat_id);
+			$total_count = $mySql->getCountMessagesForChat($app, $chat_id, $countryCode);
 				
 			$result = array('code' => CODE_SUCCESS,
 					'message' => 'OK',
@@ -425,6 +427,8 @@ class ChatController extends SpikaBaseController {
 				$mySql->updateChat($app, $chat_id, $values);
 				
 				//move group members from chat
+				$app['monolog']->addDebug(" group id : " . print_r($group_ids));
+				
 				$all_group_members = $mySql->getGroupMembersForRoom($app, $group_ids);
 				$user_ids_for_delete = "";
 				foreach($all_group_members as $member){

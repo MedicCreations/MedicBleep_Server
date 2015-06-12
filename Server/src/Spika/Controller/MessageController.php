@@ -495,7 +495,7 @@ class MessageController extends SpikaBaseController {
 			
 			if($total_messages > 0){
 
-				foreach($messages as $tmp_message){
+				foreach($messages as &$tmp_message){
 					$my_user_id = $app['user']['id'];
 					
 					if(intval($tmp_message["seen_timestamp"]) == 0 && intval($tmp_message["user_id"]) != $my_user_id){
@@ -506,11 +506,8 @@ class MessageController extends SpikaBaseController {
 					}
             	}
 			}				
-
-			//check if message is from me
-            
-            
-			//if message is not from me and seen_timestamp is 0 then set time_stamp
+			
+			$result['messages'] = $messages;
 							
 			return $app->json($result, 200);
 				
@@ -565,12 +562,13 @@ class MessageController extends SpikaBaseController {
 			
 			if($total_count > 0){
 
-				foreach($messages as $tmp_message){
+				foreach($messages as &$tmp_message){
 					$my_user_id = $app['user']['id'];
 					
 					if(intval($tmp_message["seen_timestamp"]) == 0 && intval($tmp_message["user_id"]) != $my_user_id){
 						$time_stamp = time();
-						$tmp_message["seen_timestamp"] = $time_stamp; 
+						
+						$tmp_message["seen_timestamp"] = $time_stamp;
 						$mySql->updateSeenTimestamp($app, $tmp_message["id"]);
 					}
             	}
@@ -702,7 +700,7 @@ class MessageController extends SpikaBaseController {
 		})->before($app['beforeSpikaTokenChecker']);
 		
 		
-		//get messages on push for iOS
+		//get messages on push for iOS and Android
 		$controllers->get('/push', function (Request $request) use ($app, $self, $mySql){
 			
 			$paramsAry = $request->query->all();
@@ -710,6 +708,7 @@ class MessageController extends SpikaBaseController {
 			
 			$message_id = $paramsAry['message_id'];
 			$chat_id = $paramsAry['chat_id'];
+			$is_chat_active = $paramsAry['is_chat_active'];
 			
 			$my_user_id = $app['user']['id'];
 			
@@ -772,10 +771,12 @@ class MessageController extends SpikaBaseController {
 			
 			if($total_count > 0){
 
-				foreach($messages as $tmp_message){
+				foreach($messages as &$tmp_message){
 					$my_user_id = $app['user']['id'];
 					
-					if(intval($tmp_message["seen_timestamp"]) == 0 && intval($tmp_message["user_id"]) != $my_user_id){
+					if(intval($tmp_message["seen_timestamp"]) == 0 && 
+					   intval($tmp_message["user_id"]) != $my_user_id &&
+					   intval($is_chat_active) == 1){
 						$time_stamp = time();
 						$tmp_message["seen_timestamp"] = $time_stamp; 
 						$mySql->updateSeenTimestamp($app, $tmp_message["id"]);
@@ -799,6 +800,41 @@ class MessageController extends SpikaBaseController {
 							'image_thumb' => $data['image_thumb']);
 					$result['user'] = $user;
 				}
+			
+			return $app->json($result, 200);
+			
+		})->before($app['beforeSpikaTokenChecker']);
+		
+		
+		$controllers->get('/checkTimestamps', function (Request $request) use ($app, $self, $mySql){	
+			
+			$paramsAry = $request->query->all();
+			
+			$message_ids = explode(',', $paramsAry['message_ids']);
+
+			$result = array();
+			
+			foreach($message_ids as $message_id){
+				$message = $mySql->getMessageByID($app, $message_id);
+
+				$seenTimestamp;
+
+				if($message){
+					$seenTimestamp = (int)$message['seen_timestamp'];
+				}else{
+					$seenTimestamp = 1;
+				}
+				
+				$messageResult = array('message_id' => $message_id,
+				'seen_timestamp' => $seenTimestamp);
+				
+				array_push($result, $messageResult);
+				
+			}
+			
+			$result = array('code' => CODE_SUCCESS, 
+					'message' => 'OK',
+					'result' => $result);
 			
 			return $app->json($result, 200);
 			
