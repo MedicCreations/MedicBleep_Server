@@ -45,6 +45,7 @@
                 Map        
         </li>
 
+{*
         <li id="extramessage_btn_voice_call">
             <i class="fa fa-phone"></i><br />
                 Voice Call
@@ -54,6 +55,7 @@
             <i class="fa fa-video-camera"></i><br />
                 Video Call
         </li>
+*}
  
     </ul>
 
@@ -174,6 +176,7 @@
 </div>
 
 <!-- Video Chat-->
+{*
 <div class="extramessage_dialog_view" style="display:none" id="extramessage_dialog_view_conference">
     <div class="alert_box">
         <div class="alert_title">Video Chat</div>
@@ -194,6 +197,7 @@
         
     </div>
 </div>
+*}
 
 <!-- Map -->
 <div class="extramessage_dialog_view" style="display: none" id="extramessage_dialog_view_map">

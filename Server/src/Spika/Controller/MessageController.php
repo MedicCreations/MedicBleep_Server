@@ -483,8 +483,10 @@ class MessageController extends SpikaBaseController {
 			if ($new == 1){
 			
 				$new_messages = $mySql->getMessagesOnPush($app, $chat_id, $last_msg_id, $countryCode);
+				$self->updateSeen($app, $mySql, $chat_id, $countryCode);
 				$new_messages = $self->getFormattedMessages($new_messages);
 				$messages = array_merge($messages, $new_messages);
+// 				$app['monolog']->addDebug(" OVDJE SAMMMMMM< DALHASJKFHAKSJHFKASJHD " . var_dump($messages));
 				$result['messages'] = $messages;
 			
 			}
@@ -752,6 +754,10 @@ class MessageController extends SpikaBaseController {
 						'message' => 'Not chat member');
 				
 				return $app->json($result, 200);
+			}
+			
+			if($is_chat_active == 1){
+				$self->updateSeen($app, $mySql, $chat_id, $countryCode);
 			}
 			
 			$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);

@@ -410,6 +410,11 @@ class ChatController extends SpikaBaseController {
 			
 			$chat = $mySql->getChatWithID($app, $chat_id);
 			
+/*
+			$app['monolog']->addDebug(print_r($chat_id));
+			$app['monolog']->addDebug(print_r($user_id));
+*/
+			
 			if (array_key_exists('group_ids', $paramsAry) && $paramsAry['group_ids'] != ''){
 				
 				$group_ids = $paramsAry['group_ids'];

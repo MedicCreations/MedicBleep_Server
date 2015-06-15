@@ -1155,6 +1155,8 @@ var SPIKA_ChatView = Backbone.View.extend({
                                 
             } else {
 
+				var self = this;
+
                 $$('#btn_leave_room').css('display','inline-block');
                 $$('#btn_leave_room').unbind().click(function(){
                     
@@ -1164,6 +1166,8 @@ var SPIKA_ChatView = Backbone.View.extend({
                         apiClient.deleteUsersFromChat(
                             self.chatData.get('chat_id'),
                             user.get('id'),
+                            null,
+                            null,
                             function(dataChat2){
     
                                 Backbone.trigger(EVENT_LEAVE_CHAT,self.chatData.get('chat_id'));
