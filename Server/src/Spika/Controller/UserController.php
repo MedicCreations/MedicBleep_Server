@@ -31,54 +31,176 @@ class UserController extends SpikaBaseController {
 		$controllers->post ( '/prelogin', function (Request $request) use($app, $self, $mySql, $ldap) {
             
             $body = $request->getContent();
-            
+            $app['monolog']->addDebug("\n****** LOGIN *******");
             $app['monolog']->addDebug("--" . $body . "---");
             
 			$paramsAry = $request->request->all();
 			
 			$username = $paramsAry['username'];
 			$password = $paramsAry['password'];
-
-			//try login with temp password
-			$user = $mySql->loginWithTempPass($app, $username, $password);
 			
-			if (is_array($user)){
-			
-				$temp_pass_timestamp = $user ['temp_password_timestamp'];
-				$currentTimestamp = time ();
-				$temp_pass_time = $temp_pass_timestamp + PW_RESET_CODE_VALID_TIME;
-					
-				if ($temp_pass_time < $currentTimestamp) {
-					//temp password is not valid
-					$result = array(
-						'code' => ER_TEMP_PASSWORD_NOT_VALID,
-						'message' => 'Temp password not valid'
-					);
+			//CHECK IF USERNAME INPUT IS EMAIL
+			$email = filter_var($username, FILTER_SANITIZE_EMAIL);
 
-					return $app->json($result, 200);
-				} else {
-					//temp password is valid
-					$result = array(
-						'code' => ER_LOGIN_WITH_TEMP_PASS,
-						'message' => 'Login with temp password'
+			if(!filter_var($email, FILTER_VALIDATE_EMAIL) === false){
+				
+				//FIND USER BY EMAIL
+				$user = $mySql->getUserByUsernameOrEmail($app, $username);
+				$app['monolog']->addDebug("USER " . print_r($user,true));
+				//IF USER IS NOT FOUND CHECK OCR FOR THAT USER
+				
+				if(!isset($user['id'])){
+					//IF USERNAME IS EMAIL GO WITH OCR LOGIN				
+					$app['monolog']->addDebug("Login with email");
+					
+					$dataForOCR = array("email"=>$username, "password"=>$password);
+					$data_string = json_encode($dataForOCR);
+					
+					$app['monolog']->addDebug(print_r($data_string,true));
+					
+					$ch = curl_init('https://www.theoncallroom.com/admin/bleeps/login');
+					curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+					curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
+					curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+					    'Content-Type: application/json',                                                                                
+					    'Content-Length: ' . strlen($data_string))                                                                       
 					);
 					
-					return $app->json($result, 200);
+					$res = curl_exec($ch);
+					$res = json_decode($res, true);
+					
+					curl_close($ch);
+					
+					if($res['error_code'] == 1001){
+						
+						$app['monolog']->addDebug("userID " . $res['data']['id']);
+						
+						//CHECK IF USER ALREADY EXISTS IN DATABASE
+						$OCRuser = $mySql->selectOCRuser($app, $res['data']['id']);
+						
+						if(!isset($OCRuser['id'])){
+							//IF THERE IS NO USER CREATE HIM
+							$app['monolog']->addDebug("User doesn't exist!");
+							$mySql->registerOCRUser($app, $res, $dataForOCR['password']);
+						}
+						
+						$image=null;
+						$imageThumb = null;
+						
+						//download profile photo
+						if(!isset($OCRuser['image'])){
+							$imageURL = "http://www.theoncallroom.com/img/userprofilephotos/" . $res['data']['image'];
+							$app['monolog']->addDebug("imageURL " . $imageURL);
+							
+							$chi = curl_init($imageURL);
+							curl_setopt($chi, CURLOPT_URL, $imageURL);
+							curl_setopt($chi, CURLOPT_RETURNTRANSFER, 1);
+							$image = curl_exec($chi);			
+							
+							if($image != null){
+								
+								$app['monolog']->addDebug("Fetched image from OCR");
+								$destination = "/var/www/Spika_v1.0.0/spikaenterprise-web_source/Server/uploads/" . substr($res['data']['image'], 0, -4);
+								$file = fopen($destination, "w");
+								fwrite($file, $image);
+								fclose($file);
+								
+							}
+							curl_close($chi);
+						}
+						
+						//download photo thumb
+						if(!isset($OCRuser['thumb_image'])){
+							
+
+							$imageURL = "http://www.theoncallroom.com/img/userprofilephotos/thumb/".$res['data']['thumb_image'];
+							
+							$chit = curl_init($imageURL);
+							curl_setopt($chit, CURLOPT_URL, $imageURL);
+							curl_setopt($chit, CURLOPT_RETURNTRANSFER, 1);
+							$imageThumb = curl_exec($chit);
+							
+							if($imageThumb != null){
+								$app['monolog']->addDebug("Fetched thumb image from OCR");								
+								$destination = "/var/www/Spika_v1.0.0/spikaenterprise-web_source/Server/uploads/" . substr($res['data']['thumb_image'], 0, -4);
+								$file = fopen($destination, "w");
+								fwrite($file, $imageThumb);
+								fclose($file);
+							}							
+							curl_close($chit);
+						}
+						
+						
+						$app['monolog']->addDebug("User exists from this point on");					
+						
+						//THEN UPDATE || REWRITE USER DATA ON START
+					}else{
+							$result= array('code' => ER_INVALID_LOGIN, 
+							'message' => 'Invalid username or password');
+					}
+			
+						
+					
+				}else{		
+					
+					$organizations = $mySql->getOrganizationsByCredential($app, $user['username'], $password);
+							
+					if(count($organizations) > 0){
+						$result = array(
+						    'code' => CODE_SUCCESS, 
+						    'organizations' => $organizations);
+						
+					} else {
+					    $result = array('code' => ER_INVALID_LOGIN, 'message' => 'Invalid username or password');
+					}
+		 
+		            return $app->json($result, 200);	
 				}
-			
+					
+			}else{
+				//try login with temp password
+				$user = $mySql->loginWithTempPass($app, $username, $password);
+				
+				if (is_array($user)){
+				
+					$temp_pass_timestamp = $user ['temp_password_timestamp'];
+					$currentTimestamp = time ();
+					$temp_pass_time = $temp_pass_timestamp + PW_RESET_CODE_VALID_TIME;
+						
+					if ($temp_pass_time < $currentTimestamp) {
+						//temp password is not valid
+						$result = array(
+							'code' => ER_TEMP_PASSWORD_NOT_VALID,
+							'message' => 'Temp password not valid'
+						);
+	
+						return $app->json($result, 200);
+					} else {
+						//temp password is valid
+						$result = array(
+							'code' => ER_LOGIN_WITH_TEMP_PASS,
+							'message' => 'Login with temp password'
+						);
+						
+						return $app->json($result, 200);
+					}
+				
+				}
+
 			}
+
+			$organizations = $mySql->getOrganizationsByCredential($app, $username, $password);
 			
-            $organizations = $mySql->getOrganizationsByCredential($app, $username, $password);
-            
-            if(count($organizations) > 0){
-    			$result = array(
-    			    'code' => CODE_SUCCESS, 
-    			    'organizations' => $organizations);
-    			
-            } else {
-                $result = array('code' => ER_INVALID_LOGIN, 'message' => 'Invalid username or password');
-            }
-            
+			if(count($organizations) > 0){
+				$result = array(
+				    'code' => CODE_SUCCESS, 
+				    'organizations' => $organizations);
+				
+			} else {
+			    $result = array('code' => ER_INVALID_LOGIN, 'message' => 'Invalid username or password');
+			}
+ 
             return $app->json($result, 200);
 			
 		});
@@ -95,7 +217,7 @@ class UserController extends SpikaBaseController {
 			if(isset($paramsAry['organization_id'])){
     			$organizationId = $paramsAry['organization_id'];
 			}
-			
+						
 			//login
 			$login_result = $mySql->loginUser($app, $password, $username, $organizationId, $self->getDeviceType($request->headers->get('user-agent')) );
 						

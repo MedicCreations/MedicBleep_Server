@@ -23,6 +23,7 @@ class OCRController extends SpikaBaseController {
 		
 		$controllers = $app ['controllers_factory'];
 
+/*
 		//OCR update user
 		$controllers->post('/updateProfile',function (Request $request) use ($app, $self, $mySql){
 			
@@ -73,7 +74,8 @@ class OCRController extends SpikaBaseController {
 			
 			return $app->json($result, 200);
 			
-		});	
+		});
+*/	
 
 		$controllers->post('password/forgot',function(Request $request) use ($app, $self, $mySql){
 			
@@ -132,36 +134,6 @@ class OCRController extends SpikaBaseController {
 			
 		});
 		
-/*
-		$controllers->post('password/change', function(Request $request) use ($app, $self, $mySql){
-
-			$result_code = 0;
-			$result = null;
-
-			$paramsAry = $request->query->all();
-			
-			$user_id = $paramsAry['username'];
-			$temp_password = $paramsAry['temp_password'];
-			$new_password = $paramsAry['new_password'];
-			
-			$user = $mySql->getUserByTempPassword($app, $temp_password);
-			
-			if(!is_array($user)){
-				$result = array(
-							'code' => ER_INVALID_TEMP_PASSWORD,
-							'message' => 'User doesn\'t exist'
-				);
-			}else{
-				
-				
-				
-			}
-			
-			return $app->json($result, $result_code);
-			
-		});
-*/
-		
 		//OCR password update
 		$controllers->post('password/update', function(Request $request) use ($app, $self, $mySql){
 
@@ -191,8 +163,6 @@ class OCRController extends SpikaBaseController {
 				
 				$OCRuser = $mySql->selectOCRuser($app, $user_id);
 				
-				print_r($OCRuser);
-				
 				$passwordExist = $mySql->checkPassword($app, $OCRuser['username'], $new_password);
 				
 				if($passwordExist){
@@ -211,7 +181,27 @@ class OCRController extends SpikaBaseController {
 			return $app->json($result, 200);
 		});
 		
-		
+		$controllers->post('profile/update', function(Request $request) use ($app, $self, $mySql){
+			
+			$body = $request->getContent();
+            $app['monolog']->addDebug("\n****** OCR PROFILE UPDATE *******");
+			
+			$profileData = json_decode($body,true);
+			$app['monolog']->addDebug("---  " . print_r($profileData,true) . "  ---");			
+			
+			if(isset($profileData["id"])){
+				
+				$mySql->updateOCRUser($app, $profileData);
+				
+				$result = array('code' => CODE_SUCCESS,
+								'message' => "Profile updated");
+			}else{
+				$result = array('code' => ER_DEFAULT,
+								'message' => "No data to update");
+			}
+			
+			return $app->json($result, 200);;
+		});	
 		
 /*
 		//OCR image upload

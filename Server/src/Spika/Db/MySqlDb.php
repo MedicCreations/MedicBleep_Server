@@ -1760,13 +1760,75 @@ class MySqlDb implements DbInterface{
 		return $result;
 	}
 	
-	public function updateUserByMasterId(Application $app, $master_Id, $values){
+	public function updateOCRUser(Application $app, $OCRdata){
 		
-		$where = array('master_user_id' => $master_Id);
+			$values = array('username' => $OCRdata['email'], 
+					'email' =>  $OCRdata['email'],
+					'modified' => time());
+					
+			$app['db']->update('user_mst', 
+								$values,
+								array('id_ocr' => $OCRdata["id"]));
+			
+			$user = $this->selectOCRuser($app, $OCRdata["id"]);
 
-		$stmt = $app['db']->update('user', $values, $where);
+			$values = array(
+				'firstname' => $OCRdata['name'],
+				'lastname' => $OCRdata['last_name'],
+				'email' => $OCRdata['email'],
+				'image' => substr($OCRdata['image'], 0, -4),
+				'image_thumb' => substr($OCRdata['thumb_image'], 0, -4),
+				'details' => json_encode($OCRdata),
+				'modified' => time()
+			);
+			
+			$app['db']->update('user', 
+								$values,
+								array('master_user_id' => $user['id']));
+			
+
 		
 	}
 	
+	public function registerOCRUser(Application $app, $OCRuser, $password){
+
+		if(isset($OCRuser)){
+			//PRVO NAPRAVI USER-A U USER_MST(username,password,email,email_verified=1,created,id_ocr)
+			$values = array('username' => $OCRuser['data']['email'], 
+					'password' => $password,
+					'email' =>  $OCRuser['data']['email'],
+					'email_verified' => 1,
+					'created' => time(),
+					'id_ocr' => $OCRuser['data']['id']);
+			$app['db']->insert('user_mst', $values);
+			$app['monolog']->addDebug("Created user in user_mst ");
+			
+			//ZATIM NAPRAVI USER-A U USER
+			
+			$master_Id = $app['db']->lastInsertId();
+			$app['monolog']->addDebug("masterID " . $master_Id);
+			
+			$values = array(
+				'master_user_id' => $master_Id,
+				'firstname' => $OCRuser['data']['name'],
+				'lastname' => $OCRuser['data']['last_name'],
+				'email' => $OCRuser['data']['email'],
+				'password' => $password,
+				'image' => substr($OCRuser['data']['image'], 0, -4),
+				'image_thumb' => substr($OCRuser['data']['thumb_image'], 0, -4),
+				'details' => json_encode($OCRuser['data']),
+				'created' => time(),
+				'modified' => time(),
+				'outside_id' => 0,
+				'token' => 0,
+				'is_valid' => 1,
+				'organization_id' => 3
+			);
+			$app['db']->insert('user',$values);
+			
+			$app['monolog']->addDebug("Created user in user");
+		}
+		
+	}
 
 }
