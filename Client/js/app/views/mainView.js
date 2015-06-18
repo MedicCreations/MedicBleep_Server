@@ -213,12 +213,18 @@ var SPIKA_MainView = Backbone.View.extend({
                 text += ' <i class="fa fa-plug"></i>';
                 
             $$('.userprofile span').html(text);
-            
+
+			$$('.userprofile img').attr("src", 'https://medicbleep.com/spika/Server/wwwroot/v1/file/download?file_id=' + modelUser.get('image_thumb'));
+
+			
+//OVDJE NAPRAVI DOWNLOAD PROFILE IMAGE1            
+/*
             EncryptManager.decryptImage($$('.userprofile img'),modelUser.get('image_thumb'),0,apiClient,function(){
                 
             },function(){
 
             });
+*/
     
         },function(data){
             
