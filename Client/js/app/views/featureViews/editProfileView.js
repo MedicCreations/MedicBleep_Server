@@ -159,8 +159,10 @@ var SPIKA_EditProflieView = Backbone.View.extend({
             }
 
         });
+        console.log(this.user.get('image_thumb'));
+        AvatarManager.process('#profile_edit_view img',this.user.get('image_thumb'));
         
-        $$('#profile_edit_view img').attr("src", 'https://medicbleep.com/spika/Server/wwwroot/v1/file/download?file_id=' + this.user.get('image_thumb'));
+//         $$('#profile_edit_view img').attr("src", 'https://medicbleep.com/spika/Server/wwwroot/v1/file/download?file_id=' + this.user.get('image_thumb'));
         self.hideLoading();
 /*
         EncryptManager.decryptImage($$('#profile_edit_view img'),this.user.get('image'),0,apiClient,function(){

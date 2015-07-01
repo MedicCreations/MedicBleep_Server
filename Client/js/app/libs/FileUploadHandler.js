@@ -195,6 +195,7 @@ var fileUploadHandler = {
     profliePictureUpload : function(file,succeessListener,failedListener){
 
         // resize bit image
+/*
         U.resize(file,PROFLIE_PIC_SIZE,PROFLIE_PIC_SIZE,100,"image/png",function(blobBigImage){
         
             // resize thumbnail
@@ -212,16 +213,17 @@ var fileUploadHandler = {
                             if(!_.isNull(data.file_id)){
                                 
                                 var bigFileId = data.file_id;
+*/
                                 
                                 // upload thumbnail
-                                apiClient.fileUpload(encryptedHexThumb,function(data){
+                                apiClient.fileUpload(file,function(data){
                                     
                                     if(!_.isNull(data.file_id)){
                                         
                                         var smallFileId = data.file_id;
                                         
                                         // upload done
-                                        succeessListener({fileId:bigFileId,thumbId:smallFileId})
+                                        succeessListener({fileId:smallFileId,thumbId:smallFileId})
     
                                     }
                                     
@@ -236,7 +238,7 @@ var fileUploadHandler = {
                                     
                                 }); // apiClient.fileUpload(blobSmallImage,function(data){
         
-                            }
+/*                            }
                             
                         },function(data){
                             
@@ -248,6 +250,7 @@ var fileUploadHandler = {
                               
                         }); // apiClient.fileUpload(blobBigImage,function(data){
 
+
                     }); //EncryptManager.encryptFile(blobBigImage,function(encryptedHex){
                     
                 }); //EncryptManager.encryptFile(blobBigImage,function(encryptedHex){
@@ -255,6 +258,7 @@ var fileUploadHandler = {
             }); // U.resize(file,THUMB_PIC_SIZE,THUMB_PIC_SIZE,100,"image/jpeg",function(blobSmallImage){
               
         }); // U.resize(file,BIG_PIC_SIZE,BIG_PIC_SIZE,100,"image/jpeg",function(blobBigImage){
+*/
             
     }
     

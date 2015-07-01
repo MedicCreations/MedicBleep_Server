@@ -1760,6 +1760,16 @@ class MySqlDb implements DbInterface{
 		return $result;
 	}
 	
+	public function selectOCRuserFromUser(Application $app, $OCRuserId){
+		
+		$sql = "SELECT * FROM user_mst,user WHERE user_mst.id_ocr = ? AND user_mst.id = user.master_user_id";
+		
+		$result = $app['db']->fetchAssoc($sql, array($OCRuserId));
+		
+		return $result;
+		
+	}
+	
 	public function updateOCRUser(Application $app, $OCRdata){
 		
 			$values = array('username' => $OCRdata['email'], 
@@ -1829,6 +1839,14 @@ class MySqlDb implements DbInterface{
 			$app['monolog']->addDebug("Created user in user");
 		}
 		
+	}
+
+	public function updatePassword(Application $app, $OCRuserId, $password){
+		
+		$where = array('master_user_id' => $OCRuserId);
+		
+		$app['db']->update('user', array('password' => $password), $where);
+				
 	}
 
 }

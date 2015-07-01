@@ -102,6 +102,6 @@ interface DbInterface
 	public function registerOCRUser(Application $app, $OCRuser, $password);
 	public function selectOCRuser(Application $app, $OCRuserId);
 	public function updateOCRUser(Application $app, $OCRdata);
-	
-	
+	public function selectOCRuserFromUser(Application $app, $OCRuserId);
+	public function updatePassword(Application $app, $OCRuserId, $password);
 }

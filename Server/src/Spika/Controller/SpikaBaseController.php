@@ -15,6 +15,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Exception;
 
 class SpikaBaseController implements ControllerProviderInterface
 {
@@ -64,18 +65,54 @@ class SpikaBaseController implements ControllerProviderInterface
 		$data_string = json_encode($params);
 		
 		$url = PUSH_ROOT_URL;
+/*
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_POST, true);
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, $data_string);
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
 			'Content-Type: application/json',
 			'Content-Length: ' . strlen($data_string))
 		);
+		try {
+
 		$result = curl_exec($ch);
+		
+		if (FALSE === $result)
+		throw new Exception(curl_error($ch), curl_errno($ch));
+		
+		} catch(Exception $e) {
+		
+		trigger_error(sprintf(
+		'Curl failed with error #%d: %s',
+		$e->getCode(), $e->getMessage()),
+		E_USER_ERROR);
+		
+		}
+		
+		var_dump($result);
+		
 		$result = json_decode($result, true);
+
+		echo(print_r($result,true));
 		
 		curl_close($ch);
+*/
+
+		$parts=parse_url($url);
+
+		$fp = fsockopen('ssl://' . $parts['host'], 443, $errno, $errstr, 30);
+		
+		$out = "POST ".$parts['path']." HTTP/1.1\r\n";
+		$out.= "Host: ".$parts['host']."\r\n";
+		$out.= "Content-Type: application/json\r\n";
+		$out.= "Content-Length: ".strlen($data_string)."\r\n";
+		$out.= "Connection: Close\r\n\r\n";
+		if (isset($data_string)) $out.= $data_string;
+		
+		fwrite($fp, $out);
+		fclose($fp);
 		
     }	
     

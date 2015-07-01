@@ -23,60 +23,6 @@ class OCRController extends SpikaBaseController {
 		
 		$controllers = $app ['controllers_factory'];
 
-/*
-		//OCR update user
-		$controllers->post('/updateProfile',function (Request $request) use ($app, $self, $mySql){
-			
-			//API gets OCR user id and compares it to existing users OCR id
-			
-			$result = null;
-			
-			$paramsAry = $request->query->all();
-			
-			$values = array();
-			
-			//Add keys if neccessary
-			if(array_key_exists('firstname', $paramsAry)){
-	            $values['firstname'] = $paramsAry['firstname'];	            
-            }
-			
-			if(array_key_exists('lastname', $paramsAry)){
-	            $values['lastname'] = $paramsAry['lastname'];				
-			}
-
-			if(array_key_exists('details', $paramsAry)){
-				$values['details'] = $paramsAry['details'];
-			}
-
-			if(array_key_exists('user_id', $paramsAry)){
-				$user_id = $paramsAry['user_id'];	
-			}
-			
-			$OCRuser = $mySql->selectOCRuser($app, $user_id);
-			
-			if(count($values) >= 3){
-				
-				
-				$mySql->updateUser($app, $OCRuser['id'], $values);
-				
-				$result = array(
-					'code' => CODE_SUCCESS,
-					'message' => "OK"	
-				);
-				
-			}else{
-				$result = array(
-					'code' => ER_DEFAULT,
-					'message' => "No parameters or missing parameter"	
-				);
-				
-			}
-			
-			return $app->json($result, 200);
-			
-		});
-*/	
-
 		$controllers->post('password/forgot',function(Request $request) use ($app, $self, $mySql){
 			
 			$result;
@@ -173,6 +119,7 @@ class OCRController extends SpikaBaseController {
 				}
 				
 				$mySql->updateUserMst($app, $OCRuser['id'], array('password' => $new_password));
+				$mySql->updatePassword($app, $OCRuser['id'], $new_password);
 				
 				$result = array('code' => CODE_SUCCESS,
 								'message' => 'OK');
@@ -200,8 +147,39 @@ class OCRController extends SpikaBaseController {
 								'message' => "No data to update");
 			}
 			
-			return $app->json($result, 200);;
+			return $app->json($result, 200);
 		});	
+		
+		$controllers->get('fetchUser', function(Request $request) use ($app, $self, $mySql){
+			
+			$paramsAry = $request->query->all();
+			
+			$ocr_id = null;
+			
+			if(array_key_exists('user_id', $paramsAry)){
+				$ocr_id = $paramsAry['user_id'];	
+			}
+			
+			if(isset($ocr_id) && !empty($ocr_id)){
+
+				$OCRuser = $mySql->selectOCRuserFromUser($app, $ocr_id);
+				
+				if($OCRuser == false){
+					return $app->json(array('code' => ER_DEFAULT,
+											'message' => "No such user"), 200);
+				}else{
+					return $app->json($OCRuser, 200);
+				}
+				
+			}else{
+				
+				$result = array('code' => ER_DEFAULT,
+								'message' => "No user id");
+				return $app->json($result, 200);
+				
+			}
+			
+		});
 		
 /*
 		//OCR image upload

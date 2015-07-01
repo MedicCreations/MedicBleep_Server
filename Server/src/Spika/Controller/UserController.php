@@ -510,6 +510,9 @@ class UserController extends SpikaBaseController {
 			if (array_key_exists('lastname', $paramsAry)){
 				$values['lastname'] = $paramsAry['lastname'];
 			}
+			if(array_key_exists('phone_number', $paramsAry)){
+				$values['phone_number'] = $paramsAry['phone_number'];
+			}
 						
 			$user_id = $app['user']['id'];
 			
@@ -753,7 +756,10 @@ class UserController extends SpikaBaseController {
 		
 		
 		$controllers->get('test', function (Request $request) use ($app, $self, $mySql){
+
+			$self->sendPushRequest(array());
 			
+/*
 			$chat_id = 762;
 			
 			$messages = $mySql->getLastMessages($app, $chat_id);
@@ -763,7 +769,8 @@ class UserController extends SpikaBaseController {
 			$messages = $self->getFormattedMessages($messages);
 			
 			var_dump($messages);
-						
+			
+*/			
 			$result = "OK";
 			return $app->json($result, 200);
 			

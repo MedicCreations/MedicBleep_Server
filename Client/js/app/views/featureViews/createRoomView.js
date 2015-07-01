@@ -156,11 +156,15 @@ var SPIKA_CreateRoomView = Backbone.View.extend({
                 self.profileImageFileId = data.fileId;
                 self.profileThumbFileId = data.thumbId;
                 
+                AvatarManager.process('#createroom_container .room_profile_image',data.thumbId);
+                
+/*
                 EncryptManager.decryptImage($$('#createroom_container .room_profile_image'),data.thumbId,0,apiClient,function(){
                     self.hideAvatarLoading();
                 },function(){
                     self.hideAvatarLoading();
                 });
+*/
                 
                 self.uploadedFileData = data;
                 

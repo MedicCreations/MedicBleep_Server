@@ -27,6 +27,18 @@ AvatarManager = {
 		
 		$(imgElement).attr('state','loaded');
 		
+		if(fileId === 'default_user_image'){
+			$(imgElement).attr("src", 'https://medicbleep.com/spika/Client/img/default_user.png');            
+    	}else if(fileId === 'default_group_image'){
+	    	$(imgElement).attr("src", 'https://medicbleep.com/spika/Client/img/default_group.png');            
+    	}else if(fileId === ''){
+	    	$(imgElement).attr("src", 'https://medicbleep.com/spika/Client/img/default_user.png');            
+    	}else{
+			$(imgElement).attr("src", 'https://medicbleep.com/spika/Server/wwwroot/v1/file/download?file_id=' + fileId);	            
+        }
+		
+		return;
+		
         if(fileId.search('default') != -1){
             return;
         }

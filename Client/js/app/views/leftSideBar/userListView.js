@@ -123,11 +123,13 @@ var SPIKA_UserListView = Backbone.View.extend({
                     
             }
             
+/*
             if(fileId === 'default_user_image'){
 				            $(this).attr("src", 'https://medicbleep.com/spika/Client/img/default_user.png');            
             }else{
 	            $(this).attr("src", 'https://medicbleep.com/spika/Server/wwwroot/v1/file/download?file_id=' + fileId);	            
             }
+*/
             
 
             

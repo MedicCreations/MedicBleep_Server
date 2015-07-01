@@ -53,7 +53,9 @@ var SPIKA_UserProfileView = Backbone.View.extend({
             
             self.userData = userFactory.createModelByAPIResponse(data.user);
             
-            EncryptManager.decryptImage($$('#user_profile .profile_pic'),self.userData.get('image_thumb'),THUMB_PIC_SIZE,apiClient,null,null,false);
+//             EncryptManager.decryptImage($$('#user_profile .profile_pic'),self.userData.get('image_thumb'),THUMB_PIC_SIZE,apiClient,null,null,false);
+            
+            AvatarManager.process('#user_profile .profile_pic',self.userData.get('image_thumb'));
             
             var details = self.userData.get('details');
             var name = self.userData.get('firstname') + " " + self.userData.get('lastname');
