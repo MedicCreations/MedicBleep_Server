@@ -42,23 +42,28 @@ class UserController extends SpikaBaseController {
 			//CHECK IF USERNAME INPUT IS EMAIL
 			$email = filter_var($username, FILTER_SANITIZE_EMAIL);
 
-			if(!filter_var($email, FILTER_VALIDATE_EMAIL) === false){
-				
+			$user = $mySql->getUserByUsernameOrEmail($app, $username);
+// 			echo(var_dump($user));
+
+			if(!filter_var($email, FILTER_VALIDATE_EMAIL) === false && strcmp($user['password'], "noPassword") !== 0){
+
 				//FIND USER BY EMAIL
 				$user = $mySql->getUserByUsernameOrEmail($app, $username);
-				$app['monolog']->addDebug("USER " . print_r($user,true));
+// 				$app['monolog']->addDebug("USER " . print_r($user,true));
 				//IF USER IS NOT FOUND CHECK OCR FOR THAT USER
 				
 				if(!isset($user['id'])){
+									
 					//IF USERNAME IS EMAIL GO WITH OCR LOGIN				
-					$app['monolog']->addDebug("Login with email");
+					$app['monolog']->addDebug("Prelogin with email");
 					
 					$dataForOCR = array("email"=>$username, "password"=>$password);
 					$data_string = json_encode($dataForOCR);
 					
-					$app['monolog']->addDebug(print_r($data_string,true));
+// 					$app['monolog']->addDebug(print_r($data_string,true));
 					
-					$ch = curl_init('https://www.theoncallroom.com/admin/bleeps/login');
+					
+					$ch = curl_init('http://dev.theoncallroom.com/admin/bleeps/login');
 					curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 					curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
@@ -70,8 +75,10 @@ class UserController extends SpikaBaseController {
 					$res = curl_exec($ch);
 					$res = json_decode($res, true);
 					
-					curl_close($ch);
+// 					$app['monolog']->addDebug(print_r($res));
 					
+					curl_close($ch);
+										
 					if($res['error_code'] == 1001){
 						
 						$app['monolog']->addDebug("userID " . $res['data']['id']);
@@ -79,58 +86,24 @@ class UserController extends SpikaBaseController {
 						//CHECK IF USER ALREADY EXISTS IN DATABASE
 						$OCRuser = $mySql->selectOCRuser($app, $res['data']['id']);
 						
-						if(!isset($OCRuser['id'])){
+						if(!isset($OCRuser) || $OCRuser === false){
 							//IF THERE IS NO USER CREATE HIM
 							$app['monolog']->addDebug("User doesn't exist!");
-							$mySql->registerOCRUser($app, $res, $dataForOCR['password']);
+							$mySql->registerOCRUser($app, $res['data'], $dataForOCR['password']);
 						}
 						
 						$image=null;
 						$imageThumb = null;
 						
 						//download profile photo
-						if(!isset($OCRuser['image'])){
-							$imageURL = "http://www.theoncallroom.com/img/userprofilephotos/" . $res['data']['image'];
-							$app['monolog']->addDebug("imageURL " . $imageURL);
-							
-							$chi = curl_init($imageURL);
-							curl_setopt($chi, CURLOPT_URL, $imageURL);
-							curl_setopt($chi, CURLOPT_RETURNTRANSFER, 1);
-							$image = curl_exec($chi);			
-							
-							if($image != null){
-								
-								$app['monolog']->addDebug("Fetched image from OCR");
-								$destination = "/var/www/Spika_v1.0.0/spikaenterprise-web_source/Server/uploads/" . substr($res['data']['image'], 0, -4);
-								$file = fopen($destination, "w");
-								fwrite($file, $image);
-								fclose($file);
-								
-							}
-							curl_close($chi);
+						if(!isset($OCRuser['image']) && !is_null($res['data']['image'])){
+							$self->getOCRuserImage($app, $res['data']['image']);
 						}
 						
 						//download photo thumb
-						if(!isset($OCRuser['thumb_image'])){
-							
-
-							$imageURL = "http://www.theoncallroom.com/img/userprofilephotos/thumb/".$res['data']['thumb_image'];
-							
-							$chit = curl_init($imageURL);
-							curl_setopt($chit, CURLOPT_URL, $imageURL);
-							curl_setopt($chit, CURLOPT_RETURNTRANSFER, 1);
-							$imageThumb = curl_exec($chit);
-							
-							if($imageThumb != null){
-								$app['monolog']->addDebug("Fetched thumb image from OCR");								
-								$destination = "/var/www/Spika_v1.0.0/spikaenterprise-web_source/Server/uploads/" . substr($res['data']['thumb_image'], 0, -4);
-								$file = fopen($destination, "w");
-								fwrite($file, $imageThumb);
-								fclose($file);
-							}							
-							curl_close($chit);
+						if(!isset($OCRuser['thumb_image']) && !is_null($res['data']['thumb_image'])){
+							$self->getOCRuserThumbImage($app, $res['data']['thumb_image']);
 						}
-						
 						
 						$app['monolog']->addDebug("User exists from this point on");					
 						
@@ -143,15 +116,18 @@ class UserController extends SpikaBaseController {
 						
 					
 				}else{		
-					
+				
 					$organizations = $mySql->getOrganizationsByCredential($app, $user['username'], $password);
+				
+// 					$app['monolog']->addDebug(print_r($organizations, true));	
 							
 					if(count($organizations) > 0){
 						$result = array(
 						    'code' => CODE_SUCCESS, 
 						    'organizations' => $organizations);
 						
-					} else {
+					} 
+					else {
 					    $result = array('code' => ER_INVALID_LOGIN, 'message' => 'Invalid username or password');
 					}
 		 
@@ -159,9 +135,11 @@ class UserController extends SpikaBaseController {
 				}
 					
 			}else{
+				
 				//try login with temp password
 				$user = $mySql->loginWithTempPass($app, $username, $password);
 				
+// 				echo("Temp pass " . var_dump($user));
 				if (is_array($user)){
 				
 					$temp_pass_timestamp = $user ['temp_password_timestamp'];
@@ -283,6 +261,8 @@ class UserController extends SpikaBaseController {
 			    
 				$result = array('code' => CODE_SUCCESS, 
 						'user_id' =>  $login_result['user']['id'],
+						'email' => $login_result['user']['email'],
+						'phone_number' => $login_result['user']['phone_number'],
 						'organization_id' =>  $login_result['user']['organization_id'],
 						'token' => $login_result['user']['token'],
 						'firstname' => $login_result['user']['firstname'],
@@ -662,14 +642,13 @@ class UserController extends SpikaBaseController {
 
 		
 		$controllers->post('password/change', function (Request $request) use ($app, $self, $mySql){
-			
+
 			$paramsAry = $request->request->all();
-			
 			$temp_password = $paramsAry['temp_password'];
 			$new_password = $paramsAry['new_password'];
-			
+
 			$user = $mySql->getUserByTempPassword($app, $temp_password);
-			
+
 			if (!is_array($user)){
 			
 				$result = array('code' => ER_INVALID_TEMP_PASSWORD,
@@ -681,11 +660,14 @@ class UserController extends SpikaBaseController {
 			$my_user_id = $user['id'];
 						
 			$mySql->updateUserPassword($app, $my_user_id, $new_password);
-						
+			
+			$self->changeOCRpassword($app, $user['email'], $new_password);
+			
             $organizations = $mySql->getOrganizationsByCredential($app, $user['username'], $new_password);
-    			    
-			$result = array('code' => CODE_SUCCESS,'organizations' => $organizations);
-		
+    		
+    		$result = array('code' => CODE_SUCCESS,
+    						'organizations' => $organizations);
+
 			return $app->json($result, 200);
 		
 		});
@@ -717,7 +699,34 @@ class UserController extends SpikaBaseController {
 			$values = array('token' => $token);
 			$mySql->updateUser($app, $app['user']['id'], $values);
 			
-
+			//change password in OCR
+			
+			$app['monolog']->addDebug('\n*** CHANGE PASS FOR OCR ***');
+			
+			$self->changeOCRpassword($app, $app['user']['email'], $new_password);
+/*
+			$dataForOCR = array("email"=>$app['user']['email'], "password"=>$new_password);
+			$data_string = json_encode($dataForOCR);
+			
+			$app['monolog']->addDebug(print_r($data_string,true));
+			
+			
+			$ch = curl_init('http://dev.theoncallroom.com/admin/Bleeps/change_password');
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+				'Content-Type: application/json',                                                                                
+				'Content-Length: ' . strlen($data_string))                                                                       
+			);
+			
+			$res = curl_exec($ch);
+			$res = json_decode($res, true);
+			
+			$app['monolog']->addDebug(print_r($res,true));
+			
+			curl_close($ch);
+*/
 			
 			$user = $mySql->getUserById($app, $app['user']['id']);
 			
@@ -754,15 +763,14 @@ class UserController extends SpikaBaseController {
 			
 		})->before($app['beforeSpikaTokenChecker']);
 		
-		
 		$controllers->get('test', function (Request $request) use ($app, $self, $mySql){
 
 			$self->sendPushRequest(array());
 			
-/*
 			$chat_id = 762;
+			$countryCode = 'HR';
 			
-			$messages = $mySql->getLastMessages($app, $chat_id);
+			$messages = $mySql->getLastMessages($app, $chat_id, $countryCode );
 			
 			var_dump($messages);
 			
@@ -770,7 +778,24 @@ class UserController extends SpikaBaseController {
 			
 			var_dump($messages);
 			
-*/			
+			
+			
+/*
+			$url = "http://medicbleep.com/spika/Server/wwwroot/v1/OCR/addContact?user_id=340&connection_id=283";
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL,$url);
+			curl_setopt($ch, CURLOPT_POST, true);  // tell curl you want to post something
+			  if(!empty($fields)){ 
+			   curl_setopt($ch, CURLOPT_POSTFIELDS, $fields); // define what you want to post
+			  }
+			  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // return the output in string format
+			  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded'));
+			  $output = curl_exec ($ch); // execute 
+			  curl_close ($ch); // close curl handle
+			  
+			  var_dump($output);
+*/
+			
 			$result = "OK";
 			return $app->json($result, 200);
 			

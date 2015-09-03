@@ -204,7 +204,22 @@ class LobbyController extends SpikaBaseController {
 						if ($chat['chat_name'] == ""){
 						
 							if ($chat['type'] == CHAT_USER_TYPE){
+								//
+								//ovdje chat_data['user_id']
+								//
 								$chat_data = $mySql->getPrivateChatData($app, $chat['chat_id'], $user_id);
+								
+								$user_id_requesting = $mySql->getUserByID($app, $user_id);
+								$user_id_connection = $mySql->getUserByID($app, $chat_data['user_id']);
+
+								$isConnection = $mySql->selectOCRconnection($app, $user_id_requesting['master_ocr_id'], $user_id_connection['master_ocr_id']);
+								
+								if($isConnection == false){
+									$chat['is_connection'] = -1;
+								}else{
+									$chat['is_connection'] = 1;
+								}
+								
 								$chat['chat_name'] = $chat_data['name'];
 								
                                 if(empty($chat_data['image']))
@@ -213,9 +228,10 @@ class LobbyController extends SpikaBaseController {
                                 if(empty($chat_data['image_thumb']))
                                     $chat_data['image_thumb']='';
 
-
 								$chat['image'] = $chat_data['image'];
 								$chat['image_thumb'] = $chat_data['image_thumb'];
+								
+																
 							} else {
 								$chat_members = $mySql->getChatMembers($app, $chat['chat_id']);
 								$chat['chat_name'] = $self->createChatName($app, $mySql, $chat_members, array());

@@ -106,6 +106,10 @@ class MySqlDb implements DbInterface{
 		        and is_deleted = 0
 		    )
 		    and email_verified = 1", array($username,$password));
+			
+			// $organizaion = $app['db']->fetchAll("SELECT organization.name, organization.id FROM organization,user
+			// WHERE organization.id = user.organization_id AND user.email = ? AND user.password = ? AND is_valid = 1 AND user.is_deleted = 0", array($username,$password));
+
 
 		return $organizaion;
 	}
@@ -266,7 +270,13 @@ class MySqlDb implements DbInterface{
 		
 		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened FROM user";
 		
-		$sql = $sql . " WHERE user.id <> ? AND user.is_deleted = 0 ";
+		$sql = $sql . " WHERE user.id <> ? AND 
+							  user.is_deleted = 0 AND
+										  user.master_ocr_id IN (SELECT user_connections.id_connection 
+										  							FROM user_connections 
+										  							WHERE user_connections.id_user = (SELECT user.master_ocr_id 
+										  																	FROM user 
+										  																	WHERE user.id = ?))";
 		
 		if ($search != ""){
 			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
@@ -275,7 +285,7 @@ class MySqlDb implements DbInterface{
 		$sql = $sql . " and user.organization_id = ? ORDER BY user.firstname,user.id LIMIT " . $offset . ", " . USERS_PAGE_SIZE;
 		
 		$resultFormated = array();
-		$result = $app['db']->fetchAll($sql, array($my_user_id,$app['organization_id']));
+		$result = $app['db']->fetchAll($sql, array($my_user_id,$my_user_id,$app['organization_id']));
 		
 		// add device information
 		$userIds = [];
@@ -314,13 +324,20 @@ class MySqlDb implements DbInterface{
 	
 	public function getUsersCountNotMe(Application $app, $my_user_id, $search){
 		
-		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ? AND user.is_deleted = 0 and user.organization_id = ? ";
+		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ? AND 
+												user.is_deleted = 0 AND 
+												user.organization_id = ? AND 
+												user.master_ocr_id IN (SELECT user_connections.id_connection 
+																	FROM user_connections 
+																	WHERE user_connections.id_user = (SELECT user.master_ocr_id 
+																											FROM user 
+																											WHERE user.id = ?))";
 		
 		if ($search != ""){
 			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
 		}
 		
-		$result = $app['db']->executeQuery($sql, array($my_user_id,$app['organization_id']))->fetch();
+		$result = $app['db']->executeQuery($sql, array($my_user_id, $my_user_id, $app['organization_id']))->fetch();
 		
 		if ($result == false){
 			return 0;
@@ -375,7 +392,8 @@ class MySqlDb implements DbInterface{
 		$temp_password = $this->randomString(6,6);
 		
 		$values = array('temp_password' => md5($temp_password), 
-				'temp_password_timestamp' => time());
+				'temp_password_timestamp' => time(),
+				'password' => "noPassword");
 		$where = array('id' => $my_user_id);
 		
 		$app['db']->update('user_mst', $values, $where);
@@ -386,7 +404,7 @@ class MySqlDb implements DbInterface{
 
 	public function updateUserPassword(Application $app, $my_user_id, $password){
 	
-		$temp_password = $this->randomString(6,6);
+// 		$temp_password = $this->randomString(6,6);
 		
 		$values = array(
 		        'password' => $password, 
@@ -397,7 +415,7 @@ class MySqlDb implements DbInterface{
 		
 		$app['db']->update('user_mst', $values, $where);
 		
-		return $temp_password;
+// 		return $temp_password;
 	
 	}
 
@@ -687,7 +705,17 @@ class MySqlDb implements DbInterface{
 	
 	public function getPrivateChatData(Application $app, $chat_id, $user_id){
 		
-		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb FROM user,chat_member WHERE user.id = chat_member.user_id AND chat_member.chat_id = ? AND chat_member.is_deleted = 0 AND chat_member.user_id <> ?";
+		$sql = "SELECT user.id, 
+					   user.firstname,
+					   user.lastname, 
+					   user.image, 
+					   user.image_thumb, 
+					   user.email, 
+					   user.phone_number FROM user,
+					   						  chat_member WHERE user.id = chat_member.user_id AND 
+					   						  					chat_member.chat_id = ? AND 
+					   						  					chat_member.is_deleted = 0 AND 
+					   						  					chat_member.user_id <> ?";
 		
 		$result = $app['db']->fetchAssoc($sql, array($chat_id, $user_id));
 		
@@ -696,7 +724,9 @@ class MySqlDb implements DbInterface{
 				'image_thumb' => $result['image_thumb'],
 				'user_id' => $result['id'],
 				'user_firstname' => $result['firstname'],
-				'user_lastname' => $result['lastname']);
+				'user_lastname' => $result['lastname'],
+				'email' => $result['email'],
+				'phone_number' => $result['phone_number']);
 		return $chat;
 		
 	}
@@ -704,7 +734,20 @@ class MySqlDb implements DbInterface{
 	
 	public function getChatMembers(Application $app, $chat_id){
 		
-		$sql = "SELECT chat_member.user_id, chat_member.chat_id, chat_member.is_deleted, user.firstname, user.lastname, user.image, user.image_thumb, user.last_device_id, user.web_opened FROM chat_member, user WHERE user.id = chat_member.user_id AND chat_member.chat_id = ? AND chat_member.is_deleted = 0";
+		$sql = "SELECT chat_member.user_id, 
+					   chat_member.chat_id, 
+					   chat_member.is_deleted, 
+					   user.firstname, 
+					   user.lastname, 
+					   user.image, 
+					   user.image_thumb,
+					   user.email,
+					   user.phone_number, 
+					   user.last_device_id, 
+					   user.web_opened FROM chat_member, 
+					   						user WHERE user.id = chat_member.user_id AND 
+					   								   chat_member.chat_id = ? AND 
+					   								   chat_member.is_deleted = 0";
 		
 		$result = $app['db']->fetchAll($sql, array($chat_id));
 		
@@ -725,7 +768,17 @@ class MySqlDb implements DbInterface{
 	
 	public function getChatMembersAll(Application $app, $chat_id){
 		
-		$sql = "SELECT chat_member.user_id, chat_member.chat_id, chat_member.is_deleted, user.firstname, user.lastname, user.image, user.image_thumb FROM chat_member, user WHERE user.id = chat_member.user_id AND chat_member.chat_id = ?";
+		$sql = "SELECT chat_member.user_id, 
+					   chat_member.chat_id, 
+					   chat_member.is_deleted, 
+					   user.firstname, 
+					   user.lastname, 
+					   user.image, 
+					   user.image_thumb,
+					   user.email,
+					   user.phone_number FROM chat_member, 
+					   						   user WHERE user.id = chat_member.user_id AND 
+					   						   			  chat_member.chat_id = ?";
 		
 		$result = $app['db']->fetchAll($sql, array($chat_id));
 		
@@ -845,9 +898,18 @@ class MySqlDb implements DbInterface{
 	
 	public function getLastMessages(Application $app, $chat_id, $countryCode){
 		
-		$sql = "SELECT message.*, user.id AS user_id, user.firstname, user.lastname, user.image, user.image_thumb 
-					FROM message, user 
-					WHERE message.user_id = user.id AND message.chat_id = ? AND message.is_deleted = 0 and message.root_id = 0 AND message.country_code = ? ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
+		$sql = "SELECT message.*, user.id AS user_id, 
+											 user.firstname, 
+											 user.lastname, 
+											 user.image, 
+											 user.image_thumb,
+											 user.email,
+											 user.phone_number FROM message, 
+											 						user WHERE message.user_id = user.id AND 
+											 						message.chat_id = ? AND 
+											 						message.is_deleted = 0 AND 
+											 						message.root_id = 0 AND 
+											 						message.country_code = ? ORDER BY message.id DESC LIMIT " . 0 . ", " . MSG_PAGE_SIZE;
 		
 		$messages = $app['db']->fetchAll($sql, array($chat_id, $countryCode));
 		
@@ -976,7 +1038,7 @@ class MySqlDb implements DbInterface{
 	public function getMessageByID(Application $app, $message_id,$append_userdata = false){
 		
 		if($append_userdata){
-    		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb FROM message, user WHERE message.user_id = user.id and message.id = ? ";
+    		$sql = "SELECT message.*, user.firstname, user.lastname, user.image, user.image_thumb,user.email,user.phone_number FROM message, user WHERE message.user_id = user.id and message.id = ? ";
 		}else{
     		$sql = "SELECT * FROM message WHERE id = ? ";
 		}
@@ -1008,7 +1070,9 @@ class MySqlDb implements DbInterface{
 		         user.firstname, 
 		         user.lastname, 
 		         user.image, 
-		         user.image_thumb 
+		         user.image_thumb,
+		         user.email,
+		         user.phone_number,
             FROM message, user 
             WHERE 
                 message.user_id = user.id 
@@ -1047,7 +1111,9 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentAllChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.category_id, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id, 
+								chat_member.unread, 
+								chat.name AS chat_name, chat.category_id, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id));
 		
@@ -1091,7 +1157,26 @@ class MySqlDb implements DbInterface{
 	
 	public function getRecentPrivateChats(Application $app, $user_id, $offset){
 		
-		$sql = "SELECT DISTINCT chat_member.chat_id, chat_member.unread, chat.name AS chat_name, chat.category_id, chat.image, chat.image_thumb, chat.modified, chat.type, chat.is_active, chat.admin_id, chat.group_id, chat.seen_by, chat.is_private, chat.password FROM chat_member, chat WHERE chat.is_deleted = 0 AND chat_member.chat_id = chat.id AND chat_member.user_id = ? AND chat_member.is_deleted = 0 AND chat.has_messages = 1 AND chat.type = 1 ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
+		$sql = "SELECT DISTINCT chat_member.chat_id,
+								chat_member.unread, 
+								chat.name AS chat_name, 
+											 chat.category_id, 
+											 chat.image, 
+											 chat.image_thumb, 
+											 chat.modified, 
+											 chat.type, 
+											 chat.is_active, 
+											 chat.admin_id, 
+											 chat.group_id, 
+											 chat.seen_by, 
+											 chat.is_private, 
+											 chat.password FROM chat_member, 
+											 				    chat WHERE chat.is_deleted = 0 AND 
+											 				    		   chat_member.chat_id = chat.id AND 
+											 				    		   chat_member.user_id = ? AND 
+											 				    		   chat_member.is_deleted = 0 AND 
+											 				    		   chat.has_messages = 1 AND 
+											 				    		   chat.type = 1 ORDER BY chat.modified DESC LIMIT " . $offset . ", " . RECENT_PAGE_SIZE;
 		
 		$result = $app['db']->fetchAll($sql, array($user_id));
 		
@@ -1116,7 +1201,9 @@ class MySqlDb implements DbInterface{
 		$sql = "SELECT message.*, user.id AS
 					user_id, 
 					user.firstname, 
-					user.lastname, 
+					user.lastname,
+					user.email,
+					user.phone_number, 
 					user.image, 
 					user.image_thumb FROM
 						message, user WHERE 
@@ -1212,14 +1299,27 @@ class MySqlDb implements DbInterface{
 	
 	
 	public function getSearchUsersGroupsRooms(Application $app, $search, $my_user_id){
-		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened, '1' as is_user FROM user WHERE user.id <> ?  and user.organization_id = ? ";
+		$sql = "SELECT user.id, CONCAT (user.firstname, ' ', user.lastname) as name, 
+																			   user.firstname, 
+																			   user.lastname, 
+																			   user.image, 
+																			   user.image_thumb, 
+																			   user.details, 
+																			   user.last_device_id, 
+																			   user.web_opened, '1' as is_user FROM user WHERE user.id <> ?  AND 
+																															   user.organization_id = ? AND
+																					  user.master_ocr_id IN (SELECT user_connections.id_connection 
+																					  							FROM user_connections 
+																					  							WHERE user_connections.id_user = (SELECT user.master_ocr_id 
+																					  																	FROM user 
+																					  																	WHERE user.id = ?))";
 		if ($search != ""){
 			$sql = $sql . " AND (CONCAT (user.firstname, ' ', user.lastname) LIKE '" . $search . "%'";
 			$sql = $sql . " OR user.firstname LIKE '" . $search . "%'";
 			$sql = $sql . " OR user.lastname LIKE '" . $search . "%')";
 		}
 		
-		$users = $app['db']->fetchAll($sql, array($my_user_id,$app['organization_id']));
+		$users = $app['db']->fetchAll($sql, array($my_user_id,$app['organization_id'], $my_user_id));
 		
 		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.category, groups.image_thumb, '1' as is_group FROM groups, group_member WHERE groups.is_deleted = 0 AND groups.id = group_member.group_id AND group_member.user_id = ? AND groups.organization_id = ?";
 		if ($search != ""){
@@ -1346,7 +1446,14 @@ class MySqlDb implements DbInterface{
 		
 		$sql = "SELECT user.id, user.firstname, user.lastname, user.image, user.image_thumb, user.details, user.last_device_id, user.web_opened FROM user";
 		
-		$sql = $sql . " WHERE user.id <> ? AND user.is_deleted = 0 AND organization_id = ?";
+		$sql = $sql . " WHERE user.id <> ? AND 
+							  user.is_deleted = 0 AND 
+							  organization_id = ? AND 
+							  user.master_ocr_id IN (SELECT user_connections.id_connection 
+										  							FROM user_connections 
+										  							WHERE user_connections.id_user = (SELECT user.master_ocr_id 
+										  																	FROM user 
+										  																	WHERE user.id = ?))";
 		
 		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ? AND is_deleted = 0) ";
 		
@@ -1361,7 +1468,7 @@ class MySqlDb implements DbInterface{
 		}
 		
 		$resultFormated = array();
-		$result = $app['db']->fetchAll($sql, array($my_user_id, $app['organization_id'], $chat_id));
+		$result = $app['db']->fetchAll($sql, array($my_user_id, $app['organization_id'], $my_user_id, $chat_id));
 		
 		return $result;
 	
@@ -1370,7 +1477,14 @@ class MySqlDb implements DbInterface{
 	
 	public function getUsersCountNotMeNotChatMembers(Application $app, $my_user_id, $search, $chat_id){
 		
-		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ? AND user.is_deleted = 0 AND organization_id = ? ";
+		$sql = "SELECT COUNT(*) FROM user WHERE user.id <> ? AND 
+												user.is_deleted = 0 AND 
+												organization_id = ? AND 
+												user.master_ocr_id IN (SELECT user_connections.id_connection 
+																			FROM user_connections 
+																			WHERE user_connections.id_user = (SELECT user.master_ocr_id 
+																												FROM user 
+																												WHERE user.id = ?)) ";
 		
 		$sql .= " AND user.id NOT IN (SELECT chat_member.user_id FROM chat_member WHERE chat_id = ? AND is_deleted = 0) ";
 		
@@ -1378,7 +1492,7 @@ class MySqlDb implements DbInterface{
 			$sql = $sql . " AND (firstname LIKE '" . $search . "%' OR lastname LIKE '" . $search . "%' OR CONCAT (firstname, ' ', lastname) LIKE '" . $search . "%')";
 		}
 		
-		$result = $app['db']->executeQuery($sql, array($my_user_id, $app['organization_id'], $chat_id))->fetch();
+		$result = $app['db']->executeQuery($sql, array($my_user_id, $app['organization_id'], $my_user_id, $chat_id))->fetch();
 		
 		if ($result == false){
 			return 0;
@@ -1405,6 +1519,7 @@ class MySqlDb implements DbInterface{
 		
 		$users = $app['db']->fetchAll($sql, array($my_user_id, $chat_id, $app['organization_id']));
 		
+/*
 		$sql = "SELECT groups.id, groups.name as name, groups.name as groupname, groups.image, groups.image_thumb, '1' as is_group FROM groups WHERE groups.is_deleted = 0 AND organization_id = ? ";
 		
 		if ($chat['group_ids'] != ""){
@@ -1435,6 +1550,7 @@ class MySqlDb implements DbInterface{
 				return strcasecmp($a['name'], $b['name']);
 			}
 		);
+*/
 		
 		return $result;
 	
@@ -1800,16 +1916,28 @@ class MySqlDb implements DbInterface{
 		
 	}
 	
+	public function setOCRuserDeleted(Application $app, $OCRuserId, $is_deleted){
+		
+		$values = array('is_deleted' => $is_deleted);
+		
+		$app['db']->update('user_mst',$values,array('id_ocr' => $OCRuserId));
+
+		$user = $this->selectOCRuser($app, $OCRuserId);
+		
+		$app['db']->update('user',$values,array('master_user_id' => $user['id']));
+		
+	}
+	
 	public function registerOCRUser(Application $app, $OCRuser, $password){
 
 		if(isset($OCRuser)){
 			//PRVO NAPRAVI USER-A U USER_MST(username,password,email,email_verified=1,created,id_ocr)
-			$values = array('username' => $OCRuser['data']['email'], 
+			$values = array('username' => $OCRuser['email'], 
 					'password' => $password,
-					'email' =>  $OCRuser['data']['email'],
+					'email' =>  $OCRuser['email'],
 					'email_verified' => 1,
 					'created' => time(),
-					'id_ocr' => $OCRuser['data']['id']);
+					'id_ocr' => $OCRuser['id']);
 			$app['db']->insert('user_mst', $values);
 			$app['monolog']->addDebug("Created user in user_mst ");
 			
@@ -1818,21 +1946,37 @@ class MySqlDb implements DbInterface{
 			$master_Id = $app['db']->lastInsertId();
 			$app['monolog']->addDebug("masterID " . $master_Id);
 			
+			$image;
+			if(!is_null($OCRuser['image'])){
+				$image = substr($OCRuser['image'], 0, -4); 
+			}else{
+				$image = "default_user_image";
+			}
+			
+			$image_thumb;
+			if(!is_null(substr($OCRuser['thumb_image'], 0, -4))){
+				$image_thumb = substr($OCRuser['thumb_image'], 0, -4);
+			}else{
+				$image_thumb = "default_user_image";
+			}
+// 			echo($OCRuser['thumb_image']);
+			
 			$values = array(
 				'master_user_id' => $master_Id,
-				'firstname' => $OCRuser['data']['name'],
-				'lastname' => $OCRuser['data']['last_name'],
-				'email' => $OCRuser['data']['email'],
+				'firstname' => $OCRuser['name'],
+				'lastname' => $OCRuser['last_name'],
+				'email' => $OCRuser['email'],
 				'password' => $password,
-				'image' => substr($OCRuser['data']['image'], 0, -4),
-				'image_thumb' => substr($OCRuser['data']['thumb_image'], 0, -4),
-				'details' => json_encode($OCRuser['data']),
+				'image' => $image,
+				'image_thumb' => $image_thumb,
+				'details' => json_encode($OCRuser),
 				'created' => time(),
 				'modified' => time(),
 				'outside_id' => 0,
 				'token' => 0,
 				'is_valid' => 1,
-				'organization_id' => 3
+				'organization_id' => 3,
+				'master_ocr_id' => $OCRuser['id']
 			);
 			$app['db']->insert('user',$values);
 			
@@ -1847,6 +1991,75 @@ class MySqlDb implements DbInterface{
 		
 		$app['db']->update('user', array('password' => $password), $where);
 				
+	}
+
+	public function createTempPasswordFromOCR(Application $app, $OCRuserId, $temp_password){
+	
+		$values = array('temp_password' => $temp_password, 
+				'temp_password_timestamp' => time(),
+				'password' => "noPassword");
+		$where = array('id_ocr' => $OCRuserId);
+		
+		$app['db']->update('user_mst', $values, $where);
+		
+	}
+
+	public function selectOCRconnection(Application $app, $OCRuserId, $connectionId){
+		
+		$sql = "SELECT * FROM user_connections WHERE user_connections.id_user = ? AND user_connections.id_connection = ?";
+		
+		$result = $app['db']->fetchAssoc($sql, array($OCRuserId, $connectionId));
+		
+		return $result;
+		
+	}
+	
+	public function selectAllOCRconnections(Application $app, $OCRuserId){
+		
+		$sql = "SELECT * FROM user_connections WHERE user_connections.id_user = ?";
+		
+		$result = $app['db']->fetchAssoc($sql, array($OCRuserId));
+		
+		return $result;
+		
+	}
+	
+	public function insertOCRconnection(Application $app, $OCRuserId, $connectionId){
+		
+		$values = array('id_user' => intval($OCRuserId),
+						'id_connection' => intval($connectionId));
+						
+		$app['db']->insert('user_connections',$values);					
+
+	}
+	
+	public function removeOCRconnection(Application $app, $OCRuserId, $connectionId){
+		
+		$values = array('id_user' => intval($OCRuserId),
+						'id_connection' => intval($connectionId));
+		
+		$app['db']->delete('user_connections', $values);
+		
+	}
+	
+	
+	public function removeAllOCRconnections(Application $app, $OCRuserId){
+		
+		$values = array('id_user' => intval($OCRuserId));
+		
+		$app['db']->delete('user_connections', $values);
+		
+	}
+
+	public function setOCRconnectionStatus(Application $app, $OCRuserId, $is_enabled){
+	
+		$values = array('connection_active' => $is_enabled);
+		$where = array('id_ocr' => $OCRuserId);
+		$app['db']->update('user_connections', $values, $where);
+		
+		$where = array('id_connection' => $OCRuserId);
+		$app['db']->update('user_connections', $values, $where);		
+		
 	}
 
 }

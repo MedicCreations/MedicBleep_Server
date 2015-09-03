@@ -104,4 +104,13 @@ interface DbInterface
 	public function updateOCRUser(Application $app, $OCRdata);
 	public function selectOCRuserFromUser(Application $app, $OCRuserId);
 	public function updatePassword(Application $app, $OCRuserId, $password);
+	public function setOCRuserDeleted(Application $app, $OCRuserId, $is_deleted);
+	public function createTempPasswordFromOCR(Application $app, $OCRuserId, $temp_password);
+
+	public function selectOCRconnection(Application $app, $OCRuserId, $connectionId);
+	public function selectAllOCRconnections(Application $app, $OCRuserId);
+	public function insertOCRconnection(Application $app, $OCRuserId, $connectionId);
+	public function removeOCRconnection(Application $app, $OCRuserId, $connectionId);
+	public function setOCRconnectionStatus(Application $app, $OCRuserId, $is_enabled);
+	
 }

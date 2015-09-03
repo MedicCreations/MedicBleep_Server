@@ -65,6 +65,7 @@ class SpikaBaseController implements ControllerProviderInterface
 		$data_string = json_encode($params);
 		
 		$url = PUSH_ROOT_URL;
+// 		echo($url);
 /*
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_POST, true);
@@ -103,6 +104,7 @@ class SpikaBaseController implements ControllerProviderInterface
 		$parts=parse_url($url);
 
 		$fp = fsockopen('ssl://' . $parts['host'], 443, $errno, $errstr, 30);
+// 		echo($fp);
 		
 		$out = "POST ".$parts['path']." HTTP/1.1\r\n";
 		$out.= "Host: ".$parts['host']."\r\n";
@@ -456,7 +458,9 @@ class SpikaBaseController implements ControllerProviderInterface
 					'firstname' => $message['firstname'],
 					'lastname' => $message['lastname'],
 					'image' => $message['image'],
-					'image_thumb' => $message['image_thumb']);
+					'image_thumb' => $message['image_thumb'],
+					'email' => empty($message['email']) ? '' : $message['email'],
+					'phone_number' => empty($message['phone_number']) ? '' : $message['phone_number']);
 			$message['user'] = $user;
 		}
 		
@@ -470,12 +474,124 @@ class SpikaBaseController implements ControllerProviderInterface
 					'firstname' => $message['firstname'],
 					'lastname' => $message['lastname'],
 					'image' => $message['image'],
-					'image_thumb' => $message['image_thumb']);
+					'image_thumb' => $message['image_thumb'],
+					'email' => empty($message['email']) ? '' : $message['email'],
+					'phone_number' => empty($message['phone_number']) ? '' : $message['phone_number']);
 			$message['user'] = $user;
 		
 		return $message;
 	
 	}
+	
+	public function getOCRuserImage(Application $app, $imageName){
+		
+		$imageURL = "http://dev.theoncallroom.com/img/userprofilephotos/" . $imageName;
+		$app['monolog']->addDebug("imageURL " . $imageURL);
+		
+		$chi = curl_init($imageURL);
+		curl_setopt($chi, CURLOPT_URL, $imageURL);
+		curl_setopt($chi, CURLOPT_RETURNTRANSFER, 1);
+		$image = curl_exec($chi);			
+		
+		if(!is_null($image) && $image != false){
+				
+			$app['monolog']->addDebug("Fetched image from OCR");
+			$destination = "/var/www/Spika_v1.0.0/spikaenterprise-web_source/Server/uploads/" . substr($imageName, 0, -4);
+			$file = fopen($destination, "w");
+			fwrite($file, $image);
+			fclose($file);
+			
+		}
+		curl_close($chi);
+		
+	}
+    
+    public function getOCRuserThumbImage(Application $app, $imageName){
+		
+		$imageURL = "http://dev.theoncallroom.com/img/userprofilephotos/thumb/".$imageName;
+							
+		$chit = curl_init($imageURL);
+		curl_setopt($chit, CURLOPT_URL, $imageURL);
+		curl_setopt($chit, CURLOPT_RETURNTRANSFER, 1);
+		$imageThumb = curl_exec($chit);
+		
+		
+		if(!is_null($imageThumb) && $imageThumb != false){
+			$app['monolog']->addDebug("Fetched thumb image from OCR");								
+			$destination = "/var/www/Spika_v1.0.0/spikaenterprise-web_source/Server/uploads/" . substr($imageName, 0, -4);
+			$file = fopen($destination, "w");
+			fwrite($file, $imageThumb);
+			fclose($file);
+		}							
+		curl_close($chit); 
+    }
+    
+    public function changeOCRpassword(Application $app, $OCR_email, $new_password){
+	    
+	    $dataForOCR = array("email"=>$OCR_email, "password"=>$new_password);
+		$data_string = json_encode($dataForOCR);
+		
+		$app['monolog']->addDebug(print_r($data_string,true));
+	    
+	    $ch = curl_init('http://dev.theoncallroom.com/admin/Bleeps/change_password');
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+			'Content-Type: application/json',                                                                                
+			'Content-Length: ' . strlen($data_string))                                                                       
+		);
+			
+		$res = curl_exec($ch);
+		$res = json_decode($res, true);
+		
+    }
+    
+    //if user exists return true
+	public function registerUser(Application $app, $mySql, $OCRuser){
+		
+		$user = $mySql->getUserByUsernameOrEmail($app, $OCRuser['email']);
+// 		echo(var_dump($user));
+		
+		if($user == false){
+			
+			$mySql->registerOCRUser($app, $OCRuser, $OCRuser['password']);
+			
+			echo("Image " . $OCRuser['image']);
+			echo("thumbImage " . $OCRuser['thumb_image']);
+			
+			if($OCRuser['image'] != false){
+				$this->getOCRuserImage($app, $OCRuser['image']);	
+			}
+			
+			if($OCRuser['thumb_image'] != false){
+				$this->getOCRuserThumbImage($app, $OCRuser['thumb_image']);						
+			}
 
-    		
+		}
+		
+		return true;
+		
+	}
+	
+	public function createConnections(Application $app, $mySql, $OCRuser){
+		
+		if(is_array($OCRuser['connections'])){
+			$connections = $OCRuser['connections'];
+			
+			//remove all connections
+			$mySql->removeAllOCRconnections($app, $OCRuser['id']);
+			
+			//add all connections
+			foreach($connections as $connection){				
+				$userConnection = $mySql->selectOCRconnection($app, $OCRuser['id'], $connection['id']);
+				if($userConnection == false){
+					$mySql->insertOCRconnection($app, $OCRuser['id'], $connection['id']);
+				}
+								
+			}			
+		}
+				
+	}
+    
 }

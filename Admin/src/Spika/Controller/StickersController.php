@@ -56,6 +56,7 @@ class StickersController extends BaseController {
 
             $files = $request->files;
     
+			echo(STICKERS_DIR);
             $path = STICKERS_DIR;
             $filename = $files->get('stickerfile')->getClientOriginalName();
             $filenameSplited = explode('.',$filename);

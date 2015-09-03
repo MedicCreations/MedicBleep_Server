@@ -248,7 +248,7 @@ var SPIKA_LoginView = Backbone.View.extend({
                         SPIKA_notificationManger.attachUser(data.user.id);
                         AvatarManager.init();
 
-                        SPIKA_VideoCallManager.init(data.user_id);
+//                         SPIKA_VideoCallManager.init(data.user_id);
                         
                         U.goPage("main");
                         
