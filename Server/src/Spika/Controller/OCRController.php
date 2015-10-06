@@ -157,16 +157,18 @@ class OCRController extends SpikaBaseController {
 // 				echo($profileData['image']);
 				
 				//download profile photo
+				$app['monolog']->addDebug("---  Image: " . $profileData['image'] . "  ---");	
 				if(isset($profileData['image']) && !is_null($profileData['image'])){
-					echo "downloading image";
+// 					echo "downloading image";
 					$self->getOCRuserImage($app, $profileData['image']);
 				}
 
 // 				echo($profileData['thumb_image']);				
 				//download photo thumb
-				if(isset($profileData['thumb_image']) && !is_null($profileData['thumb_image'])){
-					echo "downloading thumb_image";
-					$self->getOCRuserThumbImage($app, $profileData['thumb_image']);
+				$app['monolog']->addDebug("---  Thumb: " . $profileData['image_thumb'] . "  ---");	
+				if(isset($profileData['image_thumb']) && !is_null($profileData['image_thumb'])){
+// 					echo "downloading thumb_image";
+					$self->getOCRuserThumbImage($app, $profileData['image_thumb']);
 				}
 				
 				$result = array('code' => CODE_SUCCESS,

@@ -718,7 +718,7 @@ class MessageController extends SpikaBaseController {
 			// $chat_seen_by = $mySql->getSeenBy($app, $chat_id);
 			
 			$chat = $mySql->getChatByID($app, $chat_id);
-				
+			
 				if ($chat['type'] == CHAT_USER_TYPE){
 					$data = $mySql->getPrivateChatData($app, $chat_id, $my_user_id);
 					$user = array('id' => $data['user_id'], 
@@ -746,6 +746,7 @@ class MessageController extends SpikaBaseController {
 				
 				$category = $mySql->getCategoryById($app, $chat['category_id']);
 				$chat['category'] = $category;
+				$chat['unread'] = $mySql->getUnreadCountForChat($app, $my_user_id, $chat_id)['unread'];
 			
 			$is_chat_member = $mySql->isChatMember($app, $my_user_id, $chat_id);
 			
@@ -758,9 +759,9 @@ class MessageController extends SpikaBaseController {
 			
 			if($is_chat_active == 1){
 				$self->updateSeen($app, $mySql, $chat_id, $countryCode);
+				$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 			}
 			
-			$mySql->resetUnreadMessagesForMember($app, $chat_id, $my_user_id);
 			
 			$messages = $mySql->getMessagesOnPushForIOS($app, $chat_id, $message_id);
 			

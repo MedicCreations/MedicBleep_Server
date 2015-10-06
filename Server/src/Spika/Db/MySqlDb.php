@@ -895,6 +895,14 @@ class MySqlDb implements DbInterface{
 		
 	}
 	
+	public function getUnreadCountForChat(Application $app, $user_id, $chat_id){
+		
+		$sql = "SELECT chat_member.unread FROM chat_member WHERE chat_member.chat_id = ? AND chat_member.user_id = ?";
+		
+		$result = $app['db']->fetchAssoc($sql, array($chat_id, $user_id));
+		
+		return $result;
+	}
 	
 	public function getLastMessages(Application $app, $chat_id, $countryCode){
 		
@@ -1903,7 +1911,7 @@ class MySqlDb implements DbInterface{
 				'lastname' => $OCRdata['last_name'],
 				'email' => $OCRdata['email'],
 				'image' => substr($OCRdata['image'], 0, -4),
-				'image_thumb' => substr($OCRdata['thumb_image'], 0, -4),
+				'image_thumb' => substr($OCRdata['image_thumb'], 0, -4),
 				'details' => json_encode($OCRdata),
 				'modified' => time()
 			);
@@ -1959,7 +1967,6 @@ class MySqlDb implements DbInterface{
 			}else{
 				$image_thumb = "default_user_image";
 			}
-// 			echo($OCRuser['thumb_image']);
 			
 			$values = array(
 				'master_user_id' => $master_Id,

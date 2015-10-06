@@ -53,6 +53,7 @@ interface DbInterface
 	public function getMessagesPaging(Application $app, $chat_id, $last_msg_id, $countryCode);
 	public function getMessagesOnPush(Application $app, $chat_id, $first_msg_id, $countryCode);
 	public function getCountMessagesForChat(Application $app, $chat_id, $countryCode);
+	public function getUnreadCountForChat(Application $app, $user_id, $chat_id);
 	public function updateUnreadMessagesForMembers(Application $app, $chat_id, $user_id);
 	public function resetUnreadMessagesForMember(Application $app, $chat_id, $user_id);
 	public function updateChatHasMessages(Application $app, $chat_id);
