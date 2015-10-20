@@ -485,7 +485,7 @@ class SpikaBaseController implements ControllerProviderInterface
 	
 	public function getOCRuserImage(Application $app, $imageName){
 		
-		$imageURL = "http://dev.theoncallroom.com/img/userprofilephotos/" . $imageName;
+		$imageURL = "https://theoncallroom.com/img/userprofilephotos/" . $imageName;
 		$app['monolog']->addDebug("imageURL " . $imageURL);
 		
 		$chi = curl_init($imageURL);
@@ -508,7 +508,7 @@ class SpikaBaseController implements ControllerProviderInterface
     
     public function getOCRuserThumbImage(Application $app, $imageName){
 		
-		$imageURL = "http://dev.theoncallroom.com/img/userprofilephotos/thumb/".$imageName;
+		$imageURL = "https://theoncallroom.com/img/userprofilephotos/thumb/".$imageName;
 							
 		$chit = curl_init($imageURL);
 		curl_setopt($chit, CURLOPT_URL, $imageURL);
@@ -533,7 +533,7 @@ class SpikaBaseController implements ControllerProviderInterface
 		
 		$app['monolog']->addDebug(print_r($data_string,true));
 	    
-	    $ch = curl_init('http://dev.theoncallroom.com/admin/Bleeps/change_password');
+	    $ch = curl_init('https://theoncallroom.com/admin/Bleeps/change_password');
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 

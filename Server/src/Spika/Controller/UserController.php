@@ -63,7 +63,7 @@ class UserController extends SpikaBaseController {
 // 					$app['monolog']->addDebug(print_r($data_string,true));
 					
 					
-					$ch = curl_init('http://dev.theoncallroom.com/admin/bleeps/login');
+					$ch = curl_init('https://theoncallroom.com/admin/bleeps/login');
 					curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 					curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);                                                                  
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      

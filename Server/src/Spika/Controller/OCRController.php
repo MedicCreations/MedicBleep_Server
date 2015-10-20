@@ -284,7 +284,7 @@ class OCRController extends SpikaBaseController {
 		
 		$controllers->get('syncContacts', function(Request $request) use ($app, $self, $mySql){
 			
-			$ch = curl_init('http://dev.theoncallroom.com/admin/Bleeps/fetch_users');
+			$ch = curl_init('https://theoncallroom.com/admin/Bleeps/fetch_users');
 					curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);                                                                      
 					curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
